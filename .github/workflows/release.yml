@@ -1,0 +1,59 @@
+name: Build and draft release
+on:
+  push:
+    tags: ['*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Prepare Electron sandbox
+        run: |
+          node -e "require('electron')"
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+      - run: xvfb-run --auto-servernum npm run test:electron
+      - run: npm run check:release
+      - name: Verify reproducible build
+        run: |
+          sha256sum main.js styles.css > /tmp/academic-build.sha256
+          npm run build
+          sha256sum --check /tmp/academic-build.sha256
+      - name: Verify tag
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: node -e "if(process.env.RELEASE_TAG!==require('./manifest.json').version)process.exit(1)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: academic-notes
+          path: |
+            main.js
+            manifest.json
+            styles.css
+  draft:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: academic-notes
+      - name: Create draft with the three plugin assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: gh release create "$RELEASE_TAG" main.js manifest.json styles.css --draft --verify-tag --title "Academic Notes $RELEASE_TAG" --generate-notes
