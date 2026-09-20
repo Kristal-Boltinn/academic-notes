@@ -20,7 +20,7 @@ jobs:
               files = [i for i in z.infolist() if not i.is_dir()]
               assert len(files) == 55
               for item in files:
-                  p = pathlib.PurePosixPath(item.filename)
+                  p = pathlib.PurePosixPath(item.filename.replace(chr(92), '/'))
                   assert p.parts[0] == 'academic-notes' and '..' not in p.parts
                   target = pathlib.Path(*p.parts[1:])
                   assert target.parts and target.parts[0] != '.git'
