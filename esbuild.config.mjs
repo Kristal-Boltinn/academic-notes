@@ -6,7 +6,7 @@ const options = {
   format: 'cjs', platform: 'node', target: 'es2022',
   external: ['obsidian', 'electron', '@electron/remote', '@codemirror/*', '@lezer/*'],
   loader: { '.css': 'text' }, logLevel: 'info', legalComments: 'eof',
-  banner: { js: '/* Academic Notes 2.2.2 | MIT | generated from src/main.ts */' }
+  banner: { js: '/* Academic Notes 2.2.3 | MIT | generated from src/main.ts */' }
 };
 const licenseFiles = (await readdir('licenses')).sort();
 options.footer = { js: '/*! Bundled dependency licenses\n' +

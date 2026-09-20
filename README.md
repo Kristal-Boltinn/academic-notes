@@ -17,7 +17,7 @@ LaTeX-like numbering, cross-references, figures, tables, and local PDF export fo
 
 ## Installation
 
-Requires **Obsidian desktop 1.9.0 or later**. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/zijiexu159-prog/academic-notes/releases/latest), then place them in your vault:
+Requires **Obsidian desktop 1.9.0 or later**. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/Kristal-Boltinn/academic-notes/releases/latest), then place them in your vault:
 
 ```text
 .obsidian/plugins/academic-notes/
@@ -248,7 +248,7 @@ Outputs default to `_exports/` inside the vault. Only vault-relative output dire
 
 - Markdown is indexed locally to resolve cross-file references, with configurable exclusions. No account, telemetry, or developer server is involved; note contents are not sent to the developer.
 - The installed plugin does not install software, launch external commands, or download runtime dependencies. Printing and PDF post-processing run locally.
-- The Node filesystem API is used only to create and remove an isolated print snapshot, not to scan arbitrary system folders. PDF export temporarily writes HTML into an isolated `academic-notes-*` directory under the system temporary directory, then removes it. A crash can leave temporary files behind. Printing uses an isolated hidden window with Node integration, document scripts, and network requests disabled. External hyperlinks can remain in PDFs without being visited during export.
+- The installed plugin does not use the Node filesystem API. PDF printing loads the snapshot as an in-memory Blob in an isolated hidden window; it does not create temporary HTML files outside the vault. Node integration, document scripts, network requests, local-file requests, and permission requests are disabled in that window. External hyperlinks can remain in PDFs without being visited during export.
 - To preserve appearance, snapshots may read locally loaded CSS, fonts, and images, including local files outside the vault referenced by a theme. They are embedded in the local snapshot. Disabling theme capture reduces theme-resource access.
 - Final exports and reports are written only to the configured directory inside the vault. Reports may contain paths, note titles, and warnings; review them before public sharing. Do not publish your local `data.json` settings file.
 - Save remote images to the vault first. Export does not download remote images or CSS. Obsidian's and other plugins' network behavior is outside this plugin's control.

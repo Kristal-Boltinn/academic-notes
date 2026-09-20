@@ -1,3 +1,12 @@
+# 2.2.3 review follow-up — 2026-09-20
+
+- Native Electron exported an 8.8 MB in-memory HTML snapshot to six PDF pages in two calibration passes, with eleven valid internal links, no invalid links and no horizontal overflow. Thirteen light/dark palette cases passed.
+- The print window rejects Node access, local image files and HTTP image/fetch requests to a working test server. The server received zero requests. Inline scripts and browser-triggered event handlers remained blocked even when the test removed the snapshot's original CSP, exercising the exporter's mandatory policy.
+- Successful export, cancellation and a broken-image failure all destroyed their hidden print windows. Each print window uses a nonpersistent session with sandboxing and context isolation enabled.
+- TOC formatting, cloned SVG glyph references, ordinary H6 headings and source-heading preservation remain covered. The snapshot builder uses mocked Obsidian DOM helpers in the synthetic Electron fixture; the print window itself has none.
+- The plugin has no Node filesystem import; the release check rejects fs/fs-promises imports in the generated bundle. Development and test scripts still use filesystem APIs to build artifacts and read synthetic fixtures.
+- Real Obsidian host acceptance and the next official scan are distinct from these automated checks. The user previously verified PDF export with 2.2.1; this document does not claim that test covered 2.2.3.
+
 # 2.2.2 review follow-up — 2026-09-20
 
 - Strict implicit-any TypeScript check, seven regression tests and three-file release validation passed.
@@ -5,7 +14,7 @@
 - Native Electron: 13 palette cases passed; 8.8 MB snapshot generated a six-page PDF in two passes, with 11 valid internal links, no invalid links and no horizontal overflow.
 - Added a real Chromium regression for TOC inline formatting, literal angle brackets, cloned SVG glyph references and unchanged source headings.
 - Run Electron under the normal desktop account; the restricted execution account could not start its GPU subprocess. No browser sandbox protection was disabled.
-- GitHub upload, 2.2.2 release attestations, official rescan and real Obsidian acceptance of 2.2.2 have not yet been verified. Older sections below describe historical checks.
+- The GitHub release and attestations were subsequently verified. The supplied 2.2.2 official report passed and confirmed attestations and byte-for-byte build reproduction. Real Obsidian acceptance of 2.2.2 was not separately recorded. Older sections below describe historical checks.
 
 # 2.2.1 follow-up
 

@@ -11,6 +11,7 @@ const bundle = await readFile('main.js', 'utf8');
 for (const forbidden of ['legacyCaptions', 'followPhycat', 'setup-pdf', 'findPython', 'runtime/export.py', "require(\"child_process\")"]) {
   assert.ok(!bundle.includes(forbidden), `Release still contains ${forbidden}`);
 }
+assert.ok(!/require\(["'](?:node:)?fs(?:\/promises)?["']\)/.test(bundle), 'Release must not use the Node filesystem API');
 assert.ok(bundle.includes('printToPDF')); assert.ok(bundle.includes('PDFDocument'));
 assert.ok((await readFile('styles.css', 'utf8')).includes('an-figure-grid'));
 console.log('Three-file release, version metadata and removed-runtime checks passed.');

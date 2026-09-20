@@ -1,12 +1,14 @@
 import * as electron from 'electron';
 import { setTimeout as scheduleTimeout, clearTimeout as cancelTimeout } from 'node:timers';
-import { mkdtemp, writeFile, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
 import type { BrowserWindow as ElectronWindow, BrowserWindowConstructorOptions } from 'electron';
 import { finishPdf, measurePdf, type ExportMeta } from './pdf-postprocess';
 type WindowConstructor = new (options: BrowserWindowConstructorOptions) => ElectronWindow;
+// Only this small, fixed shell uses a data URL. The full snapshot stays in a Blob,
+// avoiding Chromium's URL length limit and any filesystem access by the plugin.
+const PRINT_CSP = "default-src 'none'; img-src data: blob:; style-src 'unsafe-inline' data:; font-src data:; script-src 'none'; base-uri 'none'; form-action 'none'";
+const PRINT_POLICY = '<meta http-equiv="Content-Security-Policy" content="' + PRINT_CSP + '">';
+const PRINT_SHELL = 'data:text/html;charset=utf-8,' + encodeURIComponent(
+    '<!doctype html><meta charset="utf-8">' + PRINT_POLICY);
 function nativeWindow(): WindowConstructor {
     // Obsidian exposes Electron's main-process API through its remote bridge.
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- Optional Obsidian bridge; eager import breaks hosts exposing electron.remote.
@@ -28,6 +30,11 @@ export function pdfAvailability() {
 export async function exportPdf(html: string, log: (line: string) => void = () => { }, signal?: AbortSignal, Window: WindowConstructor = nativeWindow()) {
     if (signal?.aborted)
         throw new Error('导出已取消。');
+    // Enforce the policy before any snapshot resources are parsed. Blob
+    // navigations must not rely on inheriting their creator document's CSP.
+    const documentHtml = html.replace(/<head>/i, '<head>' + PRINT_POLICY);
+    if (documentHtml === html)
+        throw new Error('打印快照缺少 HTML head，无法设置安全策略。');
     const win = new Window({
         show: false, width: 1000, height: 800, autoHideMenuBar: true,
         webPreferences: {
@@ -36,25 +43,30 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
         }
     });
     let timedOut = false;
-    let tempDirectory: string | undefined;
     const close = () => { if (!win.isDestroyed())
         win.destroy(); };
     const timer = scheduleTimeout(() => { timedOut = true; close(); }, 240000);
     signal?.addEventListener('abort', close, { once: true });
     try {
         const wc = win.webContents;
-        tempDirectory = await mkdtemp(join(tmpdir(), 'academic-notes-'));
-        const htmlPath = join(tempDirectory, 'document.html');
-        await writeFile(htmlPath, html, { encoding: 'utf8', flag: 'wx', mode: 0o600 });
-        const documentUrl = pathToFileURL(htmlPath).href;
         wc.session.webRequest.onBeforeRequest((details, callback) => {
-            callback({ cancel: !(details.url.split('#')[0] === documentUrl || /^(data:|blob:|about:blank$)/.test(details.url)) });
+            callback({ cancel: !/^(data:|blob:|about:blank$)/.test(details.url) });
         });
+        wc.session.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
+        wc.session.setPermissionCheckHandler(() => false);
         wc.setWindowOpenHandler(() => ({ action: 'deny' }));
         wc.on('will-navigate', event => event.preventDefault());
+        wc.on('will-attach-webview', event => event.preventDefault());
         try {
-            log('正在加载本地打印快照（' + Buffer.byteLength(html, 'utf8') + ' 字节）…');
-            await win.loadFile(htmlPath);
+            log('正在加载内存打印快照（' + Buffer.byteLength(html, 'utf8') + ' 字节）…');
+            await win.loadURL(PRINT_SHELL);
+            // JSON serialization keeps document text out of executable code.
+            // The Blob is created and consumed inside the sandboxed window.
+            const documentUrl = await wc.executeJavaScript(
+                `URL.createObjectURL(new Blob([${JSON.stringify(documentHtml)}], {type: 'text/html;charset=utf-8'}))`) as string;
+            if (!documentUrl.startsWith('blob:'))
+                throw new Error('Invalid print snapshot URL');
+            await win.loadURL(documentUrl);
         }
         catch (error) {
             // Keep local paths and document contents out of the public-facing error.
@@ -126,8 +138,6 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
         cancelTimeout(timer);
         signal?.removeEventListener('abort', close);
         close();
-        if (tempDirectory)
-            await rm(tempDirectory, { recursive: true, force: true }).catch(() => log('临时打印文件清理失败，请检查系统临时目录中的 academic-notes 文件夹。'));
     }
 }
 // This function is serialized into the isolated print window; keep it self-contained.

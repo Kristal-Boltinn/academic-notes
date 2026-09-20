@@ -4,6 +4,7 @@ export {};
 declare global {
     interface Window {
         createEl: typeof createEl;
+        createDiv: typeof createDiv;
         createSpan: typeof createSpan;
         createSvg: typeof createSvg;
     }

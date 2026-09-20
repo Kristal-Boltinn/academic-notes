@@ -1,4 +1,4 @@
-/* Academic Notes 2.2.2 | MIT | generated from src/main.ts */
+/* Academic Notes 2.2.3 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -22506,7 +22506,7 @@ function setTitle(box, number = "") {
   }
   if (/^(Definition|Theorem|Lemma|Proposition|Corollary|Claim|Example)\s+\d/i.test(title.textContent?.trim() || ""))
     return;
-  const original = title.ownerDocument.createElement("span");
+  const original = title.ownerDocument.win.createSpan();
   original.className = "phb-title-name";
   const text = (title.textContent || "").trim().toLowerCase();
   const defaults = [...TYPES2[key2].map((x) => x.toLowerCase()), ""];
@@ -22515,7 +22515,7 @@ function setTitle(box, number = "") {
       original.appendChild(title.firstChild);
   else
     title.replaceChildren();
-  const label = title.ownerDocument.createElement("span");
+  const label = title.ownerDocument.win.createSpan();
   label.className = "phb-type-label";
   label.textContent = TYPES2[key2][0] + (number ? " " + number : "");
   title.replaceChildren(label, original);
@@ -22563,30 +22563,30 @@ function inlineCopy(el, prefix) {
   return clone.childNodes;
 }
 function makeToc(doc, entries, headingMap = /* @__PURE__ */ new Map(), title = "\u76EE\u5F55") {
-  const nav = doc.createElement("nav");
+  const nav = doc.win.createEl("nav");
   nav.className = "phb-toc";
   nav.setAttribute("aria-label", title);
-  const tab = doc.createElement("div");
+  const tab = doc.win.createDiv();
   tab.className = "phb-toc-title";
   tab.textContent = title;
   nav.appendChild(tab);
   const min = entries.length ? Math.min(...entries.map((e) => e.level)) : 1;
   for (const [i, ent] of entries.entries()) {
-    const row = doc.createElement("div");
+    const row = doc.win.createDiv();
     row.className = "phb-toc-row";
     row.dataset.level = String(ent.level);
     row.style.setProperty("--phb-depth", String(ent.level - min));
-    const link = doc.createElement("a");
+    const link = doc.win.createEl("a");
     link.href = "#" + ent.id;
     link.dataset.phbTarget = ent.id;
     if (headingMap.has(ent.id))
       link.replaceChildren(...inlineCopy(headingMap.get(ent.id), `phb-toc-${i}-`));
     else
       link.textContent = ent.title;
-    const dots = doc.createElement("span");
+    const dots = doc.win.createSpan();
     dots.className = "phb-toc-leader";
     dots.setAttribute("aria-hidden", "true");
-    const page = doc.createElement("a");
+    const page = doc.win.createEl("a");
     page.className = "phb-toc-page";
     page.href = "#" + ent.id;
     page.dataset.phbPage = ent.id;
@@ -22601,7 +22601,7 @@ function addProbes(root, entries) {
     const node = root.ownerDocument.getElementById(ent.id);
     if (!node || node.querySelector(":scope > .phb-probe"))
       continue;
-    const a = node.ownerDocument.createElement("a");
+    const a = node.ownerDocument.win.createEl("a");
     a.className = "phb-probe";
     a.href = "https://phb-anchor.invalid/" + encodeURIComponent(ent.id);
     a.setAttribute("aria-hidden", "true");
@@ -22626,12 +22626,12 @@ function prepare(root, options = {}) {
     ch.querySelectorAll(".metadata-container,.frontmatter-container,.mod-header,.embedded-backlinks,.copy-code-button").forEach((x) => x.remove());
     let main = [...ch.querySelectorAll("h1")].find((h) => !h.closest(".callout"));
     if (!main) {
-      main = doc.createElement("h1");
+      main = doc.win.createEl("h1");
       main.textContent = ch.dataset.title || path.split("/").pop() || "";
       ch.prepend(main);
     }
     if (book) {
-      const kicker = doc.createElement("div");
+      const kicker = doc.win.createDiv();
       kicker.className = "phb-chapter-kicker";
       kicker.textContent = `CHAPTER ${String(i + 1).padStart(2, "0")}`;
       main.before(kicker);
@@ -22718,7 +22718,7 @@ function prepare(root, options = {}) {
       }
     }
   root.querySelectorAll(".phb-toc").forEach((n) => {
-    const p = doc.createElement("div");
+    const p = doc.win.createDiv();
     p.className = "phb-toc-placeholder";
     n.replaceWith(p);
   });
@@ -22732,12 +22732,12 @@ function prepare(root, options = {}) {
   });
   if (book) {
     root.querySelectorAll(".phb-toc-placeholder").forEach((n) => n.remove());
-    const front = doc.createElement("section");
+    const front = doc.win.createEl("section");
     front.className = "phb-frontmatter";
-    const title = doc.createElement("h1");
+    const title = doc.win.createEl("h1");
     title.className = "phb-book-title";
     title.textContent = options.title || "\u8BB2\u4E49";
-    const sub = doc.createElement("p");
+    const sub = doc.win.createEl("p");
     sub.className = "phb-book-subtitle";
     sub.textContent = options.subtitle || "\u6570\u5B66\u7B14\u8BB0 \xB7 \u5408\u8BA2\u672C";
     front.append(title, sub, makeToc(doc, entries, headingMap));
@@ -22745,7 +22745,7 @@ function prepare(root, options = {}) {
   } else {
     let holders = [...root.querySelectorAll(".phb-toc-placeholder")];
     if (!holders.length && options.toc !== false && entries.length > 1) {
-      const p = doc.createElement("div");
+      const p = doc.win.createDiv();
       chapters[0].querySelector("h1").after(p);
       holders = [p];
     }
@@ -23295,10 +23295,6 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
 // src/export/pdf.ts
 var electron = __toESM(require("electron"));
 var import_node_timers = require("node:timers");
-var import_promises = require("node:fs/promises");
-var import_node_os = require("node:os");
-var import_node_path = require("node:path");
-var import_node_url = require("node:url");
 
 // src/export/pdf-postprocess.ts
 var import_pdf_lib = __toESM(require_cjs());
@@ -23429,6 +23425,11 @@ async function finishPdf(bytes, meta, positions) {
 }
 
 // src/export/pdf.ts
+var PRINT_CSP = "default-src 'none'; img-src data: blob:; style-src 'unsafe-inline' data:; font-src data:; script-src 'none'; base-uri 'none'; form-action 'none'";
+var PRINT_POLICY = '<meta http-equiv="Content-Security-Policy" content="' + PRINT_CSP + '">';
+var PRINT_SHELL = "data:text/html;charset=utf-8," + encodeURIComponent(
+  '<!doctype html><meta charset="utf-8">' + PRINT_POLICY
+);
 function nativeWindow() {
   const remote2 = electron.remote || require("@electron/remote");
   if (typeof remote2?.BrowserWindow !== "function")
@@ -23447,6 +23448,9 @@ async function exportPdf(html, log = () => {
 }, signal, Window = nativeWindow()) {
   if (signal?.aborted)
     throw new Error("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002");
+  const documentHtml = html.replace(/<head>/i, "<head>" + PRINT_POLICY);
+  if (documentHtml === html)
+    throw new Error("\u6253\u5370\u5FEB\u7167\u7F3A\u5C11 HTML head\uFF0C\u65E0\u6CD5\u8BBE\u7F6E\u5B89\u5168\u7B56\u7565\u3002");
   const win = new Window({
     show: false,
     width: 1e3,
@@ -23461,7 +23465,6 @@ async function exportPdf(html, log = () => {
     }
   });
   let timedOut = false;
-  let tempDirectory;
   const close = () => {
     if (!win.isDestroyed())
       win.destroy();
@@ -23473,18 +23476,23 @@ async function exportPdf(html, log = () => {
   signal?.addEventListener("abort", close, { once: true });
   try {
     const wc = win.webContents;
-    tempDirectory = await (0, import_promises.mkdtemp)((0, import_node_path.join)((0, import_node_os.tmpdir)(), "academic-notes-"));
-    const htmlPath = (0, import_node_path.join)(tempDirectory, "document.html");
-    await (0, import_promises.writeFile)(htmlPath, html, { encoding: "utf8", flag: "wx", mode: 384 });
-    const documentUrl = (0, import_node_url.pathToFileURL)(htmlPath).href;
     wc.session.webRequest.onBeforeRequest((details, callback) => {
-      callback({ cancel: !(details.url.split("#")[0] === documentUrl || /^(data:|blob:|about:blank$)/.test(details.url)) });
+      callback({ cancel: !/^(data:|blob:|about:blank$)/.test(details.url) });
     });
+    wc.session.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
+    wc.session.setPermissionCheckHandler(() => false);
     wc.setWindowOpenHandler(() => ({ action: "deny" }));
     wc.on("will-navigate", (event) => event.preventDefault());
+    wc.on("will-attach-webview", (event) => event.preventDefault());
     try {
-      log("\u6B63\u5728\u52A0\u8F7D\u672C\u5730\u6253\u5370\u5FEB\u7167\uFF08" + Buffer.byteLength(html, "utf8") + " \u5B57\u8282\uFF09\u2026");
-      await win.loadFile(htmlPath);
+      log("\u6B63\u5728\u52A0\u8F7D\u5185\u5B58\u6253\u5370\u5FEB\u7167\uFF08" + Buffer.byteLength(html, "utf8") + " \u5B57\u8282\uFF09\u2026");
+      await win.loadURL(PRINT_SHELL);
+      const documentUrl = await wc.executeJavaScript(
+        `URL.createObjectURL(new Blob([${JSON.stringify(documentHtml)}], {type: 'text/html;charset=utf-8'}))`
+      );
+      if (!documentUrl.startsWith("blob:"))
+        throw new Error("Invalid print snapshot URL");
+      await win.loadURL(documentUrl);
     } catch (error) {
       const code = error.code || "unknown";
       throw new Error("Electron \u6253\u5370\u7A97\u53E3\u52A0\u8F7D\u5931\u8D25\uFF1A" + code);
@@ -23554,8 +23562,6 @@ async function exportPdf(html, log = () => {
     (0, import_node_timers.clearTimeout)(timer);
     signal?.removeEventListener("abort", close);
     close();
-    if (tempDirectory)
-      await (0, import_promises.rm)(tempDirectory, { recursive: true, force: true }).catch(() => log("\u4E34\u65F6\u6253\u5370\u6587\u4EF6\u6E05\u7406\u5931\u8D25\uFF0C\u8BF7\u68C0\u67E5\u7CFB\u7EDF\u4E34\u65F6\u76EE\u5F55\u4E2D\u7684 academic-notes \u6587\u4EF6\u5939\u3002"));
   }
 }
 async function preparePrint() {

@@ -1,22 +1,22 @@
-# Community review follow-up: 2.2.2
+# Community review follow-up: 2.2.3
 
-## Changes responding to the supplied 2.2.1 report
+## Changes responding to the supplied 2.2.2 report
 
-- LICENSE contains the standard MIT text. Dependency and user-content notices stay in THIRD-PARTY-NOTICES.md. GitHub license detection must be checked after pushing.
-- Release builds generate attestations for main.js, styles.css and manifest.json using actions/attest. Attestations exist only after the GitHub workflow succeeds, not merely after committing its configuration.
-- TOC content is copied as DOM nodes, including remapped SVG glyph IDs; no innerHTML assignment remains.
-- Print background and glyph-cache layout use static CSS. Settings headings use Setting.setHeading().
-- Core records, plugin state, editor integration, export, and UI have explicit types. noImplicitAny is enabled. CodeMirror dependencies are declared and remain external in the plugin bundle.
-- Settings definitions expose controls to Obsidian 1.13 search, with imperative display retained for older supported hosts.
-- Local image URLs are restricted to app/file/blob (data images are already embedded). Chromium fetch handles these local schemes; requestUrl is intended for HTTP and cannot replace this resource-loading path.
+- Direct filesystem access has been removed from the installed plugin. PDF export loads a small fixed shell, creates a Blob inside the sandboxed print window, and navigates to that short Blob URL. The full HTML never becomes a data URL. No temporary HTML file is written outside the vault, and release validation rejects Node fs imports in the bundle.
+- The exporter enforces a restrictive CSP before snapshot content is parsed. The isolated session blocks network and file requests, denies permission requests, and disables Node integration. Window cleanup covers success, cancellation and failures.
+- The TOC and snapshot builder execute in Obsidian and now use that document window's createEl/createDiv/createSpan helpers. Electron tests provide minimal mocks for these helpers.
+- README links and release-verification examples now point to Kristal-Boltinn/academic-notes. Both READMEs explain the memory-based PDF export and remaining local resource access.
+- The supplied page includes historical 2.2.1 failures below the passing 2.2.2 scan. Its latest scan confirms release attestations and byte-for-byte build reproduction; the older license and source-code failures are not new findings. LICENSE retains the standard MIT text and the release workflow continues to attest all three assets.
 
-## Necessary capabilities and remaining recommendations
+## Retained capabilities and warnings
 
-- Direct filesystem access: src/export/pdf.ts creates one unique academic-notes-* directory under the OS temporary directory, exclusively writes document.html, and removes that directory in finally. POSIX file mode is 0600; Windows access is governed by the user's temporary-directory ACL. No arbitrary directory enumeration or system-file reading uses Node fs. A crash may leave the print snapshot behind. Notes and final exports use the Obsidian vault API. README documents this behavior.
 - Vault enumeration: local cross-note references and referenced-only equation numbering require the Markdown index. Configured excluded paths are filtered before reading. No index is transmitted.
-- Native DOM creation recommendations remain in the shared document renderer and serialized print function: these also run in isolated Chromium without Obsidian's createEl helpers. These warnings are left visible, not suppressed. Native Obsidian UI uses its helpers.
-- CSS recommendations: mjx-container and mjx-assistive-mml are MathJax custom elements. text-indent and box-decoration-break have fallbacks (including the WebKit-prefixed form). Scoped !important rules protect academic layout and printing from captured theme styles. Removing them wholesale would change rendering. These are review recommendations, not source-code errors.
+- One native DOM creation warning remains in the serialized print function: its sandboxed Chromium window does not provide Obsidian's createDiv helper. The warning remains visible; it is not suppressed or hidden behind another API.
+- CSS custom elements: mjx-container and mjx-assistive-mml are real MathJax elements required for formula layout and hiding duplicate assistive markup in print.
+- CSS compatibility: the scan groups ordinary text-indent and page-fragmentation properties under partially supported browser features, using an Obsidian 1.7.4 baseline. The plugin requires 1.9.0. The declarations use simple indentation, page breaks and prefixed box-decoration-break; removing them would change indentation, split formulas or lose repeated box decoration. Current Electron layout is covered by tests, not a claim of testing every older installer.
+- CSS !important: the retained scoped theme overrides preserve callout geometry, captions, three-line tables and captured-theme printing. Wholesale removal would change supported theme behavior. No CSS lint rules are disabled to conceal these warnings.
+- Snapshot collection still embeds already loaded local theme fonts/images through Chromium's local-resource APIs, as disclosed in both READMEs. Removing Node fs does not turn the whole Obsidian plugin environment into a permission sandbox. Notes and final outputs use the vault API.
 
 ## Validation and release status
 
-See VALIDATION.md for local checks. These changes do not establish Community Directory approval. Publishing 2.2.2, verifying cloud attestations and rerunning the official scan remain separate release steps.
+See VALIDATION.md for local checks. The release workflow repeats tests, checks build reproducibility and creates attestations. The official scan must examine the new release to update its findings; passing automated checks is separate from Community Directory approval.

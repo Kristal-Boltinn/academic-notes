@@ -1,3 +1,11 @@
+# 2.2.3
+
+- Remove Node filesystem access from the installed plugin. Load PDF snapshots in memory, avoiding temporary HTML files and oversized data URLs.
+- Deny permission requests in the isolated print window, in addition to blocking network and local-file requests.
+- Use Obsidian DOM helpers in the snapshot and TOC builder; retain native DOM creation only in the isolated print window.
+- Update repository links to Kristal-Boltinn/academic-notes and revise the bilingual privacy documentation.
+- Add release checks for filesystem imports and Electron regressions for print isolation, cancellation and failure cleanup.
+
 # 2.2.2
 
 - Use standard MIT license text and generate build attestations for release assets.

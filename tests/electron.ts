@@ -1,6 +1,8 @@
 import { app, BrowserWindow } from 'electron';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { createServer } from 'node:http';
 import assert from 'node:assert/strict';
 import { buildSync } from 'esbuild';
 import { exportPdf } from '../src/export/pdf';
@@ -66,6 +68,9 @@ async function run() {
     const paragraphs = '<p>A synthetic paragraph used to exercise real page boundaries and repeated printing.</p>'.repeat(25);
     const book = `<main id="phb-document" class="markdown-preview-view markdown-rendered"><section class="phb-chapter" data-path="a.md" data-title="Chapter A"><h1>Chapter A</h1><h2>Compactness</h2>${content}<h6>1.2.3 Ordinary H6 heading</h6>${paragraphs}<a data-href="b.md#Destination" href="b.md#Destination">Go to chapter B</a></section><section class="phb-chapter" data-path="b.md" data-title="Chapter B"><h1>Chapter B</h1><h2>Destination</h2>${paragraphs}</section></main>`;
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(book, print)));
+    // Minimal Obsidian DOM helpers for the snapshot builder; the real print
+    // window below has no helpers, Node access, or application runtime.
+    await wc.executeJavaScript(`Object.defineProperty(Document.prototype,'win',{get(){return this.defaultView}}); window.createEl=tag=>document.createElement(tag); window.createDiv=()=>document.createElement('div'); window.createSpan=()=>document.createElement('span'); void 0;`);
     await wc.executeJavaScript(client);
     const snapshot = await wc.executeJavaScript(`(() => {
       document.body.classList.add('phb-export');
@@ -87,7 +92,64 @@ async function run() {
     writeFileSync('output/book.phb.html', snapshot);
     await wc.executeJavaScript(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
     writeFileSync('screenshots/book-export.png', (await wc.capturePage()).toPNG());
-    const result = await exportPdf(snapshot + '<!--' + 'large snapshot 中文 '.repeat(400000) + '-->', console.log, undefined, BrowserWindow);
+    let requests = 0;
+    const server = createServer((_request, response) => {
+      requests++;
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Content-Type', 'image/svg+xml');
+      response.end('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>');
+    });
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address();
+    assert.ok(address && typeof address !== 'string');
+    const networkUrl = `http://127.0.0.1:${address.port}/asset.svg`;
+    const localUrl = pathToFileURL(resolve('examples/assets/curve-a.svg')).href;
+    const printWindows: BrowserWindow[] = [];
+    let guardedLoads = 0;
+    class GuardedPrintWindow extends BrowserWindow {
+      constructor(options: Electron.BrowserWindowConstructorOptions) {
+        assert.equal(options.webPreferences?.sandbox, true);
+        assert.equal(options.webPreferences?.nodeIntegration, false);
+        assert.equal(options.webPreferences?.contextIsolation, true);
+        assert.ok(!options.webPreferences?.partition?.startsWith('persist:'));
+        super(options);
+        printWindows.push(this);
+      }
+      override async loadURL(url: string, options?: Electron.LoadURLOptions) {
+        assert.ok(url.length < 2048, 'The full snapshot must never become a data URL');
+        await super.loadURL(url, options);
+        if (!url.startsWith('blob:')) return;
+        guardedLoads++;
+        const protection = await this.webContents.executeJavaScript(`(async () => {
+          const urls=${JSON.stringify([localUrl, networkUrl])};
+          const images=await Promise.all(urls.map(async url=>{const img=new Image();img.src=url;try{await img.decode();return true}catch{return false}}));
+          let network=false;try{await fetch(urls[1]);network=true}catch{}
+          document.getElementById('security-probe')?.remove();
+          return {node:typeof process,require:typeof require,helper:typeof createEl,scripts:document.body.dataset.executed||'',images,network};
+        })()`);
+        console.log('Print isolation checks:', JSON.stringify(protection));
+        assert.deepEqual(protection, { node: 'undefined', require: 'undefined', helper: 'undefined', scripts: '', images: [false, false], network: false });
+      }
+    }
+    let result: Awaited<ReturnType<typeof exportPdf>>;
+    try {
+      // Remove the snapshot's own CSP to verify that the exporter enforces its
+      // policy even if a future snapshot generator forgets its meta tag.
+      const guardedSnapshot = snapshot.replace(/<meta http-equiv="Content-Security-Policy"[^>]*>/, '')
+        .replace('</body>', '<script>document.body.dataset.executed="script"</script><img hidden id="security-probe" src="data:image/png;base64,broken" onerror="document.body.dataset.executed=\'event\'"></body>');
+      result = await exportPdf(guardedSnapshot + '<!--' + 'large snapshot 中文 '.repeat(400000) + '-->', console.log, undefined, GuardedPrintWindow);
+      const controller = new AbortController();
+      await assert.rejects(exportPdf(snapshot, () => controller.abort(), controller.signal, GuardedPrintWindow), /导出已取消/);
+      const brokenImage = snapshot.replace('</body>', '<img src="data:image/png;base64,broken" alt="invalid fixture"></body>');
+      await assert.rejects(exportPdf(brokenImage, () => {}, undefined, GuardedPrintWindow), /图片无法加载/);
+      assert.equal(guardedLoads, 2);
+      assert.equal(requests, 0, 'The working local HTTP server must receive no requests');
+      assert.ok(printWindows.every(window => window.isDestroyed()), 'Success, cancellation and failure must close their windows');
+      console.log('Memory transport, enforced CSP, blocked Node/file/network access, cancellation and failure cleanup passed.');
+    } finally {
+      printWindows.forEach(window => { if (!window.isDestroyed()) window.destroy(); });
+      await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+    }
     writeFileSync('output/book.pdf', result.bytes); writeFileSync('output/book.report.json', JSON.stringify(result.report, null, 2));
     assert.ok(result.report.pages >= 3);
     assert.ok(result.report.validInternalLinks >= 5, 'TOC and cross-chapter links must be internal PDF links');

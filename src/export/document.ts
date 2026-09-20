@@ -1,4 +1,4 @@
-// This renderer also runs in isolated Chromium without Obsidian DOM helpers.
+// Build the snapshot in Obsidian; the isolated print window receives static HTML.
 interface TocEntry { id: string; title: string; level: number; path?: string }
 interface Declaration { line: number; type: string; key: string; name: string; number: string }
 const TYPES: Record<string, string[]> = { "def": ["Definition", "definition", "def"], "thm": ["Theorem", "theorem", "thm"], "lem": ["Lemma", "lemma", "lem"], "prop": ["Proposition", "proposition", "prop", "prp"], "cor": ["Corollary", "corollary", "cor"], "claim": ["Claim", "claim", "clm"], "example": ["Example", "example", "ex", "exa", "exm"], "proof": ["Proof", "proof", "pf"], "remark": ["Remark", "remark", "rem", "rmk"], "axiom": ["Axiom", "axiom", "axm"], "assumption": ["Assumption", "assumption", "asm"], "exercise": ["Exercise", "exercise", "exr"], "conjecture": ["Conjecture", "conjecture", "cnj"], "hypothesis": ["Hypothesis", "hypothesis", "hyp"], "solution": ["Solution", "solution", "sol"] };
@@ -82,7 +82,7 @@ function setTitle(box: HTMLElement, number = '') {
     // Do not prepend a second number to a title already owned by another theorem plugin.
     if (/^(Definition|Theorem|Lemma|Proposition|Corollary|Claim|Example)\s+\d/i.test(title.textContent?.trim() || ''))
         return;
-    const original = title.ownerDocument.createElement('span');
+    const original = title.ownerDocument.win.createSpan();
     original.className = 'phb-title-name';
     const text = (title.textContent || '').trim().toLowerCase();
     const defaults = [...TYPES[key].map(x => x.toLowerCase()), ''];
@@ -91,7 +91,7 @@ function setTitle(box: HTMLElement, number = '') {
             original.appendChild(title.firstChild);
     else
         title.replaceChildren();
-    const label = title.ownerDocument.createElement('span');
+    const label = title.ownerDocument.win.createSpan();
     label.className = 'phb-type-label';
     label.textContent = TYPES[key][0] + (number ? ' ' + number : '');
     title.replaceChildren(label, original);
@@ -137,30 +137,30 @@ function inlineCopy(el: HTMLElement, prefix: string) {
     return clone.childNodes;
 }
 function makeToc(doc: Document, entries: TocEntry[], headingMap = new Map<string, HTMLElement>(), title = '目录') {
-    const nav = doc.createElement('nav');
+    const nav = doc.win.createEl('nav');
     nav.className = 'phb-toc';
     nav.setAttribute('aria-label', title);
-    const tab = doc.createElement('div');
+    const tab = doc.win.createDiv();
     tab.className = 'phb-toc-title';
     tab.textContent = title;
     nav.appendChild(tab);
     const min = entries.length ? Math.min(...entries.map(e => e.level)) : 1;
     for (const [i, ent] of entries.entries()) {
-        const row = doc.createElement('div');
+        const row = doc.win.createDiv();
         row.className = 'phb-toc-row';
         row.dataset.level = String(ent.level);
         row.style.setProperty('--phb-depth', String(ent.level - min));
-        const link = doc.createElement('a');
+        const link = doc.win.createEl('a');
         link.href = '#' + ent.id;
         link.dataset.phbTarget = ent.id;
         if (headingMap.has(ent.id))
             link.replaceChildren(...inlineCopy(headingMap.get(ent.id)!, `phb-toc-${i}-`));
         else
             link.textContent = ent.title;
-        const dots = doc.createElement('span');
+        const dots = doc.win.createSpan();
         dots.className = 'phb-toc-leader';
         dots.setAttribute('aria-hidden', 'true');
-        const page = doc.createElement('a');
+        const page = doc.win.createEl('a');
         page.className = 'phb-toc-page';
         page.href = '#' + ent.id;
         page.dataset.phbPage = ent.id;
@@ -175,7 +175,7 @@ function addProbes(root: HTMLElement, entries: TocEntry[]) {
         const node = root.ownerDocument.getElementById(ent.id);
         if (!node || node.querySelector(':scope > .phb-probe'))
             continue;
-        const a = node.ownerDocument.createElement('a');
+        const a = node.ownerDocument.win.createEl('a');
         a.className = 'phb-probe';
         a.href = 'https://phb-anchor.invalid/' + encodeURIComponent(ent.id);
         a.setAttribute('aria-hidden', 'true');
@@ -209,12 +209,12 @@ function prepare(root: HTMLElement, options: {
         ch.querySelectorAll<HTMLElement>('.metadata-container,.frontmatter-container,.mod-header,.embedded-backlinks,.copy-code-button').forEach(x => x.remove());
         let main = [...ch.querySelectorAll<HTMLElement>('h1')].find(h => !h.closest('.callout'));
         if (!main) {
-            main = doc.createElement('h1');
+            main = doc.win.createEl('h1');
             main.textContent = ch.dataset.title || path.split('/').pop() || '';
             ch.prepend(main);
         }
         if (book) {
-            const kicker = doc.createElement('div');
+            const kicker = doc.win.createDiv();
             kicker.className = 'phb-chapter-kicker';
             kicker.textContent = `CHAPTER ${String(i + 1).padStart(2, '0')}`;
             main.before(kicker);
@@ -306,7 +306,7 @@ function prepare(root: HTMLElement, options: {
         }
     // Existing live TOC markup is replaced, not appended to a second time.
     root.querySelectorAll<HTMLElement>('.phb-toc').forEach(n => {
-        const p = doc.createElement('div');
+        const p = doc.win.createDiv();
         p.className = 'phb-toc-placeholder';
         n.replaceWith(p);
     });
@@ -318,12 +318,12 @@ function prepare(root: HTMLElement, options: {
     });
     if (book) {
         root.querySelectorAll<HTMLElement>('.phb-toc-placeholder').forEach(n => n.remove());
-        const front = doc.createElement('section');
+        const front = doc.win.createEl('section');
         front.className = 'phb-frontmatter';
-        const title = doc.createElement('h1');
+        const title = doc.win.createEl('h1');
         title.className = 'phb-book-title';
         title.textContent = options.title || '讲义';
-        const sub = doc.createElement('p');
+        const sub = doc.win.createEl('p');
         sub.className = 'phb-book-subtitle';
         sub.textContent = options.subtitle || '数学笔记 · 合订本';
         front.append(title, sub, makeToc(doc, entries, headingMap));
@@ -332,7 +332,7 @@ function prepare(root: HTMLElement, options: {
     else {
         let holders = [...root.querySelectorAll<HTMLElement>('.phb-toc-placeholder')];
         if (!holders.length && options.toc !== false && entries.length > 1) {
-            const p = doc.createElement('div');
+            const p = doc.win.createDiv();
             chapters[0].querySelector('h1')!.after(p);
             holders = [p];
         }

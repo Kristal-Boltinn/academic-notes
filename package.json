@@ -1,6 +1,6 @@
 {
   "name": "academic-notes",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "private": true,
   "description": "Local academic numbering and PDF export for Obsidian",
   "license": "MIT",
