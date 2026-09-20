@@ -1,0 +1,14 @@
+node_modules/
+.venv/
+runtime/
+data.json
+_exports/
+output/
+dist/
+.test-build/
+*.log
+*.tsbuildinfo
+.env
+.env.*
+Thumbs.db
+.DS_Store

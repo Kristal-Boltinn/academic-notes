@@ -1,0 +1,104 @@
+/* Standalone shell + print layout. Included LAST, after Obsidian/theme/snippet CSS. */
+html { font-size: 16px; }
+body.phb-export {
+  display: block !important; position: static !important;
+  width: auto !important; height: auto !important; min-height: 0 !important;
+  margin: 0 !important; padding: 0 !important; overflow: visible !important;
+  background: var(--phb-surface, #fff) !important; color: var(--phb-text, #24372e) !important;
+  font-family: var(--font-text, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif);
+  font-size: 11pt; line-height: 1.7;
+  -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+}
+body.phb-export *, body.phb-export *::before, body.phb-export *::after {
+  animation: none !important; transition: none !important;
+  caret-color: transparent !important;
+}
+body.phb-export #phb-document {
+  display: block !important; position: static !important;
+  width: 174mm !important; max-width: none !important; height: auto !important;
+  padding: 0 !important; margin: 0 auto !important; overflow: visible !important;
+  font-size: inherit; line-height: inherit;
+}
+body.phb-export :is(.markdown-preview-view,.markdown-preview-sizer,.markdown-rendered,.phb-chapter) {
+  min-height: 0 !important; max-height: none !important; height: auto !important;
+  overflow: visible !important; contain: none !important; content-visibility: visible !important;
+}
+body.phb-export .phb-chapter { display:block; }
+body.phb-export :is(p,li) { line-height: 1.7; }
+body.phb-export p { margin: .65em 0; }
+body.phb-export :is(h1,h2,h3,h4,h5,h6) {
+  position: relative !important; break-after: avoid !important;
+  text-shadow: none !important; transform: none !important;
+}
+body.phb-export h1 { font-size: 1.9em; line-height:1.4; margin:1.1em 0 .8em; }
+body.phb-export h2 { font-size: 1.4em; margin:1.1em 0 .7em; }
+body.phb-export h3 { font-size: 1.16em; margin:1em 0 .5em; }
+body.phb-export pre { white-space:pre-wrap !important; overflow-wrap:anywhere; }
+body.phb-export :is(.math-block,.phb-math[data-display="true"]) {
+  display: block; text-align: center; margin: .7em 0; text-indent: 0;
+}
+body.phb-export .phb-math mjx-container { margin: 0 !important; }
+body.phb-export mjx-container[display="true"] { display:block !important; max-width:100%; overflow: visible !important; }
+body.phb-export :is(.math-block,.phb-math) { overflow:visible !important; }
+body.phb-export .phb-math-error { border:2px solid #c00; padding:.5em; }
+body.phb-export .phb-chapter-kicker { font-size: 9pt; font-weight:600; letter-spacing:.16em; color:var(--phb-thm); margin: 1em 0; }
+body.phb-export .phb-book-title { text-align:center; margin-top:1.5em; }
+body.phb-export .phb-book-subtitle { text-align:center; color:var(--text-muted,#66776c); }
+body.phb-export .phb-frontmatter { padding-top: 5mm; }
+body.phb-export .phb-probe {
+  position:absolute !important; top:0 !important; left:0 !important;
+  display:block !important; width:2px !important; height:2px !important;
+  font-size:1px !important; line-height:1px !important;
+  padding:0 !important; margin:0 !important; border:0 !important;
+  opacity:1 !important; color:var(--phb-surface, #fff) !important;
+  background:none !important; z-index:1 !important;
+}
+body.phb-export .phb-probe::before,body.phb-export .phb-probe::after { content:none !important; }
+body.phb-export .heading-collapse-indicator,body.phb-export .callout-fold { display:none !important; }
+body.phb-export .callout-title { max-width:100% !important; }
+body.phb-export .callout-content { display:block !important; }
+body.phb-export .callout-content li::before { display:none !important; }
+body.phb-export .callout-content ul,body.phb-export .callout-content ol { padding-left:1.6em; }
+body.phb-export img { max-width:100%; max-height:220mm; object-fit:contain; }
+body.phb-export .phb-toc { font-size:10.5pt; }
+@media screen {
+  body.phb-export { padding: 12mm !important; }
+  body.phb-export .phb-frontmatter ~ .phb-chapter { margin-top:3em; }
+}
+@media print {
+  @page { size:A4; margin:18mm 18mm 20mm; }
+  body.phb-export .phb-frontmatter ~ .phb-chapter { break-before:page; }
+  body.phb-export #phb-document { width:174mm !important; }
+  body.phb-export .phb-chapter > :first-child { margin-top:0 !important; }
+  body.phb-export .callout { break-inside:auto; }
+  body.phb-export .callout[data-phb-keep="true"] { break-inside:avoid !important; }
+  body.phb-export .callout[data-phb-long="true"] { break-inside:auto !important; }
+  body.phb-export .callout[data-phb-long="true"]::after { display:none !important; }
+  body.phb-export :is(p,li) { orphans:2; widows:2; }
+  body.phb-export .phb-toc-title { break-after:avoid; }
+}
+
+/* MathJax accessibility MathML must not be painted beside the SVG. */
+body.phb-export mjx-assistive-mml { display:none !important; }
+
+/* Padding belongs to a wrapper, so a floating title stays inside its paginated
+   bounding box even when the browser discards a margin at the top of a page. */
+body.phb-export .phb-callout-wrap {
+  display:block; padding-top:.95em; margin: .85em 0 1.25em;
+  break-inside:auto; box-sizing:border-box;
+}
+body.phb-export .phb-callout-wrap > .callout[data-callout] { margin:0 !important; }
+@media print {
+  body.phb-export .phb-callout-wrap[data-phb-keep="true"] { break-inside:avoid !important; }
+  body.phb-export .phb-callout-wrap[data-phb-keep="false"] { break-inside:auto !important; }
+}
+
+@media print { body.phb-export .phb-toc { break-after: page; } }
+
+/* Keep a display formula (including a matrix/cases pair) on one page. */
+@media print {
+  body.phb-export :is(.math-block,.phb-math[data-display="true"],mjx-container[display="true"]) {
+    break-inside:avoid !important; page-break-inside:avoid !important;
+  }
+  body.phb-export tr { break-inside:avoid; }
+}

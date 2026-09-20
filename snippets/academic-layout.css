@@ -1,0 +1,233 @@
+/* Academic Layout 2.2.0 — standalone figure and table layout.
+ * Install: .obsidian/snippets/academic-layout.css, then enable this snippet.
+ * Native markup: [!figure], nested [!subfigure], [!table]. No H6 conversion.
+ * Academic Notes supplies numbers; this file ONLY supplies presentation.
+ * Optional note cssclasses: academic-indent, academic-serif, academic-keep-table-style.
+ * Ordinary images are not auto-captioned from alt text. No CSS counters are used.
+ */
+
+body {
+  --an-layout-caption-size: .9em;
+  --an-layout-caption-gap: .55em;
+  --an-layout-image-gap: 1.25em;
+  --an-layout-subfigure-min: 12rem;
+  --an-layout-rule: var(--text-normal, #26352c);
+  --an-layout-rule-heavy: 1.6px;
+  --an-layout-rule-light: 1px;
+}
+
+/* Three-line tables: top rule, header rule, bottom rule. Not the Settings UI. */
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;
+  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  width: auto;
+  min-width: min(100%, 22rem);
+  max-width: 100%;
+  margin: 1.25em auto;
+  font-variant-numeric: tabular-nums;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) :is(th,td,tr,thead,tbody,tfoot) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) thead {
+  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) :is(th,td) {
+  padding: .5em .85em !important;
+  line-height: 1.5;
+  color: var(--text-normal, inherit) !important;
+  text-indent: 0 !important;
+  overflow-wrap: anywhere;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) th { font-weight: 650; }
+
+/* A native callout is retained so its Markdown source mapping and block ID survive.
+ * Override only the six explicit figure/table aliases, never ordinary blockquotes. */
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"]) {
+  --callout-blend-mode: normal;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  overflow: visible !important;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  margin: 1.5em 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-normal, inherit) !important;
+  transform: none !important;
+  filter: none !important;
+  isolation: auto !important;
+  mix-blend-mode: normal !important;
+  box-sizing: border-box;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])::before,
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])::after {
+  content: none !important;
+  display: none !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])
+  > .callout-title {
+  position: static !important;
+  inset: auto !important;
+  display: flex !important;
+  align-items: baseline;
+  justify-content: center !important;
+  order: 2;
+  width: auto !important;
+  max-width: 100% !important;
+  margin: var(--an-layout-caption-gap) 0 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-normal, inherit) !important;
+  text-align: center !important;
+  font: inherit !important;
+  font-size: var(--an-layout-caption-size) !important;
+  line-height: 1.55 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  transform: none !important;
+  text-shadow: none !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])
+  > .callout-title > .callout-icon { display: none !important; }
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])
+  > .callout-title > .callout-title-inner {
+  display: block !important;
+  color: inherit !important;
+  font: inherit !important;
+  white-space: normal !important;
+  text-indent: 0 !important;
+  padding: 0 !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])
+  > .callout-content {
+  order: 1;
+  position: static !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--text-normal, inherit) !important;
+  overflow: visible !important;
+  min-width: 0;
+  text-align: center;
+}
+body .an-caption-label { font-weight: 650; }
+body .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before { content: " "; }
+body .an-caption-text { font-weight: 400; }
+body :is(.an-media,[data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+         [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"]) > .callout-content > p {
+  margin: .35em 0 !important;
+  text-indent: 0 !important;
+}
+body .an-media .image-embed,
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) .image-embed {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 0;
+  max-width: 100%;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  vertical-align: top;
+}
+body .an-media img,
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) img {
+  display: block !important;
+  max-width: 100% !important;
+  height: auto;
+  margin: 0 auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  object-fit: contain;
+}
+/* Table titles are above the table; figure and subfigure titles are below images. */
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="table"],[data-callout="tbl"]) > .callout-title {
+  order: 0;
+  margin: 0 0 var(--an-layout-caption-gap) !important;
+}
+body .callout:is([data-callout="table"],[data-callout="tbl"]) table { margin: 0 auto !important; }
+
+/* Explicit subfigures, one caption each; rows wrap when the pane is narrow.
+ * The plugin marks wrapper cells rather than dismantling the native render tree. */
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"]) > .callout-content.an-figure-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--an-layout-image-gap);
+}
+body .an-figure-grid > :not(.an-subfigure-cell) { flex: 0 0 100%; }
+body .an-figure-grid > .an-subfigure-cell {
+  flex: 1 1 calc(50% - var(--an-layout-image-gap));
+  min-width: min(100%, var(--an-layout-subfigure-min));
+  max-width: 100%;
+  margin: 0 !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .an-figure-grid .callout:is([data-callout="subfigure"],[data-callout="subfig"]) { margin: 0 !important; }
+body .an-figure-grid > .an-empty-anchor { display: none !important; }
+
+/* Optional article typography. Add cssclasses in the note's properties to opt in. */
+body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-indent p { text-indent: 2em; }
+body .academic-indent :is(.callout,blockquote,li,td,th,figcaption,.phb-toc) p { text-indent: 0; }
+body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-serif {
+  font-family: "Latin Modern Roman", "Times New Roman", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
+}
+
+@media print {
+  body .an-media { break-inside: avoid !important; page-break-inside: avoid !important; }
+  body .an-media > .callout-title { break-before: avoid !important; break-after: auto !important; }
+  body .an-table { display: block !important; break-inside: auto !important; page-break-inside: auto !important; }
+  body .an-table > .callout-title { break-before: auto !important; break-after: avoid !important; }
+  body .an-media img { max-height: 155mm !important; }
+  body .an-figure-grid { gap: 4mm; }
+  body .an-figure-grid > .an-subfigure-cell { min-width: 0; flex-basis: calc(50% - 4mm); }
+  body :is(.markdown-preview-view,.markdown-rendered) table { break-inside: auto; }
+  body :is(.markdown-preview-view,.markdown-rendered) thead { display: table-header-group; }
+  body :is(.markdown-preview-view,.markdown-rendered) tr { break-inside: avoid; }
+  body :is(.markdown-preview-view,.markdown-rendered) :is(table,.an-media) {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

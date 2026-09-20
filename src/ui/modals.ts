@@ -1,0 +1,98 @@
+import { Modal, FuzzySuggestModal, EditorSuggest, Setting, Notice } from 'obsidian';
+import Engine from '../indexing/engine';
+class ProgressModal extends Modal {
+    [key: string]: any;
+    constructor(app, title) { super(app); this.caption = title; }
+    onOpen() { this.titleEl.setText(this.caption); this.output = this.contentEl.createEl('pre', { cls: 'an-progress', text: '' }); this.contentEl.createEl('p', { text: '关闭窗口不会中断任务；输出仍保存到指定目录。' }); }
+    line(s) { if (this.output) {
+        this.output.textContent = (this.output.textContent + '\n' + s).slice(-35000);
+        this.output.scrollTop = this.output.scrollHeight;
+    } }
+    done() { if (this.titleEl)
+        this.titleEl.setText(this.caption + ' · 结束'); }
+}
+class ReferencePicker extends FuzzySuggestModal<any> {
+    [key: string]: any;
+    constructor(plugin, editor, file) { super(plugin.app); this.plugin = plugin; this.editor = editor; this.file = file; this.setPlaceholder('搜索编号、定理标题、公式内容或文件名（目标需要块 ID）'); }
+    getItems() { return this.plugin.targets(); }
+    getItemText(r) { return `${Engine.refText(r, this.plugin.settings)} ${r.title || r.tex || ''} — ${r.path} ^${r.id}`; }
+    onChooseItem(r) { if (!this.file)
+        return; this.editor.replaceSelection(this.plugin.makeReference(r, this.file.path)); this.plugin.scheduleIndex(); }
+}
+class ReferenceSuggest extends EditorSuggest<any> {
+    [key: string]: any;
+    constructor(plugin) { super(plugin.app); this.plugin = plugin; this.limit = 30; }
+    onTrigger(cursor, editor, file) {
+        if (!file)
+            return null;
+        const before = editor.getLine(cursor.line).slice(0, cursor.ch), m = before.match(/\\(eqref|tref|ref)(?:\s+([^\n]*))?$/);
+        if (!m)
+            return null;
+        this.kind = m[1];
+        return { start: { line: cursor.line, ch: cursor.ch - m[0].length }, end: cursor, query: m[2] || '' };
+    }
+    getSuggestions(ctx) { const q = ctx.query.toLowerCase(); return this.plugin.targets().filter(r => (this.kind !== 'eqref' || r.kind === 'equation') && (this.kind !== 'tref' || r.kind === 'theorem')).filter(r => (Engine.refText(r, this.plugin.settings) + ' ' + r.path + ' ' + (r.title || r.tex)).toLowerCase().includes(q)).slice(0, 30); }
+    renderSuggestion(r, el) { el.createDiv({ text: Engine.refText(r, this.plugin.settings), cls: 'an-suggest-title' }); el.createDiv({ text: (r.title || r.tex || '').slice(0, 130) + ' — ' + r.path, cls: 'an-suggest-detail' }); }
+    selectSuggestion(r) { const c = this.context; if (!c?.file)
+        return; c.editor.replaceRange(this.plugin.makeReference(r, c.file.path), c.start, c.end); this.close(); this.plugin.scheduleIndex(); }
+}
+class BookPicker extends Modal {
+    [key: string]: any;
+    constructor(plugin) { super(plugin.app); this.plugin = plugin; this.selected = []; this.files = plugin.app.vault.getMarkdownFiles().sort((a, b) => a.path.localeCompare(b.path)); }
+    onOpen() {
+        this.titleEl.setText('多文件合订本');
+        this.contentEl.createEl('p', { text: '搜索并勾选章节；右侧编号表示导出顺序，可上移/下移。不会合并或改写原笔记。' });
+        const title = this.contentEl.createEl('input', { type: 'text', value: '数学讲义', cls: 'an-book-title', attr: { 'aria-label': '合订本标题' } });
+        this.titleInput = title;
+        const filter = this.contentEl.createEl('input', { type: 'search', placeholder: '按完整路径筛选文件', cls: 'an-book-search', attr: { 'aria-label': '筛选章节' } });
+        this.filterInput = filter;
+        this.fileList = this.contentEl.createDiv({ cls: 'an-book-files' });
+        this.orderList = this.contentEl.createDiv({ cls: 'an-book-order' });
+        filter.addEventListener('input', () => this.renderFiles());
+        new Setting(this.contentEl).addButton(b => b.setButtonText('取消').onClick(() => this.close())).addButton(b => b.setButtonText('导出 PDF').setCta().onClick(() => {
+            if (!this.selected.length) {
+                new Notice('请至少选一篇笔记。');
+                return;
+            }
+            const files = this.selected.map(f => ({ file: f, title: f.basename })), options = { book: true, title: this.titleInput.value.trim() || '数学讲义', subtitle: '', tocDepth: this.plugin.settings.tocDepth };
+            this.close();
+            this.plugin.exportSelection({ files, options }, true);
+        }));
+        this.renderFiles();
+        this.renderOrder();
+    }
+    renderFiles() {
+        this.fileList.empty();
+        const q = this.filterInput.value.toLowerCase(), matching = this.files.filter(f => f.path.toLowerCase().includes(q));
+        for (const f of matching.slice(0, 250)) {
+            const label = this.fileList.createEl('label', { cls: 'an-file-choice' }), checkbox = label.createEl('input', { type: 'checkbox' });
+            checkbox.checked = this.selected.some(x => x.path === f.path);
+            label.createSpan({ text: f.path });
+            checkbox.addEventListener('change', () => { if (checkbox.checked)
+                this.selected.push(f);
+            else
+                this.selected = this.selected.filter(x => x.path !== f.path); this.renderOrder(); });
+        }
+        if (matching.length > 250)
+            this.fileList.createDiv({ text: '只显示前 250 个结果，请继续输入路径筛选。' });
+    }
+    renderOrder() {
+        this.orderList.empty();
+        this.orderList.createEl('h4', { text: '章节顺序 · ' + this.selected.length + ' 篇' });
+        this.selected.forEach((f, i) => {
+            const row = this.orderList.createDiv({ cls: 'an-order-row' });
+            row.createSpan({ text: (i + 1) + '. ' + f.path });
+            const button = (text, run) => { const b = row.createEl('button', { text }); b.addEventListener('click', run); };
+            button('上移', () => { if (i > 0) {
+                [this.selected[i - 1], this.selected[i]] = [this.selected[i], this.selected[i - 1]];
+                this.renderOrder();
+            } });
+            button('下移', () => { if (i + 1 < this.selected.length) {
+                [this.selected[i + 1], this.selected[i]] = [this.selected[i], this.selected[i + 1]];
+                this.renderOrder();
+            } });
+            button('移除', () => { this.selected.splice(i, 1); this.renderFiles(); this.renderOrder(); });
+        });
+    }
+}
+export { ProgressModal, ReferencePicker, ReferenceSuggest, BookPicker };
