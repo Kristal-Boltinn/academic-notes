@@ -1,79 +1,88 @@
 # Academic Notes
 
-**LaTeX-like numbering, cross-references and local PDF export for Obsidian.**
+**English** | [简体中文](README.zh-CN.md)
 
-数学环境、公式、图表与子图自动编号；跨文件块引用、目录和多篇笔记合订本。配色独立于特定主题，PDF 使用 Obsidian 自带的 Electron，安装后无需 Python、Chrome 或其他外部程序。
-
-**2.2.0 · Community Release Candidate**。尚未通过社区审核，不代表已在 Community Plugins 上架。
+LaTeX-like numbering, cross-references, figures, tables, and local PDF export for Obsidian.
 
 ![Theorem environments](screenshots/theorem.png)
 
-## 安装
+## Features
 
-需要桌面版 Obsidian 1.9.0+。将 Release 的三个文件放入笔记库的 `.obsidian/plugins/academic-notes/`：
+- Number theorems, definitions, lemmas, equations, figures, tables, and subfigures automatically or manually.
+- Reference blocks across notes, with reference suggestions and an option to number only referenced equations.
+- Choose light and dark color palettes, style nested callouts, and use three-line tables.
+- Add clickable tables of contents, PDF bookmarks, and measured PDF page numbers.
+- Export a single note or a multi-note book to PDF or HTML without modifying the source notes.
+- Process notes locally, without telemetry, an account, or a separately installed export engine.
+
+## Installation
+
+Requires **Obsidian desktop 1.9.0 or later**. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/zijiexu159-prog/academic-notes/releases/latest), then place them in your vault:
 
 ```text
-academic-notes/
+.obsidian/plugins/academic-notes/
 ├─ main.js
 ├─ manifest.json
 └─ styles.css
 ```
 
-在「设置 → 第三方插件」启用 **Academic Notes**。图表布局已内置，不需要再启用 CSS 片段。插件设置保存在本机 `data.json`；不要将它上传到公共仓库。
+Enable **Academic Notes** under **Settings → Community plugins**. Figure and table styles are included; no CSS snippet is required. PDF export uses Obsidian's bundled Electron, so no Python or separate Chrome installation is needed.
 
-已有本地测试版用户应停用 `phycat-academic` 后启用 `academic-notes`，不要同时开启两个编号插件。配色与编号偏好可从原 `data.json` 复制，插件只读取仍有效的设置字段。停止使用重复的数学框和 `academic-layout` 片段，避免两份样式叠加。
+Version **2.2.1** is available on GitHub and is not yet listed in the Community Plugins directory. The current settings and command labels are primarily in Chinese; the tables below identify commands by their current labels.
 
-仅需三线表和手写图表题注布局、不需编号时，可以单独使用 [snippets/academic-layout.css](snippets/academic-layout.css)，复制到 `.obsidian/snippets/` 后在外观设置中启用。
+For standalone table and caption styling without automatic numbering, copy [academic-layout.css](snippets/academic-layout.css) into `.obsidian/snippets/` and enable it under Appearance. Avoid enabling duplicate styles alongside the plugin.
 
-## 数学框与引用：最小示例
+## Quick start: theorems and references
 
 ```markdown
-## 连续映射
+## Continuous maps
 
-> [!def] 连续性
-> 若每个开集的原像都是开集，则称映射连续。
+> [!def] Continuity
+> A map is continuous if the inverse image of every open set is open.
 
 ^def-continuity
 
-> [!thm] 复合映射
-> 两个连续映射的复合仍连续。
+> [!thm] Composition
+> The composition of two continuous maps is continuous.
 
 ^thm-composition
 
-根据 [[#^def-continuity]] 可以证明 [[#^thm-composition]]。
+Use [[#^def-continuity]] to prove [[#^thm-composition]].
 
 > [!proof]
-> 逐次取原像即可。
+> Take inverse images successively.
 ```
 
-默认显示 `Definition 1.1 · 连续性` 和 `Theorem 1.1 · 复合映射`；链接显示 `def 1.1`、`thm 1.1`。不同类型默认分别计数。点击引用跳转到目标。
+By default, these display as `Definition 1.1 · Continuity` and `Theorem 1.1 · Composition`. References display `def 1.1` and `thm 1.1` and navigate to their targets. Each environment type has its own counter unless shared counters are enabled.
 
-| 环境 | 支持的类型名 | 自动编号 |
+| Environment | Accepted callout types | Numbered |
 |---|---|---|
-| 定义 | `def`、`definition` | 是 |
-| 定理 | `thm`、`theorem` | 是 |
-| 引理 | `lem`、`lemma` | 是 |
-| 命题 | `prop`、`proposition`、`prp` | 是 |
-| 推论 | `cor`、`corollary` | 是 |
-| 断言 | `claim`、`clm` | 是 |
-| 例子 | `example`、`ex`、`exa`、`exm` | 是 |
-| 公理 | `axiom`、`axm` | 是 |
-| 假设 | `assumption`、`asm` | 是 |
-| 习题 | `exercise`、`exr` | 是 |
-| 猜想 | `conjecture`、`cnj` | 是 |
-| 假说 | `hypothesis`、`hyp` | 是 |
-| 证明 | `proof`、`pf` | 否 |
-| 注记 | `remark`、`rem`、`rmk` | 否 |
-| 解答 | `solution`、`sol` | 否 |
+| Definition | `def`, `definition` | Yes |
+| Theorem | `thm`, `theorem` | Yes |
+| Lemma | `lem`, `lemma` | Yes |
+| Proposition | `prop`, `proposition`, `prp` | Yes |
+| Corollary | `cor`, `corollary` | Yes |
+| Claim | `claim`, `clm` | Yes |
+| Example | `example`, `ex`, `exa`, `exm` | Yes |
+| Axiom | `axiom`, `axm` | Yes |
+| Assumption | `assumption`, `asm` | Yes |
+| Exercise | `exercise`, `exr` | Yes |
+| Conjecture | `conjecture`, `cnj` | Yes |
+| Hypothesis | `hypothesis`, `hyp` | Yes |
+| Proof | `proof`, `pf` | No |
+| Remark | `remark`, `rem`, `rmk` | No |
+| Solution | `solution`, `sol` | No |
 
-`> [!thm]- 标题` 为默认折叠，`> [!thm]+ 标题` 为默认展开。嵌套框每层增加一个 `>`；导出时展开折叠内容。
+Use `> [!thm]- Title` for an initially collapsed callout, or `> [!thm]+ Title` for an expanded one. Add another `>` for each nesting level. Export expands collapsed content.
 
-手写编号：`> [!thm|A.1] 标题`。不编号：`> [!thm|*] 标题`；`|-` 和空元数据 `|` 也表示不编号。省略元数据或 `|auto` 表示自动编号。自动计数避开同一计数范围内已有的相同手写编号。
+- Manual number: `> [!thm|A.1] Title`.
+- No number: `> [!thm|*] Title`. `|-` and empty metadata `|` also suppress numbering.
+- Automatic number: omit metadata or use `|auto`. Automatic counters avoid manual numbers already used in the same scope.
 
-## 公式编号
+## Equation numbering
 
 ```markdown
-## 恒等式
+## An identity
 
 $$
 a^2+b^2=c^2
@@ -81,91 +90,98 @@ $$
 
 ^eq-example
 
-由 [[#^eq-example]] 得到结论。
+See [[#^eq-example]].
 ```
 
-默认仅为**全库中被引用**的独立 `$$...$$` 公式自动编号，未引用的公式不占号。可设为全部编号或关闭自动编号；行内公式不编号。
+By default, only display equations referenced in the indexed vault receive automatic numbers; unreferenced equations do not consume a number. You can number all display equations or disable automatic numbering. Inline math is not numbered.
 
-保留手写 `\tag{A}`；没有手写编号时，`\notag` / `\nonumber` 阻止自动编号。一个公式块对应一个自动编号。需要逐行引用时拆成不同块。一个块含多个手写 `\tag` 时保留原式，不猜测整块引用编号。
+Manual `\tag{A}` values are preserved. Without a manual tag, `\notag` or `\nonumber` suppresses automatic numbering. Each display-math block receives at most one automatic number; split it into separate blocks for separate references. Blocks containing multiple manual tags retain the original math without guessing a single reference number.
 
-## 跨文件引用和命令
+## References and commands
 
 ```markdown
-同文件：[[#^thm-composition]]
-跨文件：[[第一章#^thm-composition]]
-手写文字：[[第一章#^thm-composition|复合映射定理]]
-Markdown 链接：[复合映射定理](第一章.md#^thm-composition)
+Same note: [[#^thm-composition]]
+Another note: [[Chapter One#^thm-composition]]
+Custom label: [[Chapter One#^thm-composition|composition theorem]]
+Markdown link: [composition theorem](Chapter%20One.md#^thm-composition)
 ```
 
-块 ID 只使用英文字母、数字、连字符，一篇笔记内必须唯一。块结束后空一行，再单独写 `^id`。嵌套块建议使用命令自动添加，避免引用层级放错。
+Block IDs use letters, digits, and hyphens and must be unique within a note. Leave a blank line after the block and place `^id` on its own line. For nested blocks, use the add-ID command to avoid assigning an ID to the wrong nesting level.
 
-在命令面板（Windows：`Ctrl+P`）搜索 Academic Notes：
+Open the command palette (`Ctrl+P` on Windows) and search for **Academic Notes**:
 
-- **为光标所在公式、定理或图表添加块 ID**：为当前块写入唯一 ID。
-- **插入定理、公式或图表引用**：选择已有 ID 的目标并插入链接。
-- **重建定理公式索引并刷新引用**：手动刷新。
-
-输入 `\ref`、`\tref` 或 `\eqref` 可触发引用建议，后两种分别筛选数学框和公式。阅读模式和实时预览替换链接显示；源码模式保留写法，实时预览中光标进入链接时也恢复源码。默认保留手写链接别名。
-
-## 编号设置
-
-| 设置 | 说明 |
+| Action | Current command label |
 |---|---|
-| 按 H2 分节重置（默认） | 每遇源码中的 `##` 重置计数器；H3–H6 不参与 |
-| 编号前加入 H2 节号 | 开启为 `2.1`；关闭为 `1`，但仍按 H2 重置 |
-| H2 节号来源 | 按出现顺序，或优先取 `## 3.2 标题` 开头的数字 |
-| 整篇连续编号 | 不按 H2 重置，不添加 H2 节号 |
-| 不同定理类型共享计数器 | 开启后定义、定理等共同计数；公式、图、表仍独立 |
-| 编号前缀 | 手动指定；不会从日期或文件名猜测 |
-| 排除索引的路径 | 相对库根目录的文件或目录，每行一个 |
+| Add a unique block ID at the cursor | 为光标所在公式、定理或图表添加块 ID |
+| Select a target and insert its reference | 插入定理、公式或图表引用 |
+| Rebuild the index and refresh references | 重建定理公式索引并刷新引用 |
+| Export the current note as PDF | 直接导出当前笔记为 PDF |
+| Export the current note as HTML | 导出当前笔记为 HTML 快照 |
+| Select notes and export a book | 选择多篇笔记并导出合订本 PDF |
+| Export a book from a manifest | 按 phb-book 清单导出 PDF |
+| Open diagnostics | 检查插件状态与导出环境 |
 
-有 H2 时，首个 H2 前属于第 0 节；完全没有 H2 时省略节号。代码块、公式、注释中的标题不计入分节。
+Type `\ref`, `\tref`, or `\eqref` for reference suggestions. The latter two filter to mathematical callouts or equations. Reading view and Live Preview replace reference labels; Source mode preserves the syntax. Moving the cursor into a reference in Live Preview also reveals its source. Custom aliases are preserved by default.
 
-公式引用格式默认 `eq:{number}`；数学框默认 `{type} {number}`。`{type}` 受缩写开关控制，`{abbr}` 始终缩写，`{name}` 始终全称；还支持 `{title}`、`{file}`。图表默认 `fig {number}` / `tab {number}`。
+## Numbering settings
 
-## 图、表与子图
+| Setting | Behavior |
+|---|---|
+| Reset at H2 headings (default) | Every source `##` starts a new counter scope; H3–H6 do not reset it. |
+| Include H2 section number | Displays `2.1` instead of `1`; turning this off still allows section resets. |
+| H2 number source | Use heading order, or prefer a leading number such as `## 3.2 Title`. |
+| Continuous numbering | Count throughout the note without H2 resets or section prefixes. |
+| Shared theorem counter | Mathematical environments share a counter; equations, figures, and tables remain separate. |
+| Number prefix | Set explicitly; no prefix is inferred from dates or filenames. |
+| Excluded paths | One vault-relative file or directory per line. |
 
-题注写在 Callout 标题中。图注在图下方，表注在表上方，表格使用三线表。图片路径换成库中实际存在的文件。
+With H2 headings, material before the first H2 belongs to section 0. If a note has no H2 headings, section numbers are omitted. Headings inside code, math, or comments do not start sections.
+
+Equation references default to `eq:{number}`; mathematical callouts use `{type} {number}`. `{type}` follows the abbreviation setting, `{abbr}` is always abbreviated, and `{name}` is always the full name. `{title}` and `{file}` are also available. Figures and tables default to `fig {number}` and `tab {number}`.
+
+## Figures, tables, and subfigures
+
+Write captions in callout titles. Figure captions appear below images; table captions appear above three-line tables. Replace image paths with files in your vault.
 
 ```markdown
-> [!figure] 函数曲线
-> ![[附件/曲线.svg]]
+> [!figure] Function curve
+> ![[Attachments/curve.svg]]
 
 ^fig-curve
 
-> [!table] 参数
-> | 参数 | 数值 |
+> [!table] Parameters
+> | Parameter | Value |
 > | --- | --- |
 > | $a$ | 1 |
 > | $b$ | 2 |
 
 ^tab-parameters
 
-参见 [[#^fig-curve]]、[[#^tab-parameters]]。
+See [[#^fig-curve]] and [[#^tab-parameters]].
 ```
 
-子图必须嵌套在主图内：
+Subfigures must be nested inside a main figure:
 
 ```markdown
-> [!figure] 两种状态
-> > [!subfigure] 初始状态
-> > ![[附件/初始.svg]]
+> [!figure] Two states
+> > [!subfigure] Initial state
+> > ![[Attachments/initial.svg]]
 >
 > ^fig-initial
 >
-> > [!subfigure] 最终状态
-> > ![[附件/最终.svg]]
+> > [!subfigure] Final state
+> > ![[Attachments/final.svg]]
 >
 > ^fig-final
 
 ^fig-states
 ```
 
-子图显示 `(a)`、`(b)`；引用 `[[#^fig-initial]]` 显示例如 `fig 1.1(a)`。窄窗口自动换行。孤立的子图只显示题注并给出诊断警告。支持别名 `fig`、`tbl`、`subfig`。
+Subfigures display `(a)`, `(b)`, etc.; `[[#^fig-initial]]` can render as `fig 1.1(a)`. Layout wraps in narrow windows. An orphan subfigure keeps its caption and produces a warning. Aliases `fig`, `tbl`, and `subfig` are supported. Use explicit callouts for figures and tables; ordinary image alt text and H6 headings are not captions.
 
-普通图片不从 alt 文本猜测题注。**H6 始终是六级标题**；图表必须使用明确的 Callout 语法。
+![Figures and tables](screenshots/figures.png)
 
-可选笔记属性：
+Optional note properties:
 
 ```yaml
 ---
@@ -175,21 +191,21 @@ cssclasses:
 ---
 ```
 
-`academic-serif` 使用本机可用的衬线字体；`academic-indent` 让普通段落首行缩进，框内、列表等不缩进；`academic-keep-table-style` 保留主题的表格样式。
+`academic-serif` uses local serif fonts. `academic-indent` indents ordinary paragraphs, excluding callouts and lists. `academic-keep-table-style` preserves the theme's table styling.
 
-## 配色：哪些会跟随主题？
+## Appearance
 
-浅色：Forest（默认）、Sakura、Mint、Sky、Mauve、Golden、Cherry、Prussian。深色：Radiation（默认）、Vampire、Abyss。每套按数学环境区分颜色。浅深模式跟随 **Obsidian 当前模式**；Obsidian 设为跟随系统时，会间接跟随系统的浅深模式。
+Light palettes: Forest (default), Sakura, Mint, Sky, Mauve, Golden, Cherry, and Prussian. Dark palettes: Radiation (default), Vampire, and Abyss. Each palette assigns colors by environment type. Light/dark mode follows **Obsidian's current mode**, which can itself follow the operating system.
 
-**跟随 Obsidian 主题配色**不会匹配某套预设，也不直接读取操作系统主色调。定义取主题公开的 `--text-accent`，定理/断言取蓝色，引理取紫色，命题取绿色，推论取青色，例子取橙色，证明/注记取次要文字色，再混入普通正文色。强调色只影响部分环境。选择固定色板即可让边框与底色色系独立于主题；没有主题专用适配开关。
+The **follow Obsidian theme colors** option uses the theme's public accent for definitions, blue for theorems/claims, purple for lemmas, green for propositions, cyan for corollaries, orange for examples, and secondary text color for proofs/remarks, mixed with normal text color. It does not choose a preset automatically or read the operating system's accent directly. Select a fixed palette to control border and fill colors independently of the theme.
 
-**框内正文使用普通正文色**：开启后，正文和笔记普通文字同色；关闭时混入 36% 当前框色。它只影响正文颜色，不改变字体、标题、边框或底色。主题正文色可能带色，并不保证纯黑/纯灰；链接和代码保留各自语义样式。
+**Use normal text color inside callouts** makes body text match ordinary note text. When disabled, 36% of the callout color is mixed in. It affects body text only; links and code keep their own styles.
 
-浅色框内部为 **6% 框色 + 94% 白色**，深色框为 **8% 框色 + 92% 中性深灰**，避免彩色页面背景使框内部偏色。深色模式保留低亮度同色系底色。嵌套框各用自己的颜色。右下角图案可单独隐藏。可选 Style Settings 可调边框和圆角，并非运行依赖。
+Light fills mix 6% callout color with 94% white; dark fills mix 8% callout color with 92% neutral dark gray. Nested callouts use their own colors. The corner decoration can be hidden. The optional Style Settings plugin can adjust borders and corner radii.
 
-## 目录
+## Table of contents
 
-独立段落写 `[toc]`，或使用带深度的代码块：
+Write `[toc]` as a standalone paragraph, or specify a depth:
 
 ````markdown
 ```academic-toc
@@ -197,13 +213,13 @@ cssclasses:
 ```
 ````
 
-支持深度 1–6，省略则用设置值。笔记中的目录可点击；PDF 目录的页码通过实际打印测量得到，并建立 PDF 书签。
+Depths 1–6 are supported; omission uses the setting. Note TOCs are clickable. PDF TOCs use measured printed page positions and include bookmarks.
 
-## PDF / HTML 导出
+## PDF, HTML, and book export
 
-**无需安装导出引擎**。运行「直接导出当前笔记为 PDF」或「导出当前笔记为 HTML 快照」。HTML 是静态快照；修改笔记后需要重新导出。
+Use the export commands listed above. HTML is a static snapshot; re-export after editing a note. The multi-note selection dialog lets you choose notes, change their order, and edit chapter titles.
 
-多篇导出运行「选择多篇笔记并导出合订本 PDF」，勾选文件、调整顺序和标题。也可创建清单笔记：
+Alternatively, create a book manifest note:
 
 ```yaml
 ---
@@ -212,53 +228,53 @@ phb-book:
   subtitle: A sample collection
   tocDepth: 3
   files:
-    - 第一章.md
-    - path: 第二章.md
-      title: 第二章：连续映射
+    - Chapter One.md
+    - path: Chapter Two.md
+      title: Continuity
 ---
 ```
 
-`phb-book` 是笔记顶部 YAML 属性里的合订本章节清单，不是目录或额外插件。单篇直接导出不需要它；也可以使用多篇选择窗口而不写清单。
+`phb-book` is a chapter list in the note's YAML properties. It is unnecessary for single-note export or the multi-note selection dialog. Open the manifest and run the manifest PDF or HTML command. Paths are relative to the vault root; list order determines chapter order. The manifest itself is not included as a chapter.
 
-打开清单运行「按 phb-book 清单导出 PDF」或 HTML 命令。路径相对库根目录，按清单顺序组章；清单本身不作为章节。
+Book numbering supports **chapter.section.number** (default, e.g. `2.3.1`), **chapter.number** (continuous per chapter), or **preserve vault numbering** (which may repeat across chapters). In chapter.section mode, material before the first H2 or in a chapter without H2 belongs to section 0. Renumbering affects export copies only. Include cross-file targets in the export; otherwise the report flags unresolved references.
 
-合订本编号有三种：**章.节.序号**（默认，如 `2.3.1`）、**章.序号**（章内连续，如 `2.1`）、**保留库内显示编号**（可能跨章重号）。无 H2 或首个 H2 前，在章.节模式属于第 0 节。前两种在导出副本中重新编号，原笔记不变。跨文件目标要纳入本次导出，否则报告提示未解析引用。
+Enable theme-and-snippet capture to include current CSS, or disable it to use built-in callout, figure, and print styles. Both retain the current light/dark mode and palette. Collapsed callouts expand, long callouts may span pages, and wide SVG math scales to the available width.
 
-「PDF 捕获当前主题与片段样式」开启时复制当前 CSS，关闭时用内置数学框、图表和打印样式；都保留当前浅深模式和色板。折叠框展开，长框允许跨页，过宽 SVG 公式按可用宽度缩放。
+Outputs default to `_exports/` inside the vault. Only vault-relative output directories are accepted; absolute paths and `..` are rejected. Exports include timestamped HTML snapshots, snapshot reports, PDFs, and pagination reports. TOC calibration allows up to six passes. Export stops if calibration does not converge or if image, math, font, or internal-link validation fails.
 
-默认输出到库内 `_exports/`；只能使用库内相对目录，不能使用绝对路径或 `..`。生成带时间戳的 HTML 快照、快照报告、PDF 和分页校验报告。最多进行 6 轮目录校准，未收敛、图片/公式/字体错误或内部链接无效时停止输出，不猜测页码。
+![Book export](screenshots/book-export.png)
 
-## 隐私和权限
+## Privacy and permissions
 
-- 本地索引库内 Markdown，以解析跨文件引用；支持排除文件/目录。无账号、遥测或开发者服务器，不传输笔记内容。
-- 插件不安装程序、不启动外部命令、不下载运行依赖。Electron 和 PDF 后处理都在本机执行。
-- PDF 临时将 HTML 写入系统临时目录中的独立 `academic-notes-*` 文件夹，结束后删除；应用崩溃时可能留下临时文件。PDF 使用隔离的隐藏窗口，禁用 Node 集成、文档脚本和网络请求。普通外部链接可保留为 PDF 链接，不会因导出自动访问。
-- 为保存主题外观，快照可能读取本机已加载的 CSS、字体和图片资源，包括主题引用的库外本地资源。这些资源仅内嵌进本地快照；关闭捕获主题可减少主题资源读取。
-- 导出文件与报告只写入库内指定目录。报告可能包含文件路径、标题和警告；公开分享前应检查内容。
-- 网络图片请先保存到库内。插件不会在导出时下载远程图片或 CSS 资源。Obsidian 和其他插件自己的网络行为不由本插件控制。
-- 自动索引和导出不改写笔记；添加块 ID 和插入引用命令会按用户操作编辑当前笔记。
+- Markdown is indexed locally to resolve cross-file references, with configurable exclusions. No account, telemetry, or developer server is involved; note contents are not sent to the developer.
+- The installed plugin does not install software, launch external commands, or download runtime dependencies. Printing and PDF post-processing run locally.
+- PDF export temporarily writes HTML into an isolated `academic-notes-*` directory under the system temporary directory, then removes it. A crash can leave temporary files behind. Printing uses an isolated hidden window with Node integration, document scripts, and network requests disabled. External hyperlinks can remain in PDFs without being visited during export.
+- To preserve appearance, snapshots may read locally loaded CSS, fonts, and images, including local files outside the vault referenced by a theme. They are embedded in the local snapshot. Disabling theme capture reduces theme-resource access.
+- Final exports and reports are written only to the configured directory inside the vault. Reports may contain paths, note titles, and warnings; review them before public sharing. Do not publish your local `data.json` settings file.
+- Save remote images to the vault first. Export does not download remote images or CSS. Obsidian's and other plugins' network behavior is outside this plugin's control.
+- Indexing and export do not rewrite notes. The add-ID and insert-reference commands edit the current note when invoked.
 
-## 查看导出失败原因
+## Troubleshooting
 
-导出进度窗口会显示错误。关闭窗口后，用命令面板运行「检查插件状态与导出环境」，查看 `errors` 和 `lastPdfExport`；点击「保存诊断 JSON 到导出目录」保存到默认 `_exports/academic-diagnostics-*.json`。错误历史保留在当前插件会话，重载前请保存。`pdf.interfaceAvailable` 只检查接口存在，不代表导出成功。成功导出才会生成 `.report.json`；失败时 `.phb.html` 快照可能已经保存。更完整的日志可在 `Ctrl+Shift+I` 的 Console 中搜索 `[Academic Notes]`。
+The export progress window shows errors. Afterwards, open diagnostics and inspect `errors` and `lastPdfExport`. Use **保存诊断 JSON 到导出目录** to save diagnostics, normally to `_exports/academic-diagnostics-*.json`. Error history lasts for the current plugin session, so save it before reloading.
 
-## 排错与兼容性
+`pdf.interfaceAvailable` only checks whether the interface exists; it does not prove export succeeded. A successful export creates `.report.json`; on failure, a `.phb.html` snapshot may already exist. For more logs, open Developer Tools (`Ctrl+Shift+I` on Windows) and search the Console for `[Academic Notes]`.
 
-| 问题 | 检查 |
+| Problem | What to check |
 |---|---|
-| 公式未编号 | 默认仅编号被引用公式；检查 ID、路径、排除设置和 `\notag` |
-| 引用未替换 | 手写别名默认保留；源码模式不替换；重复 ID 不解析 |
-| 数学框或图表异常 | 停用重复的编号插件/数学框 CSS/布局片段，确认支持的 Callout 类型 |
-| 框内颜色偏差 | 检查是否选择跟随主题；普通正文色开关只控制文字 |
-| Electron 接口不可用 | 运行「检查插件状态与导出环境」，更新 Obsidian 桌面安装程序 |
-| PDF 导出失败 | 查看进度窗口和报告；确认图片已存入库、公式和字体可正常加载 |
-| 编号没有刷新 | 运行重建索引命令 |
+| Equation has no number | Referenced-only is the default. Check its ID, references, excluded paths, and `\notag`. |
+| Reference label is unchanged | Custom aliases are preserved; Source mode shows original syntax; duplicate IDs do not resolve. |
+| Callout/figure styling is wrong | Disable duplicate numbering plugins or CSS snippets and check the callout type. |
+| Unexpected colors | Check theme-following mode; normal-text-color affects text only. |
+| Electron interface is unavailable | Run diagnostics and update the Obsidian desktop installer. |
+| PDF export fails | Inspect progress and diagnostics; ensure local images, math, and fonts load correctly. |
+| Numbering is stale | Run the rebuild-index command. |
 
-桌面专用；不支持移动端 PDF。最低应用版本表示 API 下限，不代表所有操作系统、主题和插件组合都已实机验收。PDF 原生窗口桥接依赖 Obsidian 桌面提供的 Electron 接口；应用更新后应重新测试。
+This plugin is desktop-only. The minimum app version is an API requirement, not a guarantee that every OS, theme, and plugin combination has been tested. Native PDF access depends on Electron interfaces exposed by Obsidian desktop and should be retested after application updates.
 
-## 开发与发布
+## Development
 
-Node.js 22+：
+Use Node.js 22 or later:
 
 ```sh
 npm ci
@@ -268,12 +284,12 @@ npm run test:electron
 npm run check:release
 ```
 
-`npm ci` 仅用于开发/CI，会安装测试用 Electron；用户安装的插件不运行它。`npm run dev` 监听源码。TypeScript 源码位于 `src/`，esbuild 将 pdf-lib 和 CSS 后备资源内嵌；构建只需分发 `main.js`、`manifest.json`、`styles.css`。`snippets/` 是可选独立布局，`examples/` 为合成示例，`tests/` 不使用个人笔记。
+`npm ci` installs development dependencies, including the Electron test runtime; the installed plugin never runs it. `npm run dev` watches source files. TypeScript lives in `src/`; esbuild bundles pdf-lib and fallback CSS. Distribution requires only `main.js`, `manifest.json`, and `styles.css`.
 
-原生测试会启动隐藏的独立 Electron 测试窗口，在 `output/` 输出截图、PDF 和报告。它验证真实 Chromium 打印和样式，不等同于真实 Obsidian 实时预览验收。
+`examples/` contains synthetic notes and images. Native tests launch a hidden standalone Electron window and write screenshots, PDFs, and reports into `output/`. They verify Chromium printing and styles, but do not replace testing inside Obsidian. Linux CI uses Xvfb and configures Electron's sandbox helper; see [ci.yml](.github/workflows/ci.yml).
 
-修改版本时同步 `package.json`、lockfile、`manifest.json`、`versions.json` 和 CHANGELOG。推送与 manifest 版本一致的 tag（例如 `2.2.0`）后，GitHub Actions 构建、测试并创建**草稿 Release**，上传三个安装文件；人工审阅后再公开。发布前按 [RELEASING.md](RELEASING.md) 核对作者、唯一 ID、实际桌面验收和 Community Directory 扫描。
+For releases, update `package.json`, the lockfile, `manifest.json`, `versions.json`, and the changelog together. Push a tag matching the manifest version. GitHub Actions tests and builds the plugin, checks reproducibility, and creates a draft release with three installable assets. See [RELEASING.md](RELEASING.md).
 
 ## License
 
-[MIT](LICENSE)。Academic Notes 是独立实现，不捆绑 MathBooster / LaTeX-like Theorem & Equation Referencer 源码。第三方许可见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+[MIT](LICENSE). Dependency licenses are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
