@@ -1,0 +1,58 @@
+name: Import reviewed source
+on:
+  push:
+    paths: ['.github/workflows/import-source.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify and unpack reviewed archive
+        run: |
+          python3 - <<'PY'
+          import hashlib, pathlib, zipfile
+          archive = pathlib.Path('academic-notes-2.2.1-source.zip')
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == '0fe298838f4734dbce67ad411f446cdfdfc96472c3b379fa43f6970f5ebcd421'
+          with zipfile.ZipFile(archive) as z:
+              files = [i for i in z.infolist() if not i.is_dir()]
+              assert len(files) == 55
+              for item in files:
+                  p = pathlib.PurePosixPath(item.filename)
+                  assert p.parts[0] == 'academic-notes' and '..' not in p.parts
+                  target = pathlib.Path(*p.parts[1:])
+                  assert target.parts and target.parts[0] != '.git'
+                  if target.as_posix().startswith('.github/workflows/'):
+                      continue
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(item))
+          archive.unlink()
+          PY
+      - name: Commit source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Import privacy-reviewed Academic Notes 2.2.1 source'
+          git push
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: xvfb-run --auto-servernum npm run test:electron
+      - run: npm run check:release
+      - name: Verify reproducible build
+        run: |
+          sha256sum main.js styles.css > /tmp/academic-build.sha256
+          npm run build
+          sha256sum --check /tmp/academic-build.sha256
+      - name: Draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create 2.2.1 main.js manifest.json styles.css --draft --target "$(git rev-parse HEAD)" --title 'Academic Notes 2.2.1' --notes 'Theorem, equation, figure and table numbering, cross-file references, and local Electron PDF export. Install the three attached plugin files. See README for syntax and usage.'
