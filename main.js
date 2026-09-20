@@ -1,4 +1,4 @@
-/* Academic Notes 2.2.1 | MIT | generated from src/main.ts */
+/* Academic Notes 2.2.2 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -22129,7 +22129,6 @@ function parse(path, source, cache = {}) {
     offset += l.length + 1;
   });
   let mask = maskedSource(source);
-  const maskedLines = mask.split("\n");
   const records = [], equations = [], theorems = [], media = [], callouts = [], warnings = [];
   const delimiters = [...mask.matchAll(/(?<!\\)\$\$/g)];
   for (let i = 0; i + 1 < delimiters.length; i += 2) {
@@ -22391,7 +22390,7 @@ function graph(notes, opts = {}, resolver, chapters) {
     for (const ref of note.refs) {
       const p = resolvePath(ref.file, note.path, paths, resolver);
       ref.targetPath = p;
-      ref.target = p ? map.get(p).blocks.get(ref.block) : null;
+      ref.target = p ? map.get(p).blocks.get(ref.block) ?? null : null;
       if (ref.target)
         referenced.add(p + "#^" + ref.block);
     }
@@ -22414,12 +22413,12 @@ function refText(r, settings = DEFAULTS) {
   if (!r.number)
     return `${type}${r.title ? " \xB7 " + plain(r.title) : "\uFF08\u672A\u7F16\u53F7\uFF09"}`;
   const format = r.kind === "equation" ? settings.eqFormat : r.kind === "table" ? settings.tableFormat : r.kind === "figure" || r.kind === "subfigure" ? settings.figureFormat : settings.theoremFormat;
-  return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k) => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, "").split("/").pop() })[k]);
+  return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k) => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, "").split("/").pop() || "" })[k]);
 }
 function taggedTex(eq) {
   if (eq.manual || eq.multiTag)
-    return eq.tex;
-  let tex = eq.tex.replace(/^\s*\\begin\{(equation\*?|align\*?|gather\*?)\}([\s\S]*)\\end\{\1\}\s*$/, (_, env, body) => env.startsWith("align") ? "\\begin{aligned}" + body + "\\end{aligned}" : env.startsWith("gather") ? "\\begin{gathered}" + body + "\\end{gathered}" : body);
+    return eq.tex || "";
+  let tex = (eq.tex || "").replace(/^\s*\\begin\{(equation\*?|align\*?|gather\*?)\}([\s\S]*)\\end\{\1\}\s*$/, (_, env, body) => env.startsWith("align") ? "\\begin{aligned}" + body + "\\end{aligned}" : env.startsWith("gather") ? "\\begin{gathered}" + body + "\\end{gathered}" : body);
   if (eq.number)
     tex += "\\tag{" + eq.number + "}";
   return tex;
@@ -22505,11 +22504,11 @@ function setTitle(box, number = "") {
       label2.textContent = TYPES2[key2][0] + (number ? " " + number : "");
     return;
   }
-  if (/^(Definition|Theorem|Lemma|Proposition|Corollary|Claim|Example)\s+\d/i.test(title.textContent.trim()))
+  if (/^(Definition|Theorem|Lemma|Proposition|Corollary|Claim|Example)\s+\d/i.test(title.textContent?.trim() || ""))
     return;
   const original = title.ownerDocument.createElement("span");
   original.className = "phb-title-name";
-  const text = title.textContent.trim().toLowerCase();
+  const text = (title.textContent || "").trim().toLowerCase();
   const defaults = [...TYPES2[key2].map((x) => x.toLowerCase()), ""];
   if (!defaults.includes(text))
     while (title.firstChild)
@@ -22527,7 +22526,7 @@ function decorateWhole(root, numbered = true, chapter = "") {
   for (const node of root.querySelectorAll("h2,.callout[data-callout]")) {
     if (node.tagName === "H2" && !node.closest(".callout") && !chapter) {
       n++;
-      section = (node.textContent.trim().match(/^(\d+(?:\.\d+)*)\s/) || [null, String(n)])[1];
+      section = ((node.textContent || "").trim().match(/^(\d+(?:\.\d+)*)\s/) || [null, String(n)])[1];
       counts = {};
     } else if (node.matches(".callout")) {
       const key2 = canon2(node.dataset.callout);
@@ -22561,7 +22560,7 @@ function inlineCopy(el, prefix) {
         e.setAttribute(a.name, a.value.replace(/url\(#([^)]*)\)/g, (m, id) => ids.has(id) ? `url(#${ids.get(id)})` : m));
     }
   });
-  return clone.innerHTML;
+  return clone.childNodes;
 }
 function makeToc(doc, entries, headingMap = /* @__PURE__ */ new Map(), title = "\u76EE\u5F55") {
   const nav = doc.createElement("nav");
@@ -22581,7 +22580,7 @@ function makeToc(doc, entries, headingMap = /* @__PURE__ */ new Map(), title = "
     link.href = "#" + ent.id;
     link.dataset.phbTarget = ent.id;
     if (headingMap.has(ent.id))
-      link.innerHTML = inlineCopy(headingMap.get(ent.id), `phb-toc-${i}-`);
+      link.replaceChildren(...inlineCopy(headingMap.get(ent.id), `phb-toc-${i}-`));
     else
       link.textContent = ent.title;
     const dots = doc.createElement("span");
@@ -22628,7 +22627,7 @@ function prepare(root, options = {}) {
     let main = [...ch.querySelectorAll("h1")].find((h) => !h.closest(".callout"));
     if (!main) {
       main = doc.createElement("h1");
-      main.textContent = ch.dataset.title || path.split("/").pop();
+      main.textContent = ch.dataset.title || path.split("/").pop() || "";
       ch.prepend(main);
     }
     if (book) {
@@ -22648,7 +22647,8 @@ function prepare(root, options = {}) {
       const key2 = e.dataset.phbBlock || e.dataset.blockId;
       let keys = key2 ? [key2] : [];
       try {
-        keys.push(...JSON.parse(e.dataset.phbBlocks || "[]"));
+        const parsed = JSON.parse(e.dataset.phbBlocks || "[]");
+        if (Array.isArray(parsed)) keys.push(...parsed.filter((key3) => typeof key3 === "string"));
       } catch {
       }
       keys = [...new Set(keys.filter((k) => typeof k === "string" && /^[A-Za-z0-9-]+$/.test(k)))];
@@ -22673,14 +22673,14 @@ function prepare(root, options = {}) {
     for (const h of ch.querySelectorAll("h1,h2,h3,h4,h5,h6")) {
       if (h.closest(".callout,.phb-toc"))
         continue;
-      const old = h.id, raw = h.dataset.heading || h.textContent.trim(), id = `phb-c${i + 1}-h${++j}`;
+      const old = h.id, raw = h.dataset.heading || h.textContent?.trim() || "", id = `phb-c${i + 1}-h${++j}`;
       h.id = id;
       if (old)
         map.set(old, id);
       if (!map.has(raw))
         map.set(raw, id);
-      if (!map.has(h.textContent.trim()))
-        map.set(h.textContent.trim(), id);
+      if (!map.has(h.textContent?.trim() || ""))
+        map.set(h.textContent?.trim() || "", id);
       const level = Number(h.tagName.slice(1));
       if (level <= depth) {
         const title = raw.replace(/\$/g, "");
@@ -22697,7 +22697,7 @@ function prepare(root, options = {}) {
       const raw = decode2(a.dataset.phbLink || a.dataset.href || a.getAttribute("href") || "");
       if (/^(https?:|mailto:|tel:|data:|obsidian:)/i.test(raw))
         continue;
-      const here = norm(ch.dataset.path), hash = raw.indexOf("#");
+      const here = norm(ch.dataset.path || ""), hash = raw.indexOf("#");
       const file = hash < 0 ? raw : raw.slice(0, hash), sub = hash < 0 ? "" : raw.slice(hash + 1);
       const candidates = a.dataset.phbCanonical === "true" ? [norm(file)] : file ? [norm(file), norm(here.split("/").slice(0, -1).join("/") + "/" + file)] : [here];
       let target = candidates.find((p) => maps.has(p));
@@ -22723,11 +22723,11 @@ function prepare(root, options = {}) {
     n.replaceWith(p);
   });
   root.querySelectorAll("p").forEach((p) => {
-    if (/^\[toc\]$/i.test(p.textContent.trim()))
+    if (/^\[toc\]$/i.test(p.textContent?.trim() || ""))
       p.className = "phb-toc-placeholder";
   });
   root.querySelectorAll(".phb-toc-placeholder").forEach((p) => {
-    if (p.parentElement?.tagName === "P" && !p.parentElement.textContent.trim())
+    if (p.parentElement?.tagName === "P" && !(p.parentElement.textContent || "").trim())
       p.parentElement.replaceWith(p);
   });
   if (book) {
@@ -22757,7 +22757,7 @@ function prepare(root, options = {}) {
 }
 function updatePages(root, positions) {
   root.querySelectorAll("[data-phb-page]").forEach((el) => {
-    const p = positions[el.dataset.phbPage];
+    const p = positions[el.dataset.phbPage || ""];
     if (!p)
       throw new Error("Missing printed destination: " + el.dataset.phbPage);
     el.textContent = String(p.page + 1);
@@ -22784,6 +22784,8 @@ var DEFAULTS2 = {
 
 // src/rendering/adapters.ts
 var Obs = __toESM(require("obsidian"));
+var import_view = require("@codemirror/view");
+var import_state = require("@codemirror/state");
 function allNodes(el, selector) {
   return [...el.matches?.(selector) ? [el] : [], ...el.querySelectorAll(selector)];
 }
@@ -22798,7 +22800,7 @@ function titleRecord(box, r) {
   box.dataset.anLine = String(r.line);
   let label = inner.querySelector(":scope > .phb-type-label");
   if (!label) {
-    const original = box.ownerDocument.createElement("span");
+    const original = box.ownerDocument.win.createSpan();
     original.className = "phb-title-name";
     const defaultTitle = engine_default.TYPES[r.key].map((x) => x.toLowerCase()).includes(inner.textContent.trim().toLowerCase());
     if (!defaultTitle)
@@ -22806,7 +22808,7 @@ function titleRecord(box, r) {
         original.appendChild(inner.firstChild);
     else
       inner.replaceChildren();
-    label = box.ownerDocument.createElement("span");
+    label = box.ownerDocument.win.createSpan();
     label.className = "phb-type-label";
     inner.replaceChildren(label, original);
   }
@@ -22826,13 +22828,13 @@ function mediaRecord(box, r) {
     return;
   let label = inner.querySelector(":scope > .an-caption-label");
   if (!label) {
-    const original = box.ownerDocument.createElement("span");
+    const original = box.ownerDocument.win.createSpan();
     original.className = "an-caption-text";
     const isDefault = ["", ...engine_default.MEDIA[r.kind].map((x) => x.toLowerCase())].includes(inner.textContent.trim().toLowerCase());
     if (!isDefault)
       while (inner.firstChild)
         original.appendChild(inner.firstChild);
-    label = box.ownerDocument.createElement("span");
+    label = box.ownerDocument.win.createSpan();
     label.className = "an-caption-label";
     inner.replaceChildren(label, original);
   }
@@ -22882,8 +22884,8 @@ function renderFragment(el, note, graph2, infoFor) {
     return;
   const used = /* @__PURE__ */ new Set();
   const pick = (node, records) => {
-    const info = infoFor(node) || {};
-    if (!Number.isInteger(info.lineStart))
+    const info = infoFor(node);
+    if (!info || !Number.isInteger(info.lineStart))
       return null;
     const candidates = records.filter((r) => !used.has(r) && r.line >= info.lineStart && r.line <= info.lineEnd);
     const rec = candidates[0];
@@ -22942,11 +22944,9 @@ function renderFragment(el, note, graph2, infoFor) {
   }
 }
 function createLiveExtension(plugin) {
-  const { ViewPlugin, Decoration, WidgetType } = require("@codemirror/view");
-  const { StateEffect } = require("@codemirror/state");
-  const refresh = StateEffect.define();
+  const refresh = import_state.StateEffect.define();
   plugin.refreshEffect = refresh;
-  class LinkWidget extends WidgetType {
+  class LinkWidget extends import_view.WidgetType {
     constructor(label, raw, path, offset) {
       super();
       Object.assign(this, { label, raw, path, offset });
@@ -22955,7 +22955,7 @@ function createLiveExtension(plugin) {
       return this.label === b.label && this.raw === b.raw && this.path === b.path && this.offset === b.offset;
     }
     toDOM(view) {
-      const a = view.dom.ownerDocument.createElement("a");
+      const a = view.dom.ownerDocument.win.createEl("a");
       a.className = "internal-link an-ref";
       a.textContent = this.label;
       a.dataset.href = this.raw;
@@ -22983,8 +22983,9 @@ function createLiveExtension(plugin) {
       return true;
     }
   }
-  return ViewPlugin.fromClass(class {
+  return import_view.ViewPlugin.fromClass(class {
     constructor(view) {
+      this.timer = null;
       this.view = view;
       this.disposed = false;
       plugin.editorViews.add(view);
@@ -23001,10 +23002,10 @@ function createLiveExtension(plugin) {
     links(view) {
       const live = view.state.field(Obs.editorLivePreviewField, false), info = view.state.field(Obs.editorInfoField, false);
       if (!live || !info?.file || !plugin.settings.livePreview || !plugin.graph)
-        return Decoration.none;
+        return import_view.Decoration.none;
       const source = view.state.doc.toString(), note = plugin.graph.notes.get(info.file.path);
       if (!note || note.source !== source)
-        return Decoration.none;
+        return import_view.Decoration.none;
       const ranges = [];
       for (const ref of note.refs) {
         if (ref.embed || ref.syntax !== "wiki" || !ref.target)
@@ -23016,14 +23017,14 @@ function createLiveExtension(plugin) {
         if (!view.visibleRanges.some((v) => ref.to >= v.from && ref.from <= v.to))
           continue;
         const text = engine_default.refText(ref.target, plugin.settings);
-        ranges.push(Decoration.replace({ widget: new LinkWidget(text, ref.raw, note.path, ref.from) }).range(ref.from, ref.to));
+        ranges.push(import_view.Decoration.replace({ widget: new LinkWidget(text || "", ref.raw, note.path, ref.from) }).range(ref.from, ref.to));
       }
-      return Decoration.set(ranges, true);
+      return import_view.Decoration.set(ranges, true);
     }
     schedule() {
       if (this.timer || this.disposed)
         return;
-      this.timer = setTimeout(() => {
+      this.timer = window.setTimeout(() => {
         this.timer = null;
         try {
           this.paint();
@@ -23056,7 +23057,7 @@ function createLiveExtension(plugin) {
     }
     destroy() {
       this.disposed = true;
-      clearTimeout(this.timer);
+      window.clearTimeout(this.timer ?? void 0);
       this.observer.disconnect();
       plugin.editorViews.delete(this.view);
     }
@@ -23110,6 +23111,7 @@ var ReferencePicker = class extends import_obsidian.FuzzySuggestModal {
 var ReferenceSuggest = class extends import_obsidian.EditorSuggest {
   constructor(plugin) {
     super(plugin.app);
+    this.kind = "";
     this.plugin = plugin;
     this.limit = 30;
   }
@@ -23127,7 +23129,7 @@ var ReferenceSuggest = class extends import_obsidian.EditorSuggest {
     return this.plugin.targets().filter((r) => (this.kind !== "eqref" || r.kind === "equation") && (this.kind !== "tref" || r.kind === "theorem")).filter((r) => (engine_default.refText(r, this.plugin.settings) + " " + r.path + " " + (r.title || r.tex)).toLowerCase().includes(q)).slice(0, 30);
   }
   renderSuggestion(r, el) {
-    el.createDiv({ text: engine_default.refText(r, this.plugin.settings), cls: "an-suggest-title" });
+    el.createDiv({ text: engine_default.refText(r, this.plugin.settings) || "", cls: "an-suggest-title" });
     el.createDiv({ text: (r.title || r.tex || "").slice(0, 130) + " \u2014 " + r.path, cls: "an-suggest-detail" });
   }
   selectSuggestion(r) {
@@ -23163,7 +23165,7 @@ var BookPicker = class extends import_obsidian.Modal {
       }
       const files = this.selected.map((f) => ({ file: f, title: f.basename })), options = { book: true, title: this.titleInput.value.trim() || "\u6570\u5B66\u8BB2\u4E49", subtitle: "", tocDepth: this.plugin.settings.tocDepth };
       this.close();
-      this.plugin.exportSelection({ files, options }, true);
+      void this.plugin.exportSelection({ files, options }, true);
     }));
     this.renderFiles();
     this.renderOrder();
@@ -23225,27 +23227,40 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     this.plugin = plugin;
   }
   display() {
-    const el = this.containerEl;
-    el.empty();
+    this.containerEl.empty();
+    for (const definition of this.getSettingDefinitions()) {
+      const setting = new import_obsidian2.Setting(this.containerEl).setName(definition.name).setDesc(definition.desc || "");
+      definition.render(setting);
+    }
+  }
+  getSettingDefinitions() {
+    const definitions = [];
     const p = this.plugin, s = p.settings;
-    el.createEl("p", { text: "\u7F16\u53F7\u3001\u5757\u5F15\u7528\u548C PDF \u547D\u4EE4\u4E0D\u4F9D\u8D56\u7279\u5B9A\u4E3B\u9898\u6216\u5176\u4ED6\u7F16\u53F7\u63D2\u4EF6\u3002\u8BF7\u907F\u514D\u540C\u65F6\u542F\u7528\u591A\u4E2A\u7F16\u53F7\u63D2\u4EF6\u6216\u91CD\u590D\u7684\u6570\u5B66\u6846 CSS\u3002" });
-    const toggle = (key2, name, desc = "") => new import_obsidian2.Setting(el).setName(name).setDesc(desc || "").addToggle((t) => t.setValue(!!s[key2]).onChange(async (v) => {
-      s[key2] = v;
-      await p.saveSettings();
-    }));
-    const text = (key2, name, desc = "") => new import_obsidian2.Setting(el).setName(name).setDesc(desc || "").addText((t) => t.setValue(String(s[key2] || "")).onChange(async (v) => {
-      s[key2] = v;
-      await p.saveSettings();
-    }));
-    const select = (key2, name, options, desc = "") => new import_obsidian2.Setting(el).setName(name).setDesc(desc || "").addDropdown((d) => {
-      for (const [k, v] of Object.entries(options))
-        d.addOption(k, v);
-      d.setValue(String(s[key2])).onChange(async (v) => {
-        s[key2] = key2 === "tocDepth" ? Number(v) : v;
+    const toggle = (key2, name, desc = "") => definitions.push({ name, desc, render: (row) => {
+      row.addToggle((t) => t.setValue(s[key2]).onChange(async (v) => {
+        s[key2] = v;
         await p.saveSettings();
-      });
-    });
-    el.createEl("h3", { text: "\u7F16\u53F7\u4E0E\u5F15\u7528" });
+      }));
+    } });
+    const text = (key2, name, desc = "") => definitions.push({ name, desc, render: (row) => {
+      row.addText((t) => t.setValue(s[key2]).onChange(async (v) => {
+        s[key2] = v;
+        await p.saveSettings();
+      }));
+    } });
+    const select = (key2, name, options, desc = "") => definitions.push({ name, desc, render: (row) => {
+      row.addDropdown((d) => d.addOptions(options).setValue(String(s[key2])).onChange(async (v) => {
+        if (key2 === "tocDepth") s.tocDepth = Number(v);
+        else s[key2] = v;
+        await p.saveSettings();
+      }));
+    } });
+    const heading = (name) => definitions.push({ name, render: (row) => {
+      row.setHeading();
+    } });
+    const description = (desc) => definitions.push({ name: "", desc, render: () => {
+    } });
+    heading("\u7F16\u53F7\u4E0E\u5F15\u7528");
     toggle("numbered", "\u5B9A\u7406\u7C7B\u73AF\u5883\u81EA\u52A8\u7F16\u53F7", "Proof\u3001Remark\u3001Solution \u9ED8\u8BA4\u4E0D\u8BA1\u6570\u3002");
     select("equationMode", "\u516C\u5F0F\u81EA\u52A8\u7F16\u53F7", { referenced: "\u4EC5\u88AB\u5F15\u7528\u7684\u516C\u5F0F\uFF08\u5168\u5E93\u5224\u65AD\uFF09", all: "\u6240\u6709\u72EC\u7ACB\u516C\u5F0F\u5757", none: "\u5173\u95ED\u81EA\u52A8\u7F16\u53F7" }, "\u4FDD\u7559\u663E\u5F0F \\tag\uFF1B\u53EA\u6709\u8FDB\u5165\u81EA\u52A8\u7F16\u53F7\u7684\u516C\u5F0F\u624D\u589E\u52A0\u8BA1\u6570\u5668\u3002");
     select("numbering", "\u7B14\u8BB0\u5185\u7F16\u53F7\u8303\u56F4", { section: "\u6309 H2 \u5206\u8282\u91CD\u7F6E", file: "\u6574\u7BC7\u8FDE\u7EED\u7F16\u53F7" });
@@ -23260,23 +23275,26 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     toggle("respectAliases", "\u4FDD\u7559\u624B\u5199\u94FE\u63A5\u522B\u540D", "[[#^id|\u81EA\u5DF1\u7684\u6587\u5B57]] \u4E0D\u88AB\u81EA\u52A8\u7F16\u53F7\u66FF\u6362\uFF0C\u4F46\u4ECD\u7B97\u5F15\u7528\u3002");
     toggle("livePreview", "\u5728\u5B9E\u65F6\u9884\u89C8\u4E2D\u8F6C\u6362\u94FE\u63A5\u4E0E\u7F16\u53F7", "\u5149\u6807\u8FDB\u5165\u94FE\u63A5\u65F6\u6062\u590D\u6E90\u7801\u3002\u6E90\u7801\u6A21\u5F0F\u4E0D\u8FDB\u884C\u663E\u793A\u66FF\u6362\u3002");
     text("excludedFolders", "\u6392\u9664\u7D22\u5F15\u7684\u8DEF\u5F84", "\u591A\u4E2A\u76EE\u5F55/\u6587\u4EF6\u8BF7\u7528\u6362\u884C\u5206\u9694\uFF1B\u4E5F\u53EF\u76F4\u63A5\u7F16\u8F91\u672C\u63D2\u4EF6 data.json\u3002");
-    el.createEl("h3", { text: "\u72EC\u7ACB\u914D\u8272" });
+    heading("\u72EC\u7ACB\u914D\u8272");
     select("lightPalette", "\u6D45\u8272\u6570\u5B66\u6846\u914D\u8272", { theme: "\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272", forest: "Forest", sakura: "Sakura", mint: "Mint", sky: "Sky", mauve: "Mauve", golden: "Golden", cherry: "Cherry", prussian: "Prussian" });
     select("darkPalette", "\u6DF1\u8272\u6570\u5B66\u6846\u914D\u8272", { theme: "\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272", radiation: "Radiation", vampire: "Vampire", abyss: "Abyss" });
-    el.createEl("p", { text: "\u8DDF\u968F\u4E3B\u9898\u8BFB\u53D6 Obsidian \u7684\u5F3A\u8C03\u8272\u3001\u84DD/\u7D2B/\u7EFF/\u9752/\u6A59\u8272\u53CA\u6B63\u6587\u8272\uFF0C\u4E0D\u5339\u914D\u9884\u8BBE\u8272\u677F\uFF0C\u4E5F\u4E0D\u76F4\u63A5\u8BFB\u53D6\u64CD\u4F5C\u7CFB\u7EDF\u4E3B\u8272\u8C03\u3002\u56FA\u5B9A\u8272\u677F\u4E0D\u53D7\u4E3B\u9898\u914D\u8272\u5207\u6362\u5F71\u54CD\uFF1B\u6D45\u6DF1\u6A21\u5F0F\u8DDF\u968F Obsidian\u3002" });
+    description("\u8DDF\u968F\u4E3B\u9898\u8BFB\u53D6 Obsidian \u7684\u5F3A\u8C03\u8272\u3001\u84DD/\u7D2B/\u7EFF/\u9752/\u6A59\u8272\u53CA\u6B63\u6587\u8272\uFF0C\u4E0D\u5339\u914D\u9884\u8BBE\u8272\u677F\uFF0C\u4E5F\u4E0D\u76F4\u63A5\u8BFB\u53D6\u64CD\u4F5C\u7CFB\u7EDF\u4E3B\u8272\u8C03\u3002\u56FA\u5B9A\u8272\u677F\u4E0D\u53D7\u4E3B\u9898\u914D\u8272\u5207\u6362\u5F71\u54CD\uFF1B\u6D45\u6DF1\u6A21\u5F0F\u8DDF\u968F Obsidian\u3002");
     toggle("neutralBody", "\u6846\u5185\u6B63\u6587\u4F7F\u7528\u666E\u901A\u6B63\u6587\u8272", "\u5F00\u542F\uFF1A\u6B63\u6587\u4E0E\u7B14\u8BB0\u666E\u901A\u6587\u5B57\u540C\u8272\uFF1B\u5173\u95ED\uFF1A\u6B63\u6587\u6DF7\u5165 36% \u7684\u5F53\u524D\u6846\u8272\u3002\u53EA\u6539\u53D8\u6B63\u6587\uFF0C\u4E0D\u6539\u53D8\u6807\u9898\u3001\u8FB9\u6846\u548C\u5E95\u8272\u3002");
     toggle("hideMotif", "\u9690\u85CF\u53F3\u4E0B\u89D2\u5C0F\u56FE\u6848");
-    el.createEl("h3", { text: "\u76EE\u5F55\u4E0E PDF" });
-    el.createEl("p", { text: "PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002" });
+    heading("\u76EE\u5F55\u4E0E PDF");
+    description("PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002");
     select("tocDepth", "\u76EE\u5F55\u5C42\u7EA7", { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6" });
     select("exportNumbering", "\u5408\u8BA2\u672C\u7F16\u53F7", { "chapter-section": "\u7AE0.\u8282.\u5E8F\u53F7\uFF08\u5982 2.3.1\uFF09", chapter: "\u7AE0.\u5E8F\u53F7\uFF08\u5982 2.1\uFF0C\u7AE0\u5185\u8FDE\u7EED\uFF09", note: "\u4FDD\u7559\u5E93\u5185\u663E\u793A\u7F16\u53F7\uFF08\u53EF\u80FD\u8DE8\u7AE0\u91CD\u53F7\uFF09" }, "\u524D\u4E24\u79CD\u6309\u5165\u9009\u7AE0\u8282\u91CD\u65B0\u7F16\u53F7\u548C\u89E3\u6790\u5F15\u7528\uFF1B\u4FDD\u7559\u6A21\u5F0F\u6CBF\u7528\u5168\u5E93\u7F16\u53F7\u3002\u539F\u7B14\u8BB0\u4E0D\u6539\u5199\u3002");
     text("exportFolder", "\u5BFC\u51FA\u76EE\u5F55", "\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u9ED8\u8BA4 _exports\u3002");
     toggle("captureTheme", "PDF \u6355\u83B7\u5F53\u524D\u4E3B\u9898\u4E0E\u7247\u6BB5\u6837\u5F0F", "\u5173\u95ED\u65F6\u4F7F\u7528\u63D2\u4EF6\u81EA\u5DF1\u7684\u6570\u5B66\u6846\u4E0E\u57FA\u7840\u6392\u7248\u3002");
     toggle("openPdf", "\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF");
+    return definitions;
   }
 };
 
 // src/export/pdf.ts
+var electron = __toESM(require("electron"));
+var import_node_timers = require("node:timers");
 var import_promises = require("node:fs/promises");
 var import_node_os = require("node:os");
 var import_node_path = require("node:path");
@@ -23412,11 +23430,10 @@ async function finishPdf(bytes, meta, positions) {
 
 // src/export/pdf.ts
 function nativeWindow() {
-  const electron = require("electron");
-  const remote = electron.remote || require("@electron/remote");
-  if (typeof remote?.BrowserWindow !== "function")
+  const remote2 = electron.remote || require("@electron/remote");
+  if (typeof remote2?.BrowserWindow !== "function")
     throw new Error("\u5F53\u524D Obsidian \u672A\u63D0\u4F9B Electron PDF \u63A5\u53E3\uFF0C\u8BF7\u66F4\u65B0\u684C\u9762\u5B89\u88C5\u7A0B\u5E8F\u3002");
-  return remote.BrowserWindow;
+  return remote2.BrowserWindow;
 }
 function pdfAvailability() {
   try {
@@ -23449,7 +23466,7 @@ async function exportPdf(html, log = () => {
     if (!win.isDestroyed())
       win.destroy();
   };
-  const timer = setTimeout(() => {
+  const timer = (0, import_node_timers.setTimeout)(() => {
     timedOut = true;
     close();
   }, 24e4);
@@ -23458,7 +23475,7 @@ async function exportPdf(html, log = () => {
     const wc = win.webContents;
     tempDirectory = await (0, import_promises.mkdtemp)((0, import_node_path.join)((0, import_node_os.tmpdir)(), "academic-notes-"));
     const htmlPath = (0, import_node_path.join)(tempDirectory, "document.html");
-    await (0, import_promises.writeFile)(htmlPath, html, "utf8");
+    await (0, import_promises.writeFile)(htmlPath, html, { encoding: "utf8", flag: "wx", mode: 384 });
     const documentUrl = (0, import_node_url.pathToFileURL)(htmlPath).href;
     wc.session.webRequest.onBeforeRequest((details, callback) => {
       callback({ cancel: !(details.url.split("#")[0] === documentUrl || /^(data:|blob:|about:blank$)/.test(details.url)) });
@@ -23476,7 +23493,7 @@ async function exportPdf(html, log = () => {
     if (!meta.prepared || !meta.entries?.length)
       throw new Error("\u5FEB\u7167\u7F3A\u5C11\u5DF2\u89E3\u6790\u7684\u6807\u9898\u4E0E\u76EE\u5F55\u4FE1\u606F\u3002");
     await wc.executeJavaScript(`(${preparePrint.toString()})()`);
-    const dark = await wc.executeJavaScript(`document.body.classList.contains('theme-dark')`);
+    const dark = Boolean(await wc.executeJavaScript(`document.body.classList.contains('theme-dark')`));
     const options = {
       pageSize: "A4",
       printBackground: true,
@@ -23534,7 +23551,7 @@ async function exportPdf(html, log = () => {
       throw new Error("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002");
     throw error;
   } finally {
-    clearTimeout(timer);
+    (0, import_node_timers.clearTimeout)(timer);
     signal?.removeEventListener("abort", close);
     close();
     if (tempDirectory)
@@ -23571,9 +23588,7 @@ async function preparePrint() {
       svg.style.height = bounds.height * available / bounds.width + "px";
     }
   });
-  const style = document.createElement("style"), bg = getComputedStyle(document.body).backgroundColor;
-  style.textContent = `html{background:${bg}!important}@page{background:${bg}}`;
-  document.head.appendChild(style);
+  document.documentElement.style.setProperty("--phb-page-background", getComputedStyle(document.body).backgroundColor);
 }
 function findOverflow() {
   const main = document.getElementById("phb-document").getBoundingClientRect();
@@ -23984,249 +23999,249 @@ body .an-live-toc .phb-toc-row {gap:.65em;}
 `;
 
 // snippets/academic-layout.css
-var academic_layout_default = `/* Academic Layout 2.2.0 \u2014 standalone figure and table layout.\r
- * Install: .obsidian/snippets/academic-layout.css, then enable this snippet.\r
- * Native markup: [!figure], nested [!subfigure], [!table]. No H6 conversion.\r
- * Academic Notes supplies numbers; this file ONLY supplies presentation.\r
- * Optional note cssclasses: academic-indent, academic-serif, academic-keep-table-style.\r
- * Ordinary images are not auto-captioned from alt text. No CSS counters are used.\r
- */\r
-\r
-body {\r
-  --an-layout-caption-size: .9em;\r
-  --an-layout-caption-gap: .55em;\r
-  --an-layout-image-gap: 1.25em;\r
-  --an-layout-subfigure-min: 12rem;\r
-  --an-layout-rule: var(--text-normal, #26352c);\r
-  --an-layout-rule-heavy: 1.6px;\r
-  --an-layout-rule-light: 1px;\r
-}\r
-\r
-/* Three-line tables: top rule, header rule, bottom rule. Not the Settings UI. */\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  table:not(.academic-keep-table-style table) {\r
-  border-collapse: collapse !important;\r
-  border-spacing: 0 !important;\r
-  border-radius: 0 !important;\r
-  border: 0 !important;\r
-  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\r
-  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\r
-  background: transparent !important;\r
-  box-shadow: none !important;\r
-  width: auto;\r
-  min-width: min(100%, 22rem);\r
-  max-width: 100%;\r
-  margin: 1.25em auto;\r
-  font-variant-numeric: tabular-nums;\r
-}\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  table:not(.academic-keep-table-style table) :is(th,td,tr,thead,tbody,tfoot) {\r
-  border: 0 !important;\r
-  border-radius: 0 !important;\r
-  background: transparent !important;\r
-  box-shadow: none !important;\r
-}\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  table:not(.academic-keep-table-style table) thead {\r
-  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\r
-}\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  table:not(.academic-keep-table-style table) :is(th,td) {\r
-  padding: .5em .85em !important;\r
-  line-height: 1.5;\r
-  color: var(--text-normal, inherit) !important;\r
-  text-indent: 0 !important;\r
-  overflow-wrap: anywhere;\r
-}\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  table:not(.academic-keep-table-style table) th { font-weight: 650; }\r
-\r
-/* A native callout is retained so its Markdown source mapping and block ID survive.\r
- * Override only the six explicit figure/table aliases, never ordinary blockquotes. */\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],\r
-             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"]) {\r
-  --callout-blend-mode: normal;\r
-  display: flex !important;\r
-  flex-direction: column !important;\r
-  position: relative !important;\r
-  overflow: visible !important;\r
-  width: auto;\r
-  min-width: 0;\r
-  max-width: 100%;\r
-  margin: 1.5em 0 !important;\r
-  padding: 0 !important;\r
-  border: 0 !important;\r
-  border-radius: 0 !important;\r
-  background: transparent !important;\r
-  box-shadow: none !important;\r
-  color: var(--text-normal, inherit) !important;\r
-  transform: none !important;\r
-  filter: none !important;\r
-  isolation: auto !important;\r
-  mix-blend-mode: normal !important;\r
-  box-sizing: border-box;\r
-}\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],\r
-             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])::before,\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],\r
-             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])::after {\r
-  content: none !important;\r
-  display: none !important;\r
-}\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],\r
-             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])\r
-  > .callout-title {\r
-  position: static !important;\r
-  inset: auto !important;\r
-  display: flex !important;\r
-  align-items: baseline;\r
-  justify-content: center !important;\r
-  order: 2;\r
-  width: auto !important;\r
-  max-width: 100% !important;\r
-  margin: var(--an-layout-caption-gap) 0 0 !important;\r
-  padding: 0 !important;\r
-  border: 0 !important;\r
-  border-radius: 0 !important;\r
-  background: transparent !important;\r
-  box-shadow: none !important;\r
-  color: var(--text-normal, inherit) !important;\r
-  text-align: center !important;\r
-  font: inherit !important;\r
-  font-size: var(--an-layout-caption-size) !important;\r
-  line-height: 1.55 !important;\r
-  white-space: normal !important;\r
-  overflow-wrap: anywhere;\r
-  transform: none !important;\r
-  text-shadow: none !important;\r
-}\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],\r
-             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])\r
-  > .callout-title > .callout-icon { display: none !important; }\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],\r
-             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])\r
-  > .callout-title > .callout-title-inner {\r
-  display: block !important;\r
-  color: inherit !important;\r
-  font: inherit !important;\r
-  white-space: normal !important;\r
-  text-indent: 0 !important;\r
-  padding: 0 !important;\r
-}\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],\r
-             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])\r
-  > .callout-content {\r
-  order: 1;\r
-  position: static !important;\r
-  margin: 0 !important;\r
-  padding: 0 !important;\r
-  border: 0 !important;\r
-  background: transparent !important;\r
-  color: var(--text-normal, inherit) !important;\r
-  overflow: visible !important;\r
-  min-width: 0;\r
-  text-align: center;\r
-}\r
-body .an-caption-label { font-weight: 650; }\r
-body .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before { content: "\u2002"; }\r
-body .an-caption-text { font-weight: 400; }\r
-body :is(.an-media,[data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],\r
-         [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"]) > .callout-content > p {\r
-  margin: .35em 0 !important;\r
-  text-indent: 0 !important;\r
-}\r
-body .an-media .image-embed,\r
-body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) .image-embed {\r
-  display: inline-block !important;\r
-  margin: 0 !important;\r
-  padding: 0 !important;\r
-  min-width: 0;\r
-  max-width: 100%;\r
-  background: transparent !important;\r
-  border: 0 !important;\r
-  box-shadow: none !important;\r
-  vertical-align: top;\r
-}\r
-body .an-media img,\r
-body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) img {\r
-  display: block !important;\r
-  max-width: 100% !important;\r
-  height: auto;\r
-  margin: 0 auto !important;\r
-  border: 0 !important;\r
-  border-radius: 0 !important;\r
-  box-shadow: none !important;\r
-  object-fit: contain;\r
-}\r
-/* Table titles are above the table; figure and subfigure titles are below images. */\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .callout:is([data-callout="table"],[data-callout="tbl"]) > .callout-title {\r
-  order: 0;\r
-  margin: 0 0 var(--an-layout-caption-gap) !important;\r
-}\r
-body .callout:is([data-callout="table"],[data-callout="tbl"]) table { margin: 0 auto !important; }\r
-\r
-/* Explicit subfigures, one caption each; rows wrap when the pane is narrow.\r
- * The plugin marks wrapper cells rather than dismantling the native render tree. */\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .callout:is([data-callout="figure"],[data-callout="fig"]) > .callout-content.an-figure-grid {\r
-  display: flex !important;\r
-  flex-wrap: wrap !important;\r
-  justify-content: center;\r
-  align-items: flex-start;\r
-  gap: var(--an-layout-image-gap);\r
-}\r
-body .an-figure-grid > :not(.an-subfigure-cell) { flex: 0 0 100%; }\r
-body .an-figure-grid > .an-subfigure-cell {\r
-  flex: 1 1 calc(50% - var(--an-layout-image-gap));\r
-  min-width: min(100%, var(--an-layout-subfigure-min));\r
-  max-width: 100%;\r
-  margin: 0 !important;\r
-}\r
-body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)\r
-  .an-figure-grid .callout:is([data-callout="subfigure"],[data-callout="subfig"]) { margin: 0 !important; }\r
-body .an-figure-grid > .an-empty-anchor { display: none !important; }\r
-\r
-/* Optional article typography. Add cssclasses in the note's properties to opt in. */\r
-body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-indent p { text-indent: 2em; }\r
-body .academic-indent :is(.callout,blockquote,li,td,th,figcaption,.phb-toc) p { text-indent: 0; }\r
-body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-serif {\r
-  font-family: "Latin Modern Roman", "Times New Roman", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;\r
-}\r
-\r
-@media print {\r
-  body .an-media { break-inside: avoid !important; page-break-inside: avoid !important; }\r
-  body .an-media > .callout-title { break-before: avoid !important; break-after: auto !important; }\r
-  body .an-table { display: block !important; break-inside: auto !important; page-break-inside: auto !important; }\r
-  body .an-table > .callout-title { break-before: auto !important; break-after: avoid !important; }\r
-  body .an-media img { max-height: 155mm !important; }\r
-  body .an-figure-grid { gap: 4mm; }\r
-  body .an-figure-grid > .an-subfigure-cell { min-width: 0; flex-basis: calc(50% - 4mm); }\r
-  body :is(.markdown-preview-view,.markdown-rendered) table { break-inside: auto; }\r
-  body :is(.markdown-preview-view,.markdown-rendered) thead { display: table-header-group; }\r
-  body :is(.markdown-preview-view,.markdown-rendered) tr { break-inside: avoid; }\r
-  body :is(.markdown-preview-view,.markdown-rendered) :is(table,.an-media) {\r
-    -webkit-print-color-adjust: exact !important;\r
-    print-color-adjust: exact !important;\r
-  }\r
-}\r
+var academic_layout_default = `/* Academic Layout 2.2.0 \u2014 standalone figure and table layout.
+ * Install: .obsidian/snippets/academic-layout.css, then enable this snippet.
+ * Native markup: [!figure], nested [!subfigure], [!table]. No H6 conversion.
+ * Academic Notes supplies numbers; this file ONLY supplies presentation.
+ * Optional note cssclasses: academic-indent, academic-serif, academic-keep-table-style.
+ * Ordinary images are not auto-captioned from alt text. No CSS counters are used.
+ */
+
+body {
+  --an-layout-caption-size: .9em;
+  --an-layout-caption-gap: .55em;
+  --an-layout-image-gap: 1.25em;
+  --an-layout-subfigure-min: 12rem;
+  --an-layout-rule: var(--text-normal, #26352c);
+  --an-layout-rule-heavy: 1.6px;
+  --an-layout-rule-light: 1px;
+}
+
+/* Three-line tables: top rule, header rule, bottom rule. Not the Settings UI. */
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;
+  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  width: auto;
+  min-width: min(100%, 22rem);
+  max-width: 100%;
+  margin: 1.25em auto;
+  font-variant-numeric: tabular-nums;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) :is(th,td,tr,thead,tbody,tfoot) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) thead {
+  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) :is(th,td) {
+  padding: .5em .85em !important;
+  line-height: 1.5;
+  color: var(--text-normal, inherit) !important;
+  text-indent: 0 !important;
+  overflow-wrap: anywhere;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  table:not(.academic-keep-table-style table) th { font-weight: 650; }
+
+/* A native callout is retained so its Markdown source mapping and block ID survive.
+ * Override only the six explicit figure/table aliases, never ordinary blockquotes. */
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"]) {
+  --callout-blend-mode: normal;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  overflow: visible !important;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  margin: 1.5em 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-normal, inherit) !important;
+  transform: none !important;
+  filter: none !important;
+  isolation: auto !important;
+  mix-blend-mode: normal !important;
+  box-sizing: border-box;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])::before,
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])::after {
+  content: none !important;
+  display: none !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])
+  > .callout-title {
+  position: static !important;
+  inset: auto !important;
+  display: flex !important;
+  align-items: baseline;
+  justify-content: center !important;
+  order: 2;
+  width: auto !important;
+  max-width: 100% !important;
+  margin: var(--an-layout-caption-gap) 0 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-normal, inherit) !important;
+  text-align: center !important;
+  font: inherit !important;
+  font-size: var(--an-layout-caption-size) !important;
+  line-height: 1.55 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  transform: none !important;
+  text-shadow: none !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])
+  > .callout-title > .callout-icon { display: none !important; }
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])
+  > .callout-title > .callout-title-inner {
+  display: block !important;
+  color: inherit !important;
+  font: inherit !important;
+  white-space: normal !important;
+  text-indent: 0 !important;
+  padding: 0 !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+             [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"])
+  > .callout-content {
+  order: 1;
+  position: static !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--text-normal, inherit) !important;
+  overflow: visible !important;
+  min-width: 0;
+  text-align: center;
+}
+body .an-caption-label { font-weight: 650; }
+body .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before { content: "\u2002"; }
+body .an-caption-text { font-weight: 400; }
+body :is(.an-media,[data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],
+         [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"]) > .callout-content > p {
+  margin: .35em 0 !important;
+  text-indent: 0 !important;
+}
+body .an-media .image-embed,
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) .image-embed {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 0;
+  max-width: 100%;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  vertical-align: top;
+}
+body .an-media img,
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) img {
+  display: block !important;
+  max-width: 100% !important;
+  height: auto;
+  margin: 0 auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  object-fit: contain;
+}
+/* Table titles are above the table; figure and subfigure titles are below images. */
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="table"],[data-callout="tbl"]) > .callout-title {
+  order: 0;
+  margin: 0 0 var(--an-layout-caption-gap) !important;
+}
+body .callout:is([data-callout="table"],[data-callout="tbl"]) table { margin: 0 auto !important; }
+
+/* Explicit subfigures, one caption each; rows wrap when the pane is narrow.
+ * The plugin marks wrapper cells rather than dismantling the native render tree. */
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .callout:is([data-callout="figure"],[data-callout="fig"]) > .callout-content.an-figure-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--an-layout-image-gap);
+}
+body .an-figure-grid > :not(.an-subfigure-cell) { flex: 0 0 100%; }
+body .an-figure-grid > .an-subfigure-cell {
+  flex: 1 1 calc(50% - var(--an-layout-image-gap));
+  min-width: min(100%, var(--an-layout-subfigure-min));
+  max-width: 100%;
+  margin: 0 !important;
+}
+body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
+  .an-figure-grid .callout:is([data-callout="subfigure"],[data-callout="subfig"]) { margin: 0 !important; }
+body .an-figure-grid > .an-empty-anchor { display: none !important; }
+
+/* Optional article typography. Add cssclasses in the note's properties to opt in. */
+body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-indent p { text-indent: 2em; }
+body .academic-indent :is(.callout,blockquote,li,td,th,figcaption,.phb-toc) p { text-indent: 0; }
+body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-serif {
+  font-family: "Latin Modern Roman", "Times New Roman", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
+}
+
+@media print {
+  body .an-media { break-inside: avoid !important; page-break-inside: avoid !important; }
+  body .an-media > .callout-title { break-before: avoid !important; break-after: auto !important; }
+  body .an-table { display: block !important; break-inside: auto !important; page-break-inside: auto !important; }
+  body .an-table > .callout-title { break-before: auto !important; break-after: avoid !important; }
+  body .an-media img { max-height: 155mm !important; }
+  body .an-figure-grid { gap: 4mm; }
+  body .an-figure-grid > .an-subfigure-cell { min-width: 0; flex-basis: calc(50% - 4mm); }
+  body :is(.markdown-preview-view,.markdown-rendered) table { break-inside: auto; }
+  body :is(.markdown-preview-view,.markdown-rendered) thead { display: table-header-group; }
+  body :is(.markdown-preview-view,.markdown-rendered) tr { break-inside: avoid; }
+  body :is(.markdown-preview-view,.markdown-rendered) :is(table,.an-media) {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
 `;
 
 // src/styles/document.css
-var document_default2 = '/* Standalone shell + print layout. Included LAST, after Obsidian/theme/snippet CSS. */\r\nhtml { font-size: 16px; }\r\nbody.phb-export {\r\n  display: block !important; position: static !important;\r\n  width: auto !important; height: auto !important; min-height: 0 !important;\r\n  margin: 0 !important; padding: 0 !important; overflow: visible !important;\r\n  background: var(--phb-surface, #fff) !important; color: var(--phb-text, #24372e) !important;\r\n  font-family: var(--font-text, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif);\r\n  font-size: 11pt; line-height: 1.7;\r\n  -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;\r\n}\r\nbody.phb-export *, body.phb-export *::before, body.phb-export *::after {\r\n  animation: none !important; transition: none !important;\r\n  caret-color: transparent !important;\r\n}\r\nbody.phb-export #phb-document {\r\n  display: block !important; position: static !important;\r\n  width: 174mm !important; max-width: none !important; height: auto !important;\r\n  padding: 0 !important; margin: 0 auto !important; overflow: visible !important;\r\n  font-size: inherit; line-height: inherit;\r\n}\r\nbody.phb-export :is(.markdown-preview-view,.markdown-preview-sizer,.markdown-rendered,.phb-chapter) {\r\n  min-height: 0 !important; max-height: none !important; height: auto !important;\r\n  overflow: visible !important; contain: none !important; content-visibility: visible !important;\r\n}\r\nbody.phb-export .phb-chapter { display:block; }\r\nbody.phb-export :is(p,li) { line-height: 1.7; }\r\nbody.phb-export p { margin: .65em 0; }\r\nbody.phb-export :is(h1,h2,h3,h4,h5,h6) {\r\n  position: relative !important; break-after: avoid !important;\r\n  text-shadow: none !important; transform: none !important;\r\n}\r\nbody.phb-export h1 { font-size: 1.9em; line-height:1.4; margin:1.1em 0 .8em; }\r\nbody.phb-export h2 { font-size: 1.4em; margin:1.1em 0 .7em; }\r\nbody.phb-export h3 { font-size: 1.16em; margin:1em 0 .5em; }\r\nbody.phb-export pre { white-space:pre-wrap !important; overflow-wrap:anywhere; }\r\nbody.phb-export :is(.math-block,.phb-math[data-display="true"]) {\r\n  display: block; text-align: center; margin: .7em 0; text-indent: 0;\r\n}\r\nbody.phb-export .phb-math mjx-container { margin: 0 !important; }\r\nbody.phb-export mjx-container[display="true"] { display:block !important; max-width:100%; overflow: visible !important; }\r\nbody.phb-export :is(.math-block,.phb-math) { overflow:visible !important; }\r\nbody.phb-export .phb-math-error { border:2px solid #c00; padding:.5em; }\r\nbody.phb-export .phb-chapter-kicker { font-size: 9pt; font-weight:600; letter-spacing:.16em; color:var(--phb-thm); margin: 1em 0; }\r\nbody.phb-export .phb-book-title { text-align:center; margin-top:1.5em; }\r\nbody.phb-export .phb-book-subtitle { text-align:center; color:var(--text-muted,#66776c); }\r\nbody.phb-export .phb-frontmatter { padding-top: 5mm; }\r\nbody.phb-export .phb-probe {\r\n  position:absolute !important; top:0 !important; left:0 !important;\r\n  display:block !important; width:2px !important; height:2px !important;\r\n  font-size:1px !important; line-height:1px !important;\r\n  padding:0 !important; margin:0 !important; border:0 !important;\r\n  opacity:1 !important; color:var(--phb-surface, #fff) !important;\r\n  background:none !important; z-index:1 !important;\r\n}\r\nbody.phb-export .phb-probe::before,body.phb-export .phb-probe::after { content:none !important; }\r\nbody.phb-export .heading-collapse-indicator,body.phb-export .callout-fold { display:none !important; }\r\nbody.phb-export .callout-title { max-width:100% !important; }\r\nbody.phb-export .callout-content { display:block !important; }\r\nbody.phb-export .callout-content li::before { display:none !important; }\r\nbody.phb-export .callout-content ul,body.phb-export .callout-content ol { padding-left:1.6em; }\r\nbody.phb-export img { max-width:100%; max-height:220mm; object-fit:contain; }\r\nbody.phb-export .phb-toc { font-size:10.5pt; }\r\n@media screen {\r\n  body.phb-export { padding: 12mm !important; }\r\n  body.phb-export .phb-frontmatter ~ .phb-chapter { margin-top:3em; }\r\n}\r\n@media print {\r\n  @page { size:A4; margin:18mm 18mm 20mm; }\r\n  body.phb-export .phb-frontmatter ~ .phb-chapter { break-before:page; }\r\n  body.phb-export #phb-document { width:174mm !important; }\r\n  body.phb-export .phb-chapter > :first-child { margin-top:0 !important; }\r\n  body.phb-export .callout { break-inside:auto; }\r\n  body.phb-export .callout[data-phb-keep="true"] { break-inside:avoid !important; }\r\n  body.phb-export .callout[data-phb-long="true"] { break-inside:auto !important; }\r\n  body.phb-export .callout[data-phb-long="true"]::after { display:none !important; }\r\n  body.phb-export :is(p,li) { orphans:2; widows:2; }\r\n  body.phb-export .phb-toc-title { break-after:avoid; }\r\n}\r\n\r\n/* MathJax accessibility MathML must not be painted beside the SVG. */\r\nbody.phb-export mjx-assistive-mml { display:none !important; }\r\n\r\n/* Padding belongs to a wrapper, so a floating title stays inside its paginated\r\n   bounding box even when the browser discards a margin at the top of a page. */\r\nbody.phb-export .phb-callout-wrap {\r\n  display:block; padding-top:.95em; margin: .85em 0 1.25em;\r\n  break-inside:auto; box-sizing:border-box;\r\n}\r\nbody.phb-export .phb-callout-wrap > .callout[data-callout] { margin:0 !important; }\r\n@media print {\r\n  body.phb-export .phb-callout-wrap[data-phb-keep="true"] { break-inside:avoid !important; }\r\n  body.phb-export .phb-callout-wrap[data-phb-keep="false"] { break-inside:auto !important; }\r\n}\r\n\r\n@media print { body.phb-export .phb-toc { break-after: page; } }\r\n\r\n/* Keep a display formula (including a matrix/cases pair) on one page. */\r\n@media print {\r\n  body.phb-export :is(.math-block,.phb-math[data-display="true"],mjx-container[display="true"]) {\r\n    break-inside:avoid !important; page-break-inside:avoid !important;\r\n  }\r\n  body.phb-export tr { break-inside:avoid; }\r\n}\r\n';
+var document_default2 = '/* Standalone shell + print layout. Included LAST, after Obsidian/theme/snippet CSS. */\nhtml { font-size: 16px; }\nbody.phb-export {\n  display: block !important; position: static !important;\n  width: auto !important; height: auto !important; min-height: 0 !important;\n  margin: 0 !important; padding: 0 !important; overflow: visible !important;\n  background: var(--phb-surface, #fff) !important; color: var(--phb-text, #24372e) !important;\n  font-family: var(--font-text, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif);\n  font-size: 11pt; line-height: 1.7;\n  -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;\n}\nbody.phb-export *, body.phb-export *::before, body.phb-export *::after {\n  animation: none !important; transition: none !important;\n  caret-color: transparent !important;\n}\nbody.phb-export #phb-document {\n  display: block !important; position: static !important;\n  width: 174mm !important; max-width: none !important; height: auto !important;\n  padding: 0 !important; margin: 0 auto !important; overflow: visible !important;\n  font-size: inherit; line-height: inherit;\n}\nbody.phb-export :is(.markdown-preview-view,.markdown-preview-sizer,.markdown-rendered,.phb-chapter) {\n  min-height: 0 !important; max-height: none !important; height: auto !important;\n  overflow: visible !important; contain: none !important; content-visibility: visible !important;\n}\nbody.phb-export .phb-chapter { display:block; }\nbody.phb-export :is(p,li) { line-height: 1.7; }\nbody.phb-export p { margin: .65em 0; }\nbody.phb-export :is(h1,h2,h3,h4,h5,h6) {\n  position: relative !important; break-after: avoid !important;\n  text-shadow: none !important; transform: none !important;\n}\nbody.phb-export h1 { font-size: 1.9em; line-height:1.4; margin:1.1em 0 .8em; }\nbody.phb-export h2 { font-size: 1.4em; margin:1.1em 0 .7em; }\nbody.phb-export h3 { font-size: 1.16em; margin:1em 0 .5em; }\nbody.phb-export pre { white-space:pre-wrap !important; overflow-wrap:anywhere; }\nbody.phb-export :is(.math-block,.phb-math[data-display="true"]) {\n  display: block; text-align: center; margin: .7em 0; text-indent: 0;\n}\nbody.phb-export .phb-math mjx-container { margin: 0 !important; }\nbody.phb-export mjx-container[display="true"] { display:block !important; max-width:100%; overflow: visible !important; }\nbody.phb-export :is(.math-block,.phb-math) { overflow:visible !important; }\nbody.phb-export .phb-math-error { border:2px solid #c00; padding:.5em; }\nbody.phb-export .phb-chapter-kicker { font-size: 9pt; font-weight:600; letter-spacing:.16em; color:var(--phb-thm); margin: 1em 0; }\nbody.phb-export .phb-book-title { text-align:center; margin-top:1.5em; }\nbody.phb-export .phb-book-subtitle { text-align:center; color:var(--text-muted,#66776c); }\nbody.phb-export .phb-frontmatter { padding-top: 5mm; }\nbody.phb-export .phb-probe {\n  position:absolute !important; top:0 !important; left:0 !important;\n  display:block !important; width:2px !important; height:2px !important;\n  font-size:1px !important; line-height:1px !important;\n  padding:0 !important; margin:0 !important; border:0 !important;\n  opacity:1 !important; color:var(--phb-surface, #fff) !important;\n  background:none !important; z-index:1 !important;\n}\nbody.phb-export .phb-probe::before,body.phb-export .phb-probe::after { content:none !important; }\nbody.phb-export .heading-collapse-indicator,body.phb-export .callout-fold { display:none !important; }\nbody.phb-export .callout-title { max-width:100% !important; }\nbody.phb-export .callout-content { display:block !important; }\nbody.phb-export .callout-content li::before { display:none !important; }\nbody.phb-export .callout-content ul,body.phb-export .callout-content ol { padding-left:1.6em; }\nbody.phb-export img { max-width:100%; max-height:220mm; object-fit:contain; }\nbody.phb-export .phb-toc { font-size:10.5pt; }\n@media screen {\n  body.phb-export { padding: 12mm !important; }\n  body.phb-export .phb-frontmatter ~ .phb-chapter { margin-top:3em; }\n}\n@media print {\n  @page { size:A4; margin:18mm 18mm 20mm; }\n  body.phb-export .phb-frontmatter ~ .phb-chapter { break-before:page; }\n  body.phb-export #phb-document { width:174mm !important; }\n  body.phb-export .phb-chapter > :first-child { margin-top:0 !important; }\n  body.phb-export .callout { break-inside:auto; }\n  body.phb-export .callout[data-phb-keep="true"] { break-inside:avoid !important; }\n  body.phb-export .callout[data-phb-long="true"] { break-inside:auto !important; }\n  body.phb-export .callout[data-phb-long="true"]::after { display:none !important; }\n  body.phb-export :is(p,li) { orphans:2; widows:2; }\n  body.phb-export .phb-toc-title { break-after:avoid; }\n}\n\n/* MathJax accessibility MathML must not be painted beside the SVG. */\nbody.phb-export mjx-assistive-mml { display:none !important; }\n\n/* Padding belongs to a wrapper, so a floating title stays inside its paginated\n   bounding box even when the browser discards a margin at the top of a page. */\nbody.phb-export .phb-callout-wrap {\n  display:block; padding-top:.95em; margin: .85em 0 1.25em;\n  break-inside:auto; box-sizing:border-box;\n}\nbody.phb-export .phb-callout-wrap > .callout[data-callout] { margin:0 !important; }\n@media print {\n  body.phb-export .phb-callout-wrap[data-phb-keep="true"] { break-inside:avoid !important; }\n  body.phb-export .phb-callout-wrap[data-phb-keep="false"] { break-inside:auto !important; }\n}\n\n@media print { body.phb-export .phb-toc { break-after: page; } }\n\n/* Keep a display formula (including a matrix/cases pair) on one page. */\n@media print {\n  body.phb-export :is(.math-block,.phb-math[data-display="true"],mjx-container[display="true"]) {\n    break-inside:avoid !important; page-break-inside:avoid !important;\n  }\n  body.phb-export tr { break-inside:avoid; }\n}\nhtml { background: var(--phb-page-background, white); }\n@page { background: var(--phb-page-background, white); }\n.phb-glyph-cache { position: absolute; width: 0; height: 0; overflow: hidden; }\n';
 
 // src/main.ts
-var sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+var sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 var jsonSafe = (obj) => JSON.stringify(obj).replace(/</g, "\\u003c").replace(/&/g, "\\u0026");
 function safeFolder(value) {
-  const raw = String(value || "").trim().replace(/\\/g, "/");
+  const raw = (typeof value === "string" ? value : "").trim().replace(/\\/g, "/");
   if (!raw || raw.startsWith("/") || /^[A-Za-z]:/.test(raw) || raw.split("/").some((p) => p === "..") || /[<>:"|?*\x00-\x1f]/.test(raw))
     throw new Error("\u5BFC\u51FA\u76EE\u5F55\u987B\u4E3A\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u4E0D\u5141\u8BB8 .. \u6216\u7EDD\u5BF9\u8DEF\u5F84\u3002");
   return (0, import_obsidian3.normalizePath)(raw);
@@ -24234,12 +24249,28 @@ function safeFolder(value) {
 function dataUrl(blob) {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
-    r.onload = () => resolve(String(r.result));
-    r.onerror = () => reject(r.error);
+    r.onload = () => resolve(typeof r.result === "string" ? r.result : "");
+    r.onerror = () => reject(r.error || new Error("Unable to read image data"));
     r.readAsDataURL(blob);
   });
 }
 var AcademicNotes = class extends import_obsidian3.Plugin {
+  constructor() {
+    super(...arguments);
+    this.errors = [];
+    this.graph = null;
+    this.revision = 0;
+    this.active = false;
+    this.liveExtension = false;
+    this.busy = false;
+    this.indexRunning = false;
+    this.rerun = false;
+    this.editorViews = /* @__PURE__ */ new Set();
+    this.readers = /* @__PURE__ */ new Set();
+    this.parsed = /* @__PURE__ */ new Map();
+    this.dirty = /* @__PURE__ */ new Map();
+    this.pdfJobs = /* @__PURE__ */ new Set();
+  }
   async onload() {
     this.errors = [];
     this.graph = null;
@@ -24254,8 +24285,9 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     this.dirty = /* @__PURE__ */ new Map();
     this.pdfJobs = /* @__PURE__ */ new Set();
     try {
-      const data = await this.loadData();
-      this.settings = Object.fromEntries(Object.entries(DEFAULTS2).map(([key2, value]) => [key2, data?.[key2] ?? value]));
+      const loaded = await this.loadData();
+      const data = loaded && typeof loaded === "object" ? loaded : {};
+      this.settings = Object.fromEntries(Object.entries(DEFAULTS2).map(([key2, value]) => [key2, typeof data[key2] === typeof value ? data[key2] : value]));
     } catch (e) {
       this.settings = { ...DEFAULTS2 };
       this.recordError("\u8BFB\u53D6 data.json\uFF08\u5DF2\u56DE\u9000\u9ED8\u8BA4\u503C\uFF09", e);
@@ -24285,7 +24317,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     try {
       this.registerMarkdownCodeBlockProcessor("academic-toc", tocProcessor);
     } catch (e) {
-      if (!/already registered/i.test(String(e?.message || e)))
+      if (!/already registered/i.test(String(e instanceof Error ? e.message : String(e))))
         throw e;
       this.recordError("academic-toc \u5DF2\u88AB\u5360\u7528\uFF1B\u4FDD\u7559 [toc] \u548C\u7F16\u53F7\u529F\u80FD", e);
     }
@@ -24308,7 +24340,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     this.registerEvent(this.app.vault.on("rename", () => this.scheduleIndex()));
     this.registerEvent(this.app.workspace.on("editor-change", (editor, info) => {
       if (info?.file) {
-        this.dirty.set(info.file.path, editor.getValue());
+        this.dirty.set(info.file.path, true);
         this.scheduleIndex();
       }
     }));
@@ -24325,7 +24357,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
   }
   onunload() {
     this.active = false;
-    clearTimeout(this.indexTimer);
+    window.clearTimeout(this.indexTimer);
     this.readers.clear();
     for (const job of this.pdfJobs)
       job.abort();
@@ -24341,7 +24373,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     }
   }
   recordError(where, error) {
-    const entry = { time: (/* @__PURE__ */ new Date()).toISOString(), where, message: String(error?.message || error), stack: error?.stack || "" };
+    const entry = { time: (/* @__PURE__ */ new Date()).toISOString(), where, message: String(error instanceof Error ? error.message : error), stack: error instanceof Error ? error.stack || "" : "" };
     this.errors.push(entry);
     if (this.errors.length > 40)
       this.errors.shift();
@@ -24349,7 +24381,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
   }
   fail(where, error) {
     this.recordError(where, error);
-    new import_obsidian3.Notice(where + "\u5931\u8D25\uFF1A" + (error?.message || error) + "\n\u53EF\u8FD0\u884C\u201C\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883\u201D\u3002", 13e3);
+    new import_obsidian3.Notice(where + "\u5931\u8D25\uFF1A" + (error instanceof Error ? error.message : String(error)) + "\n\u53EF\u8FD0\u884C\u201C\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883\u201D\u3002", 13e3);
   }
   async saveSettings() {
     await this.saveData(this.settings);
@@ -24373,8 +24405,10 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
   scheduleIndex() {
     if (!this.active)
       return;
-    clearTimeout(this.indexTimer);
-    this.indexTimer = setTimeout(() => this.rebuild().catch((e) => this.fail("\u66F4\u65B0\u7D22\u5F15", e)), Math.max(150, this.settings.indexDelay || 450));
+    window.clearTimeout(this.indexTimer);
+    this.indexTimer = window.setTimeout(() => {
+      void this.rebuild().catch((e) => this.fail("\u66F4\u65B0\u7D22\u5F15", e));
+    }, Math.max(150, this.settings.indexDelay || 450));
   }
   included(file) {
     const path = file.path;
@@ -24452,34 +24486,38 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         return;
       renderFragment(el, n, this.graph, (node) => ctx.getSectionInfo(node) || ctx.getSectionInfo(el));
     };
-    const plugin = this;
     class Reader extends import_obsidian3.MarkdownRenderChild {
+      constructor(el2, owner) {
+        super(el2);
+        this.owner = owner;
+      }
       onload() {
-        plugin.readers.add(refresh);
+        this.owner.readers.add(refresh);
         refresh();
         this.follow = (event) => {
-          if (event.defaultPrevented || event.type === "click" && event.button !== 0 || event.type === "keydown" && event.key !== "Enter")
+          if (event.defaultPrevented || "button" in event && event.button !== 0 || "key" in event && event.key !== "Enter")
             return;
-          const a = event.target?.closest?.("a.internal-link,a[data-href]");
+          const target = event.target;
+          const a = typeof target?.closest === "function" ? target.closest("a.internal-link,a[data-href]") : null;
           if (!a || !el.contains(a))
             return;
           const raw = a.dataset.href || a.getAttribute("href") || "";
-          if (!plugin.graph?.resolve(raw, ctx.sourcePath))
+          if (!this.owner.graph?.resolve(raw, ctx.sourcePath))
             return;
           event.preventDefault();
           event.stopImmediatePropagation();
-          plugin.openReference(raw, ctx.sourcePath, !!(event.ctrlKey || event.metaKey)).catch((e) => plugin.fail("\u6253\u5F00\u5757\u5F15\u7528", e));
+          this.owner.openReference(raw, ctx.sourcePath, !!(event.ctrlKey || event.metaKey)).catch((e) => this.owner.fail("\u6253\u5F00\u5757\u5F15\u7528", e));
         };
         el.addEventListener("click", this.follow, true);
         el.addEventListener("keydown", this.follow, true);
       }
       onunload() {
-        plugin.readers.delete(refresh);
+        this.owner.readers.delete(refresh);
         el.removeEventListener("click", this.follow, true);
         el.removeEventListener("keydown", this.follow, true);
       }
     }
-    ctx.addChild(new Reader(el));
+    ctx.addChild(new Reader(el, this));
     for (const p of allNodes(el, "p"))
       if (/^\[toc\]$/i.test(p.textContent.trim()) && !p.closest(".callout"))
         this.renderToc(p, ctx, this.settings.tocDepth).catch((e) => this.recordError("\u76EE\u5F55\u6E32\u67D3", e));
@@ -24494,7 +24532,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       a.href = "#" + encodeURIComponent(list[i].heading);
       a.addEventListener("click", (e) => {
         e.preventDefault();
-        this.app.workspace.openLinkText(ctx.sourcePath + "#" + list[i].heading, ctx.sourcePath);
+        void this.app.workspace.openLinkText(ctx.sourcePath + "#" + list[i].heading, ctx.sourcePath);
       });
     });
     if (el.tagName === "P")
@@ -24519,7 +24557,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     const note = engine_default.parse(file.path, editor.getValue()), line = editor.getCursor().line;
     const r = note.records.filter((r2) => r2.line <= line && r2.endLine >= line).sort((a, b) => b.line - a.line)[0];
     if (!r) {
-      new import_obsidian3.Notice("\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table Callout \u5185\u3002");
+      new import_obsidian3.Notice("\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table callout \u5185\u3002");
       return;
     }
     if (r.id) {
@@ -24576,12 +24614,15 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     const file = this.app.workspace.getActiveFile();
     if (!(file instanceof import_obsidian3.TFile) || file.extension !== "md")
       throw new Error("\u8BF7\u5148\u6253\u5F00\u4E00\u7BC7 Markdown \u7B14\u8BB0\u3002");
-    const fm = this.app.metadataCache.getFileCache(file)?.frontmatter || {}, book = isBook ? fm["phb-book"] : null;
+    const fm = this.app.metadataCache.getFileCache(file)?.frontmatter || {};
+    const rawBook = isBook ? fm["phb-book"] : null;
+    const book = rawBook && typeof rawBook === "object" ? rawBook : void 0;
     if (isBook && !Array.isArray(book?.files))
       throw new Error("\u5F53\u524D\u6587\u4EF6\u7F3A\u5C11 phb-book.files \u6E05\u5355\u3002");
-    const items = isBook ? book.files : [file.path], seen = /* @__PURE__ */ new Set();
+    const items = isBook && Array.isArray(book?.files) ? book.files : [file.path], seen = /* @__PURE__ */ new Set();
     const files = items.map((item) => {
-      const raw = typeof item === "string" ? item : item?.path;
+      const entry = item && typeof item === "object" ? item : void 0;
+      const raw = typeof item === "string" ? item : entry?.path;
       if (typeof raw !== "string")
         throw new Error("\u7AE0\u8282\u8DEF\u5F84\u683C\u5F0F\u4E0D\u6B63\u786E\u3002");
       const path = raw.replace(/^\[\[|\]\]$/g, "").split("|")[0];
@@ -24591,11 +24632,11 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       if (seen.has(f.path))
         throw new Error("\u91CD\u590D\u7AE0\u8282\uFF1A" + f.path);
       seen.add(f.path);
-      return { file: f, title: typeof item === "object" && item.title || f.basename };
+      return { file: f, title: typeof entry?.title === "string" ? entry.title : f.basename };
     });
     if (!files.length)
       throw new Error("\u7AE0\u8282\u6E05\u5355\u4E3A\u7A7A\u3002");
-    return { files, options: { book: isBook, title: book?.title || fm.title || file.basename, subtitle: book?.subtitle || "", tocDepth: book?.tocDepth || this.settings.tocDepth } };
+    return { files, options: { book: isBook, title: typeof book?.title === "string" ? book.title : typeof fm.title === "string" ? fm.title : file.basename, subtitle: typeof book?.subtitle === "string" ? book.subtitle : "", tocDepth: typeof book?.tocDepth === "number" ? book.tocDepth : this.settings.tocDepth } };
   }
   async exportActive(isBook, pdf) {
     try {
@@ -24650,8 +24691,8 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         new import_obsidian3.Notice("HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A" + snapshot);
       log.done();
     } catch (e) {
-      if (pdf) this.lastPdfExport = { status: "failed", time: (/* @__PURE__ */ new Date()).toISOString(), message: String(e.message || e) };
-      log.line("\u9519\u8BEF\uFF1A" + e.message);
+      if (pdf) this.lastPdfExport = { status: "failed", time: (/* @__PURE__ */ new Date()).toISOString(), message: String(e instanceof Error ? e.message : e) };
+      log.line("\u9519\u8BEF\uFF1A" + (e instanceof Error ? e.message : String(e)));
       log.line("\u67E5\u770B\u5B8C\u6574\u9519\u8BEF\uFF1A\u547D\u4EE4\u9762\u677F \u2192 \u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883 \u2192 errors\uFF1B\u53EF\u4FDD\u5B58\u8BCA\u65AD JSON\u3002");
       log.done();
       this.fail("\u5BFC\u51FA", e);
@@ -24716,8 +24757,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         for (const rec of note.records) {
           const old = original.records.find((r) => r.from === rec.from && r.kind === rec.kind);
           if (old)
-            for (const k of ["number", "prefix", "subletter", "referenced"])
-              rec[k] = old[k];
+            Object.assign(rec, { number: old.number, prefix: old.prefix, subletter: old.subletter, referenced: old.referenced });
         }
       }
       warnings.push("\u4FDD\u7559\u7B14\u8BB0\u7F16\u53F7\u6A21\u5F0F\uFF1A\u4E0D\u540C\u7AE0\u8282\u53EF\u80FD\u663E\u793A\u76F8\u540C\u7F16\u53F7\uFF1B\u8DF3\u8F6C\u4ECD\u6309\u6587\u4EF6\u8DEF\u5F84\u548C\u5757 ID \u533A\u5206\u3002");
@@ -24727,7 +24767,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         if (!ref.target)
           warnings.push(`${n.path}:${ref.line + 1} \u5F15\u7528\u76EE\u6807\u672A\u7EB3\u5165\u672C\u6B21\u5BFC\u51FA\u6216\u4E0D\u53EF\u89E3\u6790\uFF1A${ref.raw}`);
     const doc = this.app.workspace.getActiveViewOfType(import_obsidian3.MarkdownView)?.containerEl.ownerDocument || document;
-    const stage = doc.createElement("main");
+    const stage = doc.win.createEl("main");
     stage.id = "phb-document";
     stage.className = "phb-export-stage markdown-preview-view markdown-rendered";
     doc.body.appendChild(stage);
@@ -24735,7 +24775,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     component.load();
     try {
       for (let i = 0; i < files.length; i++) {
-        const { file: f, title } = files[i], note = notes[i], section = doc.createElement("section");
+        const { file: f, title } = files[i], note = notes[i], section = doc.win.createEl("section");
         section.className = "phb-chapter";
         section.dataset.path = f.path;
         section.dataset.title = title;
@@ -24798,13 +24838,11 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       await this.inlineImages(stage);
       if (stage.querySelector('[data-mml-node="merror"],mjx-merror'))
         throw new Error("\u68C0\u6D4B\u5230\u6570\u5B66\u6E32\u67D3\u9519\u8BEF\uFF0C\u5DF2\u505C\u6B62 PDF \u5BFC\u51FA\uFF1B\u8BF7\u5148\u68C0\u67E5\u539F\u516C\u5F0F\u3002");
-      const opts = { ...options, preNumbered: true, toc: true }, meta = { ...opts, ...document_default.prepare(stage, opts), nativeSnapshot: true };
+      const opts = { ...options, preNumbered: true, toc: true }, meta = { ...opts, ...document_default.prepare(stage, opts), nativeSnapshot: true, numberingMode: options.book ? this.settings.exportNumbering : "note", targets: notes.flatMap((n) => n.records.filter((r) => r.id).map((r) => ({ path: r.path, block: r.id, kind: r.kind, number: r.number, reference: engine_default.refText(r, graph2.settings) }))) };
       meta.warnings.push(...warnings);
-      meta.numberingMode = options.book ? this.settings.exportNumbering : "note";
-      meta.targets = notes.flatMap((n) => n.records.filter((r) => r.id).map((r) => ({ path: r.path, block: r.id, kind: r.kind, number: r.number, reference: engine_default.refText(r, graph2.settings) })));
-      const svg = doc.createElementNS("http://www.w3.org/2000/svg", "svg"), defs = doc.createElementNS(svg.namespaceURI, "defs");
+      const svg = doc.win.createSvg("svg"), defs = doc.win.createSvg("defs");
       svg.appendChild(defs);
-      svg.style.cssText = "position:absolute;width:0;height:0;overflow:hidden";
+      svg.setAttribute("class", "phb-glyph-cache");
       const copied = /* @__PURE__ */ new Set();
       stage.querySelectorAll("svg use").forEach((u) => {
         const href = u.getAttribute("href") || u.getAttribute("xlink:href");
@@ -24843,23 +24881,23 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     await new Promise((resolve) => {
       let quiet, limit;
       const done = () => {
-        clearTimeout(quiet);
-        clearTimeout(limit);
+        window.clearTimeout(quiet);
+        window.clearTimeout(limit);
         o.disconnect();
         resolve();
       };
       const o = new MutationObserver(() => {
-        clearTimeout(quiet);
-        quiet = setTimeout(done, 400);
+        window.clearTimeout(quiet);
+        quiet = window.setTimeout(done, 400);
       });
       o.observe(stage, { childList: true, subtree: true });
-      quiet = setTimeout(done, 400);
-      limit = setTimeout(done, 8e3);
+      quiet = window.setTimeout(done, 400);
+      limit = window.setTimeout(done, 8e3);
     });
   }
   async inlineImages(stage) {
     for (const canvas of [...stage.querySelectorAll("canvas")]) {
-      const img = stage.ownerDocument.createElement("img");
+      const img = stage.ownerDocument.win.createEl("img");
       img.src = canvas.toDataURL("image/png");
       img.width = canvas.width;
       img.height = canvas.height;
@@ -24869,15 +24907,15 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       const url = img.currentSrc || img.src;
       if (url.startsWith("data:"))
         continue;
-      if (/^https?:/i.test(url))
+      if (!/^(app:|file:|blob:)/i.test(url))
         throw new Error("\u5FEB\u7167\u9ED8\u8BA4\u4E0D\u4E0B\u8F7D\u7F51\u7EDC\u56FE\u7247\uFF0C\u8BF7\u5148\u5C06\u56FE\u7247\u5B58\u5165 vault\uFF1A" + url);
       let data;
       try {
-        const r = await fetch(url);
+        const r = await stage.ownerDocument.win.fetch(url);
         if (!r.ok)
           throw new Error(String(r.status));
         data = await dataUrl(await r.blob());
-      } catch (error) {
+      } catch {
         const src = img.closest(".image-embed")?.getAttribute("src") || img.getAttribute("data-src");
         const path = img.closest(".phb-chapter")?.dataset.path || "";
         const file = src && this.app.metadataCache.getFirstLinkpathDest(src, path);
@@ -24916,7 +24954,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         return url;
       }
       try {
-        const r = await fetch(absolute);
+        const r = await doc.win.fetch(absolute);
         if (!r.ok)
           throw new Error(String(r.status));
         const data = await dataUrl(await r.blob());
@@ -24939,7 +24977,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         return;
       }
       for (const rule of rules) {
-        if (rule.type === 3 && rule.styleSheet) {
+        if ("styleSheet" in rule && rule.styleSheet instanceof CSSStyleSheet) {
           await visit(rule.styleSheet);
           continue;
         }

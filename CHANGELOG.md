@@ -1,3 +1,12 @@
+# 2.2.2
+
+- Use standard MIT license text and generate build attestations for release assets.
+- Replace TOC HTML assignment with DOM cloning, preserving inline formulas and glyph links.
+- Move print background and glyph-cache styling to CSS; use standard setting headings.
+- Add explicit types, implicit-any checking, declared CodeMirror dependencies and local Obsidian linting.
+- Make settings discoverable by Obsidian 1.13 settings search while retaining the older settings UI.
+- Restrict image snapshot reads to local protocols and create temporary print files exclusively with private POSIX permissions.
+
 # 2.2.1
 
 - Load PDF snapshots from isolated temporary HTML files instead of oversized data URLs; remove temporary files after export.

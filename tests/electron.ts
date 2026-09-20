@@ -69,7 +69,17 @@ async function run() {
     await wc.executeJavaScript(client);
     const snapshot = await wc.executeJavaScript(`(() => {
       document.body.classList.add('phb-export');
+      const heading=document.querySelector('h2');
+      const emphasis=document.createElement('em');emphasis.textContent=' <formula>';heading.appendChild(emphasis);
+      const glyph=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      const path=document.createElementNS(glyph.namespaceURI,'path');path.id='toc-test-glyph';glyph.appendChild(path);
+      const use=document.createElementNS(glyph.namespaceURI,'use');use.setAttribute('href','#toc-test-glyph');glyph.appendChild(use);heading.appendChild(glyph);
       const meta=AcademicTestDoc.prepare(document.getElementById('phb-document'),{book:true,title:'Sample Book',tocDepth:6,legacyCaptions:true});
+      const toc=document.querySelector('.phb-toc');
+      if(toc.querySelector('em')?.textContent!==' <formula>')throw new Error('TOC lost inline formatting');
+      const copiedGlyph=toc.querySelector('svg path');
+      if(!copiedGlyph||copiedGlyph.id==='toc-test-glyph'||toc.querySelector('svg use').getAttribute('href')!=='#'+copiedGlyph.id)throw new Error('TOC glyph IDs were not remapped');
+      if(heading.querySelector('path').id!=='toc-test-glyph')throw new Error('TOC mutated source heading');
       if(document.querySelectorAll('h6').length!==1||document.querySelector('figcaption'))throw new Error('H6 was converted');
       const script=document.createElement('script');script.id='phb-meta';script.type='application/json';script.textContent=JSON.stringify(meta);document.body.appendChild(script);
       return '<!doctype html>'+document.documentElement.outerHTML;

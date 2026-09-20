@@ -1,3 +1,5 @@
+import * as electron from 'electron';
+import { setTimeout as scheduleTimeout, clearTimeout as cancelTimeout } from 'node:timers';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -6,9 +8,9 @@ import type { BrowserWindow as ElectronWindow, BrowserWindowConstructorOptions }
 import { finishPdf, measurePdf, type ExportMeta } from './pdf-postprocess';
 type WindowConstructor = new (options: BrowserWindowConstructorOptions) => ElectronWindow;
 function nativeWindow(): WindowConstructor {
-    const electron = require('electron');
     // Obsidian exposes Electron's main-process API through its remote bridge.
-    const remote = electron.remote || require('@electron/remote');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- Optional Obsidian bridge; eager import breaks hosts exposing electron.remote.
+    const remote = (electron as typeof electron & { remote?: { BrowserWindow?: WindowConstructor } }).remote || require('@electron/remote') as { BrowserWindow?: WindowConstructor };
     if (typeof remote?.BrowserWindow !== 'function')
         throw new Error('当前 Obsidian 未提供 Electron PDF 接口，请更新桌面安装程序。');
     return remote.BrowserWindow;
@@ -37,13 +39,13 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
     let tempDirectory: string | undefined;
     const close = () => { if (!win.isDestroyed())
         win.destroy(); };
-    const timer = setTimeout(() => { timedOut = true; close(); }, 240000);
+    const timer = scheduleTimeout(() => { timedOut = true; close(); }, 240000);
     signal?.addEventListener('abort', close, { once: true });
     try {
         const wc = win.webContents;
         tempDirectory = await mkdtemp(join(tmpdir(), 'academic-notes-'));
         const htmlPath = join(tempDirectory, 'document.html');
-        await writeFile(htmlPath, html, 'utf8');
+        await writeFile(htmlPath, html, { encoding: 'utf8', flag: 'wx', mode: 0o600 });
         const documentUrl = pathToFileURL(htmlPath).href;
         wc.session.webRequest.onBeforeRequest((details, callback) => {
             callback({ cancel: !(details.url.split('#')[0] === documentUrl || /^(data:|blob:|about:blank$)/.test(details.url)) });
@@ -61,11 +63,11 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
             }).code || 'unknown';
             throw new Error('Electron 打印窗口加载失败：' + code);
         }
-        const meta: ExportMeta = await wc.executeJavaScript(`JSON.parse(document.getElementById('phb-meta').textContent)`);
+        const meta = await wc.executeJavaScript(`JSON.parse(document.getElementById('phb-meta').textContent)`) as ExportMeta;
         if (!meta.prepared || !meta.entries?.length)
             throw new Error('快照缺少已解析的标题与目录信息。');
         await wc.executeJavaScript(`(${preparePrint.toString()})()`);
-        const dark: boolean = await wc.executeJavaScript(`document.body.classList.contains('theme-dark')`);
+        const dark = Boolean(await wc.executeJavaScript(`document.body.classList.contains('theme-dark')`));
         const options = {
             pageSize: 'A4' as const, printBackground: true, preferCSSPageSize: true,
             displayHeaderFooter: true, headerTemplate: '<span></span>',
@@ -103,13 +105,13 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
             throw new Error('6 轮后目录页码仍未稳定，请调整目录标题或字体。');
         // Remove probe annotations from the measured PDF itself, avoiding a divergent final reprint.
         const finished = await finishPdf(finalBytes, meta, measured.positions);
-        const overflow = await wc.executeJavaScript(`(${findOverflow.toString()})()`);
+        const overflow = await wc.executeJavaScript(`(${findOverflow.toString()})()`) as ReturnType<typeof findOverflow>;
         return {
             bytes: finished.bytes,
             report: {
                 ...finished.stats, iterations, engine: 'Electron printToPDF', warnings: meta.warnings || [],
                 horizontalOverflow: overflow,
-                entries: meta.entries.map(e => ({ ...e, ...measured!.positions[e.id], printedPage: measured!.positions[e.id].page + 1 }))
+                entries: meta.entries.map(e => ({ ...e, ...measured.positions[e.id], printedPage: measured.positions[e.id].page + 1 }))
             }
         };
     }
@@ -121,7 +123,7 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
         throw error;
     }
     finally {
-        clearTimeout(timer);
+        cancelTimeout(timer);
         signal?.removeEventListener('abort', close);
         close();
         if (tempDirectory)
@@ -144,6 +146,7 @@ async function preparePrint() {
     if ([...document.fonts].some(font => font.status === 'error'))
         throw new Error('快照字体加载失败。');
     document.querySelectorAll<HTMLElement>('.callout:not(.an-media)').forEach(box => {
+        // Runs serialized in isolated Chromium, without Obsidian DOM helpers.
         const wrapper = document.createElement('div');
         wrapper.className = 'phb-callout-wrap';
         box.before(wrapper);
@@ -160,9 +163,7 @@ async function preparePrint() {
             svg.style.height = bounds.height * available / bounds.width + 'px';
         }
     });
-    const style = document.createElement('style'), bg = getComputedStyle(document.body).backgroundColor;
-    style.textContent = `html{background:${bg}!important}@page{background:${bg}}`;
-    document.head.appendChild(style);
+    document.documentElement.style.setProperty('--phb-page-background', getComputedStyle(document.body).backgroundColor);
 }
 function findOverflow() {
     const main = document.getElementById('phb-document')!.getBoundingClientRect();

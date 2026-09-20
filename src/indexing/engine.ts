@@ -1,3 +1,5 @@
+export type ChapterSpec = number | string | { chapter: number | string; mode: string };
+export type NoteGraph = ReturnType<typeof graph>;
 export interface SourceRecord {
     kind: string;
     key: string;
@@ -56,7 +58,7 @@ export interface ParsedNote {
     _mtime?: number;
     _fromEditor?: boolean;
 }
-const TYPES = {
+const TYPES: Record<string, string[]> = {
     def: ['Definition', 'definition', 'def'], thm: ['Theorem', 'theorem', 'thm'],
     lem: ['Lemma', 'lemma', 'lem'], prop: ['Proposition', 'proposition', 'prop', 'prp'],
     cor: ['Corollary', 'corollary', 'cor'], claim: ['Claim', 'claim', 'clm'],
@@ -66,23 +68,23 @@ const TYPES = {
     conjecture: ['Conjecture', 'conjecture', 'cnj'], hypothesis: ['Hypothesis', 'hypothesis', 'hyp'],
     solution: ['Solution', 'solution', 'sol']
 };
-const MEDIA = { figure: ['Figure', 'figure', 'fig'], subfigure: ['Subfigure', 'subfigure', 'subfig'], table: ['Table', 'table', 'tbl'] };
-const ABBR = { def: 'def', thm: 'thm', lem: 'lem', prop: 'prop', cor: 'cor', claim: 'clm', example: 'ex', proof: 'pf', remark: 'rem', axiom: 'ax', assumption: 'asm', exercise: 'exr', conjecture: 'conj', hypothesis: 'hyp', solution: 'sol', equation: 'eq', figure: 'fig', subfigure: 'fig', table: 'tab' };
+const MEDIA: Record<string, string[]> = { figure: ['Figure', 'figure', 'fig'], subfigure: ['Subfigure', 'subfigure', 'subfig'], table: ['Table', 'table', 'tbl'] };
+const ABBR: Record<string, string> = { def: 'def', thm: 'thm', lem: 'lem', prop: 'prop', cor: 'cor', claim: 'clm', example: 'ex', proof: 'pf', remark: 'rem', axiom: 'ax', assumption: 'asm', exercise: 'exr', conjecture: 'conj', hypothesis: 'hyp', solution: 'sol', equation: 'eq', figure: 'fig', subfigure: 'fig', table: 'tab' };
 const mediaAliases = Object.fromEntries(Object.entries(MEDIA).flatMap(([k, v]) => v.slice(1).map(a => [a, k])));
-const mediaCanon = s => mediaAliases[String(s || '').toLowerCase()] || null;
+const mediaCanon = (s: string | null | undefined): string | null => mediaAliases[String(s || '').toLowerCase()] || null;
 const aliases = Object.fromEntries(Object.entries(TYPES).flatMap(([k, v]) => v.slice(1).map(a => [a, k])));
-const canon = s => aliases[String(s || '').toLowerCase()] || null;
+const canon = (s: string | null | undefined): string | null => aliases[String(s || '').toLowerCase()] || null;
 const DEFAULTS = { numbered: true, equationMode: 'referenced', numbering: 'section', sharedCounter: false,
     eqFormat: 'eq:{number}', theoremFormat: '{type} {number}', respectAliases: true, numberPrefix: '',
     sectionPrefix: true, sectionNumberSource: 'order', shortReferences: true, mediaNumbered: true, figureFormat: 'fig {number}', tableFormat: 'tab {number}' };
-const blank = s => s.replace(/[^\r\n]/g, ' ');
-const decode = s => { try {
+const blank = (s: string) => s.replace(/[^\r\n]/g, ' ');
+const decode = (s: string) => { try {
     return decodeURIComponent(s);
 }
 catch {
     return s;
 } };
-const cleanPath = s => { const a: string[] = []; for (const p of s.replace(/\\/g, '/').split('/')) {
+const cleanPath = (s: string) => { const a: string[] = []; for (const p of s.replace(/\\/g, '/').split('/')) {
     if (!p || p === '.')
         continue;
     if (p === '..')
@@ -90,16 +92,16 @@ const cleanPath = s => { const a: string[] = []; for (const p of s.replace(/\\/g
     else
         a.push(p);
 } return a.join('/'); };
-const plain = s => String(s || '').replace(/<[^>]*>/g, '').replace(/[*_`]/g, '').trim();
-function lineOf(starts, offset) { let l = 0, r = starts.length; while (l + 1 < r) {
+const plain = (s: string | null | undefined) => String(s || '').replace(/<[^>]*>/g, '').replace(/[*_`]/g, '').trim();
+function lineOf(starts: number[], offset: number) { let l = 0, r = starts.length; while (l + 1 < r) {
     const m = (l + r) >> 1;
     if (starts[m] <= offset)
         l = m;
     else
         r = m;
 } return l; }
-function quote(s) { const m = s.match(/^[ \t]*(?:>[ \t]*)*/)[0]; return { depth: (m.match(/>/g) || []).length, prefix: m, body: s.slice(m.length) }; }
-function maskedSource(source) {
+function quote(s: string) { const m = s.match(/^[ \t]*(?:>[ \t]*)*/)![0]; return { depth: (m.match(/>/g) || []).length, prefix: m, body: s.slice(m.length) }; }
+function maskedSource(source: string) {
     // Preserve UTF-16 offsets: CodeMirror and Obsidian positions use those offsets.
     let masked = source.replace(/^\uFEFF?---\r?\n[\s\S]*?\r?\n---[^\S\r\n]*(?:\r?\n|$)/, blank);
     masked = masked.replace(/<!--[\s\S]*?(?:-->|$)/g, blank).replace(/%%[\s\S]*?(?:%%|$)/g, blank);
@@ -123,13 +125,12 @@ function maskedSource(source) {
     return masked;
 }
 function parse(path: string, source: string, cache: {
-    blocks?: Record<string, any>;
+    blocks?: Record<string, { position: { start: { line: number }; end: { line: number } } }>;
 } = {}): ParsedNote {
     const lines = source.split('\n'), starts: number[] = [];
     let offset = 0;
     lines.forEach(l => { starts.push(offset); offset += l.length + 1; });
     let mask = maskedSource(source);
-    const maskedLines = mask.split('\n');
     const records: SourceRecord[] = [], equations: SourceRecord[] = [], theorems: SourceRecord[] = [], media: SourceRecord[] = [], callouts: SourceRecord[] = [], warnings: string[] = [];
     // All $$ pairs, including display expressions embedded in a quoted paragraph.
     const delimiters = [...mask.matchAll(/(?<!\\)\$\$/g)];
@@ -184,7 +185,7 @@ function parse(path: string, source: string, cache: {
         records.push(rec);
     }
     const blocks = new Map<string, SourceRecord | null>();
-    function bind(rec, id) { if (!rec || !id)
+    function bind(rec: SourceRecord | undefined, id: string) { if (!rec || !id)
         return; if (blocks.has(id) && blocks.get(id) !== rec) {
         blocks.set(id, null);
         warnings.push(`${path}: 重复块 ID ^${id}，不解析歧义引用。`);
@@ -229,7 +230,7 @@ function parse(path: string, source: string, cache: {
     }
     const refs: SourceReference[] = [];
     for (const m of prose.matchAll(/(!?)\[\[([^\]\n]+)\]\]/g)) {
-        const pieces = m[2].split(/(?<!\\)\|/), raw = pieces.shift().trim().replace(/\\\|/g, '|');
+        const pieces = m[2].split(/(?<!\\)\|/), raw = pieces.shift()!.trim().replace(/\\\|/g, '|');
         const target = splitTarget(raw);
         if (!target)
             continue;
@@ -255,7 +256,7 @@ function parse(path: string, source: string, cache: {
     }
     return { path, source, lines, starts, records, theorems, equations, media, callouts, blocks, refs, headings, warnings };
 }
-function splitTarget(raw) {
+function splitTarget(raw: string) {
     raw = decode(raw);
     let at = raw.indexOf('#^');
     if (at >= 0 && /^[A-Za-z0-9-]+$/.test(raw.slice(at + 2)))
@@ -264,7 +265,7 @@ function splitTarget(raw) {
         return { file: '', block: raw.slice(1) };
     return null;
 }
-function resolvePath(name, here, paths: Set<string>, resolver?) {
+function resolvePath(name: string, here: string, paths: Set<string>, resolver?: (name: string, here: string) => string | null) {
     if (!name)
         return here;
     if (resolver) {
@@ -281,11 +282,11 @@ function resolvePath(name, here, paths: Set<string>, resolver?) {
     const bs = [...paths].filter(p => p.replace(/\.md$/i, '').split('/').pop() === wanted);
     return bs.length === 1 ? bs[0] : null;
 }
-function assign(note, settings, referenced, chapter) {
-    const reserved = new Map(), counters = new Map();
+function assign(note: ParsedNote, settings: typeof DEFAULTS, referenced: Set<string>, chapter?: ChapterSpec) {
+    const reserved = new Map<string, Set<string>>(), counters = new Map<string, number>();
     const h2 = note.headings.filter(h => h.level === 2);
     const chapterSpec = chapter === undefined || chapter === null ? null : (typeof chapter === 'object' ? chapter : { chapter, mode: 'chapter' });
-    function scopeAt(r) {
+    function scopeAt(r: SourceRecord) {
         const hs = h2.filter(h => h.line < r.line), h = hs[hs.length - 1], index = hs.length;
         const section = h ? (settings.sectionNumberSource === 'heading' ? ((h.title.match(/^(\d+(?:\.\d+)*)\b/) || [])[1] || String(index)) : String(index)) : (h2.length ? '0' : '');
         if (chapterSpec) {
@@ -299,7 +300,7 @@ function assign(note, settings, referenced, chapter) {
         // Counter scope must NOT be the printed prefix: hiding prefixes still resets at H2.
         return { scope: 'section-' + index, prefix: [settings.numberPrefix, settings.sectionPrefix ? section : ''].filter(Boolean).join('.') };
     }
-    const bucket = r => `${r.scope}|${r.kind === 'equation' ? 'equation' : r.kind !== 'theorem' ? r.kind : settings.sharedCounter ? 'theorems' : r.key}`;
+    const bucket = (r: SourceRecord) => `${r.scope}|${r.kind === 'equation' ? 'equation' : r.kind !== 'theorem' ? r.kind : settings.sharedCounter ? 'theorems' : r.key}`;
     for (const r of note.records) {
         const s = scopeAt(r);
         r.prefix = s.prefix;
@@ -311,7 +312,7 @@ function assign(note, settings, referenced, chapter) {
             const k = bucket(r);
             if (!reserved.has(k))
                 reserved.set(k, new Set());
-            reserved.get(k).add(r.manual);
+            reserved.get(k)!.add(r.manual);
         }
     }
     for (const r of note.records) {
@@ -333,8 +334,8 @@ function assign(note, settings, referenced, chapter) {
         counters.set(k, n);
         r.number = label;
     }
-    const subcounts = new Map();
-    const alpha = n => { let a = ''; do {
+    const subcounts = new Map<SourceRecord, number>();
+    const alpha = (n: number) => { let a = ''; do {
         n--;
         a = String.fromCharCode(97 + n % 26) + a;
         n = Math.floor(n / 26);
@@ -352,22 +353,22 @@ function assign(note, settings, referenced, chapter) {
         r.number = r.parent.number + '(' + r.subletter + ')';
     }
 }
-function graph(notes: ParsedNote[], opts = {}, resolver?: (name: string, here: string) => string | null, chapters?: Map<string, any>) {
-    const settings = { ...DEFAULTS, ...opts }, map = new Map(notes.map(n => [n.path, n])), paths = new Set(map.keys()), referenced = new Set(), warnings = notes.flatMap(n => n.warnings);
+function graph(notes: ParsedNote[], opts: Partial<typeof DEFAULTS> = {}, resolver?: (name: string, here: string) => string | null, chapters?: Map<string, ChapterSpec>) {
+    const settings = { ...DEFAULTS, ...opts }, map = new Map(notes.map(n => [n.path, n])), paths = new Set(map.keys()), referenced = new Set<string>(), warnings = notes.flatMap(n => n.warnings);
     for (const note of notes)
         for (const ref of note.refs) {
             const p = resolvePath(ref.file, note.path, paths, resolver);
             ref.targetPath = p;
-            ref.target = p ? map.get(p)!.blocks.get(ref.block) : null;
+            ref.target = p ? map.get(p)!.blocks.get(ref.block) ?? null : null;
             if (ref.target)
                 referenced.add(p + '#^' + ref.block);
         }
     for (const n of notes)
         assign(n, settings, referenced, chapters?.get(n.path));
-    return { notes: map, settings, warnings, referenced, resolve(raw, here) { const t = splitTarget(raw); if (!t)
+    return { notes: map, settings, warnings, referenced, resolve(raw: string, here: string) { const t = splitTarget(raw); if (!t)
             return null; const p = resolvePath(t.file, here, paths, resolver); return p ? map.get(p)!.blocks.get(t.block) || null : null; } };
 }
-function refText(r, settings = DEFAULTS) {
+function refText(r: SourceRecord | null | undefined, settings = DEFAULTS) {
     if (!r)
         return null;
     settings = { ...DEFAULTS, ...settings };
@@ -376,13 +377,13 @@ function refText(r, settings = DEFAULTS) {
     if (!r.number)
         return `${type}${r.title ? ' · ' + plain(r.title) : '（未编号）'}`;
     const format = r.kind === 'equation' ? settings.eqFormat : r.kind === 'table' ? settings.tableFormat : r.kind === 'figure' || r.kind === 'subfigure' ? settings.figureFormat : settings.theoremFormat;
-    return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k) => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, '').split('/').pop() })[k]);
+    return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k: 'number' | 'type' | 'name' | 'abbr' | 'title' | 'file') => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, '').split('/').pop() || '' })[k]);
 }
-function taggedTex(eq) {
+function taggedTex(eq: SourceRecord) {
     if (eq.manual || eq.multiTag)
-        return eq.tex;
+        return eq.tex || '';
     // One native block = one identifier/number. No implicit AMS row counters.
-    let tex = eq.tex.replace(/^\s*\\begin\{(equation\*?|align\*?|gather\*?)\}([\s\S]*)\\end\{\1\}\s*$/, (_, env, body) => env.startsWith('align') ? '\\begin{aligned}' + body + '\\end{aligned}' : env.startsWith('gather') ? '\\begin{gathered}' + body + '\\end{gathered}' : body);
+    let tex = (eq.tex || '').replace(/^\s*\\begin\{(equation\*?|align\*?|gather\*?)\}([\s\S]*)\\end\{\1\}\s*$/, (_, env: string, body: string) => env.startsWith('align') ? '\\begin{aligned}' + body + '\\end{aligned}' : env.startsWith('gather') ? '\\begin{gathered}' + body + '\\end{gathered}' : body);
     if (eq.number)
         tex += '\\tag{' + eq.number + '}';
     return tex;

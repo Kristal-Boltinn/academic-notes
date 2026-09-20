@@ -1,8 +1,11 @@
-const TYPES = { "def": ["Definition", "definition", "def"], "thm": ["Theorem", "theorem", "thm"], "lem": ["Lemma", "lemma", "lem"], "prop": ["Proposition", "proposition", "prop", "prp"], "cor": ["Corollary", "corollary", "cor"], "claim": ["Claim", "claim", "clm"], "example": ["Example", "example", "ex", "exa", "exm"], "proof": ["Proof", "proof", "pf"], "remark": ["Remark", "remark", "rem", "rmk"], "axiom": ["Axiom", "axiom", "axm"], "assumption": ["Assumption", "assumption", "asm"], "exercise": ["Exercise", "exercise", "exr"], "conjecture": ["Conjecture", "conjecture", "cnj"], "hypothesis": ["Hypothesis", "hypothesis", "hyp"], "solution": ["Solution", "solution", "sol"] };
+// This renderer also runs in isolated Chromium without Obsidian DOM helpers.
+interface TocEntry { id: string; title: string; level: number; path?: string }
+interface Declaration { line: number; type: string; key: string; name: string; number: string }
+const TYPES: Record<string, string[]> = { "def": ["Definition", "definition", "def"], "thm": ["Theorem", "theorem", "thm"], "lem": ["Lemma", "lemma", "lem"], "prop": ["Proposition", "proposition", "prop", "prp"], "cor": ["Corollary", "corollary", "cor"], "claim": ["Claim", "claim", "clm"], "example": ["Example", "example", "ex", "exa", "exm"], "proof": ["Proof", "proof", "pf"], "remark": ["Remark", "remark", "rem", "rmk"], "axiom": ["Axiom", "axiom", "axm"], "assumption": ["Assumption", "assumption", "asm"], "exercise": ["Exercise", "exercise", "exr"], "conjecture": ["Conjecture", "conjecture", "cnj"], "hypothesis": ["Hypothesis", "hypothesis", "hyp"], "solution": ["Solution", "solution", "sol"] };
 const aliases = Object.fromEntries(Object.entries(TYPES).flatMap(([k, a]) => a.slice(1).map(x => [x, k])));
-const canon = s => aliases[String(s || '').toLowerCase()] || null;
-const norm = p => {
-    const result: any[] = [];
+const canon = (s: string | null | undefined): string | null => aliases[String(s || '').toLowerCase()] || null;
+const norm = (p: string) => {
+    const result: string[] = [];
     for (const s of p.replace(/\\/g, '/').split('/')) {
         if (!s || s === '.')
             continue;
@@ -13,23 +16,23 @@ const norm = p => {
     }
     return result.join('/').replace(/\.md$/i, '');
 };
-const decode = s => { try {
+const decode = (s: string) => { try {
     return decodeURIComponent(s);
 }
 catch {
     return s;
 } };
-const escape = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
-const seqLabel = (key, prefix, counts, numbered) => {
+const escape = (s: unknown) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+const seqLabel = (key: string, prefix: string, counts: Record<string, number>, numbered: boolean) => {
     if (!numbered || key === 'proof' || key === 'remark' || key === 'solution')
         return '';
     counts[key] = (counts[key] || 0) + 1;
     return (prefix ? prefix + '.' : '') + counts[key];
 };
 /** Scan only declarations, never infer numbering from a virtualized editor DOM. */
-function scanSource(source, numbered = true, chapter = '') {
+function scanSource(source: string, numbered = true, chapter = '') {
     let fence: string | null = null, section = '', sectionCount = 0, counts = {}, inDisplay = false;
-    const result: any[] = [];
+    const result: Declaration[] = [];
     source.split(/\r?\n/).forEach((raw, line) => {
         const bare = raw.replace(/^(?:\s*>\s?)+/, '').trimStart();
         const f = bare.match(/^(`{3,}|~{3,})/);
@@ -57,17 +60,17 @@ function scanSource(source, numbered = true, chapter = '') {
         }
         const m = raw.match(/^(?:\s*>\s?)+\[!([\w-]+)(?:\|[^\]]*)?\][+-]?(?:\s+(.*))?$/);
         if (m && canon(m[1])) {
-            const key = canon(m[1]);
+            const key = canon(m[1])!;
             result.push({ line, type: m[1].toLowerCase(), key, name: (m[2] || '').trim(), number: seqLabel(key, chapter || section, counts, numbered) });
         }
     });
     return result;
 }
-function setTitle(box, number = '') {
+function setTitle(box: HTMLElement, number = '') {
     const key = canon(box.getAttribute('data-callout'));
     if (!key)
         return;
-    const title = box.querySelector(':scope > .callout-title > .callout-title-inner');
+    const title = box.querySelector<HTMLElement>(':scope > .callout-title > .callout-title-inner');
     if (!title)
         return;
     if (title.dataset.phbDecorated) {
@@ -77,11 +80,11 @@ function setTitle(box, number = '') {
         return;
     }
     // Do not prepend a second number to a title already owned by another theorem plugin.
-    if (/^(Definition|Theorem|Lemma|Proposition|Corollary|Claim|Example)\s+\d/i.test(title.textContent.trim()))
+    if (/^(Definition|Theorem|Lemma|Proposition|Corollary|Claim|Example)\s+\d/i.test(title.textContent?.trim() || ''))
         return;
     const original = title.ownerDocument.createElement('span');
     original.className = 'phb-title-name';
-    const text = title.textContent.trim().toLowerCase();
+    const text = (title.textContent || '').trim().toLowerCase();
     const defaults = [...TYPES[key].map(x => x.toLowerCase()), ''];
     if (!defaults.includes(text))
         while (title.firstChild)
@@ -94,12 +97,12 @@ function setTitle(box, number = '') {
     title.replaceChildren(label, original);
     title.dataset.phbDecorated = 'true';
 }
-function decorateWhole(root, numbered = true, chapter = '') {
+function decorateWhole(root: HTMLElement, numbered = true, chapter = '') {
     let section = '', n = 0, counts = {};
-    for (const node of root.querySelectorAll('h2,.callout[data-callout]')) {
+    for (const node of root.querySelectorAll<HTMLElement>('h2,.callout[data-callout]')) {
         if (node.tagName === 'H2' && !node.closest('.callout') && !chapter) {
             n++;
-            section = (node.textContent.trim().match(/^(\d+(?:\.\d+)*)\s/) || [null, String(n)])[1];
+            section = ((node.textContent || '').trim().match(/^(\d+(?:\.\d+)*)\s/) || [null, String(n)])[1];
             counts = {};
         }
         else if (node.matches('.callout')) {
@@ -109,21 +112,21 @@ function decorateWhole(root, numbered = true, chapter = '') {
         }
     }
 }
-function unfold(root) {
-    for (const c of root.querySelectorAll('.callout.is-collapsed'))
+function unfold(root: HTMLElement) {
+    for (const c of root.querySelectorAll<HTMLElement>('.callout.is-collapsed'))
         c.classList.remove('is-collapsed');
-    for (const c of root.querySelectorAll('.callout > .callout-content')) {
+    for (const c of root.querySelectorAll<HTMLElement>('.callout > .callout-content')) {
         c.hidden = false;
         ['display', 'height', 'max-height', 'overflow'].forEach(p => c.style.removeProperty(p));
     }
 }
 /** Copy inline markup, giving SVG glyph IDs fresh names to avoid duplicate anchors. */
-function inlineCopy(el, prefix) {
-    const clone = el.cloneNode(true);
-    clone.querySelectorAll('.heading-collapse-indicator,.phb-probe,.phb-chapter-kicker').forEach(e => e.remove());
+function inlineCopy(el: HTMLElement, prefix: string) {
+    const clone = el.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll<HTMLElement>('.heading-collapse-indicator,.phb-probe,.phb-chapter-kicker').forEach(e => e.remove());
     const ids = new Map();
-    clone.querySelectorAll('[id]').forEach(e => { const old = e.id; e.id = prefix + old; ids.set(old, e.id); });
-    clone.querySelectorAll('*').forEach(e => {
+    clone.querySelectorAll<HTMLElement>('[id]').forEach(e => { const old = e.id; e.id = prefix + old; ids.set(old, e.id); });
+    clone.querySelectorAll<HTMLElement>('*').forEach(e => {
         for (const a of [...e.attributes]) {
             if ((a.name === 'href' || a.name === 'xlink:href') && a.value[0] === '#' && ids.has(a.value.slice(1)))
                 e.setAttribute(a.name, '#' + ids.get(a.value.slice(1)));
@@ -131,9 +134,9 @@ function inlineCopy(el, prefix) {
                 e.setAttribute(a.name, a.value.replace(/url\(#([^)]*)\)/g, (m, id) => ids.has(id) ? `url(#${ids.get(id)})` : m));
         }
     });
-    return clone.innerHTML;
+    return clone.childNodes;
 }
-function makeToc(doc, entries, headingMap = new Map(), title = '目录') {
+function makeToc(doc: Document, entries: TocEntry[], headingMap = new Map<string, HTMLElement>(), title = '目录') {
     const nav = doc.createElement('nav');
     nav.className = 'phb-toc';
     nav.setAttribute('aria-label', title);
@@ -151,7 +154,7 @@ function makeToc(doc, entries, headingMap = new Map(), title = '目录') {
         link.href = '#' + ent.id;
         link.dataset.phbTarget = ent.id;
         if (headingMap.has(ent.id))
-            link.innerHTML = inlineCopy(headingMap.get(ent.id), `phb-toc-${i}-`);
+            link.replaceChildren(...inlineCopy(headingMap.get(ent.id)!, `phb-toc-${i}-`));
         else
             link.textContent = ent.title;
         const dots = doc.createElement('span');
@@ -167,7 +170,7 @@ function makeToc(doc, entries, headingMap = new Map(), title = '目录') {
     }
     return nav;
 }
-function addProbes(root, entries) {
+function addProbes(root: HTMLElement, entries: TocEntry[]) {
     for (const ent of entries) {
         const node = root.ownerDocument.getElementById(ent.id);
         if (!node || node.querySelector(':scope > .phb-probe'))
@@ -181,7 +184,7 @@ function addProbes(root, entries) {
     }
 }
 /** Called once on a complete native snapshot or on the local Markdown renderer's DOM. */
-function prepare(root, options: {
+function prepare(root: HTMLElement, options: {
     book?: boolean;
     tocDepth?: number;
     preNumbered?: boolean;
@@ -190,8 +193,8 @@ function prepare(root, options: {
     subtitle?: string;
     toc?: boolean;
 } = {}) {
-    const doc = root.ownerDocument, warnings: string[] = [], entries: any[] = [], headingMap = new Map(), maps = new Map();
-    const chapters = [...root.querySelectorAll(':scope > .phb-chapter')];
+    const doc = root.ownerDocument, warnings: string[] = [], entries: TocEntry[] = [], headingMap = new Map<string, HTMLElement>(), maps = new Map<string, Map<string, string | null>>();
+    const chapters = [...root.querySelectorAll<HTMLElement>(':scope > .phb-chapter')];
     if (!chapters.length)
         throw new Error('No chapter containers in export document.');
     const book = options.book ?? chapters.length > 1;
@@ -199,15 +202,15 @@ function prepare(root, options: {
     unfold(root);
     chapters.forEach((ch, i) => {
         const path = norm(ch.dataset.path || String(i));
-        const map = new Map();
+        const map = new Map<string, string | null>();
         maps.set(path, map);
         ch.id = `phb-c${i + 1}`;
         map.set('', ch.id);
-        ch.querySelectorAll('.metadata-container,.frontmatter-container,.mod-header,.embedded-backlinks,.copy-code-button').forEach(x => x.remove());
-        let main = [...ch.querySelectorAll('h1')].find(h => !h.closest('.callout'));
+        ch.querySelectorAll<HTMLElement>('.metadata-container,.frontmatter-container,.mod-header,.embedded-backlinks,.copy-code-button').forEach(x => x.remove());
+        let main = [...ch.querySelectorAll<HTMLElement>('h1')].find(h => !h.closest('.callout'));
         if (!main) {
             main = doc.createElement('h1');
-            main.textContent = ch.dataset.title || path.split('/').pop();
+            main.textContent = ch.dataset.title || path.split('/').pop() || '';
             ch.prepend(main);
         }
         if (book) {
@@ -217,20 +220,21 @@ function prepare(root, options: {
             main.before(kicker);
         }
         // Ordinary HTML/block/footnote IDs must be chapter-local. Math/SVG IDs are already unique.
-        ch.querySelectorAll('[id]').forEach(e => {
+        ch.querySelectorAll<HTMLElement>('[id]').forEach(e => {
             if (/^H[1-6]$/.test(e.tagName) || e.closest('svg,mjx-container'))
                 return;
             const old = e.id;
             e.id = `phb-c${i + 1}-i-${old}`;
             map.set(old, e.id);
         });
-        ch.querySelectorAll('[data-phb-block],[data-block-id],[data-phb-blocks]').forEach(e => {
+        ch.querySelectorAll<HTMLElement>('[data-phb-block],[data-block-id],[data-phb-blocks]').forEach(e => {
             const key = e.dataset.phbBlock || e.dataset.blockId;
             let keys = key ? [key] : [];
             try {
-                keys.push(...JSON.parse(e.dataset.phbBlocks || '[]'));
+                const parsed: unknown = JSON.parse(e.dataset.phbBlocks || '[]');
+                if (Array.isArray(parsed)) keys.push(...parsed.filter((key): key is string => typeof key === 'string'));
             }
-            catch { }
+            catch { /* Malformed optional block metadata is ignored. */ }
             keys = [...new Set(keys.filter(k => typeof k === 'string' && /^[A-Za-z0-9-]+$/.test(k)))];
             if (!keys.length)
                 return;
@@ -251,17 +255,17 @@ function prepare(root, options: {
         if (!options.preNumbered)
             decorateWhole(ch, options.numbered !== false, book ? String(i + 1) : '');
         let j = 0;
-        for (const h of ch.querySelectorAll('h1,h2,h3,h4,h5,h6')) {
+        for (const h of ch.querySelectorAll<HTMLElement>('h1,h2,h3,h4,h5,h6')) {
             if (h.closest('.callout,.phb-toc'))
                 continue;
-            const old = h.id, raw = h.dataset.heading || h.textContent.trim(), id = `phb-c${i + 1}-h${++j}`;
+            const old = h.id, raw = h.dataset.heading || h.textContent?.trim() || '', id = `phb-c${i + 1}-h${++j}`;
             h.id = id;
             if (old)
                 map.set(old, id);
             if (!map.has(raw))
                 map.set(raw, id);
-            if (!map.has(h.textContent.trim()))
-                map.set(h.textContent.trim(), id);
+            if (!map.has(h.textContent?.trim() || ''))
+                map.set(h.textContent?.trim() || '', id);
             const level = Number(h.tagName.slice(1));
             if (level <= depth) {
                 const title = raw.replace(/\$/g, '');
@@ -273,13 +277,13 @@ function prepare(root, options: {
     });
     // Resolve wiki and ordinary fragment links AFTER every chapter's IDs exist.
     for (const ch of chapters)
-        for (const a of ch.querySelectorAll('a[href],a[data-href]')) {
+        for (const a of ch.querySelectorAll<HTMLAnchorElement>('a[href],a[data-href]')) {
             if (a.closest('svg,mjx-container,.phb-toc'))
                 continue;
             const raw = decode(a.dataset.phbLink || a.dataset.href || a.getAttribute('href') || '');
             if (/^(https?:|mailto:|tel:|data:|obsidian:)/i.test(raw))
                 continue;
-            const here = norm(ch.dataset.path), hash = raw.indexOf('#');
+            const here = norm(ch.dataset.path || ''), hash = raw.indexOf('#');
             const file = hash < 0 ? raw : raw.slice(0, hash), sub = hash < 0 ? '' : raw.slice(hash + 1);
             const candidates = a.dataset.phbCanonical === 'true' ? [norm(file)] : file ? [norm(file), norm(here.split('/').slice(0, -1).join('/') + '/' + file)] : [here];
             let target = candidates.find(p => maps.has(p));
@@ -301,19 +305,19 @@ function prepare(root, options: {
             }
         }
     // Existing live TOC markup is replaced, not appended to a second time.
-    root.querySelectorAll('.phb-toc').forEach(n => {
+    root.querySelectorAll<HTMLElement>('.phb-toc').forEach(n => {
         const p = doc.createElement('div');
         p.className = 'phb-toc-placeholder';
         n.replaceWith(p);
     });
-    root.querySelectorAll('p').forEach(p => { if (/^\[toc\]$/i.test(p.textContent.trim()))
+    root.querySelectorAll<HTMLElement>('p').forEach(p => { if (/^\[toc\]$/i.test(p.textContent?.trim() || ''))
         p.className = 'phb-toc-placeholder'; });
-    root.querySelectorAll('.phb-toc-placeholder').forEach(p => {
-        if (p.parentElement?.tagName === 'P' && !p.parentElement.textContent.trim())
+    root.querySelectorAll<HTMLElement>('.phb-toc-placeholder').forEach(p => {
+        if (p.parentElement?.tagName === 'P' && !(p.parentElement.textContent || '').trim())
             p.parentElement.replaceWith(p);
     });
     if (book) {
-        root.querySelectorAll('.phb-toc-placeholder').forEach(n => n.remove());
+        root.querySelectorAll<HTMLElement>('.phb-toc-placeholder').forEach(n => n.remove());
         const front = doc.createElement('section');
         front.className = 'phb-frontmatter';
         const title = doc.createElement('h1');
@@ -326,22 +330,22 @@ function prepare(root, options: {
         root.prepend(front);
     }
     else {
-        let holders = [...root.querySelectorAll('.phb-toc-placeholder')];
+        let holders = [...root.querySelectorAll<HTMLElement>('.phb-toc-placeholder')];
         if (!holders.length && options.toc !== false && entries.length > 1) {
             const p = doc.createElement('div');
-            chapters[0].querySelector('h1').after(p);
+            chapters[0].querySelector('h1')!.after(p);
             holders = [p];
         }
         // Single-note TOC excludes its document title, matching the supplied PDF.
-        const subentries = entries.filter(e => e.id !== chapters[0].querySelector('h1').id);
+        const subentries = entries.filter(e => e.id !== chapters[0].querySelector('h1')!.id);
         holders.forEach(n => n.replaceWith(makeToc(doc, subentries, headingMap)));
     }
     addProbes(root, entries);
     return { version: 1, prepared: true, title: options.title || chapters[0].dataset.title || '数学笔记', book, entries, warnings };
 }
-function updatePages(root, positions) {
-    root.querySelectorAll('[data-phb-page]').forEach(el => {
-        const p = positions[el.dataset.phbPage];
+function updatePages(root: HTMLElement, positions: Record<string, { page: number }>) {
+    root.querySelectorAll<HTMLElement>('[data-phb-page]').forEach(el => {
+        const p = positions[el.dataset.phbPage || ''];
         if (!p)
             throw new Error('Missing printed destination: ' + el.dataset.phbPage);
         el.textContent = String(p.page + 1);

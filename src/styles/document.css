@@ -102,3 +102,6 @@ body.phb-export .phb-callout-wrap > .callout[data-callout] { margin:0 !important
   }
   body.phb-export tr { break-inside:avoid; }
 }
+html { background: var(--phb-page-background, white); }
+@page { background: var(--phb-page-background, white); }
+.phb-glyph-cache { position: absolute; width: 0; height: 0; overflow: hidden; }

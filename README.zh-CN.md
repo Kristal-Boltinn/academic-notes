@@ -6,7 +6,7 @@
 
 数学环境、公式、图表与子图自动编号；跨文件块引用、目录和多篇笔记合订本。配色独立于特定主题，PDF 使用 Obsidian 自带的 Electron，安装后无需 Python、Chrome 或其他外部程序。
 
-**2.2.1 · Community Release Candidate**。尚未通过社区审核，不代表已在 Community Plugins 上架。
+**2.2.2 · Community Release Candidate**。尚未通过社区审核，不代表已在 Community Plugins 上架。
 
 ![Theorem environments](screenshots/theorem.png)
 
@@ -232,7 +232,7 @@ phb-book:
 
 - 本地索引库内 Markdown，以解析跨文件引用；支持排除文件/目录。无账号、遥测或开发者服务器，不传输笔记内容。
 - 插件不安装程序、不启动外部命令、不下载运行依赖。Electron 和 PDF 后处理都在本机执行。
-- PDF 临时将 HTML 写入系统临时目录中的独立 `academic-notes-*` 文件夹，结束后删除；应用崩溃时可能留下临时文件。PDF 使用隔离的隐藏窗口，禁用 Node 集成、文档脚本和网络请求。普通外部链接可保留为 PDF 链接，不会因导出自动访问。
+- Node 文件系统接口仅用于创建和清理独立的打印快照，不扫描任意系统目录。PDF 临时将 HTML 写入系统临时目录中的独立 `academic-notes-*` 文件夹，结束后删除；应用崩溃时可能留下临时文件。PDF 使用隔离的隐藏窗口，禁用 Node 集成、文档脚本和网络请求。普通外部链接可保留为 PDF 链接，不会因导出自动访问。
 - 为保存主题外观，快照可能读取本机已加载的 CSS、字体和图片资源，包括主题引用的库外本地资源。这些资源仅内嵌进本地快照；关闭捕获主题可减少主题资源读取。
 - 导出文件与报告只写入库内指定目录。报告可能包含文件路径、标题和警告；公开分享前应检查内容。
 - 网络图片请先保存到库内。插件不会在导出时下载远程图片或 CSS 资源。Obsidian 和其他插件自己的网络行为不由本插件控制。
@@ -272,7 +272,7 @@ npm run check:release
 
 原生测试会启动隐藏的独立 Electron 测试窗口，在 `output/` 输出截图、PDF 和报告。它验证真实 Chromium 打印和样式，不等同于真实 Obsidian 实时预览验收。
 
-修改版本时同步 `package.json`、lockfile、`manifest.json`、`versions.json` 和 CHANGELOG。推送与 manifest 版本一致的 tag（例如 `2.2.1`）后，GitHub Actions 构建、测试并创建**草稿 Release**，上传三个安装文件；人工审阅后再公开。发布前按 [RELEASING.md](RELEASING.md) 核对作者、唯一 ID、实际桌面验收和 Community Directory 扫描。
+修改版本时同步 `package.json`、lockfile、`manifest.json`、`versions.json` 和 CHANGELOG。推送与 manifest 版本一致的 tag（例如 `2.2.2`）后，GitHub Actions 构建、测试并创建**草稿 Release**，上传三个安装文件；人工审阅后再公开。发布前按 [RELEASING.md](RELEASING.md) 核对作者、唯一 ID、实际桌面验收和 Community Directory 扫描。
 
 ## License
 

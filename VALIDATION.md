@@ -1,3 +1,12 @@
+# 2.2.2 review follow-up — 2026-09-20
+
+- Strict implicit-any TypeScript check, seven regression tests and three-file release validation passed.
+- Official Obsidian ESLint rules: no errors; native DOM helper recommendations remain in isolated Chromium code (see REVIEW-NOTES.md).
+- Native Electron: 13 palette cases passed; 8.8 MB snapshot generated a six-page PDF in two passes, with 11 valid internal links, no invalid links and no horizontal overflow.
+- Added a real Chromium regression for TOC inline formatting, literal angle brackets, cloned SVG glyph references and unchanged source headings.
+- Run Electron under the normal desktop account; the restricted execution account could not start its GPU subprocess. No browser sandbox protection was disabled.
+- GitHub upload, 2.2.2 release attestations, official rescan and real Obsidian acceptance of 2.2.2 have not yet been verified. Older sections below describe historical checks.
+
 # 2.2.1 follow-up
 
 TypeScript, seven regression tests and three-file release checks passed. Native Electron exported an 8,863,564-byte synthetic HTML snapshot through a temporary file, with six pages and eleven valid internal links. The user confirmed successful PDF export in Obsidian on 2026-09-20; other untested host combinations remain outside this verification. The previous data-URL path failed on the user snapshot; interface-only diagnostics previously overstated readiness.

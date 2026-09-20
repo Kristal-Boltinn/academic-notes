@@ -28,7 +28,7 @@ Requires **Obsidian desktop 1.9.0 or later**. Download `main.js`, `manifest.json
 
 Enable **Academic Notes** under **Settings → Community plugins**. Figure and table styles are included; no CSS snippet is required. PDF export uses Obsidian's bundled Electron, so no Python or separate Chrome installation is needed.
 
-Version **2.2.1** is available on GitHub and is not yet listed in the Community Plugins directory. The current settings and command labels are primarily in Chinese; the tables below identify commands by their current labels.
+Academic Notes is available through GitHub releases and is awaiting Community Plugins review. The current settings and command labels are primarily in Chinese; the tables below identify commands by their current labels.
 
 For standalone table and caption styling without automatic numbering, copy [academic-layout.css](snippets/academic-layout.css) into `.obsidian/snippets/` and enable it under Appearance. Avoid enabling duplicate styles alongside the plugin.
 
@@ -248,7 +248,7 @@ Outputs default to `_exports/` inside the vault. Only vault-relative output dire
 
 - Markdown is indexed locally to resolve cross-file references, with configurable exclusions. No account, telemetry, or developer server is involved; note contents are not sent to the developer.
 - The installed plugin does not install software, launch external commands, or download runtime dependencies. Printing and PDF post-processing run locally.
-- PDF export temporarily writes HTML into an isolated `academic-notes-*` directory under the system temporary directory, then removes it. A crash can leave temporary files behind. Printing uses an isolated hidden window with Node integration, document scripts, and network requests disabled. External hyperlinks can remain in PDFs without being visited during export.
+- The Node filesystem API is used only to create and remove an isolated print snapshot, not to scan arbitrary system folders. PDF export temporarily writes HTML into an isolated `academic-notes-*` directory under the system temporary directory, then removes it. A crash can leave temporary files behind. Printing uses an isolated hidden window with Node integration, document scripts, and network requests disabled. External hyperlinks can remain in PDFs without being visited during export.
 - To preserve appearance, snapshots may read locally loaded CSS, fonts, and images, including local files outside the vault referenced by a theme. They are embedded in the local snapshot. Disabling theme capture reduces theme-resource access.
 - Final exports and reports are written only to the configured directory inside the vault. Reports may contain paths, note titles, and warnings; review them before public sharing. Do not publish your local `data.json` settings file.
 - Save remote images to the vault first. Export does not download remote images or CSS. Obsidian's and other plugins' network behavior is outside this plugin's control.
@@ -279,6 +279,7 @@ Use Node.js 22 or later:
 ```sh
 npm ci
 npm test
+npm run lint
 npm run build
 npm run test:electron
 npm run check:release

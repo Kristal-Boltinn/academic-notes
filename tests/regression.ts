@@ -11,7 +11,8 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
   const body = { dataset: {} as Record<string, string>,
     getAttribute: () => null, removeAttribute: () => {},
     classList: { contains: (s: string) => classes.has(s), toggle: (s: string, value: boolean) => value ? classes.add(s) : classes.delete(s) } };
-  const previous = { document: globalThis.document, observer: globalThis.MutationObserver };
+  const previous = { window: globalThis.window, document: globalThis.document, observer: globalThis.MutationObserver };
+  globalThis.window = globalThis as any;
   globalThis.document = { body } as any;
   globalThis.MutationObserver = class { observe() {} disconnect() {} } as any;
   const app: any = { metadataCache: { on() {} }, vault: { on() {} }, workspace: { on() {}, onLayoutReady() {} } };
@@ -26,7 +27,7 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
     assert.ok(classes.has('phb-neutral-body'));
     plugin.onunload();
     assert.ok(!classes.has('phb-neutral-body') && !classes.has('an-active'));
-  } finally { globalThis.document = previous.document; globalThis.MutationObserver = previous.observer; }
+  } finally { globalThis.window = previous.window; globalThis.document = previous.document; globalThis.MutationObserver = previous.observer; }
 });
 
 test('H6 is a heading; explicit figures are numbered; code fences are not declarations', () => {

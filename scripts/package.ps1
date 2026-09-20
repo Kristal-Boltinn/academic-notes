@@ -14,9 +14,9 @@ foreach ($target in @($stage, $releaseStage)) {
 }
 # Deliberate allowlist: never copy a vault, local settings, dependencies, or generated test output.
 $sourceEntries = @('src','snippets','scripts','tests','examples','screenshots','licenses','.github',
-    '.gitignore','.gitattributes','package.json','package-lock.json','tsconfig.json','esbuild.config.mjs',
-    'main.js','styles.css','manifest.json','versions.json','README.md','CHANGELOG.md','RELEASING.md',
-    'VALIDATION.md','LICENSE','THIRD-PARTY-NOTICES.md','安装说明.md')
+    '.gitignore','.gitattributes','package.json','package-lock.json','tsconfig.json','esbuild.config.mjs','eslint.config.mjs',
+    'main.js','styles.css','manifest.json','versions.json','README.md','README.zh-CN.md','CHANGELOG.md','RELEASING.md',
+    'VALIDATION.md','REVIEW-NOTES.md','LICENSE','THIRD-PARTY-NOTICES.md','安装说明.md')
 foreach ($entry in $sourceEntries) {
     Copy-Item -LiteralPath (Join-Path $projectRoot $entry) -Destination (Join-Path $stage 'academic-notes') -Recurse -Force
 }
