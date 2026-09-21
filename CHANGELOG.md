@@ -1,3 +1,9 @@
+# 2.5.1
+
+- Untitled, unreferenced subfigures no longer show a letter, reserve caption space or consume a subfigure letter. Existing IDs remain available; referenced or manually numbered subfigures retain labels.
+- Preserve explicitly written captions such as "Subfigure" instead of treating them as native placeholder titles.
+- Keep explicit folding controls usable in notes and omit empty captions in PDF export. Add parser and real Chromium rendering regressions.
+
 # 2.5.0
 
 - Add the bilingual Insert academic environment command with theorem, definition, proof, remark, figure, table and 2–12-subfigure templates, unique per-note IDs and title selection.

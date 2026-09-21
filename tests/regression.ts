@@ -130,6 +130,21 @@ test('ambiguous duplicate block IDs do not resolve', () => {
   assert.ok(graph.warnings.some(w => w.includes('duplicate')));
 });
 
+test('untitled unreferenced subfigures have no caption number and do not consume letters', () => {
+  const source = '> [!figure] Group\n> > [!subfig]\n> > ![[one.png]]\n>\n> ^blank\n>\n> > [!subfigure] Named\n> > ![[two.png]]\n>\n> ^named\n>\n> > [!subfigure|Z]\n> > ![[three.png]]\n>\n> ^manual\n>\n> > [!subfigure|*]\n> > ![[four.png]]\n>\n> ^hidden\n\n^group';
+  const note = Engine.parse('figures.md', source);
+  let graph = Engine.graph([note]);
+  const children = note.media.filter(r => r.kind === 'subfigure');
+  assert.deepEqual(children.map(r => r.number), ['', '1(a)', 'Z', '']);
+  assert.equal(graph.resolve('#^blank', 'figures.md'), children[0], 'Block anchors remain available');
+  const referring = Engine.parse('other.md', '[[figures#^blank]]\n[[figures#^hidden]]');
+  graph = Engine.graph([note, referring]);
+  assert.deepEqual(children.map(r => r.number), ['1(a)', '1(b)', 'Z', '']);
+  assert.equal(Engine.refText(graph.resolve('figures#^blank', 'other.md'), graph.settings), 'fig 1(a)');
+  Engine.graph([note]);
+  assert.deepEqual(children.map(r => r.number), ['', '1(a)', 'Z', ''], 'Removing a reference resets hidden captions and counters');
+});
+
 test('PDF annotations supply exact page positions and become nested outlines', async () => {
   const doc = await PDFDocument.create(); const pages = [doc.addPage(), doc.addPage()];
   const entries = [{ id: 'h1', title: 'Chapter', level: 1 }, { id: 'h2', title: 'Section', level: 2 }];

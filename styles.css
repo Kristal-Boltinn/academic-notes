@@ -607,7 +607,7 @@ body :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-render
 body :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {
   position: static;
   inset: auto;
-  display: flex !important;
+  display: var(--an-caption-display, flex) !important;
   align-items: baseline;
   justify-content: center;
   order: 2;
@@ -660,6 +660,10 @@ body .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {
 }
 body .an-caption-text {
   font-weight: 400;
+}
+body .callout.an-captionless:not(.is-collapsible) > .callout-title,
+body.phb-export .callout.an-captionless > .callout-title {
+  --an-caption-display: none;
 }
 body :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {
   margin: .35em 0;

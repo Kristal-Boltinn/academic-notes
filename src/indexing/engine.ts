@@ -352,6 +352,10 @@ function assign(note: ParsedNote, settings: typeof DEFAULTS, referenced: Set<str
         }
         if (!r.parent || !r.parent.number || !settings.mediaNumbered || r.suppress)
             continue;
+        // A decorative image needs neither a caption nor a letter. Merely having
+        // a block ID (e.g. from the insertion command) is not a reference.
+        if (!r.title?.trim() && !r.referenced)
+            continue;
         const n = (subcounts.get(r.parent) || 0) + 1;
         subcounts.set(r.parent, n);
         r.subletter = alpha(n);

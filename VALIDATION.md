@@ -1,3 +1,11 @@
+# 2.5.1 untitled subfigure captions
+
+- Ten Node regressions pass, including untitled subfigures with existing IDs, mixed titled/untitled groups, explicit manual/suppressed numbers, cross-file references and reference removal. Decorative subfigures retain anchors but do not consume a letter.
+- Chromium tests use the actual mediaRecord adapter and numbering engine with a minimal Obsidian API mock. Reading and Live Preview DOM contexts check hidden caption text and zero caption height, visible image content, reference-driven restoration, explicitly written "Subfigure" titles and retained folding controls. Export hides empty folding-caption rows after unfolding.
+- TypeScript, lint and release checks pass; the existing isolated print-window DOM-helper warning remains. Two builds reproduce identical main.js/styles.css hashes. No additional priority declarations were introduced.
+- Default, Phycat and Minimal checks all passed, including 39 palette cases and actual PDF exports with no invalid links or horizontal overflow. The final PDF mixed-caption page was rendered and visually checked: the untitled image has no label and its titled neighbor starts at (a).
+- Actual Obsidian host UI acceptance remains separate from these synthetic tests.
+
 # 2.5.0 environment insertion and subfigure layout — 2026-09-21
 
 - TypeScript/build and nine Node regressions passed. Generated 2, 3, 4, 6 and 12-image templates parse into correctly nested subfigures with unique per-note block IDs; layout options preserve automatic, manual and suppressed numbering metadata. Existing localization and reference regressions remain covered.

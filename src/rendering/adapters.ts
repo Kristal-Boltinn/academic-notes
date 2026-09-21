@@ -43,6 +43,7 @@ function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
     box.classList.add('an-media', 'an-' + r.kind);
     box.dataset.anLine = String(r.line);
     box.dataset.anType = r.kind;
+    box.classList.toggle('an-captionless', r.kind === 'subfigure' && !r.title?.trim() && !r.number);
     box.setAttribute('role', r.kind === 'table' ? 'group' : 'figure');
     const inner = box.querySelector(':scope > .callout-title > .callout-title-inner');
     if (!inner)
@@ -51,7 +52,7 @@ function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
     if (!label) {
         const original = box.ownerDocument.win.createSpan();
         original.className = 'an-caption-text';
-        const isDefault = ['', ...Engine.MEDIA[r.kind].map(x => x.toLowerCase())].includes(inner.textContent.trim().toLowerCase());
+        const isDefault = !r.title?.trim();
         if (!isDefault)
             while (inner.firstChild)
                 original.appendChild(inner.firstChild);

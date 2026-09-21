@@ -224,6 +224,8 @@ cssclasses:
 
 `academic-serif` uses local serif fonts. `academic-indent` indents ordinary paragraphs, excluding callouts and lists. `academic-keep-table-style` preserves the theme's table styling.
 
+An untitled subfigure (`> [!subfigure]` with nothing after the closing bracket) shows only its image when it is not referenced: no letter and no empty caption row. It does not consume a letter, so the next titled subfigure starts at `(a)`. An existing block ID alone does not require a caption. If a link actually references that ID, or a manual number is supplied, a label remains available. Explicit folding controls remain usable on screen; empty captions are removed from PDF export.
+
 ### Quick insertion and group layout
 
 Run **Academic Notes: Insert academic environment** from the command palette, or assign it a hotkey under Obsidian's Hotkeys settings. Choose a theorem, definition, proof, remark, single figure, subfigure group or table. Groups offer 2–12 images, a maximum column count and an optional shared image height. The command inserts before the current line (before the enclosing quote block when inside a callout), preserves existing text, selects the title and generates block IDs that do not collide with the current note. Replace the sample image paths with your own attachments. Edit the generated Markdown freely afterward.

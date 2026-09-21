@@ -1,3 +1,8 @@
+# Community review follow-up: 2.5.1
+
+- Hide unneeded subfigure captions through a scoped variable in the existing caption rule, without additional !important declarations. Preserve actual references, explicit numbering and interactive folding controls.
+- No new network, filesystem or dependency capabilities are introduced.
+
 # Community review follow-up: 2.5.0
 
 - Figure-specific container queries select responsive column counts without resize polling. Four-column layouts intentionally bypass three columns.
