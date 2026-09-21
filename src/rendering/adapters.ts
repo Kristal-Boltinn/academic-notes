@@ -1,4 +1,5 @@
 import { t } from '../i18n';
+import { applyFigureLayout } from './figure-layout';
 import * as Obs from 'obsidian';
 import Engine from '../indexing/engine';
 import type AcademicNotes from '../main';
@@ -67,6 +68,7 @@ function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
             return;
         const subfigs = [...content.querySelectorAll<HTMLElement>('.callout[data-callout]')].filter(n => Engine.mediaCanon(n.dataset.callout) === 'subfigure' && n.parentElement!.closest('.callout') === box);
         content.classList.toggle('an-figure-grid', subfigs.length > 0);
+        applyFigureLayout(box, subfigs.length, r.layout);
         for (const sub of subfigs) {
             let cell = sub;
             while (cell.parentElement !== content)

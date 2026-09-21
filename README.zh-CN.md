@@ -8,7 +8,7 @@
 
 数学环境的视觉设计受到 [ElegantBook](https://github.com/ElegantLaTeX/ElegantBook) 启发：定理使用带标题的数学框，证明使用简洁的行内标题和结束方框，注记使用彩色行内标题。颜色随 Academic Notes 当前色板变化。
 
-**2.4.0**
+**2.5.0**
 
 界面自动跟随 **Obsidian → 设置 → 通用 → 语言**：中文语言使用简体中文，英文及其他暂未翻译的语言使用英文。更改语言后重启 Obsidian 即可生效。设置、下拉选项、命令、弹窗、诊断和导出提示均支持中英文；笔记正文、自定义标题、引用语法和已保存的设置保持不变。
 
@@ -206,6 +206,32 @@ cssclasses:
 
 `academic-serif` 使用本机可用的衬线字体；`academic-indent` 让普通段落首行缩进，框内、列表等不缩进；`academic-keep-table-style` 保留主题的表格样式。
 
+### 快捷插入与图组布局
+
+在命令面板运行 **Academic Notes：插入学术环境**，也可在 Obsidian 的快捷键设置中为此命令绑定按键。可选定理、定义、证明、注记、单图、子图组、表格；子图组可选择 2–12 幅、最大列数及可选的统一图片高度。命令在当前行前插入完整结构（位于 callout 内时插入到所属引用块之前），保留原文并选中标题，自动生成与当前笔记已有 ID 不冲突的块 ID。把示例图片路径改成自己的附件即可；之后仍可直接编辑 Markdown。
+
+统一设置写在**外层 figure**，例如：
+
+```markdown
+> [!figure|cols=auto height=180] 对比图
+> > [!subfigure] 横图
+> > ![[Attachments/wide.png]]
+>
+> > [!subfigure] 竖图
+> > ![[Attachments/tall.png]]
+```
+
+- `cols=auto`：两幅最多两列、四幅最多四列，其余最多三列。四列直接变两列，再变一列；四幅不会出现 3+1。同组单元格等宽，最后一行未满时居中。
+- `cols=1`、`2`、`3`、`4`：指定最大列数，窄图组仍会减少列数；四列上限同样跳过三列。换行依据图组本身的宽度，分栏阅读和 PDF 页面均适用。
+- `height=180` 或 `height=180px`：每幅子图使用相同的目标高度 180 像素。图片等比例完整显示、不拉伸、不裁剪；如果最宽图片放不进当前列，整组会一起降到相同的较小高度。此设置会覆盖本组图片自身的 `![[图片.png|300]]` 宽度。图片文件本身自带的白边仍会保留。允许 16–1200 像素；过高的图组可能超过一页 PDF。
+- 不写 `height` 就保留单张图片的宽度设置。图组参数不影响普通图片；无效参数值会忽略。可与编号参数合用，例如 `|A.1 cols=2 height=180`、`|* cols=2`。
+
+![宽图组：四幅同排](screenshots/subfigures-wide.png)
+
+![窄图组：两行两列](screenshots/subfigures-compact.png)
+
+如果喜欢缩写展开，可选用附带的 [LaTeX Suite snippets](examples/latex-suite-snippets.js)：提供 `subfig2`、`subfig3`、`subfig4`、`subfig6`、`athm`、`aproof`、`aremark`。将条目合并进已有 snippets 数组，在顶层空行输入缩写并按 Tab 展开，再按 Tab 逐项填写，详见 [LaTeX Suite 文档](https://github.com/artisticat1/obsidian-latex-suite/blob/main/DOCS.md)。这些 snippets 不生成 ID；需要引用时用插件的添加块 ID 命令。内置插入命令不依赖其他插件。
+
 ## 配色：哪些会跟随主题？
 
 浅色：Forest（默认）、Sakura、Mint、Sky、Mauve、Golden、Cherry、Prussian。深色：Radiation（默认）、Vampire、Abyss。每套按数学环境区分颜色。浅深模式跟随 **Obsidian 当前模式**；Obsidian 设为跟随系统时，会间接跟随系统的浅深模式。
@@ -304,7 +330,7 @@ npm run check:release
 
 原生测试会启动隐藏的独立 Electron 测试窗口，将 README 示意图保存到 `screenshots/`，将 PDF 和报告保存到 `output/`。它验证真实 Chromium 打印和样式，不等同于真实 Obsidian 实时预览验收。可将环境变量 `ACADEMIC_TEST_THEME` 设为本机主题 CSS 路径，额外检查兼容性。完整的证明与注记示例见 [examples/proof-and-remark.md](examples/proof-and-remark.md)。
 
-修改版本时同步 `package.json`、lockfile、`manifest.json`、`versions.json` 和 CHANGELOG。推送与 manifest 版本一致的 tag（例如 `2.4.0`）后，GitHub Actions 构建、测试并创建**草稿 Release**，上传三个安装文件；人工审阅后再公开。发布前按 [RELEASING.md](RELEASING.md) 核对作者、唯一 ID、实际桌面验收和 Community Directory 扫描。
+修改版本时同步 `package.json`、lockfile、`manifest.json`、`versions.json` 和 CHANGELOG。推送与 manifest 版本一致的 tag（例如 `2.5.0`）后，GitHub Actions 构建、测试并创建**草稿 Release**，上传三个安装文件；人工审阅后再公开。发布前按 [RELEASING.md](RELEASING.md) 核对作者、唯一 ID、实际桌面验收和 Community Directory 扫描。
 
 ## License
 

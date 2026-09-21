@@ -717,6 +717,42 @@ body :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-render
 body .an-figure-grid > .an-empty-anchor {
   display: none;
 }
+body .callout:is([data-callout=figure], [data-callout=fig]) {
+  container: an-figure / inline-size;
+}
+body .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {
+  --an-columns: 1;
+}
+body .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid > .an-subfigure-cell {
+  flex: 0 0 calc((100% - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns));
+  min-width: 0;
+}
+@container an-figure (min-width: 26rem) {
+  body .callout:is(.an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {
+    --an-columns: 2;
+  }
+}
+@container an-figure (min-width: 39rem) {
+  body .callout.an-columns-3 > .an-figure-grid {
+    --an-columns: 3;
+  }
+}
+@container an-figure (min-width: 52rem) {
+  body .callout.an-columns-4 > .an-figure-grid {
+    --an-columns: 4;
+  }
+}
+body .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) .image-embed {
+  width: 100% !important;
+  max-width: 100%;
+}
+body .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) img {
+  width: auto !important;
+  height: min(var(--an-subfigure-height), calc((100cqw - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns) / var(--an-max-image-ratio, 1))) !important;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+}
 body :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {
   text-indent: 2em;
 }
@@ -753,7 +789,8 @@ body :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-s
     max-height: 155mm;
   }
   body .an-figure-grid {
-    gap: 4mm;
+    --an-layout-image-gap: 4mm;
+    gap: var(--an-layout-image-gap);
   }
   body .an-figure-grid > .an-subfigure-cell {
     min-width: 0;

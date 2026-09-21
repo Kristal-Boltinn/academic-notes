@@ -8,6 +8,8 @@ import AcademicNotes from '../src/main';
 import { ENGLISH, setLanguage, t } from '../src/i18n';
 import { AcademicSettings } from '../src/ui/settings-tab';
 import { setTestLanguage } from './obsidian-mock';
+import { environmentTemplate } from '../src/ui/environment';
+import { figureMetadata } from '../src/rendering/figure-layout';
 
 test('plugin lifecycle registers new commands, drops removed settings and restores appearance', async () => {
   const classes = new Set(['theme-light']);
@@ -24,7 +26,7 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
   try {
     setTestLanguage('en');
     await plugin.onload();
-    assert.equal(plugin.commands.length, 9);
+    assert.equal(plugin.commands.length, 10);
     assert.equal(plugin.commands.find((c: any) => c.id === 'export-current-pdf').name, 'Export current note to PDF');
     assert.ok(!plugin.commands.some((c: any) => c.id === 'setup-pdf'));
     for (const key of ['legacy', 'legacyCaptions', 'followPhycat', 'pythonPath']) assert.ok(!(key in plugin.settings));
@@ -90,6 +92,35 @@ test('subfigure IDs bind to their own nested declarations', () => {
   assert.equal(note.blocks.get('fig-initial')?.number, '1.1(a)');
   assert.equal(note.blocks.get('fig-final')?.number, '1.1(b)');
   assert.equal(note.blocks.get('fig-states')?.kind, 'figure');
+});
+
+test('environment templates preserve unique IDs and figure options preserve numbering', () => {
+  setLanguage('en');
+  let source = '> [!thm] Existing\n\n^thm-1\n\n^fig-1\n\n^fig-2-sub-1';
+  for (const count of [2, 3, 4, 6, 12]) {
+    const result = environmentTemplate('subfigures', source, count, 'auto', 180);
+    assert.equal(result.text.slice(result.selection.start, result.selection.end), 'Enter a title');
+    const note = Engine.parse('figures.md', '## Images\n\n' + result.text); Engine.graph([note]);
+    const group = note.media.find(r => r.kind === 'figure')!;
+    assert.equal(group.number, '1.1'); assert.equal(group.manual, null);
+    assert.deepEqual(group.layout, { columns: 'auto', height: 180 });
+    const children = note.media.filter(r => r.kind === 'subfigure');
+    assert.equal(children.length, count);
+    children.forEach((child, i) => { assert.equal(child.parent, group); assert.equal(child.number, '1.1(' + String.fromCharCode(97 + i) + ')'); assert.ok(child.id); });
+    source += '\n\n' + result.text;
+  }
+  const ids = [...source.matchAll(/\^([A-Za-z0-9-]+)/g)].map(m => m[1]);
+  assert.equal(ids.length, new Set(ids).size);
+  for (const kind of ['thm', 'def', 'proof', 'remark', 'figure', 'table'] as const) {
+    const result = environmentTemplate(kind, source);
+    const note = Engine.parse('a.md', result.text);
+    assert.equal(note.callouts.length, 1); assert.ok(note.callouts[0].id);
+  }
+  assert.deepEqual(figureMetadata('7 cols=4 height=180px'), { numbering: '7', layout: { columns: 4, height: 180 } });
+  assert.equal(figureMetadata('* cols=2').numbering, '*');
+  assert.equal(figureMetadata('').numbering, '');
+  assert.deepEqual(figureMetadata('cols=99 height=url(x)'), { numbering: 'auto', layout: { columns: 'auto' } });
+  assert.throws(() => environmentTemplate('subfigures', '', 0));
 });
 
 test('ambiguous duplicate block IDs do not resolve', () => {

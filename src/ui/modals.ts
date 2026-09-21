@@ -1,4 +1,6 @@
 import { t } from '../i18n';
+import { environmentTemplate, type EnvironmentKind } from './environment';
+import type { FigureLayout } from '../rendering/figure-layout';
 import type AcademicNotes from '../main';
 import type { SourceRecord } from '../indexing/engine';
 import type { App, Editor, TFile, EditorPosition, EditorSuggestContext } from 'obsidian';
@@ -109,4 +111,32 @@ class BookPicker extends Modal {
         });
     }
 }
-export { ProgressModal, ReferencePicker, ReferenceSuggest, BookPicker };
+class EnvironmentModal extends Modal {
+    constructor(app: App, private editor: Editor) { super(app); }
+    onOpen() {
+        this.titleEl.setText(t('插入学术环境'));
+        this.contentEl.createEl('p', { text: t('在当前行前插入完整环境，保留原文；插入后直接填写选中的标题。') });
+        let kind: EnvironmentKind = 'subfigures', count = 2, columns: FigureLayout['columns'] = 'auto', height = '';
+        let group: HTMLDivElement;
+        new Setting(this.contentEl).setName(t('环境类型')).addDropdown(d => d.addOptions({
+            thm: t('定理'), def: t('定义'), proof: t('证明'), remark: t('注记'), figure: t('单图'), subfigures: t('子图组'), table: t('表格')
+        }).setValue(kind).onChange(v => { kind = v as EnvironmentKind; group.hidden = kind !== 'subfigures'; }));
+        group = this.contentEl.createDiv();
+        new Setting(group).setName(t('子图数量')).addDropdown(d => d.addOptions(Object.fromEntries(Array.from({ length: 11 }, (_, i) => [String(i + 2), String(i + 2)]))).setValue('2').onChange(v => { count = Number(v); }));
+        new Setting(group).setName(t('最大列数')).setDesc(t('自动：四幅最多四列，其余最多三列；窄窗格会减少列数，四列直接变两列。')).addDropdown(d => d.addOptions({ auto: t('自动'), '1': '1', '2': '2', '3': '3', '4': '4' }).setValue('auto').onChange(v => { columns = v === 'auto' ? v : Number(v) as 1 | 2 | 3 | 4; }));
+        new Setting(group).setName(t('统一图片高度（像素）')).setDesc(t('留空保留各图片宽度；设置后整组等高，不拉伸、不裁剪，空间不足时整组统一缩小。')).addText(c => c.setPlaceholder('180').onChange(v => { height = v.trim(); }));
+        new Setting(this.contentEl).addButton(b => b.setButtonText(t('取消')).onClick(() => this.close())).addButton(b => b.setButtonText(t('插入')).setCta().onClick(() => {
+            if (kind === 'subfigures' && height && (!/^\d+$/.test(height) || Number(height) < 16 || Number(height) > 1200)) { new Notice(t('高度须为 16–1200 的整数，或留空。')); return; }
+            const result = environmentTemplate(kind, this.editor.getValue(), count, columns, height ? Number(height) : undefined);
+            let line = this.editor.getCursor('from').line;
+            // Keep existing callouts intact by inserting before the enclosing quote block.
+            if (/^\s*>/.test(this.editor.getLine(line))) while (line > 0 && /^\s*>/.test(this.editor.getLine(line - 1))) line--;
+            const at = { line, ch: 0 }, offset = this.editor.posToOffset(at);
+            const prefix = line > 0 && this.editor.getLine(line - 1).trim() ? '\n' : '';
+            this.editor.replaceRange(prefix + result.text + '\n\n', at);
+            this.editor.setSelection(this.editor.offsetToPos(offset + prefix.length + result.selection.start), this.editor.offsetToPos(offset + prefix.length + result.selection.end));
+            this.close(); this.editor.focus();
+        }));
+    }
+}
+export { ProgressModal, ReferencePicker, ReferenceSuggest, BookPicker, EnvironmentModal };

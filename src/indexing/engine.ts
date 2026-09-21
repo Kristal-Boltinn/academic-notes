@@ -1,4 +1,5 @@
 import { t } from '../i18n';
+import { figureMetadata, type FigureLayout } from '../rendering/figure-layout';
 export type ChapterSpec = number | string | { chapter: number | string; mode: string };
 export type NoteGraph = ReturnType<typeof graph>;
 export interface SourceRecord {
@@ -24,6 +25,7 @@ export interface SourceRecord {
     prefix?: string;
     subletter?: string;
     referenced?: boolean;
+    layout?: FigureLayout;
 }
 export interface SourceReference {
     file: string;
@@ -175,12 +177,14 @@ function parse(path: string, source: string, cache: {
                 break;
             endLine = n;
         }
-        const meta = m[2] === undefined ? 'auto' : m[2].trim();
         const key = (canon(m[1]) || mediaCanon(m[1]))!;
+        const rawMeta = m[2] === undefined ? 'auto' : m[2].trim();
+        const figure = key === 'figure' ? figureMetadata(rawMeta) : undefined;
+        const meta = figure ? figure.numbering : rawMeta;
         const rec: SourceRecord = { kind: canon(m[1]) ? 'theorem' : key, key, rawType: m[1], path, line, endLine, from: starts[line],
             to: starts[endLine] + lines[endLine].length, depth: q.depth, title: (m[4] || '').trim(),
             manual: meta && !['auto', '*', '-'].includes(meta) ? meta : null,
-            suppress: meta === '' || meta === '*' || meta === '-', number: '', id: null, ids: [] };
+            suppress: meta === '' || meta === '*' || meta === '-', number: '', id: null, ids: [], layout: figure?.layout };
         (rec.kind === 'theorem' ? theorems : media).push(rec);
         callouts.push(rec);
         records.push(rec);

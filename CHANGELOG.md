@@ -1,3 +1,10 @@
+# 2.5.0
+
+- Add the bilingual Insert academic environment command with theorem, definition, proof, remark, figure, table and 2–12-subfigure templates, unique per-note IDs and title selection.
+- Add figure-level `cols=auto|1|2|3|4` and `height=180` options, compatible with manual and suppressed numbering. Four-column groups switch directly to two columns; shared image heights scale down together when necessary, preserving aspect ratios without cropping.
+- Include optional LaTeX Suite text snippets and expanded usage guides.
+- Test responsive layouts, mixed image ratios, generated references and forward/backward cross-chapter theorem links in PDF export.
+
 # 2.4.0
 
 - Follow Obsidian’s language for Chinese and English settings, commands, dialogs, diagnostics and export messages; use English for other locales. Existing settings and note syntax remain compatible.

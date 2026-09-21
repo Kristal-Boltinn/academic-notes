@@ -224,6 +224,32 @@ cssclasses:
 
 `academic-serif` uses local serif fonts. `academic-indent` indents ordinary paragraphs, excluding callouts and lists. `academic-keep-table-style` preserves the theme's table styling.
 
+### Quick insertion and group layout
+
+Run **Academic Notes: Insert academic environment** from the command palette, or assign it a hotkey under Obsidian's Hotkeys settings. Choose a theorem, definition, proof, remark, single figure, subfigure group or table. Groups offer 2–12 images, a maximum column count and an optional shared image height. The command inserts before the current line (before the enclosing quote block when inside a callout), preserves existing text, selects the title and generates block IDs that do not collide with the current note. Replace the sample image paths with your own attachments. Edit the generated Markdown freely afterward.
+
+Place group options on the **outer figure**, for example:
+
+```markdown
+> [!figure|cols=auto height=180] Comparison
+> > [!subfigure] Wide image
+> > ![[Attachments/wide.png]]
+>
+> > [!subfigure] Tall image
+> > ![[Attachments/tall.png]]
+```
+
+- `cols=auto`: two images use up to two columns, four use up to four, and other counts use up to three. Four columns switch directly to two, then one; four-image groups never wrap as 3+1. Rows retain equal cell widths; a final partial row is centered.
+- `cols=1`, `2`, `3` or `4`: cap the column count. Narrow figures still reduce columns; a four-column cap also skips three columns. The figure's own width controls wrapping, including split panes and PDF pages.
+- `height=180` or `height=180px`: use the same target height of 180 pixels for every subfigure. Images stay proportional and fully visible. If the widest image cannot fit its column, the entire group uses the same reduced height. This explicitly overrides individual `![[image.png|300]]` widths inside this group. It is a shared image height, not a crop or a guarantee of equal visible artwork height. Accepted range: 16–1200 pixels; very tall groups may exceed a printed page.
+- Omit `height` to preserve individual image-width settings. These options apply to subfigures inside this group, not ordinary images. Invalid layout values are ignored. Combine with existing numbering metadata, e.g. `|A.1 cols=2 height=180` or `|* cols=2`.
+
+![Four images on one row](screenshots/subfigures-wide.png)
+
+![The same group on two rows](screenshots/subfigures-compact.png)
+
+For abbreviation expansion, the optional [LaTeX Suite snippets](examples/latex-suite-snippets.js) provide `subfig2`, `subfig3`, `subfig4`, `subfig6`, `athm`, `aproof` and `aremark`. Merge the entries into your existing snippets array, type a trigger on a blank top-level line and press Tab; further Tab presses move between fields. See [LaTeX Suite's instructions](https://github.com/artisticat1/obsidian-latex-suite/blob/main/DOCS.md). Snippets do not create IDs; use Academic Notes' add-block-ID command when a reference is needed. The built-in insertion command needs no other plugin.
+
 ## Appearance
 
 Light palettes: Forest (default), Sakura, Mint, Sky, Mauve, Golden, Cherry, and Prussian. Dark palettes: Radiation (default), Vampire, and Abyss. Each palette assigns colors by environment type. Light/dark mode follows **Obsidian's current mode**, which can itself follow the operating system.

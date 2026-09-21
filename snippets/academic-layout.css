@@ -217,6 +217,41 @@ body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered
   .an-figure-grid .callout:is([data-callout="subfigure"],[data-callout="subfig"]) { margin: 0 !important; }
 body .an-figure-grid > .an-empty-anchor { display: none; }
 
+/* Query the figure's own width, including split panes and printed pages.
+ * Four-column groups deliberately skip three columns: 4 -> 2 -> 1. */
+body .callout:is([data-callout="figure"],[data-callout="fig"]) {
+  container: an-figure / inline-size;
+}
+body .callout:is(.an-columns-1,.an-columns-2,.an-columns-3,.an-columns-4) > .an-figure-grid {
+  --an-columns: 1;
+}
+body .callout:is(.an-columns-1,.an-columns-2,.an-columns-3,.an-columns-4) > .an-figure-grid > .an-subfigure-cell {
+  flex: 0 0 calc((100% - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns));
+  min-width: 0;
+}
+@container an-figure (min-width: 26rem) {
+  body .callout:is(.an-columns-2,.an-columns-3,.an-columns-4) > .an-figure-grid { --an-columns: 2; }
+}
+@container an-figure (min-width: 39rem) {
+  body .callout.an-columns-3 > .an-figure-grid { --an-columns: 3; }
+}
+@container an-figure (min-width: 52rem) {
+  body .callout.an-columns-4 > .an-figure-grid { --an-columns: 4; }
+}
+/* Shared visible height is capped by the widest aspect ratio in the group.
+ * Container units keep all images equally scaled in panes and printed pages. */
+body .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout="subfigure"],[data-callout="subfig"]) .image-embed {
+  width: 100% !important;
+  max-width: 100%;
+}
+body .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout="subfigure"],[data-callout="subfig"]) img {
+  width: auto !important;
+  height: min(var(--an-subfigure-height), calc((100cqw - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns) / var(--an-max-image-ratio, 1))) !important;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+}
+
 /* Optional article typography. Add cssclasses in the note's properties to opt in. */
 body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-indent p { text-indent: 2em; }
 body .academic-indent :is(.callout,blockquote,li,td,th,figcaption,.phb-toc) p { text-indent: 0; }
@@ -230,7 +265,7 @@ body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-ser
   body .an-table { display: block !important; break-inside: auto; }
   body .an-table > .callout-title { break-before: auto; break-after: avoid; }
   body .callout.an-media img { max-height: 155mm; }
-  body .an-figure-grid { gap: 4mm; }
+  body .an-figure-grid { --an-layout-image-gap: 4mm; gap: var(--an-layout-image-gap); }
   body .an-figure-grid > .an-subfigure-cell { min-width: 0; flex-basis: calc(50% - 4mm); }
   body :is(.markdown-preview-view,.markdown-rendered) table { break-inside: auto; }
   body :is(.markdown-preview-view,.markdown-rendered) thead { display: table-header-group; }

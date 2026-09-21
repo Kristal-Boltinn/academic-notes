@@ -1,3 +1,10 @@
+# Community review follow-up: 2.5.0
+
+- Figure-specific container queries select responsive column counts without resize polling. Four-column layouts intentionally bypass three columns.
+- Validated numeric figure metadata controls shared image height; intrinsic image ratios cap the whole group's height without cropping or stretching. This overrides per-image width only for explicitly configured groups. Three scoped priority declarations were added for theme and embed-width compatibility (64 total in released styles.css).
+- New insertion commands modify the current editor only when invoked, preserve existing text and allocate per-note unique block IDs. Optional snippet examples do not execute within the plugin.
+- No new network or filesystem capabilities are introduced.
+
 # Community review follow-up: 2.4.0
 
 - Shared callout variables replace repeated geometry and title overrides. Reduced released CSS priority declarations from 130 to 61; total CSS occurrences including sources fell from 326 to 170. Retained table hover overrides are covered against Phycat and Minimal.

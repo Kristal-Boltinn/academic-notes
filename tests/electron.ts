@@ -109,6 +109,29 @@ async function run() {
       return {grid:getComputedStyle(content).display,captionOrder:getComputedStyle(figure.querySelector(':scope > .callout-title')).order,cells:content.querySelectorAll(':scope > .an-subfigure-cell').length};
     })()`);
     assert.deepEqual(figureLayout, { grid: 'flex', captionOrder: '2', cells: 2 }, 'Figure layout must survive theme overrides');
+    const layoutClient = buildSync({ stdin: { contents: "import {applyFigureLayout} from './src/rendering/figure-layout'; globalThis.applyFigureLayout=applyFigureLayout;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', target: 'es2022' }).outputFiles[0].text;
+    const groupMarkup = (count: number) => `<main class="markdown-preview-view markdown-rendered"><div class="callout an-media" data-callout="figure"><div class="callout-title"><div class="callout-title-inner">Figure · Aligned image areas</div></div><div class="callout-content an-figure-grid">` +
+      Array.from({ length: count }, (_, i) => `<div class="an-subfigure-cell"><div class="callout an-media" data-callout="subfigure"><div class="callout-title"><div class="callout-title-inner">(${String.fromCharCode(97 + i)}) Image ${i + 1}</div></div><div class="callout-content"><p><span class="image-embed" style="width:300px"><img width="300" src="data:image/svg+xml;base64,${Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${i % 2 ? 120 : 320}" height="${i % 2 ? 240 : 120}"><rect width="100%" height="100%" fill="${i % 2 ? '#71628c' : '#286b76'}"/><circle cx="60" cy="60" r="40" fill="#fff"/></svg>`).toString('base64')}"></span></p></div></div></div>`).join('') + '</div></div></main>';
+    for (const count of [2, 3, 4, 6]) {
+      await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(groupMarkup(count), 'html{font-size:16px}')));
+      await wc.executeJavaScript(layoutClient);
+      for (const width of [300, 500, 700, 900]) {
+        const layout = await wc.executeJavaScript(`(async()=>{const box=document.querySelector('[data-callout="figure"]');box.style.width='${width}px';box.style.maxWidth='none';applyFigureLayout(box,${count},{columns:'auto',height:180});await Promise.all([...document.images].map(i=>i.decode()));await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const cells=[...box.querySelectorAll('.an-subfigure-cell')];return {rows:cells.map(c=>Math.round(c.getBoundingClientRect().top)),heights:[...box.querySelectorAll('img')].map(i=>i.getBoundingClientRect().height),fit:[...box.querySelectorAll('img')].map(i=>getComputedStyle(i).objectFit),overflow:cells.some(c=>c.scrollWidth>c.clientWidth+1)}})()`);
+        const columns = width < 416 ? 1 : count === 4 ? (width >= 832 ? 4 : 2) : count === 2 ? 2 : (width >= 624 ? 3 : 2);
+        const expected = Array.from({ length: Math.ceil(count / columns) }, (_, i) => Math.min(columns, count - i * columns));
+        const rows = [...new Set(layout.rows)].map(y => layout.rows.filter((v: number) => v === y).length);
+        assert.deepEqual(rows, expected, `Balanced ${count}-image group at ${width}px`);
+        assert.ok(layout.heights.every((h: number) => h > 0 && h <= 180 && Math.abs(h - layout.heights[0]) < 1));
+        assert.ok(layout.fit.every((fit: string) => fit === 'contain')); assert.equal(layout.overflow, false);
+        if (count === 4 && (width === 700 || width === 900)) {
+          const bounds = await wc.executeJavaScript(`(()=>{const r=document.querySelector('main').getBoundingClientRect();return {x:0,y:0,width:1000,height:Math.ceil(r.bottom+40)}})()`);
+          writeFileSync('screenshots/subfigures-' + (width === 900 ? 'wide' : 'compact') + '.png', (await wc.capturePage(bounds)).toPNG());
+        }
+      }
+      // Explicit two-column cap and removal of a previously selected height.
+      const reset = await wc.executeJavaScript(`(()=>{const box=document.querySelector('[data-callout="figure"]');applyFigureLayout(box,${count},{columns:2});return {height:box.style.getPropertyValue('--an-subfigure-height'),uniform:box.classList.contains('an-uniform-height'),two:box.classList.contains('an-columns-2')}})()`);
+      assert.deepEqual(reset, { height: '', uniform: false, two: true });
+    }
     const tableMarkup = '<div class="callout an-media an-table" data-callout="table"><div class="callout-title"><div class="callout-title-inner">Table 1.1 · Parameters</div></div><div class="callout-content"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody><tr><td>a</td><td>1</td></tr><tr><td>b</td><td>2</td></tr></tbody></table></div></div>';
     // Exercise actual theme selectors used by editable tables, including hover.
     for (const mode of ['light', 'dark']) for (const context of ['markdown-preview-view', 'markdown-source-view mod-cm6']) {
@@ -134,7 +157,8 @@ async function run() {
       Array.from({ length: 32 }, (_, i) => `<p>Step ${i + 1}. Choose an open neighborhood and apply continuity to each inverse image. This synthetic argument exercises paragraph flow across printed pages without repeating the proof title.</p>`).join('') +
       '<p>END OF LONG PROOF. The last step establishes the required continuity.</p>');
     const book = `<main id="phb-document" class="markdown-preview-view markdown-rendered"><section class="phb-chapter" data-path="a.md" data-title="Chapter A"><h1>Chapter A</h1><h2>Compactness</h2>${content}${longProof}<h6>1.2.3 Ordinary H6 heading</h6>${paragraphs}<a data-href="b.md#Destination" href="b.md#Destination">Go to chapter B</a></section><section class="phb-chapter" data-path="b.md" data-title="Chapter B"><h1>Chapter B</h1><h2>Destination</h2>${paragraphs}</section></main>`;
-    const illustratedBook = book.replace('<h2>Destination</h2>', '<h2>Destination</h2>' + figureMarkup.replace(/^<main[^>]*>|<\/main>$/g, '') + tableMarkup);
+    const fourFigures = groupMarkup(4).replace(/^<main[^>]*>|<\/main>$/g, '').replace('class="callout an-media"', 'class="callout an-media an-columns-4 an-uniform-height" style="--an-subfigure-height:140px;--an-max-image-ratio:2.6666666666666665"');
+    const illustratedBook = book.replace('<h2>Compactness</h2>', '<h2>Compactness</h2><div data-phb-block="thm-a">Theorem A target</div><a class="internal-link" data-href="b.md#^thm-b">Forward theorem reference</a>').replace('<h2>Destination</h2>', '<h2>Destination</h2><div data-phb-block="thm-b">Theorem B target</div><a class="internal-link" data-href="a.md#^thm-a">Backward theorem reference</a>' + figureMarkup.replace(/^<main[^>]*>|<\/main>$/g, '') + fourFigures + tableMarkup);
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(illustratedBook, print)));
     // Minimal Obsidian DOM helpers for the snapshot builder; the real print
     // window below has no helpers, Node access, or application runtime.
@@ -150,6 +174,7 @@ async function run() {
       const path=document.createElementNS(glyph.namespaceURI,'path');path.id='toc-test-glyph';glyph.appendChild(path);
       const use=document.createElementNS(glyph.namespaceURI,'use');use.setAttribute('href','#toc-test-glyph');glyph.appendChild(use);heading.appendChild(glyph);
       const meta=AcademicTestDoc.prepare(document.getElementById('phb-document'),{book:true,title:'Sample Book',tocDepth:6,legacyCaptions:true});
+      for(const link of document.querySelectorAll('a[data-href*="#^thm-"]')){const target=document.getElementById(link.getAttribute('href').slice(1));if(!target||target.closest('.phb-chapter')===link.closest('.phb-chapter'))throw new Error('Cross-chapter theorem reference lost its target');}
       const toc=document.querySelector('.phb-toc');
       if(toc.querySelector('em')?.textContent!==' <formula>')throw new Error('TOC lost inline formatting');
       const copiedGlyph=toc.querySelector('svg path');

@@ -10,7 +10,8 @@ import Engine from './indexing/engine';
 import DocCore from './export/document';
 import { DEFAULTS, type AcademicSettingsData } from './settings';
 import { titleRecord, mediaRecord, renderFragment, createLiveExtension, allNodes } from './rendering/adapters';
-import { ProgressModal, ReferencePicker, ReferenceSuggest, BookPicker } from './ui/modals';
+import { updateFigureImageRatio } from './rendering/figure-layout';
+import { ProgressModal, ReferencePicker, ReferenceSuggest, BookPicker, EnvironmentModal } from './ui/modals';
 import { AcademicSettings } from './ui/settings-tab';
 import { exportPdf, pdfAvailability } from './export/pdf';
 import calloutCss from './styles/callouts.css';
@@ -80,6 +81,7 @@ export default class AcademicNotes extends Plugin {
         this.addCommand({ id: 'refresh', name: t("重建定理公式索引并刷新引用"), callback: () => { this.parsed.clear(); this.rebuild().then(() => new Notice(t("索引已重建。"))).catch(e => this.fail(t("重建索引"), e)); } });
         this.addCommand({ id: 'insert-reference', name: t("插入定理、公式或图表引用"), editorCallback: (editor, view) => new ReferencePicker(this, editor, view.file).open() });
         this.addCommand({ id: 'label-block', name: t("为光标所在公式、定理或图表添加块 ID"), editorCallback: (editor, view) => this.labelBlock(editor, view.file) });
+        this.addCommand({ id: 'insert-environment', name: t('插入学术环境'), editorCallback: editor => new EnvironmentModal(this.app, editor).open() });
         this.addSettingTab(new AcademicSettings(this.app, this));
         this.registerMarkdownPostProcessor((el, ctx) => this.postprocess(el, ctx), 110);
         const tocProcessor = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -567,6 +569,7 @@ export default class AcademicNotes extends Plugin {
             await doc.fonts.ready;
             await this.waitStable(stage);
             await this.inlineImages(stage);
+            stage.querySelectorAll<HTMLElement>('.an-uniform-height').forEach(updateFigureImageRatio);
             if (stage.querySelector('[data-mml-node="merror"],mjx-merror'))
                 throw new Error(t("检测到数学渲染错误，已停止 PDF 导出；请先检查原公式。"));
             const opts = { ...options, preNumbered: true, toc: true }, meta = { ...opts, ...DocCore.prepare(stage, opts), nativeSnapshot: true, numberingMode: options.book ? this.settings.exportNumbering : 'note', targets: notes.flatMap(n => n.records.filter(r => r.id).map(r => ({ path: r.path, block: r.id, kind: r.kind, number: r.number, reference: Engine.refText(r, graph.settings) }))) };

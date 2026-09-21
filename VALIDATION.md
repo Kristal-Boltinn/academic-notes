@@ -1,3 +1,12 @@
+# 2.5.0 environment insertion and subfigure layout — 2026-09-21
+
+- TypeScript/build and nine Node regressions passed. Generated 2, 3, 4, 6 and 12-image templates parse into correctly nested subfigures with unique per-note block IDs; layout options preserve automatic, manual and suppressed numbering metadata. Existing localization and reference regressions remain covered.
+- Native Electron checks 2, 3, 4 and 6-image groups at 300, 500, 700 and 900-pixel widths, shared heights with mixed image ratios, explicit column caps and clearing the height option. Four-image groups use 1, 2 or 4 columns, never 3+1. Checks run against default styles, installed Phycat and installed Minimal, alongside the existing 39 palette cases.
+- Illustrated PDF fixtures now include forward and backward cross-chapter theorem block links and a four-image group. Source DOM checks require both links to resolve into the other chapter; PDF checks require valid internal destinations and no horizontal overflow. Print isolation, cancellation and bilingual failure cleanup remain covered.
+- All three theme runs passed: default and Minimal PDFs have ten pages and 17 internal links; Phycat has eleven pages and 25 internal links. None reported invalid links or horizontal overflow. The final four-image PDF page was rendered and visually checked for 2+2 layout, equal image heights and complete captions. Two consecutive builds reproduced identical main.js/styles.css hashes.
+- UI labels use the existing Obsidian-language translation mechanism. The optional LaTeX Suite snippet file is syntax-checked against its documented snippet structure; it has not been exercised inside a live LaTeX Suite installation.
+- These are synthetic desktop/Electron checks. Actual Obsidian command-modal and Live Preview acceptance, other operating systems and the next official scanner run remain separate checks.
+
 # 2.4.0 language and CSS update — 2026-09-21
 
 - TypeScript/build, eight Node regressions and the three-file release check passed. Chinese (including a zh-TW locale), English and an untranslated locale exercise settings labels, stable dropdown values, English fallback and message placeholders.
