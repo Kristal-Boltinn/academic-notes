@@ -1,4 +1,4 @@
-/* Academic Notes 2.3.0 | MIT | generated from src/main.ts */
+/* Academic Notes 2.4.0 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -68,15 +68,15 @@ function __extends(d, b) {
   d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 }
 function __rest(s, e) {
-  var t = {};
+  var t2 = {};
   for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-    t[p] = s[p];
+    t2[p] = s[p];
   if (s != null && typeof Object.getOwnPropertySymbols === "function")
     for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
       if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-        t[p[i]] = s[p[i]];
+        t2[p[i]] = s[p[i]];
     }
-  return t;
+  return t2;
 }
 function __decorate(decorators, target, key2, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key2) : desc, d;
@@ -121,9 +121,9 @@ function __awaiter(thisArg, _arguments, P, generator) {
 }
 function __generator(thisArg, body) {
   var _ = { label: 0, sent: function() {
-    if (t[0] & 1) throw t[1];
-    return t[1];
-  }, trys: [], ops: [] }, f, y, t, g;
+    if (t2[0] & 1) throw t2[1];
+    return t2[1];
+  }, trys: [], ops: [] }, f, y, t2, g;
   return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
     return this;
   }), g;
@@ -135,12 +135,12 @@ function __generator(thisArg, body) {
   function step(op) {
     if (f) throw new TypeError("Generator is already executing.");
     while (_) try {
-      if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-      if (y = 0, t) op = [op[0] & 2, t.value];
+      if (f = 1, y && (t2 = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t2 = y["return"]) && t2.call(y), 0) : y.next) && !(t2 = t2.call(y, op[1])).done) return t2;
+      if (y = 0, t2) op = [op[0] & 2, t2.value];
       switch (op[0]) {
         case 0:
         case 1:
-          t = op;
+          t2 = op;
           break;
         case 4:
           _.label++;
@@ -155,25 +155,25 @@ function __generator(thisArg, body) {
           _.trys.pop();
           continue;
         default:
-          if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+          if (!(t2 = _.trys, t2 = t2.length > 0 && t2[t2.length - 1]) && (op[0] === 6 || op[0] === 2)) {
             _ = 0;
             continue;
           }
-          if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+          if (op[0] === 3 && (!t2 || op[1] > t2[0] && op[1] < t2[3])) {
             _.label = op[1];
             break;
           }
-          if (op[0] === 6 && _.label < t[1]) {
-            _.label = t[1];
-            t = op;
+          if (op[0] === 6 && _.label < t2[1]) {
+            _.label = t2[1];
+            t2 = op;
             break;
           }
-          if (t && _.label < t[2]) {
-            _.label = t[2];
+          if (t2 && _.label < t2[2]) {
+            _.label = t2[2];
             _.ops.push(op);
             break;
           }
-          if (t[2]) _.ops.pop();
+          if (t2[2]) _.ops.pop();
           _.trys.pop();
           continue;
       }
@@ -182,7 +182,7 @@ function __generator(thisArg, body) {
       op = [6, e];
       y = 0;
     } finally {
-      f = t = 0;
+      f = t2 = 0;
     }
     if (op[0] & 5) throw op[1];
     return { value: op[0] ? op[1] : void 0, done: true };
@@ -348,12 +348,12 @@ var init_tslib_es6 = __esm({
       return extendStatics(d, b);
     };
     __assign = function() {
-      __assign = Object.assign || function __assign2(t) {
+      __assign = Object.assign || function __assign2(t2) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
           s = arguments[i];
-          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t2[p] = s[p];
         }
-        return t;
+        return t2;
       };
       return __assign.apply(this, arguments);
     };
@@ -1695,10 +1695,10 @@ var require_crc32 = __commonJS({
     }
     var crcTable = makeTable();
     function crc32(crc, buf, len, pos) {
-      var t = crcTable, end = pos + len;
+      var t2 = crcTable, end = pos + len;
       crc ^= -1;
       for (var i = pos; i < end; i++) {
-        crc = crc >>> 8 ^ t[(crc ^ buf[i]) & 255];
+        crc = crc >>> 8 ^ t2[(crc ^ buf[i]) & 255];
       }
       return crc ^ -1;
     }
@@ -5840,9 +5840,9 @@ var require_errors2 = __commonJS({
         tslib_1.__extends(UnexpectedObjectTypeError2, _super);
         function UnexpectedObjectTypeError2(expected, actual) {
           var _this = this;
-          var name = function(t) {
+          var name = function(t2) {
             var _a, _b;
-            return (_a = t === null || t === void 0 ? void 0 : t.name) !== null && _a !== void 0 ? _a : (_b = t === null || t === void 0 ? void 0 : t.constructor) === null || _b === void 0 ? void 0 : _b.name;
+            return (_a = t2 === null || t2 === void 0 ? void 0 : t2.name) !== null && _a !== void 0 ? _a : (_b = t2 === null || t2 === void 0 ? void 0 : t2.constructor) === null || _b === void 0 ? void 0 : _b.name;
           };
           var expectedTypes = Array.isArray(expected) ? expected.map(name) : [name(expected)];
           var msg = "Expected instance of " + expectedTypes.join(" or ") + ", " + ("but got instance of " + (actual ? name(actual) : actual));
@@ -11046,9 +11046,9 @@ var require_UPNG = __commonJS({
         while (vecDot(nimg, i0, e) <= eMq) i0 += 4;
         while (vecDot(nimg, i1, e) > eMq) i1 -= 4;
         if (i0 >= i1) break;
-        var t = nimg32[i0 >> 2];
+        var t2 = nimg32[i0 >> 2];
         nimg32[i0 >> 2] = nimg32[i1 >> 2];
-        nimg32[i1 >> 2] = t;
+        nimg32[i1 >> 2] = t2;
         i0 += 4;
         i1 -= 4;
       }
@@ -11619,13 +11619,13 @@ var require_Ascii85Stream = __commonJS({
               }
               this.eof = true;
             }
-            var t = 0;
+            var t2 = 0;
             for (i = 0; i < 5; ++i) {
-              t = t * 85 + (input[i] - 33);
+              t2 = t2 * 85 + (input[i] - 33);
             }
             for (i = 3; i >= 0; --i) {
-              buffer[bufferLength + i] = t & 255;
-              t >>= 8;
+              buffer[bufferLength + i] = t2 & 255;
+              t2 >>= 8;
             }
           }
         };
@@ -12567,10 +12567,10 @@ var require_FlateStream = __commonJS({
             for (var val = 0; val < n; ++val) {
               if (lengths[val] === len) {
                 var code2 = 0;
-                var t = code;
+                var t2 = code;
                 for (i = 0; i < len; ++i) {
-                  code2 = code2 << 1 | t & 1;
-                  t >>= 1;
+                  code2 = code2 << 1 | t2 & 1;
+                  t2 >>= 1;
                 }
                 for (i = code2; i < size; i += skip) {
                   codes[i] = len << 16 | val;
@@ -16974,13 +16974,13 @@ var require_svgPath = __commonJS({
       var a10 = sinTh * rx;
       var a11 = cosTh * ry;
       var thHalf = 0.5 * (th1 - th0);
-      var t = 8 / 3 * Math.sin(thHalf * 0.5) * Math.sin(thHalf * 0.5) / Math.sin(thHalf);
-      var x1 = cx1 + Math.cos(th0) - t * Math.sin(th0);
-      var y1 = cy1 + Math.sin(th0) + t * Math.cos(th0);
+      var t2 = 8 / 3 * Math.sin(thHalf * 0.5) * Math.sin(thHalf * 0.5) / Math.sin(thHalf);
+      var x1 = cx1 + Math.cos(th0) - t2 * Math.sin(th0);
+      var y1 = cy1 + Math.sin(th0) + t2 * Math.cos(th0);
       var x3 = cx1 + Math.cos(th1);
       var y3 = cy1 + Math.sin(th1);
-      var x2 = x3 + t * Math.sin(th1);
-      var y2 = y3 - t * Math.cos(th1);
+      var x2 = x3 + t2 * Math.sin(th1);
+      var y2 = y3 - t2 * Math.cos(th1);
       var result = [
         a00 * x1 + a01 * y1,
         a10 * x1 + a11 * y1,
@@ -20581,10 +20581,10 @@ var require_PDFDocument = __commonJS({
           var key2 = core_1.PDFName.of("Producer");
           this.getInfoDict().set(key2, core_1.PDFHexString.fromText(producer));
         };
-        PDFDocument3.prototype.setLanguage = function(language) {
-          utils_1.assertIs(language, "language", ["string"]);
+        PDFDocument3.prototype.setLanguage = function(language2) {
+          utils_1.assertIs(language2, "language", ["string"]);
           var key2 = core_1.PDFName.of("Lang");
-          this.catalog.set(key2, core_1.PDFString.of(language));
+          this.catalog.set(key2, core_1.PDFString.of(language2));
         };
         PDFDocument3.prototype.setCreationDate = function(creationDate) {
           utils_1.assertIs(creationDate, "creationDate", [[Date, "Date"]]);
@@ -21385,8 +21385,8 @@ var require_PDFPage = __commonJS({
           var _h = this.setOrEmbedFont(options.font), oldFont = _h.oldFont, newFont = _h.newFont, newFontKey = _h.newFontKey;
           var fontSize = options.size || this.fontSize;
           var wordBreaks = options.wordBreaks || this.doc.defaultWordBreaks;
-          var textWidth = function(t) {
-            return newFont.widthOfTextAtSize(t, fontSize);
+          var textWidth = function(t2) {
+            return newFont.widthOfTextAtSize(t2, fontSize);
           };
           var lines = options.maxWidth === void 0 ? utils_1.lineSplit(utils_1.cleanText(text)) : utils_1.breakTextIntoLines(text, wordBreaks, options.maxWidth, textWidth);
           var encodedLines = new Array(lines.length);
@@ -22020,6 +22020,181 @@ __export(main_exports, {
   default: () => AcademicNotes
 });
 module.exports = __toCommonJS(main_exports);
+
+// src/i18n.ts
+var ENGLISH = {
+  "{0}\u5931\u8D25\uFF1A{1}\n\u53EF\u8FD0\u884C\u201C\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883\u201D\u3002": '{0} failed: {1}\nRun "Check plugin status and export environment" for details.',
+  "\u5DF2\u6DFB\u52A0 ^{0}\uFF1B\u53EF\u7528 [[#^{0}]] \u5F15\u7528\u3002": "Added ^{0}; reference it with [[#^{0}]].",
+  "\u7AE0\u8282\u987A\u5E8F \xB7 {0} \u7BC7": "Chapter order \xB7 {0} notes",
+  "\u6B63\u5728\u52A0\u8F7D\u5185\u5B58\u6253\u5370\u5FEB\u7167\uFF08{0} \u5B57\u8282\uFF09\u2026": "Loading the in-memory print snapshot ({0} bytes)\u2026",
+  "\u6253\u5370\u5E76\u6821\u51C6\u76EE\u5F55\uFF1A\u7B2C {0} \u8F6E": "Printing and calibrating the table of contents: pass {0}",
+  "\u5BFC\u51FA\u76EE\u5F55\u987B\u4E3A\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u4E0D\u5141\u8BB8 .. \u6216\u7EDD\u5BF9\u8DEF\u5F84\u3002": "The export folder must be vault-relative, without .. or an absolute path.",
+  "\u8BFB\u53D6 data.json\uFF08\u5DF2\u56DE\u9000\u9ED8\u8BA4\u503C\uFF09": "Read data.json (using defaults after failure)",
+  "\u76F4\u63A5\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A PDF": "Export current note to PDF",
+  "\u9009\u62E9\u591A\u7BC7\u7B14\u8BB0\u5E76\u5BFC\u51FA\u5408\u8BA2\u672C PDF": "Select notes and export a PDF book",
+  "\u6309 phb-book \u6E05\u5355\u5BFC\u51FA PDF": "Export phb-book manifest to PDF",
+  "\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A HTML \u5FEB\u7167": "Export current note to HTML snapshot",
+  "\u6309 phb-book \u6E05\u5355\u5BFC\u51FA HTML \u5FEB\u7167": "Export phb-book manifest to HTML snapshot",
+  "\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883": "Check plugin status and export environment",
+  "\u91CD\u5EFA\u5B9A\u7406\u516C\u5F0F\u7D22\u5F15\u5E76\u5237\u65B0\u5F15\u7528": "Rebuild index and refresh references",
+  "\u7D22\u5F15\u5DF2\u91CD\u5EFA\u3002": "Index rebuilt.",
+  "\u91CD\u5EFA\u7D22\u5F15": "Rebuild index",
+  "\u63D2\u5165\u5B9A\u7406\u3001\u516C\u5F0F\u6216\u56FE\u8868\u5F15\u7528": "Insert theorem, equation or figure reference",
+  "\u4E3A\u5149\u6807\u6240\u5728\u516C\u5F0F\u3001\u5B9A\u7406\u6216\u56FE\u8868\u6DFB\u52A0\u5757 ID": "Add a block ID to the current equation, theorem or figure",
+  "academic-toc \u5DF2\u88AB\u5360\u7528\uFF1B\u4FDD\u7559 [toc] \u548C\u7F16\u53F7\u529F\u80FD": "academic-toc is already registered; [toc] and numbering remain available",
+  "\u52A0\u8F7D\u5B9E\u65F6\u9884\u89C8\u6269\u5C55\uFF08\u9605\u8BFB\u6A21\u5F0F\u4ECD\u53EF\u7528\uFF09": "Load Live Preview extension (reading view remains available)",
+  "\u5EFA\u7ACB\u7D22\u5F15": "Build index",
+  "\u66F4\u65B0\u7D22\u5F15": "Update index",
+  "\u5237\u65B0\u9605\u8BFB\u7247\u6BB5": "Refresh reading view",
+  "\u5237\u65B0\u7F16\u8F91\u5668": "Refresh editor",
+  "\u6253\u5F00\u5757\u5F15\u7528": "Open block reference",
+  "\u76EE\u5F55\u6E32\u67D3": "Render table of contents",
+  "\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table callout \u5185\u3002": "Place the cursor inside a $$ equation or a theorem, figure, subfigure or table callout.",
+  "\u8BE5\u5757\u5DF2\u6709 ID\uFF1A^": "This block already has an ID: ^",
+  "\u5F15\u7528\u76EE\u6807\u6587\u4EF6\u4E0D\u5B58\u5728\uFF1A": "Reference target file not found: ",
+  "\u8BF7\u5148\u6253\u5F00\u4E00\u7BC7 Markdown \u7B14\u8BB0\u3002": "Open a Markdown note first.",
+  "\u5F53\u524D\u6587\u4EF6\u7F3A\u5C11 phb-book.files \u6E05\u5355\u3002": "This note has no phb-book.files list.",
+  "\u7AE0\u8282\u8DEF\u5F84\u683C\u5F0F\u4E0D\u6B63\u786E\u3002": "Invalid chapter path format.",
+  "\u627E\u4E0D\u5230\u7AE0\u8282\uFF1A": "Chapter not found: ",
+  "\u91CD\u590D\u7AE0\u8282\uFF1A": "Duplicate chapter: ",
+  "\u7AE0\u8282\u6E05\u5355\u4E3A\u7A7A\u3002": "The chapter list is empty.",
+  "\u5BFC\u51FA": "Export",
+  "\u5DF2\u6709\u5BFC\u51FA\u4EFB\u52A1\u6B63\u5728\u8FD0\u884C\u3002": "An export is already running.",
+  "\u5BFC\u51FA PDF": "Export PDF",
+  "\u751F\u6210 HTML \u5FEB\u7167": "Create HTML snapshot",
+  "\u6B63\u5728\u5B8C\u6574\u6E32\u67D3\u6240\u9009\u7AE0\u8282\u2026": "Rendering all selected chapters\u2026",
+  "HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A": "HTML snapshot saved: ",
+  "\u63D2\u4EF6\u5DF2\u505C\u7528\u3002": "The plugin has been disabled.",
+  "\u5DF2\u5B8C\u6210\uFF1A": "Completed: ",
+  "PDF \u5DF2\u4FDD\u5B58\uFF1A": "PDF saved: ",
+  "\u9519\u8BEF\uFF1A": "Error: ",
+  "\u67E5\u770B\u5B8C\u6574\u9519\u8BEF\uFF1A\u547D\u4EE4\u9762\u677F \u2192 \u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883 \u2192 errors\uFF1B\u53EF\u4FDD\u5B58\u8BCA\u65AD JSON\u3002": "For full details, run Check plugin status and export environment and inspect errors. You can save the diagnostic JSON.",
+  "\u4FDD\u7559\u7B14\u8BB0\u7F16\u53F7\u6A21\u5F0F\uFF1A\u4E0D\u540C\u7AE0\u8282\u53EF\u80FD\u663E\u793A\u76F8\u540C\u7F16\u53F7\uFF1B\u8DF3\u8F6C\u4ECD\u6309\u6587\u4EF6\u8DEF\u5F84\u548C\u5757 ID \u533A\u5206\u3002": "Preserving note numbering: numbers may repeat between chapters. Links still distinguish file paths and block IDs.",
+  "{0}:{1} \u5F15\u7528\u76EE\u6807\u672A\u7EB3\u5165\u672C\u6B21\u5BFC\u51FA\u6216\u4E0D\u53EF\u89E3\u6790\uFF1A{2}": "{0}:{1} Reference target is missing from this export or cannot be resolved: {2}",
+  "\uFF1A\u539F\u751F\u6570\u5B66\u8282\u70B9\u6570\u4E0E\u6E90\u7801\u4E0D\u4E00\u81F4\uFF1B\u65E0\u6CD5\u5B9A\u4F4D\u7684\u6570\u5B66\u951A\u70B9\u5C06\u4FDD\u7559\u5728\u539F\u4F4D\u7F6E\u3002": ": rendered math nodes do not match the source; unlocated math anchors retain their original position.",
+  "\u6E32\u67D3\uFF1A": "Rendering: ",
+  "\u68C0\u6D4B\u5230\u6570\u5B66\u6E32\u67D3\u9519\u8BEF\uFF0C\u5DF2\u505C\u6B62 PDF \u5BFC\u51FA\uFF1B\u8BF7\u5148\u68C0\u67E5\u539F\u516C\u5F0F\u3002": "Math rendering failed. PDF export stopped; check the source formula.",
+  "\u5FEB\u7167\u9ED8\u8BA4\u4E0D\u4E0B\u8F7D\u7F51\u7EDC\u56FE\u7247\uFF0C\u8BF7\u5148\u5C06\u56FE\u7247\u5B58\u5165 vault\uFF1A": "Export does not download remote images. Save the image to the vault first: ",
+  "\u65E0\u6CD5\u5D4C\u5165\u56FE\u7247\uFF1A": "Unable to embed image: ",
+  "\u4E0D\u652F\u6301\u7684\u56FE\u7247\u683C\u5F0F\uFF1A": "Unsupported image format: ",
+  "\u56FE\u7247\u89E3\u7801\u5931\u8D25\uFF1A": "Unable to decode image: ",
+  "\u672A\u8054\u7F51\u4E0B\u8F7D CSS \u8D44\u6E90\uFF1A": "Skipped remote CSS resource: ",
+  "\u672A\u80FD\u5185\u5D4C CSS \u8D44\u6E90\uFF0C\u53EF\u80FD\u5F71\u54CD\u5B57\u4F53/\u80CC\u666F\uFF1A": "Unable to embed CSS resource; fonts or backgrounds may differ: ",
+  "\u65E0\u6CD5\u8BFB\u53D6\u4E00\u4E2A\u6837\u5F0F\u8868\uFF1A": "Unable to read stylesheet: ",
+  "Academic Notes \u8BCA\u65AD": "Academic Notes diagnostics",
+  "\u4FDD\u5B58\u8BCA\u65AD JSON \u5230\u5BFC\u51FA\u76EE\u5F55": "Save diagnostic JSON to export folder",
+  "\u5DF2\u4FDD\u5B58 ": "Saved ",
+  "\u4FDD\u5B58\u8BCA\u65AD": "Save diagnostics",
+  "\u7F16\u53F7\u4E0E\u5F15\u7528": "Numbering and references",
+  "\u5B9A\u7406\u7C7B\u73AF\u5883\u81EA\u52A8\u7F16\u53F7": "Automatically number theorem environments",
+  "Proof\u3001Remark\u3001Solution \u9ED8\u8BA4\u4E0D\u8BA1\u6570\u3002": "Proof, Remark and Solution are not counted by default.",
+  "\u516C\u5F0F\u81EA\u52A8\u7F16\u53F7": "Automatic equation numbering",
+  "\u4EC5\u88AB\u5F15\u7528\u7684\u516C\u5F0F\uFF08\u5168\u5E93\u5224\u65AD\uFF09": "Only referenced equations (across the vault)",
+  "\u6240\u6709\u72EC\u7ACB\u516C\u5F0F\u5757": "All display equations",
+  "\u5173\u95ED\u81EA\u52A8\u7F16\u53F7": "Disable automatic numbering",
+  "\u4FDD\u7559\u663E\u5F0F \\tag\uFF1B\u53EA\u6709\u8FDB\u5165\u81EA\u52A8\u7F16\u53F7\u7684\u516C\u5F0F\u624D\u589E\u52A0\u8BA1\u6570\u5668\u3002": "Preserve explicit \\tag values. Only automatically numbered equations advance the counter.",
+  "\u7B14\u8BB0\u5185\u7F16\u53F7\u8303\u56F4": "Numbering scope within a note",
+  "\u6309 H2 \u5206\u8282\u91CD\u7F6E": "Reset at H2 sections",
+  "\u6574\u7BC7\u8FDE\u7EED\u7F16\u53F7": "Continuous throughout the note",
+  "\u7F16\u53F7\u524D\u52A0\u5165 H2 \u8282\u53F7": "Include H2 section number",
+  "\u5206\u8282\u6A21\u5F0F\u4E0B\uFF1A\u5F00\u542F\u4E3A Theorem 2.1\uFF1B\u5173\u95ED\u4ECD\u5728\u6BCF\u4E2A H2 \u91CD\u7F6E\uFF0C\u4F46\u53EA\u663E\u793A Theorem 1\u3002": "In section mode: enabled shows Theorem 2.1; disabled still resets at each H2 but shows Theorem 1.",
+  "H2 \u8282\u53F7\u6765\u6E90": "H2 section number source",
+  "\u6309 H2 \u51FA\u73B0\u987A\u5E8F\uFF1A1\u30012\u30013": "H2 order: 1, 2, 3",
+  "\u4F18\u5148\u4F7F\u7528\u6807\u9898\u5F00\u5934\u7684\u6570\u5B57": "Prefer a leading number in the heading",
+  "\u53EA\u8BFB\u6E90\u7801\u4E2D\u7684 H2\uFF0C\u4E0D\u8BA1 H3\u3001H6 \u6216\u4EE3\u7801\u5757\u91CC\u7684\u6807\u9898\u3002": "Use source H2 headings only, excluding H3, H6 and headings inside code blocks.",
+  "\u94FE\u63A5\u5F15\u7528\u4F7F\u7528\u7F29\u5199": "Abbreviate reference labels",
+  "\u6807\u9898\u4ECD\u4E3A Theorem / Definition\uFF1B\u94FE\u63A5\u663E\u793A thm 2.1 / def 2.1\u3002": "Titles remain Theorem / Definition; links display thm 2.1 / def 2.1.",
+  "\u56FE\u3001\u8868\u548C\u5B50\u56FE\u81EA\u52A8\u7F16\u53F7": "Automatically number figures, tables and subfigures",
+  "\u7528 [!figure] / [!table]\uFF1B\u5D4C\u5957 [!subfigure] \u5F97\u5230 (a)\u3001(b)\u3002\u5B89\u88C5\u540E\u5373\u53EF\u4F7F\u7528\u5185\u7F6E\u56FE\u8868\u6837\u5F0F\u3002": "Use [!figure] / [!table]; nest [!subfigure] for (a), (b). Figure and table styles are built in.",
+  "\u4E0D\u540C\u5B9A\u7406\u7C7B\u578B\u5171\u4EAB\u8BA1\u6570\u5668": "Share a counter across theorem types",
+  "\u5173\u95ED\u65F6 Definition\u3001Theorem \u7B49\u5404\u81EA\u8BA1\u6570\u3002\u516C\u5F0F\u59CB\u7EC8\u72EC\u7ACB\u3002": "When disabled, Definition, Theorem and other types count separately. Equations always have their own counter.",
+  "\u7F16\u53F7\u524D\u7F00": "Number prefix",
+  "\u7559\u7A7A\u4E0D\u4F1A\u4ECE\u65E5\u671F\u6587\u4EF6\u540D\u63A8\u65AD\u7AE0\u8282\u53F7\u3002": "Leave blank to omit a prefix. Chapter numbers are not inferred from dated filenames.",
+  "\u516C\u5F0F\u5F15\u7528\u683C\u5F0F": "Equation reference format",
+  "\u652F\u6301 {number}\u3001{file}\uFF1B\u9ED8\u8BA4 eq:{number}\uFF0C\u4E5F\u53EF\u8BBE Eq. ({number})\u3002": "Supports {number} and {file}. Default: eq:{number}; for example, Eq. ({number}).",
+  "\u5B9A\u7406\u5F15\u7528\u683C\u5F0F": "Theorem reference format",
+  "\u652F\u6301 {type}\u3001{number}\u3001{title}\u3001{file}\uFF1B{abbr} \u59CB\u7EC8\u7F29\u5199\uFF0C{name} \u59CB\u7EC8\u5168\u79F0\u3002": "Supports {type}, {number}, {title} and {file}; {abbr} always abbreviates, {name} always uses the full name.",
+  "\u4FDD\u7559\u624B\u5199\u94FE\u63A5\u522B\u540D": "Preserve custom link aliases",
+  "[[#^id|\u81EA\u5DF1\u7684\u6587\u5B57]] \u4E0D\u88AB\u81EA\u52A8\u7F16\u53F7\u66FF\u6362\uFF0C\u4F46\u4ECD\u7B97\u5F15\u7528\u3002": "[[#^id|custom text]] keeps its label and still counts as a reference.",
+  "\u5728\u5B9E\u65F6\u9884\u89C8\u4E2D\u8F6C\u6362\u94FE\u63A5\u4E0E\u7F16\u53F7": "Show reference labels and numbers in Live Preview",
+  "\u5149\u6807\u8FDB\u5165\u94FE\u63A5\u65F6\u6062\u590D\u6E90\u7801\u3002\u6E90\u7801\u6A21\u5F0F\u4E0D\u8FDB\u884C\u663E\u793A\u66FF\u6362\u3002": "Moving the cursor into a link reveals its source. Source mode is unchanged.",
+  "\u6392\u9664\u7D22\u5F15\u7684\u8DEF\u5F84": "Excluded index paths",
+  "\u591A\u4E2A\u76EE\u5F55/\u6587\u4EF6\u8BF7\u7528\u6362\u884C\u5206\u9694\uFF1B\u4E5F\u53EF\u76F4\u63A5\u7F16\u8F91\u672C\u63D2\u4EF6 data.json\u3002": "Separate vault-relative files or folders with newlines, or edit this plugin's data.json.",
+  "\u72EC\u7ACB\u914D\u8272": "Color palettes",
+  "\u6D45\u8272\u6570\u5B66\u6846\u914D\u8272": "Light-mode callout palette",
+  "\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272": "Follow Obsidian theme colors",
+  "\u6DF1\u8272\u6570\u5B66\u6846\u914D\u8272": "Dark-mode callout palette",
+  "\u8DDF\u968F\u4E3B\u9898\u8BFB\u53D6 Obsidian \u7684\u5F3A\u8C03\u8272\u3001\u84DD/\u7D2B/\u7EFF/\u9752/\u6A59\u8272\u53CA\u6B63\u6587\u8272\uFF0C\u4E0D\u5339\u914D\u9884\u8BBE\u8272\u677F\uFF0C\u4E5F\u4E0D\u76F4\u63A5\u8BFB\u53D6\u64CD\u4F5C\u7CFB\u7EDF\u4E3B\u8272\u8C03\u3002\u56FA\u5B9A\u8272\u677F\u4E0D\u53D7\u4E3B\u9898\u914D\u8272\u5207\u6362\u5F71\u54CD\uFF1B\u6D45\u6DF1\u6A21\u5F0F\u8DDF\u968F Obsidian\u3002": "Theme mode uses Obsidian's accent, blue/purple/green/cyan/orange and text colors. It does not match a preset or read the OS accent. Fixed palettes retain their colors; light/dark mode follows Obsidian.",
+  "\u6846\u5185\u6B63\u6587\u4F7F\u7528\u666E\u901A\u6B63\u6587\u8272": "Use normal text color inside callouts",
+  "\u5F00\u542F\uFF1A\u6B63\u6587\u4E0E\u7B14\u8BB0\u666E\u901A\u6587\u5B57\u540C\u8272\uFF1B\u5173\u95ED\uFF1A\u6B63\u6587\u6DF7\u5165 36% \u7684\u5F53\u524D\u6846\u8272\u3002\u53EA\u6539\u53D8\u6B63\u6587\uFF0C\u4E0D\u6539\u53D8\u6807\u9898\u3001\u8FB9\u6846\u548C\u5E95\u8272\u3002": "Enabled: use normal note text. Disabled: mix in 36% of the callout color. Titles, borders and fills are unaffected.",
+  "\u9690\u85CF\u53F3\u4E0B\u89D2\u5C0F\u56FE\u6848": "Hide corner decorations",
+  "\u76EE\u5F55\u4E0E PDF": "Table of contents and PDF",
+  "PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002": "PDF export uses Obsidian's bundled Electron. No Python or external browser is required.",
+  "\u76EE\u5F55\u5C42\u7EA7": "Table of contents depth",
+  "\u5408\u8BA2\u672C\u7F16\u53F7": "Book numbering",
+  "\u7AE0.\u8282.\u5E8F\u53F7\uFF08\u5982 2.3.1\uFF09": "Chapter.section.number (e.g. 2.3.1)",
+  "\u7AE0.\u5E8F\u53F7\uFF08\u5982 2.1\uFF0C\u7AE0\u5185\u8FDE\u7EED\uFF09": "Chapter.number (e.g. 2.1, continuous per chapter)",
+  "\u4FDD\u7559\u5E93\u5185\u663E\u793A\u7F16\u53F7\uFF08\u53EF\u80FD\u8DE8\u7AE0\u91CD\u53F7\uFF09": "Preserve vault numbering (may repeat across chapters)",
+  "\u524D\u4E24\u79CD\u6309\u5165\u9009\u7AE0\u8282\u91CD\u65B0\u7F16\u53F7\u548C\u89E3\u6790\u5F15\u7528\uFF1B\u4FDD\u7559\u6A21\u5F0F\u6CBF\u7528\u5168\u5E93\u7F16\u53F7\u3002\u539F\u7B14\u8BB0\u4E0D\u6539\u5199\u3002": "The first two modes renumber selected chapters and resolve references. Preserve mode keeps vault numbers. Source notes are unchanged.",
+  "\u5BFC\u51FA\u76EE\u5F55": "Export folder",
+  "\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u9ED8\u8BA4 _exports\u3002": "Vault-relative path. Default: _exports.",
+  "PDF \u6355\u83B7\u5F53\u524D\u4E3B\u9898\u4E0E\u7247\u6BB5\u6837\u5F0F": "Capture current theme and snippets for PDF",
+  "\u5173\u95ED\u65F6\u4F7F\u7528\u63D2\u4EF6\u81EA\u5DF1\u7684\u6570\u5B66\u6846\u4E0E\u57FA\u7840\u6392\u7248\u3002": "When disabled, use the plugin's built-in callout and document styles.",
+  "\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF": "Open the PDF in Obsidian after export",
+  "\u5173\u95ED\u7A97\u53E3\u4E0D\u4F1A\u4E2D\u65AD\u4EFB\u52A1\uFF1B\u8F93\u51FA\u4ECD\u4FDD\u5B58\u5230\u6307\u5B9A\u76EE\u5F55\u3002": "Closing this window does not cancel the task. Output is still saved to the selected folder.",
+  " \xB7 \u7ED3\u675F": " \xB7 Finished",
+  "\u641C\u7D22\u7F16\u53F7\u3001\u5B9A\u7406\u6807\u9898\u3001\u516C\u5F0F\u5185\u5BB9\u6216\u6587\u4EF6\u540D\uFF08\u76EE\u6807\u9700\u8981\u5757 ID\uFF09": "Search numbers, theorem titles, equations or filenames (targets need block IDs)",
+  "\u591A\u6587\u4EF6\u5408\u8BA2\u672C": "Multi-note book",
+  "\u641C\u7D22\u5E76\u52FE\u9009\u7AE0\u8282\uFF1B\u53F3\u4FA7\u7F16\u53F7\u8868\u793A\u5BFC\u51FA\u987A\u5E8F\uFF0C\u53EF\u4E0A\u79FB/\u4E0B\u79FB\u3002\u4E0D\u4F1A\u5408\u5E76\u6216\u6539\u5199\u539F\u7B14\u8BB0\u3002": "Search and select chapters. The numbers show export order; use Move up / Move down to rearrange. Source notes are unchanged.",
+  "\u6570\u5B66\u8BB2\u4E49": "Mathematical notes",
+  "\u5408\u8BA2\u672C\u6807\u9898": "Book title",
+  "\u6309\u5B8C\u6574\u8DEF\u5F84\u7B5B\u9009\u6587\u4EF6": "Filter files by full path",
+  "\u7B5B\u9009\u7AE0\u8282": "Filter chapters",
+  "\u53D6\u6D88": "Cancel",
+  "\u8BF7\u81F3\u5C11\u9009\u4E00\u7BC7\u7B14\u8BB0\u3002": "Select at least one note.",
+  "\u53EA\u663E\u793A\u524D 250 \u4E2A\u7ED3\u679C\uFF0C\u8BF7\u7EE7\u7EED\u8F93\u5165\u8DEF\u5F84\u7B5B\u9009\u3002": "Showing the first 250 matches. Enter more of the path to narrow the results.",
+  "\u4E0A\u79FB": "Move up",
+  "\u4E0B\u79FB": "Move down",
+  "\u79FB\u9664": "Remove",
+  "{0}:{1} \u542B\u591A\u4E2A\u624B\u5199 tag\uFF0C\u4FDD\u7559\u516C\u5F0F\u4F46\u4E0D\u731C\u6D4B\u6574\u5757\u5F15\u7528\u7F16\u53F7\u3002": "{0}:{1} Multiple explicit tags: preserve the equation without inferring a single reference number.",
+  "{0}: \u5B58\u5728\u672A\u95ED\u5408\u7684 $$\uFF0C\u6700\u540E\u4E00\u6BB5\u4E0D\u53C2\u4E0E\u7F16\u53F7\u3002": "{0}: Unclosed $$; the final block is not numbered.",
+  "{0}: \u91CD\u590D\u5757 ID ^{1}\uFF0C\u4E0D\u89E3\u6790\u6B67\u4E49\u5F15\u7528\u3002": "{0}: Duplicate block ID ^{1}; ambiguous references are not resolved.",
+  "{0}:{1} subfigure \u4E0D\u5728 figure \u5185\uFF0C\u4EC5\u663E\u793A\u9898\u6CE8\uFF0C\u4E0D\u731C\u6D4B\u4E3B\u56FE\u7F16\u53F7\u3002": "{0}:{1} Subfigure outside a figure: show its caption without inferring a parent figure number.",
+  "\uFF08\u672A\u7F16\u53F7\uFF09": " (unnumbered)",
+  "\u5F53\u524D Obsidian \u672A\u63D0\u4F9B Electron PDF \u63A5\u53E3\uFF0C\u8BF7\u66F4\u65B0\u684C\u9762\u5B89\u88C5\u7A0B\u5E8F\u3002": "Obsidian's Electron PDF interface is unavailable. Update the desktop installer.",
+  "\u4EC5\u786E\u8BA4 Electron \u63A5\u53E3\u5B58\u5728\uFF0C\u4E0D\u4EE3\u8868\u5B9E\u9645\u5BFC\u51FA\u5DF2\u901A\u8FC7\uFF1B\u8BF7\u67E5\u770B lastPdfExport \u548C errors\u3002": "Only interface availability is checked, not a successful export. Inspect lastPdfExport and errors.",
+  "\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002": "Export cancelled.",
+  "\u6253\u5370\u5FEB\u7167\u7F3A\u5C11 HTML head\uFF0C\u65E0\u6CD5\u8BBE\u7F6E\u5B89\u5168\u7B56\u7565\u3002": "The print snapshot has no HTML head; cannot apply its security policy.",
+  "Electron \u6253\u5370\u7A97\u53E3\u52A0\u8F7D\u5931\u8D25\uFF1A": "Electron print window failed to load: ",
+  "\u5FEB\u7167\u7F3A\u5C11\u5DF2\u89E3\u6790\u7684\u6807\u9898\u4E0E\u76EE\u5F55\u4FE1\u606F\u3002": "The snapshot has no prepared headings or table of contents.",
+  "\u65E0\u6CD5\u5B9A\u4F4D PDF \u6807\u9898\uFF1A": "Unable to locate PDF heading: ",
+  "6 \u8F6E\u540E\u76EE\u5F55\u9875\u7801\u4ECD\u672A\u7A33\u5B9A\uFF0C\u8BF7\u8C03\u6574\u76EE\u5F55\u6807\u9898\u6216\u5B57\u4F53\u3002": "Table of contents page numbers did not stabilize after six passes. Adjust the headings or font.",
+  "PDF \u5BFC\u51FA\u8D85\u8FC7 4 \u5206\u949F\uFF0C\u7A97\u53E3\u5DF2\u5173\u95ED\u3002": "PDF export exceeded four minutes. The print window was closed.",
+  "\u56FE\u7247\u65E0\u6CD5\u52A0\u8F7D\uFF1A": "Unable to load image: ",
+  "\u516C\u5F0F\u6E32\u67D3\u9519\u8BEF\u3002": "Math rendering failed.",
+  "\u5FEB\u7167\u5B57\u4F53\u52A0\u8F7D\u5931\u8D25\u3002": "Unable to load snapshot fonts.",
+  "PDF \u5185\u90E8\u94FE\u63A5\u76EE\u6807\u65E0\u6548\uFF0C\u5DF2\u505C\u6B62\u8F93\u51FA\u3002": "Invalid internal PDF link target. Export stopped.",
+  "PDF \u7F3A\u5C11\u76EE\u5F55\u76EE\u6807\uFF1A": "Missing PDF table of contents destination: ",
+  "\u76EE\u5F55": "Contents",
+  "\u91CD\u590D\u5757 ID\uFF1A{0}#^{1}": "Duplicate block ID: {0}#^{1}",
+  "\u672A\u7EB3\u5165\u4E66\u7C4D\u6216\u65E0\u6CD5\u5B9A\u4F4D\u7684\u94FE\u63A5\uFF1A{0} -> {1}": "Link target is missing from the book or cannot be located: {0} -> {1}",
+  "\u8BB2\u4E49": "Lecture notes",
+  "\u6570\u5B66\u7B14\u8BB0 \xB7 \u5408\u8BA2\u672C": "Mathematical notes \xB7 Collected chapters",
+  "\u6570\u5B66\u7B14\u8BB0": "Mathematical notes"
+};
+var current = "en";
+function setLanguage(locale) {
+  current = /^zh(?:[-_]|$)/i.test(locale) ? "zh" : "en";
+}
+function language() {
+  return current;
+}
+function t(key2, ...values) {
+  const text = current === "zh" ? key2 : ENGLISH[key2];
+  return text.replace(/\{(\d+)\}/g, (match, index) => Number(index) < values.length ? String(values[Number(index)]) : match);
+}
+
+// src/main.ts
 var Obs2 = __toESM(require("obsidian"));
 var import_obsidian3 = require("obsidian");
 
@@ -22160,12 +22335,12 @@ function parse(path, source, cache = {}) {
       ids: []
     };
     if (rec.multiTag)
-      warnings.push(`${path}:${line + 1} \u542B\u591A\u4E2A\u624B\u5199 tag\uFF0C\u4FDD\u7559\u516C\u5F0F\u4F46\u4E0D\u731C\u6D4B\u6574\u5757\u5F15\u7528\u7F16\u53F7\u3002`);
+      warnings.push(t("{0}:{1} \u542B\u591A\u4E2A\u624B\u5199 tag\uFF0C\u4FDD\u7559\u516C\u5F0F\u4F46\u4E0D\u731C\u6D4B\u6574\u5757\u5F15\u7528\u7F16\u53F7\u3002", path, line + 1));
     equations.push(rec);
     records.push(rec);
   }
   if (delimiters.length % 2)
-    warnings.push(`${path}: \u5B58\u5728\u672A\u95ED\u5408\u7684 $$\uFF0C\u6700\u540E\u4E00\u6BB5\u4E0D\u53C2\u4E0E\u7F16\u53F7\u3002`);
+    warnings.push(t("{0}: \u5B58\u5728\u672A\u95ED\u5408\u7684 $$\uFF0C\u6700\u540E\u4E00\u6BB5\u4E0D\u53C2\u4E0E\u7F16\u53F7\u3002", path));
   const chars = mask.split("");
   for (const e of equations)
     for (let i = e.from; i < e.to; i++)
@@ -22217,7 +22392,7 @@ function parse(path, source, cache = {}) {
       return;
     if (blocks.has(id) && blocks.get(id) !== rec) {
       blocks.set(id, null);
-      warnings.push(`${path}: \u91CD\u590D\u5757 ID ^${id}\uFF0C\u4E0D\u89E3\u6790\u6B67\u4E49\u5F15\u7528\u3002`);
+      warnings.push(t("{0}: \u91CD\u590D\u5757 ID ^{1}\uFF0C\u4E0D\u89E3\u6790\u6B67\u4E49\u5F15\u7528\u3002", path, id));
       return;
     }
     blocks.set(id, rec);
@@ -22280,7 +22455,7 @@ function parse(path, source, cache = {}) {
   for (const r of media.filter((r2) => r2.kind === "subfigure")) {
     r.parent = media.filter((p) => p.kind === "figure" && p.depth < r.depth && p.line < r.line && p.endLine >= r.endLine).sort((a, b) => b.depth - a.depth)[0] || null;
     if (!r.parent)
-      warnings.push(`${path}:${r.line + 1} subfigure \u4E0D\u5728 figure \u5185\uFF0C\u4EC5\u663E\u793A\u9898\u6CE8\uFF0C\u4E0D\u731C\u6D4B\u4E3B\u56FE\u7F16\u53F7\u3002`);
+      warnings.push(t("{0}:{1} subfigure \u4E0D\u5728 figure \u5185\uFF0C\u4EC5\u663E\u793A\u9898\u6CE8\uFF0C\u4E0D\u731C\u6D4B\u4E3B\u56FE\u7F16\u53F7\u3002", path, r.line + 1));
   }
   return { path, source, lines, starts, records, theorems, equations, media, callouts, blocks, refs, headings, warnings };
 }
@@ -22397,11 +22572,11 @@ function graph(notes, opts = {}, resolver, chapters) {
   for (const n of notes)
     assign(n, settings, referenced, chapters?.get(n.path));
   return { notes: map, settings, warnings, referenced, resolve(raw, here) {
-    const t = splitTarget(raw);
-    if (!t)
+    const t2 = splitTarget(raw);
+    if (!t2)
       return null;
-    const p = resolvePath(t.file, here, paths, resolver);
-    return p ? map.get(p).blocks.get(t.block) || null : null;
+    const p = resolvePath(t2.file, here, paths, resolver);
+    return p ? map.get(p).blocks.get(t2.block) || null : null;
   } };
 }
 function refText(r, settings = DEFAULTS) {
@@ -22411,7 +22586,7 @@ function refText(r, settings = DEFAULTS) {
   const name = r.kind === "equation" ? "Equation" : (TYPES[r.key] || MEDIA[r.key])[0];
   const abbr = ABBR[r.key] || r.key, type = settings.shortReferences ? abbr : name;
   if (!r.number)
-    return `${type}${r.title ? " \xB7 " + plain(r.title) : "\uFF08\u672A\u7F16\u53F7\uFF09"}`;
+    return `${type}${r.title ? " \xB7 " + plain(r.title) : t("\uFF08\u672A\u7F16\u53F7\uFF09")}`;
   const format = r.kind === "equation" ? settings.eqFormat : r.kind === "table" ? settings.tableFormat : r.kind === "figure" || r.kind === "subfigure" ? settings.figureFormat : settings.theoremFormat;
   return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k) => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, "").split("/").pop() || "" })[k]);
 }
@@ -22562,7 +22737,7 @@ function inlineCopy(el, prefix) {
   });
   return clone.childNodes;
 }
-function makeToc(doc, entries, headingMap = /* @__PURE__ */ new Map(), title = "\u76EE\u5F55") {
+function makeToc(doc, entries, headingMap = /* @__PURE__ */ new Map(), title = t("\u76EE\u5F55")) {
   const nav = doc.win.createEl("nav");
   nav.className = "phb-toc";
   nav.setAttribute("aria-label", title);
@@ -22660,7 +22835,7 @@ function prepare(root, options = {}) {
         if (map.has("^" + k) && map.get("^" + k) !== e.id) {
           map.set("^" + k, null);
           map.set(k, null);
-          warnings.push(`\u91CD\u590D\u5757 ID\uFF1A${path}#^${k}`);
+          warnings.push(t("\u91CD\u590D\u5757 ID\uFF1A{0}#^{1}", path, k));
         } else {
           map.set("^" + k, e.id);
           map.set(k, e.id);
@@ -22711,7 +22886,7 @@ function prepare(root, options = {}) {
         a.href = "#" + id;
         a.dataset.phbResolved = id;
       } else if (a.classList.contains("internal-link") || raw.startsWith("#") || /\.md(?:#|$)/i.test(raw)) {
-        warnings.push(`\u672A\u7EB3\u5165\u4E66\u7C4D\u6216\u65E0\u6CD5\u5B9A\u4F4D\u7684\u94FE\u63A5\uFF1A${ch.dataset.path} -> ${raw}`);
+        warnings.push(t("\u672A\u7EB3\u5165\u4E66\u7C4D\u6216\u65E0\u6CD5\u5B9A\u4F4D\u7684\u94FE\u63A5\uFF1A{0} -> {1}", ch.dataset.path, raw));
         a.dataset.phbUnresolved = "true";
         if (file)
           a.href = "obsidian://open?file=" + encodeURIComponent(file + (sub ? "#" + sub : ""));
@@ -22736,10 +22911,10 @@ function prepare(root, options = {}) {
     front.className = "phb-frontmatter";
     const title = doc.win.createEl("h1");
     title.className = "phb-book-title";
-    title.textContent = options.title || "\u8BB2\u4E49";
+    title.textContent = options.title || t("\u8BB2\u4E49");
     const sub = doc.win.createEl("p");
     sub.className = "phb-book-subtitle";
-    sub.textContent = options.subtitle || "\u6570\u5B66\u7B14\u8BB0 \xB7 \u5408\u8BA2\u672C";
+    sub.textContent = options.subtitle || t("\u6570\u5B66\u7B14\u8BB0 \xB7 \u5408\u8BA2\u672C");
     front.append(title, sub, makeToc(doc, entries, headingMap));
     root.prepend(front);
   } else {
@@ -22753,7 +22928,7 @@ function prepare(root, options = {}) {
     holders.forEach((n) => n.replaceWith(makeToc(doc, subentries, headingMap)));
   }
   addProbes(root, entries);
-  return { version: 1, prepared: true, title: options.title || chapters[0].dataset.title || "\u6570\u5B66\u7B14\u8BB0", book, entries, warnings };
+  return { version: 1, prepared: true, title: options.title || chapters[0].dataset.title || t("\u6570\u5B66\u7B14\u8BB0"), book, entries, warnings };
 }
 function updatePages(root, positions) {
   root.querySelectorAll("[data-phb-page]").forEach((el) => {
@@ -22965,7 +23140,7 @@ function createLiveExtension(plugin) {
       const open = (evt) => {
         evt.preventDefault();
         evt.stopPropagation();
-        plugin.openReference(this.raw, this.path, !!(evt.ctrlKey || evt.metaKey)).catch((e) => plugin.fail("\u6253\u5F00\u5757\u5F15\u7528", e));
+        plugin.openReference(this.raw, this.path, !!(evt.ctrlKey || evt.metaKey)).catch((e) => plugin.fail(t("\u6253\u5F00\u5757\u5F15\u7528"), e));
       };
       a.addEventListener("click", open);
       a.addEventListener("keydown", (e) => {
@@ -22995,7 +23170,7 @@ function createLiveExtension(plugin) {
       this.observer.observe(view.contentDOM, { childList: true, subtree: true });
     }
     update(update) {
-      if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some((t) => t.effects.some((e) => e.is(refresh))))
+      if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some((t2) => t2.effects.some((e) => e.is(refresh))))
         this.decorations = this.links(update.view);
       this.schedule();
     }
@@ -23074,7 +23249,7 @@ var ProgressModal = class extends import_obsidian.Modal {
   onOpen() {
     this.titleEl.setText(this.caption);
     this.output = this.contentEl.createEl("pre", { cls: "an-progress", text: "" });
-    this.contentEl.createEl("p", { text: "\u5173\u95ED\u7A97\u53E3\u4E0D\u4F1A\u4E2D\u65AD\u4EFB\u52A1\uFF1B\u8F93\u51FA\u4ECD\u4FDD\u5B58\u5230\u6307\u5B9A\u76EE\u5F55\u3002" });
+    this.contentEl.createEl("p", { text: t("\u5173\u95ED\u7A97\u53E3\u4E0D\u4F1A\u4E2D\u65AD\u4EFB\u52A1\uFF1B\u8F93\u51FA\u4ECD\u4FDD\u5B58\u5230\u6307\u5B9A\u76EE\u5F55\u3002") });
   }
   line(s) {
     if (this.output) {
@@ -23084,7 +23259,7 @@ var ProgressModal = class extends import_obsidian.Modal {
   }
   done() {
     if (this.titleEl)
-      this.titleEl.setText(this.caption + " \xB7 \u7ED3\u675F");
+      this.titleEl.setText(this.caption + t(" \xB7 \u7ED3\u675F"));
   }
 };
 var ReferencePicker = class extends import_obsidian.FuzzySuggestModal {
@@ -23093,7 +23268,7 @@ var ReferencePicker = class extends import_obsidian.FuzzySuggestModal {
     this.plugin = plugin;
     this.editor = editor;
     this.file = file;
-    this.setPlaceholder("\u641C\u7D22\u7F16\u53F7\u3001\u5B9A\u7406\u6807\u9898\u3001\u516C\u5F0F\u5185\u5BB9\u6216\u6587\u4EF6\u540D\uFF08\u76EE\u6807\u9700\u8981\u5757 ID\uFF09");
+    this.setPlaceholder(t("\u641C\u7D22\u7F16\u53F7\u3001\u5B9A\u7406\u6807\u9898\u3001\u516C\u5F0F\u5185\u5BB9\u6216\u6587\u4EF6\u540D\uFF08\u76EE\u6807\u9700\u8981\u5757 ID\uFF09"));
   }
   getItems() {
     return this.plugin.targets();
@@ -23149,21 +23324,21 @@ var BookPicker = class extends import_obsidian.Modal {
     this.files = plugin.app.vault.getMarkdownFiles().sort((a, b) => a.path.localeCompare(b.path));
   }
   onOpen() {
-    this.titleEl.setText("\u591A\u6587\u4EF6\u5408\u8BA2\u672C");
-    this.contentEl.createEl("p", { text: "\u641C\u7D22\u5E76\u52FE\u9009\u7AE0\u8282\uFF1B\u53F3\u4FA7\u7F16\u53F7\u8868\u793A\u5BFC\u51FA\u987A\u5E8F\uFF0C\u53EF\u4E0A\u79FB/\u4E0B\u79FB\u3002\u4E0D\u4F1A\u5408\u5E76\u6216\u6539\u5199\u539F\u7B14\u8BB0\u3002" });
-    const title = this.contentEl.createEl("input", { type: "text", value: "\u6570\u5B66\u8BB2\u4E49", cls: "an-book-title", attr: { "aria-label": "\u5408\u8BA2\u672C\u6807\u9898" } });
+    this.titleEl.setText(t("\u591A\u6587\u4EF6\u5408\u8BA2\u672C"));
+    this.contentEl.createEl("p", { text: t("\u641C\u7D22\u5E76\u52FE\u9009\u7AE0\u8282\uFF1B\u53F3\u4FA7\u7F16\u53F7\u8868\u793A\u5BFC\u51FA\u987A\u5E8F\uFF0C\u53EF\u4E0A\u79FB/\u4E0B\u79FB\u3002\u4E0D\u4F1A\u5408\u5E76\u6216\u6539\u5199\u539F\u7B14\u8BB0\u3002") });
+    const title = this.contentEl.createEl("input", { type: "text", value: t("\u6570\u5B66\u8BB2\u4E49"), cls: "an-book-title", attr: { "aria-label": t("\u5408\u8BA2\u672C\u6807\u9898") } });
     this.titleInput = title;
-    const filter = this.contentEl.createEl("input", { type: "search", placeholder: "\u6309\u5B8C\u6574\u8DEF\u5F84\u7B5B\u9009\u6587\u4EF6", cls: "an-book-search", attr: { "aria-label": "\u7B5B\u9009\u7AE0\u8282" } });
+    const filter = this.contentEl.createEl("input", { type: "search", placeholder: t("\u6309\u5B8C\u6574\u8DEF\u5F84\u7B5B\u9009\u6587\u4EF6"), cls: "an-book-search", attr: { "aria-label": t("\u7B5B\u9009\u7AE0\u8282") } });
     this.filterInput = filter;
     this.fileList = this.contentEl.createDiv({ cls: "an-book-files" });
     this.orderList = this.contentEl.createDiv({ cls: "an-book-order" });
     filter.addEventListener("input", () => this.renderFiles());
-    new import_obsidian.Setting(this.contentEl).addButton((b) => b.setButtonText("\u53D6\u6D88").onClick(() => this.close())).addButton((b) => b.setButtonText("\u5BFC\u51FA PDF").setCta().onClick(() => {
+    new import_obsidian.Setting(this.contentEl).addButton((b) => b.setButtonText(t("\u53D6\u6D88")).onClick(() => this.close())).addButton((b) => b.setButtonText(t("\u5BFC\u51FA PDF")).setCta().onClick(() => {
       if (!this.selected.length) {
-        new import_obsidian.Notice("\u8BF7\u81F3\u5C11\u9009\u4E00\u7BC7\u7B14\u8BB0\u3002");
+        new import_obsidian.Notice(t("\u8BF7\u81F3\u5C11\u9009\u4E00\u7BC7\u7B14\u8BB0\u3002"));
         return;
       }
-      const files = this.selected.map((f) => ({ file: f, title: f.basename })), options = { book: true, title: this.titleInput.value.trim() || "\u6570\u5B66\u8BB2\u4E49", subtitle: "", tocDepth: this.plugin.settings.tocDepth };
+      const files = this.selected.map((f) => ({ file: f, title: f.basename })), options = { book: true, title: this.titleInput.value.trim() || t("\u6570\u5B66\u8BB2\u4E49"), subtitle: "", tocDepth: this.plugin.settings.tocDepth };
       this.close();
       void this.plugin.exportSelection({ files, options }, true);
     }));
@@ -23186,11 +23361,11 @@ var BookPicker = class extends import_obsidian.Modal {
       });
     }
     if (matching.length > 250)
-      this.fileList.createDiv({ text: "\u53EA\u663E\u793A\u524D 250 \u4E2A\u7ED3\u679C\uFF0C\u8BF7\u7EE7\u7EED\u8F93\u5165\u8DEF\u5F84\u7B5B\u9009\u3002" });
+      this.fileList.createDiv({ text: t("\u53EA\u663E\u793A\u524D 250 \u4E2A\u7ED3\u679C\uFF0C\u8BF7\u7EE7\u7EED\u8F93\u5165\u8DEF\u5F84\u7B5B\u9009\u3002") });
   }
   renderOrder() {
     this.orderList.empty();
-    this.orderList.createEl("h4", { text: "\u7AE0\u8282\u987A\u5E8F \xB7 " + this.selected.length + " \u7BC7" });
+    this.orderList.createEl("h4", { text: t("\u7AE0\u8282\u987A\u5E8F \xB7 {0} \u7BC7", this.selected.length) });
     this.selected.forEach((f, i) => {
       const row = this.orderList.createDiv({ cls: "an-order-row" });
       row.createSpan({ text: i + 1 + ". " + f.path });
@@ -23198,19 +23373,19 @@ var BookPicker = class extends import_obsidian.Modal {
         const b = row.createEl("button", { text });
         b.addEventListener("click", run);
       };
-      button("\u4E0A\u79FB", () => {
+      button(t("\u4E0A\u79FB"), () => {
         if (i > 0) {
           [this.selected[i - 1], this.selected[i]] = [this.selected[i], this.selected[i - 1]];
           this.renderOrder();
         }
       });
-      button("\u4E0B\u79FB", () => {
+      button(t("\u4E0B\u79FB"), () => {
         if (i + 1 < this.selected.length) {
           [this.selected[i + 1], this.selected[i]] = [this.selected[i], this.selected[i + 1]];
           this.renderOrder();
         }
       });
-      button("\u79FB\u9664", () => {
+      button(t("\u79FB\u9664"), () => {
         this.selected.splice(i, 1);
         this.renderFiles();
         this.renderOrder();
@@ -23237,13 +23412,13 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     const definitions = [];
     const p = this.plugin, s = p.settings;
     const toggle = (key2, name, desc = "") => definitions.push({ name, desc, render: (row) => {
-      row.addToggle((t) => t.setValue(s[key2]).onChange(async (v) => {
+      row.addToggle((t2) => t2.setValue(s[key2]).onChange(async (v) => {
         s[key2] = v;
         await p.saveSettings();
       }));
     } });
     const text = (key2, name, desc = "") => definitions.push({ name, desc, render: (row) => {
-      row.addText((t) => t.setValue(s[key2]).onChange(async (v) => {
+      row.addText((t2) => t2.setValue(s[key2]).onChange(async (v) => {
         s[key2] = v;
         await p.saveSettings();
       }));
@@ -23260,34 +23435,34 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     } });
     const description = (desc) => definitions.push({ name: "", desc, render: () => {
     } });
-    heading("\u7F16\u53F7\u4E0E\u5F15\u7528");
-    toggle("numbered", "\u5B9A\u7406\u7C7B\u73AF\u5883\u81EA\u52A8\u7F16\u53F7", "Proof\u3001Remark\u3001Solution \u9ED8\u8BA4\u4E0D\u8BA1\u6570\u3002");
-    select("equationMode", "\u516C\u5F0F\u81EA\u52A8\u7F16\u53F7", { referenced: "\u4EC5\u88AB\u5F15\u7528\u7684\u516C\u5F0F\uFF08\u5168\u5E93\u5224\u65AD\uFF09", all: "\u6240\u6709\u72EC\u7ACB\u516C\u5F0F\u5757", none: "\u5173\u95ED\u81EA\u52A8\u7F16\u53F7" }, "\u4FDD\u7559\u663E\u5F0F \\tag\uFF1B\u53EA\u6709\u8FDB\u5165\u81EA\u52A8\u7F16\u53F7\u7684\u516C\u5F0F\u624D\u589E\u52A0\u8BA1\u6570\u5668\u3002");
-    select("numbering", "\u7B14\u8BB0\u5185\u7F16\u53F7\u8303\u56F4", { section: "\u6309 H2 \u5206\u8282\u91CD\u7F6E", file: "\u6574\u7BC7\u8FDE\u7EED\u7F16\u53F7" });
-    toggle("sectionPrefix", "\u7F16\u53F7\u524D\u52A0\u5165 H2 \u8282\u53F7", "\u5206\u8282\u6A21\u5F0F\u4E0B\uFF1A\u5F00\u542F\u4E3A Theorem 2.1\uFF1B\u5173\u95ED\u4ECD\u5728\u6BCF\u4E2A H2 \u91CD\u7F6E\uFF0C\u4F46\u53EA\u663E\u793A Theorem 1\u3002");
-    select("sectionNumberSource", "H2 \u8282\u53F7\u6765\u6E90", { order: "\u6309 H2 \u51FA\u73B0\u987A\u5E8F\uFF1A1\u30012\u30013", heading: "\u4F18\u5148\u4F7F\u7528\u6807\u9898\u5F00\u5934\u7684\u6570\u5B57" }, "\u53EA\u8BFB\u6E90\u7801\u4E2D\u7684 H2\uFF0C\u4E0D\u8BA1 H3\u3001H6 \u6216\u4EE3\u7801\u5757\u91CC\u7684\u6807\u9898\u3002");
-    toggle("shortReferences", "\u94FE\u63A5\u5F15\u7528\u4F7F\u7528\u7F29\u5199", "\u6807\u9898\u4ECD\u4E3A Theorem / Definition\uFF1B\u94FE\u63A5\u663E\u793A thm 2.1 / def 2.1\u3002");
-    toggle("mediaNumbered", "\u56FE\u3001\u8868\u548C\u5B50\u56FE\u81EA\u52A8\u7F16\u53F7", "\u7528 [!figure] / [!table]\uFF1B\u5D4C\u5957 [!subfigure] \u5F97\u5230 (a)\u3001(b)\u3002\u5B89\u88C5\u540E\u5373\u53EF\u4F7F\u7528\u5185\u7F6E\u56FE\u8868\u6837\u5F0F\u3002");
-    toggle("sharedCounter", "\u4E0D\u540C\u5B9A\u7406\u7C7B\u578B\u5171\u4EAB\u8BA1\u6570\u5668", "\u5173\u95ED\u65F6 Definition\u3001Theorem \u7B49\u5404\u81EA\u8BA1\u6570\u3002\u516C\u5F0F\u59CB\u7EC8\u72EC\u7ACB\u3002");
-    text("numberPrefix", "\u7F16\u53F7\u524D\u7F00", "\u7559\u7A7A\u4E0D\u4F1A\u4ECE\u65E5\u671F\u6587\u4EF6\u540D\u63A8\u65AD\u7AE0\u8282\u53F7\u3002");
-    text("eqFormat", "\u516C\u5F0F\u5F15\u7528\u683C\u5F0F", "\u652F\u6301 {number}\u3001{file}\uFF1B\u9ED8\u8BA4 eq:{number}\uFF0C\u4E5F\u53EF\u8BBE Eq. ({number})\u3002");
-    text("theoremFormat", "\u5B9A\u7406\u5F15\u7528\u683C\u5F0F", "\u652F\u6301 {type}\u3001{number}\u3001{title}\u3001{file}\uFF1B{abbr} \u59CB\u7EC8\u7F29\u5199\uFF0C{name} \u59CB\u7EC8\u5168\u79F0\u3002");
-    toggle("respectAliases", "\u4FDD\u7559\u624B\u5199\u94FE\u63A5\u522B\u540D", "[[#^id|\u81EA\u5DF1\u7684\u6587\u5B57]] \u4E0D\u88AB\u81EA\u52A8\u7F16\u53F7\u66FF\u6362\uFF0C\u4F46\u4ECD\u7B97\u5F15\u7528\u3002");
-    toggle("livePreview", "\u5728\u5B9E\u65F6\u9884\u89C8\u4E2D\u8F6C\u6362\u94FE\u63A5\u4E0E\u7F16\u53F7", "\u5149\u6807\u8FDB\u5165\u94FE\u63A5\u65F6\u6062\u590D\u6E90\u7801\u3002\u6E90\u7801\u6A21\u5F0F\u4E0D\u8FDB\u884C\u663E\u793A\u66FF\u6362\u3002");
-    text("excludedFolders", "\u6392\u9664\u7D22\u5F15\u7684\u8DEF\u5F84", "\u591A\u4E2A\u76EE\u5F55/\u6587\u4EF6\u8BF7\u7528\u6362\u884C\u5206\u9694\uFF1B\u4E5F\u53EF\u76F4\u63A5\u7F16\u8F91\u672C\u63D2\u4EF6 data.json\u3002");
-    heading("\u72EC\u7ACB\u914D\u8272");
-    select("lightPalette", "\u6D45\u8272\u6570\u5B66\u6846\u914D\u8272", { theme: "\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272", forest: "Forest", sakura: "Sakura", mint: "Mint", sky: "Sky", mauve: "Mauve", golden: "Golden", cherry: "Cherry", prussian: "Prussian" });
-    select("darkPalette", "\u6DF1\u8272\u6570\u5B66\u6846\u914D\u8272", { theme: "\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272", radiation: "Radiation", vampire: "Vampire", abyss: "Abyss" });
-    description("\u8DDF\u968F\u4E3B\u9898\u8BFB\u53D6 Obsidian \u7684\u5F3A\u8C03\u8272\u3001\u84DD/\u7D2B/\u7EFF/\u9752/\u6A59\u8272\u53CA\u6B63\u6587\u8272\uFF0C\u4E0D\u5339\u914D\u9884\u8BBE\u8272\u677F\uFF0C\u4E5F\u4E0D\u76F4\u63A5\u8BFB\u53D6\u64CD\u4F5C\u7CFB\u7EDF\u4E3B\u8272\u8C03\u3002\u56FA\u5B9A\u8272\u677F\u4E0D\u53D7\u4E3B\u9898\u914D\u8272\u5207\u6362\u5F71\u54CD\uFF1B\u6D45\u6DF1\u6A21\u5F0F\u8DDF\u968F Obsidian\u3002");
-    toggle("neutralBody", "\u6846\u5185\u6B63\u6587\u4F7F\u7528\u666E\u901A\u6B63\u6587\u8272", "\u5F00\u542F\uFF1A\u6B63\u6587\u4E0E\u7B14\u8BB0\u666E\u901A\u6587\u5B57\u540C\u8272\uFF1B\u5173\u95ED\uFF1A\u6B63\u6587\u6DF7\u5165 36% \u7684\u5F53\u524D\u6846\u8272\u3002\u53EA\u6539\u53D8\u6B63\u6587\uFF0C\u4E0D\u6539\u53D8\u6807\u9898\u3001\u8FB9\u6846\u548C\u5E95\u8272\u3002");
-    toggle("hideMotif", "\u9690\u85CF\u53F3\u4E0B\u89D2\u5C0F\u56FE\u6848");
-    heading("\u76EE\u5F55\u4E0E PDF");
-    description("PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002");
-    select("tocDepth", "\u76EE\u5F55\u5C42\u7EA7", { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6" });
-    select("exportNumbering", "\u5408\u8BA2\u672C\u7F16\u53F7", { "chapter-section": "\u7AE0.\u8282.\u5E8F\u53F7\uFF08\u5982 2.3.1\uFF09", chapter: "\u7AE0.\u5E8F\u53F7\uFF08\u5982 2.1\uFF0C\u7AE0\u5185\u8FDE\u7EED\uFF09", note: "\u4FDD\u7559\u5E93\u5185\u663E\u793A\u7F16\u53F7\uFF08\u53EF\u80FD\u8DE8\u7AE0\u91CD\u53F7\uFF09" }, "\u524D\u4E24\u79CD\u6309\u5165\u9009\u7AE0\u8282\u91CD\u65B0\u7F16\u53F7\u548C\u89E3\u6790\u5F15\u7528\uFF1B\u4FDD\u7559\u6A21\u5F0F\u6CBF\u7528\u5168\u5E93\u7F16\u53F7\u3002\u539F\u7B14\u8BB0\u4E0D\u6539\u5199\u3002");
-    text("exportFolder", "\u5BFC\u51FA\u76EE\u5F55", "\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u9ED8\u8BA4 _exports\u3002");
-    toggle("captureTheme", "PDF \u6355\u83B7\u5F53\u524D\u4E3B\u9898\u4E0E\u7247\u6BB5\u6837\u5F0F", "\u5173\u95ED\u65F6\u4F7F\u7528\u63D2\u4EF6\u81EA\u5DF1\u7684\u6570\u5B66\u6846\u4E0E\u57FA\u7840\u6392\u7248\u3002");
-    toggle("openPdf", "\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF");
+    heading(t("\u7F16\u53F7\u4E0E\u5F15\u7528"));
+    toggle("numbered", t("\u5B9A\u7406\u7C7B\u73AF\u5883\u81EA\u52A8\u7F16\u53F7"), t("Proof\u3001Remark\u3001Solution \u9ED8\u8BA4\u4E0D\u8BA1\u6570\u3002"));
+    select("equationMode", t("\u516C\u5F0F\u81EA\u52A8\u7F16\u53F7"), { referenced: t("\u4EC5\u88AB\u5F15\u7528\u7684\u516C\u5F0F\uFF08\u5168\u5E93\u5224\u65AD\uFF09"), all: t("\u6240\u6709\u72EC\u7ACB\u516C\u5F0F\u5757"), none: t("\u5173\u95ED\u81EA\u52A8\u7F16\u53F7") }, t("\u4FDD\u7559\u663E\u5F0F \\tag\uFF1B\u53EA\u6709\u8FDB\u5165\u81EA\u52A8\u7F16\u53F7\u7684\u516C\u5F0F\u624D\u589E\u52A0\u8BA1\u6570\u5668\u3002"));
+    select("numbering", t("\u7B14\u8BB0\u5185\u7F16\u53F7\u8303\u56F4"), { section: t("\u6309 H2 \u5206\u8282\u91CD\u7F6E"), file: t("\u6574\u7BC7\u8FDE\u7EED\u7F16\u53F7") });
+    toggle("sectionPrefix", t("\u7F16\u53F7\u524D\u52A0\u5165 H2 \u8282\u53F7"), t("\u5206\u8282\u6A21\u5F0F\u4E0B\uFF1A\u5F00\u542F\u4E3A Theorem 2.1\uFF1B\u5173\u95ED\u4ECD\u5728\u6BCF\u4E2A H2 \u91CD\u7F6E\uFF0C\u4F46\u53EA\u663E\u793A Theorem 1\u3002"));
+    select("sectionNumberSource", t("H2 \u8282\u53F7\u6765\u6E90"), { order: t("\u6309 H2 \u51FA\u73B0\u987A\u5E8F\uFF1A1\u30012\u30013"), heading: t("\u4F18\u5148\u4F7F\u7528\u6807\u9898\u5F00\u5934\u7684\u6570\u5B57") }, t("\u53EA\u8BFB\u6E90\u7801\u4E2D\u7684 H2\uFF0C\u4E0D\u8BA1 H3\u3001H6 \u6216\u4EE3\u7801\u5757\u91CC\u7684\u6807\u9898\u3002"));
+    toggle("shortReferences", t("\u94FE\u63A5\u5F15\u7528\u4F7F\u7528\u7F29\u5199"), t("\u6807\u9898\u4ECD\u4E3A Theorem / Definition\uFF1B\u94FE\u63A5\u663E\u793A thm 2.1 / def 2.1\u3002"));
+    toggle("mediaNumbered", t("\u56FE\u3001\u8868\u548C\u5B50\u56FE\u81EA\u52A8\u7F16\u53F7"), t("\u7528 [!figure] / [!table]\uFF1B\u5D4C\u5957 [!subfigure] \u5F97\u5230 (a)\u3001(b)\u3002\u5B89\u88C5\u540E\u5373\u53EF\u4F7F\u7528\u5185\u7F6E\u56FE\u8868\u6837\u5F0F\u3002"));
+    toggle("sharedCounter", t("\u4E0D\u540C\u5B9A\u7406\u7C7B\u578B\u5171\u4EAB\u8BA1\u6570\u5668"), t("\u5173\u95ED\u65F6 Definition\u3001Theorem \u7B49\u5404\u81EA\u8BA1\u6570\u3002\u516C\u5F0F\u59CB\u7EC8\u72EC\u7ACB\u3002"));
+    text("numberPrefix", t("\u7F16\u53F7\u524D\u7F00"), t("\u7559\u7A7A\u4E0D\u4F1A\u4ECE\u65E5\u671F\u6587\u4EF6\u540D\u63A8\u65AD\u7AE0\u8282\u53F7\u3002"));
+    text("eqFormat", t("\u516C\u5F0F\u5F15\u7528\u683C\u5F0F"), t("\u652F\u6301 {number}\u3001{file}\uFF1B\u9ED8\u8BA4 eq:{number}\uFF0C\u4E5F\u53EF\u8BBE Eq. ({number})\u3002"));
+    text("theoremFormat", t("\u5B9A\u7406\u5F15\u7528\u683C\u5F0F"), t("\u652F\u6301 {type}\u3001{number}\u3001{title}\u3001{file}\uFF1B{abbr} \u59CB\u7EC8\u7F29\u5199\uFF0C{name} \u59CB\u7EC8\u5168\u79F0\u3002"));
+    toggle("respectAliases", t("\u4FDD\u7559\u624B\u5199\u94FE\u63A5\u522B\u540D"), t("[[#^id|\u81EA\u5DF1\u7684\u6587\u5B57]] \u4E0D\u88AB\u81EA\u52A8\u7F16\u53F7\u66FF\u6362\uFF0C\u4F46\u4ECD\u7B97\u5F15\u7528\u3002"));
+    toggle("livePreview", t("\u5728\u5B9E\u65F6\u9884\u89C8\u4E2D\u8F6C\u6362\u94FE\u63A5\u4E0E\u7F16\u53F7"), t("\u5149\u6807\u8FDB\u5165\u94FE\u63A5\u65F6\u6062\u590D\u6E90\u7801\u3002\u6E90\u7801\u6A21\u5F0F\u4E0D\u8FDB\u884C\u663E\u793A\u66FF\u6362\u3002"));
+    text("excludedFolders", t("\u6392\u9664\u7D22\u5F15\u7684\u8DEF\u5F84"), t("\u591A\u4E2A\u76EE\u5F55/\u6587\u4EF6\u8BF7\u7528\u6362\u884C\u5206\u9694\uFF1B\u4E5F\u53EF\u76F4\u63A5\u7F16\u8F91\u672C\u63D2\u4EF6 data.json\u3002"));
+    heading(t("\u72EC\u7ACB\u914D\u8272"));
+    select("lightPalette", t("\u6D45\u8272\u6570\u5B66\u6846\u914D\u8272"), { theme: t("\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272"), forest: "Forest", sakura: "Sakura", mint: "Mint", sky: "Sky", mauve: "Mauve", golden: "Golden", cherry: "Cherry", prussian: "Prussian" });
+    select("darkPalette", t("\u6DF1\u8272\u6570\u5B66\u6846\u914D\u8272"), { theme: t("\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272"), radiation: "Radiation", vampire: "Vampire", abyss: "Abyss" });
+    description(t("\u8DDF\u968F\u4E3B\u9898\u8BFB\u53D6 Obsidian \u7684\u5F3A\u8C03\u8272\u3001\u84DD/\u7D2B/\u7EFF/\u9752/\u6A59\u8272\u53CA\u6B63\u6587\u8272\uFF0C\u4E0D\u5339\u914D\u9884\u8BBE\u8272\u677F\uFF0C\u4E5F\u4E0D\u76F4\u63A5\u8BFB\u53D6\u64CD\u4F5C\u7CFB\u7EDF\u4E3B\u8272\u8C03\u3002\u56FA\u5B9A\u8272\u677F\u4E0D\u53D7\u4E3B\u9898\u914D\u8272\u5207\u6362\u5F71\u54CD\uFF1B\u6D45\u6DF1\u6A21\u5F0F\u8DDF\u968F Obsidian\u3002"));
+    toggle("neutralBody", t("\u6846\u5185\u6B63\u6587\u4F7F\u7528\u666E\u901A\u6B63\u6587\u8272"), t("\u5F00\u542F\uFF1A\u6B63\u6587\u4E0E\u7B14\u8BB0\u666E\u901A\u6587\u5B57\u540C\u8272\uFF1B\u5173\u95ED\uFF1A\u6B63\u6587\u6DF7\u5165 36% \u7684\u5F53\u524D\u6846\u8272\u3002\u53EA\u6539\u53D8\u6B63\u6587\uFF0C\u4E0D\u6539\u53D8\u6807\u9898\u3001\u8FB9\u6846\u548C\u5E95\u8272\u3002"));
+    toggle("hideMotif", t("\u9690\u85CF\u53F3\u4E0B\u89D2\u5C0F\u56FE\u6848"));
+    heading(t("\u76EE\u5F55\u4E0E PDF"));
+    description(t("PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002"));
+    select("tocDepth", t("\u76EE\u5F55\u5C42\u7EA7"), { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6" });
+    select("exportNumbering", t("\u5408\u8BA2\u672C\u7F16\u53F7"), { "chapter-section": t("\u7AE0.\u8282.\u5E8F\u53F7\uFF08\u5982 2.3.1\uFF09"), chapter: t("\u7AE0.\u5E8F\u53F7\uFF08\u5982 2.1\uFF0C\u7AE0\u5185\u8FDE\u7EED\uFF09"), note: t("\u4FDD\u7559\u5E93\u5185\u663E\u793A\u7F16\u53F7\uFF08\u53EF\u80FD\u8DE8\u7AE0\u91CD\u53F7\uFF09") }, t("\u524D\u4E24\u79CD\u6309\u5165\u9009\u7AE0\u8282\u91CD\u65B0\u7F16\u53F7\u548C\u89E3\u6790\u5F15\u7528\uFF1B\u4FDD\u7559\u6A21\u5F0F\u6CBF\u7528\u5168\u5E93\u7F16\u53F7\u3002\u539F\u7B14\u8BB0\u4E0D\u6539\u5199\u3002"));
+    text("exportFolder", t("\u5BFC\u51FA\u76EE\u5F55"), t("\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u9ED8\u8BA4 _exports\u3002"));
+    toggle("captureTheme", t("PDF \u6355\u83B7\u5F53\u524D\u4E3B\u9898\u4E0E\u7247\u6BB5\u6837\u5F0F"), t("\u5173\u95ED\u65F6\u4F7F\u7528\u63D2\u4EF6\u81EA\u5DF1\u7684\u6570\u5B66\u6846\u4E0E\u57FA\u7840\u6392\u7248\u3002"));
+    toggle("openPdf", t("\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF"));
     return definitions;
   }
 };
@@ -23373,7 +23548,7 @@ async function finishPdf(bytes, meta, positions) {
       const destination = annotation.get(key("Dest")) ?? (action?.get(key("S"))?.toString() === "/GoTo" ? action.get(key("D")) : void 0);
       if (destination) {
         if (!validDestination(destination))
-          throw new Error("PDF \u5185\u90E8\u94FE\u63A5\u76EE\u6807\u65E0\u6548\uFF0C\u5DF2\u505C\u6B62\u8F93\u51FA\u3002");
+          throw new Error(t("PDF \u5185\u90E8\u94FE\u63A5\u76EE\u6807\u65E0\u6548\uFF0C\u5DF2\u505C\u6B62\u8F93\u51FA\u3002"));
         validInternalLinks++;
       } else if (uri)
         externalLinks++;
@@ -23385,7 +23560,7 @@ async function finishPdf(bytes, meta, positions) {
   for (const entry of meta.entries) {
     const pos = positions[entry.id];
     if (!pos || !pages[pos.page])
-      throw new Error("PDF \u7F3A\u5C11\u76EE\u5F55\u76EE\u6807\uFF1A" + entry.id);
+      throw new Error(t("PDF \u7F3A\u5C11\u76EE\u5F55\u76EE\u6807\uFF1A") + entry.id);
     while (stack.length > 1 && stack.at(-1).entry.level >= entry.level)
       stack.pop();
     const parent = stack.at(-1);
@@ -23433,13 +23608,13 @@ var PRINT_SHELL = "data:text/html;charset=utf-8," + encodeURIComponent(
 function nativeWindow() {
   const remote2 = electron.remote || require("@electron/remote");
   if (typeof remote2?.BrowserWindow !== "function")
-    throw new Error("\u5F53\u524D Obsidian \u672A\u63D0\u4F9B Electron PDF \u63A5\u53E3\uFF0C\u8BF7\u66F4\u65B0\u684C\u9762\u5B89\u88C5\u7A0B\u5E8F\u3002");
+    throw new Error(t("\u5F53\u524D Obsidian \u672A\u63D0\u4F9B Electron PDF \u63A5\u53E3\uFF0C\u8BF7\u66F4\u65B0\u684C\u9762\u5B89\u88C5\u7A0B\u5E8F\u3002"));
   return remote2.BrowserWindow;
 }
 function pdfAvailability() {
   try {
     nativeWindow();
-    return { interfaceAvailable: true, verification: "interface-only", engine: "Electron printToPDF", note: "\u4EC5\u786E\u8BA4 Electron \u63A5\u53E3\u5B58\u5728\uFF0C\u4E0D\u4EE3\u8868\u5B9E\u9645\u5BFC\u51FA\u5DF2\u901A\u8FC7\uFF1B\u8BF7\u67E5\u770B lastPdfExport \u548C errors\u3002" };
+    return { interfaceAvailable: true, verification: "interface-only", engine: "Electron printToPDF", note: t("\u4EC5\u786E\u8BA4 Electron \u63A5\u53E3\u5B58\u5728\uFF0C\u4E0D\u4EE3\u8868\u5B9E\u9645\u5BFC\u51FA\u5DF2\u901A\u8FC7\uFF1B\u8BF7\u67E5\u770B lastPdfExport \u548C errors\u3002") };
   } catch (error) {
     return { interfaceAvailable: false, verification: "interface-only", error: String(error) };
   }
@@ -23447,10 +23622,10 @@ function pdfAvailability() {
 async function exportPdf(html, log = () => {
 }, signal, Window = nativeWindow()) {
   if (signal?.aborted)
-    throw new Error("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002");
+    throw new Error(t("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002"));
   const documentHtml = html.replace(/<head>/i, "<head>" + PRINT_POLICY);
   if (documentHtml === html)
-    throw new Error("\u6253\u5370\u5FEB\u7167\u7F3A\u5C11 HTML head\uFF0C\u65E0\u6CD5\u8BBE\u7F6E\u5B89\u5168\u7B56\u7565\u3002");
+    throw new Error(t("\u6253\u5370\u5FEB\u7167\u7F3A\u5C11 HTML head\uFF0C\u65E0\u6CD5\u8BBE\u7F6E\u5B89\u5168\u7B56\u7565\u3002"));
   const win = new Window({
     show: false,
     width: 1e3,
@@ -23485,7 +23660,7 @@ async function exportPdf(html, log = () => {
     wc.on("will-navigate", (event) => event.preventDefault());
     wc.on("will-attach-webview", (event) => event.preventDefault());
     try {
-      log("\u6B63\u5728\u52A0\u8F7D\u5185\u5B58\u6253\u5370\u5FEB\u7167\uFF08" + Buffer.byteLength(html, "utf8") + " \u5B57\u8282\uFF09\u2026");
+      log(t("\u6B63\u5728\u52A0\u8F7D\u5185\u5B58\u6253\u5370\u5FEB\u7167\uFF08{0} \u5B57\u8282\uFF09\u2026", Buffer.byteLength(html, "utf8")));
       await win.loadURL(PRINT_SHELL);
       const documentUrl = await wc.executeJavaScript(
         `URL.createObjectURL(new Blob([${JSON.stringify(documentHtml)}], {type: 'text/html;charset=utf-8'}))`
@@ -23495,12 +23670,13 @@ async function exportPdf(html, log = () => {
       await win.loadURL(documentUrl);
     } catch (error) {
       const code = error.code || "unknown";
-      throw new Error("Electron \u6253\u5370\u7A97\u53E3\u52A0\u8F7D\u5931\u8D25\uFF1A" + code);
+      throw new Error(t("Electron \u6253\u5370\u7A97\u53E3\u52A0\u8F7D\u5931\u8D25\uFF1A") + code);
     }
     const meta = await wc.executeJavaScript(`JSON.parse(document.getElementById('phb-meta').textContent)`);
     if (!meta.prepared || !meta.entries?.length)
-      throw new Error("\u5FEB\u7167\u7F3A\u5C11\u5DF2\u89E3\u6790\u7684\u6807\u9898\u4E0E\u76EE\u5F55\u4FE1\u606F\u3002");
-    await wc.executeJavaScript(`(${preparePrint.toString()})()`);
+      throw new Error(t("\u5FEB\u7167\u7F3A\u5C11\u5DF2\u89E3\u6790\u7684\u6807\u9898\u4E0E\u76EE\u5F55\u4FE1\u606F\u3002"));
+    const printMessages = { image: t("\u56FE\u7247\u65E0\u6CD5\u52A0\u8F7D\uFF1A"), math: t("\u516C\u5F0F\u6E32\u67D3\u9519\u8BEF\u3002"), font: t("\u5FEB\u7167\u5B57\u4F53\u52A0\u8F7D\u5931\u8D25\u3002") };
+    await wc.executeJavaScript(`(${preparePrint.toString()})(${JSON.stringify(printMessages)})`);
     const dark = Boolean(await wc.executeJavaScript(`document.body.classList.contains('theme-dark')`));
     const options = {
       pageSize: "A4",
@@ -23517,13 +23693,13 @@ async function exportPdf(html, log = () => {
     let iterations = 0;
     for (iterations = 1; iterations <= 6; iterations++) {
       if (signal?.aborted)
-        throw new Error("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002");
-      log("\u6253\u5370\u5E76\u6821\u51C6\u76EE\u5F55\uFF1A\u7B2C " + iterations + " \u8F6E");
+        throw new Error(t("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002"));
+      log(t("\u6253\u5370\u5E76\u6821\u51C6\u76EE\u5F55\uFF1A\u7B2C {0} \u8F6E", iterations));
       finalBytes = await wc.printToPDF(options);
       measured = await measurePdf(finalBytes);
       for (const entry of meta.entries)
         if (!measured.positions[entry.id])
-          throw new Error("\u65E0\u6CD5\u5B9A\u4F4D PDF \u6807\u9898\uFF1A" + entry.title);
+          throw new Error(t("\u65E0\u6CD5\u5B9A\u4F4D PDF \u6807\u9898\uFF1A") + entry.title);
       const signature = JSON.stringify([measured.pages, meta.entries.map((e) => measured.positions[e.id].page)]);
       if (signature === previous)
         break;
@@ -23538,7 +23714,7 @@ async function exportPdf(html, log = () => {
       previous = signature;
     }
     if (iterations > 6 || !finalBytes || !measured)
-      throw new Error("6 \u8F6E\u540E\u76EE\u5F55\u9875\u7801\u4ECD\u672A\u7A33\u5B9A\uFF0C\u8BF7\u8C03\u6574\u76EE\u5F55\u6807\u9898\u6216\u5B57\u4F53\u3002");
+      throw new Error(t("6 \u8F6E\u540E\u76EE\u5F55\u9875\u7801\u4ECD\u672A\u7A33\u5B9A\uFF0C\u8BF7\u8C03\u6574\u76EE\u5F55\u6807\u9898\u6216\u5B57\u4F53\u3002"));
     const finished = await finishPdf(finalBytes, meta, measured.positions);
     const overflow = await wc.executeJavaScript(`(${findOverflow.toString()})()`);
     return {
@@ -23554,9 +23730,9 @@ async function exportPdf(html, log = () => {
     };
   } catch (error) {
     if (timedOut)
-      throw new Error("PDF \u5BFC\u51FA\u8D85\u8FC7 4 \u5206\u949F\uFF0C\u7A97\u53E3\u5DF2\u5173\u95ED\u3002");
+      throw new Error(t("PDF \u5BFC\u51FA\u8D85\u8FC7 4 \u5206\u949F\uFF0C\u7A97\u53E3\u5DF2\u5173\u95ED\u3002"));
     if (signal?.aborted)
-      throw new Error("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002");
+      throw new Error(t("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002"));
     throw error;
   } finally {
     (0, import_node_timers.clearTimeout)(timer);
@@ -23564,19 +23740,19 @@ async function exportPdf(html, log = () => {
     close();
   }
 }
-async function preparePrint() {
+async function preparePrint(messages) {
   await document.fonts.ready;
   await Promise.all([...document.images].map(async (img) => {
     try {
       await img.decode();
     } catch {
-      throw new Error("\u56FE\u7247\u65E0\u6CD5\u52A0\u8F7D\uFF1A" + img.alt);
+      throw new Error(messages.image + img.alt);
     }
   }));
   if (document.querySelector('[data-mml-node="merror"],mjx-merror'))
-    throw new Error("\u516C\u5F0F\u6E32\u67D3\u9519\u8BEF\u3002");
+    throw new Error(messages.math);
   if ([...document.fonts].some((font) => font.status === "error"))
-    throw new Error("\u5FEB\u7167\u5B57\u4F53\u52A0\u8F7D\u5931\u8D25\u3002");
+    throw new Error(messages.font);
   document.querySelectorAll(".callout:not(.an-media)").forEach((box) => {
     if (["proof", "pf", "remark", "rem", "rmk"].includes(box.dataset.callout || ""))
       return;
@@ -23609,13 +23785,13 @@ function findOverflow() {
 }
 
 // src/styles/callouts.css
-var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-badge-mix: 100%;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def: #a63c67;\n  --phb-thm: #6952a0;\n  --phb-lem: #8a4e8d;\n  --phb-prop: #406e68;\n  --phb-cor: #536c9a;\n  --phb-claim: #996040;\n  --phb-example: #8f6c25;\n  --phb-proof: #697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def: #227c77;\n  --phb-thm: #326694;\n  --phb-lem: #65709d;\n  --phb-prop: #457d5b;\n  --phb-cor: #6b7552;\n  --phb-claim: #4c7192;\n  --phb-example: #916b35;\n  --phb-proof: #647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def: #256f83;\n  --phb-thm: #2f609c;\n  --phb-lem: #665d98;\n  --phb-prop: #3d7a70;\n  --phb-cor: #536d86;\n  --phb-claim: #7f668d;\n  --phb-example: #956b35;\n  --phb-proof: #5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def: #247651;\n  --phb-thm: #286b76;\n  --phb-lem: #71628c;\n  --phb-prop: #62752e;\n  --phb-cor: #42786b;\n  --phb-claim: #44698c;\n  --phb-example: #946b2f;\n  --phb-proof: #687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def: #776085;\n  --phb-thm: #674386;\n  --phb-lem: #925d86;\n  --phb-prop: #5d7767;\n  --phb-cor: #646998;\n  --phb-claim: #896440;\n  --phb-example: #936c3f;\n  --phb-proof: #72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def: #88712e;\n  --phb-thm: #9c582d;\n  --phb-lem: #826489;\n  --phb-prop: #617542;\n  --phb-cor: #946640;\n  --phb-claim: #587a7b;\n  --phb-example: #a75c3c;\n  --phb-proof: #77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def: #9c3a55;\n  --phb-thm: #7f3f65;\n  --phb-lem: #845786;\n  --phb-prop: #3e756b;\n  --phb-cor: #626987;\n  --phb-claim: #9c5e36;\n  --phb-example: #906c32;\n  --phb-proof: #69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def: #2a6c76;\n  --phb-thm: #28558a;\n  --phb-lem: #6c608c;\n  --phb-prop: #477966;\n  --phb-cor: #526d94;\n  --phb-claim: #887052;\n  --phb-example: #926938;\n  --phb-proof: #5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def: #82d6ac;\n  --phb-thm: #bca1e2;\n  --phb-lem: #db9bc4;\n  --phb-prop: #afd294;\n  --phb-cor: #83c7d1;\n  --phb-claim: #e5b78f;\n  --phb-example: #dfc67d;\n  --phb-proof: #a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def: #73c9bc;\n  --phb-thm: #82b6df;\n  --phb-lem: #b4a1e0;\n  --phb-prop: #9bcba7;\n  --phb-cor: #78ccd2;\n  --phb-claim: #d0ac8e;\n  --phb-example: #d6c07c;\n  --phb-proof: #a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def: #86ca98;\n  --phb-thm: #83bbce;\n  --phb-lem: #b7a7ca;\n  --phb-prop: #b8c984;\n  --phb-cor: #8dcbb4;\n  --phb-claim: #9baed0;\n  --phb-example: #dec178;\n  --phb-proof: #a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: 1.8em 0 1.25em !important;\n  padding: 0 1em .8em !important;\n  border: var(--phb-border-width) solid var(--phb-accent) !important;\n  border-radius: var(--phb-radius) !important;\n  background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface)) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: 27px;\n    height: 27px;\n    display: block;\n    background: var(--phb-accent);\n    mask: var(--phb-symbol) center / contain no-repeat;\n    opacity: .33 !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: -.85em 0 .3em .25em !important;\n    padding: .25em .75em !important;\n    border: 0 !important;\n    border-radius: 4px !important;\n    background: var(--phb-accent) !important;\n    color: var(--phb-badge-ink) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    padding-bottom: .2em !important;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    margin: 1em 0 !important;\n    padding: 0 !important;\n    border: 0 !important;\n    border-radius: 0 !important;\n    background: transparent !important;\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      margin: 0 .6em 0 0 !important;\n      padding: 0 !important;\n      border-radius: 0 !important;\n      background: transparent !important;\n      color: var(--phb-text) !important;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      margin-bottom: .35em !important;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    & > .callout-content > p:last-child::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) > .callout-title {\n    color: var(--an-remark-color) !important;\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\n';
+var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def: #a63c67;\n  --phb-thm: #6952a0;\n  --phb-lem: #8a4e8d;\n  --phb-prop: #406e68;\n  --phb-cor: #536c9a;\n  --phb-claim: #996040;\n  --phb-example: #8f6c25;\n  --phb-proof: #697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def: #227c77;\n  --phb-thm: #326694;\n  --phb-lem: #65709d;\n  --phb-prop: #457d5b;\n  --phb-cor: #6b7552;\n  --phb-claim: #4c7192;\n  --phb-example: #916b35;\n  --phb-proof: #647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def: #256f83;\n  --phb-thm: #2f609c;\n  --phb-lem: #665d98;\n  --phb-prop: #3d7a70;\n  --phb-cor: #536d86;\n  --phb-claim: #7f668d;\n  --phb-example: #956b35;\n  --phb-proof: #5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def: #247651;\n  --phb-thm: #286b76;\n  --phb-lem: #71628c;\n  --phb-prop: #62752e;\n  --phb-cor: #42786b;\n  --phb-claim: #44698c;\n  --phb-example: #946b2f;\n  --phb-proof: #687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def: #776085;\n  --phb-thm: #674386;\n  --phb-lem: #925d86;\n  --phb-prop: #5d7767;\n  --phb-cor: #646998;\n  --phb-claim: #896440;\n  --phb-example: #936c3f;\n  --phb-proof: #72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def: #88712e;\n  --phb-thm: #9c582d;\n  --phb-lem: #826489;\n  --phb-prop: #617542;\n  --phb-cor: #946640;\n  --phb-claim: #587a7b;\n  --phb-example: #a75c3c;\n  --phb-proof: #77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def: #9c3a55;\n  --phb-thm: #7f3f65;\n  --phb-lem: #845786;\n  --phb-prop: #3e756b;\n  --phb-cor: #626987;\n  --phb-claim: #9c5e36;\n  --phb-example: #906c32;\n  --phb-proof: #69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def: #2a6c76;\n  --phb-thm: #28558a;\n  --phb-lem: #6c608c;\n  --phb-prop: #477966;\n  --phb-cor: #526d94;\n  --phb-claim: #887052;\n  --phb-example: #926938;\n  --phb-proof: #5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def: #82d6ac;\n  --phb-thm: #bca1e2;\n  --phb-lem: #db9bc4;\n  --phb-prop: #afd294;\n  --phb-cor: #83c7d1;\n  --phb-claim: #e5b78f;\n  --phb-example: #dfc67d;\n  --phb-proof: #a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def: #73c9bc;\n  --phb-thm: #82b6df;\n  --phb-lem: #b4a1e0;\n  --phb-prop: #9bcba7;\n  --phb-cor: #78ccd2;\n  --phb-claim: #d0ac8e;\n  --phb-example: #d6c07c;\n  --phb-proof: #a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def: #86ca98;\n  --phb-thm: #83bbce;\n  --phb-lem: #b7a7ca;\n  --phb-prop: #b8c984;\n  --phb-cor: #8dcbb4;\n  --phb-claim: #9baed0;\n  --phb-example: #dec178;\n  --phb-proof: #a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --phb-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: 27px;\n    height: 27px;\n    display: block;\n    background: var(--phb-accent);\n    mask: var(--phb-symbol) center / contain no-repeat;\n    opacity: .33 !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    & > .callout-content > p:last-child::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\n';
 
 // snippets/academic-layout.css
-var academic_layout_default = 'body {\n  --an-layout-caption-size: .9em;\n  --an-layout-caption-gap: .55em;\n  --an-layout-image-gap: 1.25em;\n  --an-layout-subfigure-min: 12rem;\n  --an-layout-rule: var(--text-normal, #26352c);\n  --an-layout-rule-heavy: 1.6px;\n  --an-layout-rule-light: 1px;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) {\n  border-collapse: collapse !important;\n  border-spacing: 0 !important;\n  border-radius: 0 !important;\n  border: 0 !important;\n  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  background: transparent !important;\n  box-shadow: none !important;\n  width: auto;\n  min-width: min(100%, 22rem);\n  max-width: 100%;\n  margin: 1.25em auto;\n  font-variant-numeric: tabular-nums;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td, tr, thead, tbody, tfoot) {\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) thead {\n  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td) {\n  padding: .5em .85em !important;\n  line-height: 1.5;\n  color: var(--text-normal, inherit) !important;\n  text-indent: 0 !important;\n  overflow-wrap: anywhere;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) th {\n  font-weight: 650;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) {\n  --callout-blend-mode: normal;\n  display: flex !important;\n  flex-direction: column !important;\n  position: relative !important;\n  overflow: visible !important;\n  width: auto;\n  min-width: 0;\n  max-width: 100%;\n  margin: 1.5em 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none !important;\n  color: var(--text-normal, inherit) !important;\n  transform: none !important;\n  filter: none !important;\n  isolation: auto !important;\n  mix-blend-mode: normal !important;\n  box-sizing: border-box;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::before,\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::after {\n  content: none !important;\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {\n  position: static !important;\n  inset: auto !important;\n  display: flex !important;\n  align-items: baseline;\n  justify-content: center !important;\n  order: 2;\n  width: auto !important;\n  max-width: 100% !important;\n  margin: var(--an-layout-caption-gap) 0 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none !important;\n  color: var(--text-normal, inherit) !important;\n  text-align: center !important;\n  font: inherit !important;\n  font-size: var(--an-layout-caption-size) !important;\n  line-height: 1.55 !important;\n  white-space: normal !important;\n  overflow-wrap: anywhere;\n  transform: none !important;\n  text-shadow: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-icon {\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-title-inner {\n  display: block !important;\n  color: inherit !important;\n  font: inherit !important;\n  white-space: normal !important;\n  text-indent: 0 !important;\n  padding: 0 !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content {\n  order: 1;\n  position: static !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  background: transparent !important;\n  color: var(--text-normal, inherit) !important;\n  overflow: visible !important;\n  min-width: 0;\n  text-align: center;\n}\nbody .an-caption-label {\n  font-weight: 650;\n}\nbody .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {\n  content: "\\2002";\n}\nbody .an-caption-text {\n  font-weight: 400;\n}\nbody :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {\n  margin: .35em 0 !important;\n  text-indent: 0 !important;\n}\nbody .an-media .image-embed,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  display: inline-block !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  min-width: 0;\n  max-width: 100%;\n  background: transparent !important;\n  border: 0 !important;\n  box-shadow: none !important;\n  vertical-align: top;\n}\nbody .an-media img,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) img {\n  display: block !important;\n  max-width: 100% !important;\n  height: auto;\n  margin: 0 auto !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  box-shadow: none !important;\n  object-fit: contain;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=table], [data-callout=tbl]) > .callout-title {\n  order: 0;\n  margin: 0 0 var(--an-layout-caption-gap) !important;\n}\nbody .callout:is([data-callout=table], [data-callout=tbl]) table {\n  margin: 0 auto !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig]) > .callout-content.an-figure-grid {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: flex-start;\n  gap: var(--an-layout-image-gap);\n}\nbody .an-figure-grid > :not(.an-subfigure-cell) {\n  flex: 0 0 100%;\n}\nbody .an-figure-grid > .an-subfigure-cell {\n  flex: 1 1 calc(50% - var(--an-layout-image-gap));\n  min-width: min(100%, var(--an-layout-subfigure-min));\n  max-width: 100%;\n  margin: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) {\n  margin: 0 !important;\n}\nbody .an-figure-grid > .an-empty-anchor {\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {\n  text-indent: 2em;\n}\nbody .academic-indent :is(.callout, blockquote, li, td, th, figcaption, .phb-toc) p {\n  text-indent: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-serif {\n  font-family:\n    "Latin Modern Roman",\n    "Times New Roman",\n    "Noto Serif CJK SC",\n    "Source Han Serif SC",\n    "Songti SC",\n    "SimSun",\n    serif;\n}\n@media print {\n  body .an-media {\n    break-inside: avoid;\n  }\n  body .an-media > .callout-title {\n    break-before: avoid;\n    break-after: auto;\n  }\n  body .an-table {\n    display: block !important;\n    break-inside: auto;\n  }\n  body .an-table > .callout-title {\n    break-before: auto;\n    break-after: avoid;\n  }\n  body .an-media img {\n    max-height: 155mm;\n  }\n  body .an-figure-grid {\n    gap: 4mm;\n  }\n  body .an-figure-grid > .an-subfigure-cell {\n    min-width: 0;\n    flex-basis: calc(50% - 4mm);\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) table {\n    break-inside: auto;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) thead {\n    display: table-header-group;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) tr {\n    break-inside: avoid;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) :is(table, .an-media) {\n    -webkit-print-color-adjust: exact !important;\n    print-color-adjust: exact !important;\n  }\n}\n';
+var academic_layout_default = 'body {\n  --an-layout-caption-size: .9em;\n  --an-layout-caption-gap: .55em;\n  --an-layout-image-gap: 1.25em;\n  --an-layout-subfigure-min: 12rem;\n  --an-layout-rule: var(--text-normal, #26352c);\n  --an-layout-rule-heavy: 1.6px;\n  --an-layout-rule-light: 1px;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) {\n  border-collapse: collapse !important;\n  border-spacing: 0 !important;\n  border-radius: 0;\n  border: 0 !important;\n  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  background: transparent !important;\n  box-shadow: none;\n  width: auto;\n  min-width: min(100%, 22rem);\n  max-width: 100%;\n  margin: 1.25em auto;\n  font-variant-numeric: tabular-nums;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td, tr, thead, tbody, tfoot) {\n  border: 0 !important;\n  border-radius: 0;\n  background: transparent !important;\n  box-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) thead {\n  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td) {\n  padding: .5em .85em;\n  line-height: 1.5;\n  color: var(--text-normal, inherit) !important;\n  text-indent: 0;\n  overflow-wrap: anywhere;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) th {\n  font-weight: 650;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td):hover {\n  box-shadow: none !important;\n  background: transparent !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) {\n  --callout-blend-mode: normal;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: visible !important;\n  width: auto;\n  min-width: 0;\n  max-width: 100%;\n  margin: 1.5em 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit);\n  transform: none;\n  filter: none;\n  isolation: auto;\n  mix-blend-mode: normal;\n  box-sizing: border-box;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::before,\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::after {\n  content: none;\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {\n  position: static;\n  inset: auto;\n  display: flex !important;\n  align-items: baseline;\n  justify-content: center;\n  order: 2;\n  width: auto;\n  max-width: 100%;\n  margin: var(--an-layout-caption-gap) 0 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit) !important;\n  text-align: center;\n  font: inherit;\n  font-size: var(--an-layout-caption-size);\n  line-height: 1.55;\n  white-space: normal;\n  overflow-wrap: anywhere;\n  transform: none;\n  text-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-icon {\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-title-inner {\n  display: block;\n  color: inherit;\n  font: inherit;\n  white-space: normal;\n  text-indent: 0;\n  padding: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content {\n  order: 1;\n  position: static;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--text-normal, inherit);\n  overflow: visible;\n  min-width: 0;\n  text-align: center;\n}\nbody .an-caption-label {\n  font-weight: 650;\n}\nbody .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {\n  content: "\\2002";\n}\nbody .an-caption-text {\n  font-weight: 400;\n}\nbody :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {\n  margin: .35em 0;\n  text-indent: 0;\n}\nbody .an-media .image-embed,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  display: inline-block !important;\n  margin: 0;\n  padding: 0;\n  min-width: 0;\n  max-width: 100%;\n  background: transparent;\n  border: 0;\n  box-shadow: none;\n  vertical-align: top;\n}\nbody .an-media img,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n  margin: 0 auto;\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n  object-fit: contain;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=table], [data-callout=tbl]) > .callout-title {\n  order: 0;\n  margin: 0 0 var(--an-layout-caption-gap) !important;\n}\nbody .callout:is([data-callout=table], [data-callout=tbl]) table {\n  margin: 0 auto !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig]) > .callout-content.an-figure-grid {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: flex-start;\n  gap: var(--an-layout-image-gap);\n}\nbody .an-figure-grid > :not(.an-subfigure-cell) {\n  flex: 0 0 100%;\n}\nbody .an-figure-grid > .an-subfigure-cell {\n  flex: 1 1 calc(50% - var(--an-layout-image-gap));\n  min-width: min(100%, var(--an-layout-subfigure-min));\n  max-width: 100%;\n  margin: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) {\n  margin: 0 !important;\n}\nbody .an-figure-grid > .an-empty-anchor {\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {\n  text-indent: 2em;\n}\nbody .academic-indent :is(.callout, blockquote, li, td, th, figcaption, .phb-toc) p {\n  text-indent: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-serif {\n  font-family:\n    "Latin Modern Roman",\n    "Times New Roman",\n    "Noto Serif CJK SC",\n    "Source Han Serif SC",\n    "Songti SC",\n    "SimSun",\n    serif;\n}\n@media print {\n  body .an-media {\n    break-inside: avoid;\n  }\n  body .an-media > .callout-title {\n    break-before: avoid;\n    break-after: auto;\n  }\n  body .an-table {\n    display: block !important;\n    break-inside: auto;\n  }\n  body .an-table > .callout-title {\n    break-before: auto;\n    break-after: avoid;\n  }\n  body .callout.an-media img {\n    max-height: 155mm;\n  }\n  body .an-figure-grid {\n    gap: 4mm;\n  }\n  body .an-figure-grid > .an-subfigure-cell {\n    min-width: 0;\n    flex-basis: calc(50% - 4mm);\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) table {\n    break-inside: auto;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) thead {\n    display: table-header-group;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) tr {\n    break-inside: avoid;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) :is(table, .an-media) {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n  }\n}\n';
 
 // src/styles/document.css
-var document_default2 = 'html {\n  font-size: 16px;\n  background: var(--phb-page-background, white);\n}\nbody.phb-export {\n  display: block !important;\n  position: static !important;\n  width: auto !important;\n  height: auto !important;\n  min-height: 0 !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  overflow: visible !important;\n  background: var(--phb-surface, #fff) !important;\n  color: var(--phb-text, #24372e) !important;\n  font-family: var(--font-text, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif);\n  font-size: 11pt;\n  line-height: 1.7;\n  -webkit-print-color-adjust: exact !important;\n  print-color-adjust: exact !important;\n}\nbody.phb-export *,\nbody.phb-export *::before,\nbody.phb-export *::after {\n  animation: none !important;\n  transition: none !important;\n  caret-color: transparent !important;\n}\nbody.phb-export #phb-document {\n  display: block !important;\n  position: static !important;\n  width: 174mm !important;\n  max-width: none !important;\n  height: auto !important;\n  padding: 0 !important;\n  margin: 0 auto !important;\n  overflow: visible !important;\n  font-size: inherit;\n  line-height: inherit;\n}\nbody.phb-export :is(.markdown-preview-view, .markdown-preview-sizer, .markdown-rendered, .phb-chapter) {\n  min-height: 0 !important;\n  max-height: none !important;\n  height: auto !important;\n  overflow: visible !important;\n  contain: none !important;\n  content-visibility: visible !important;\n}\nbody.phb-export .phb-chapter {\n  display: block;\n}\nbody.phb-export :is(p, li) {\n  line-height: 1.7;\n}\nbody.phb-export p {\n  margin: .65em 0;\n}\nbody.phb-export :is(h1, h2, h3, h4, h5, h6) {\n  position: relative !important;\n  break-after: avoid !important;\n  text-shadow: none !important;\n  transform: none !important;\n}\nbody.phb-export h1 {\n  font-size: 1.9em;\n  line-height: 1.4;\n  margin: 1.1em 0 .8em;\n}\nbody.phb-export h2 {\n  font-size: 1.4em;\n  margin: 1.1em 0 .7em;\n}\nbody.phb-export h3 {\n  font-size: 1.16em;\n  margin: 1em 0 .5em;\n}\nbody.phb-export pre {\n  white-space: pre-wrap !important;\n  overflow-wrap: anywhere;\n}\nbody.phb-export :is(.math-block, .phb-math[data-display=true]) {\n  display: block;\n  text-align: center;\n  margin: .7em 0;\n  text-indent: 0;\n}\nbody.phb-export .phb-math mjx-container {\n  margin: 0 !important;\n}\nbody.phb-export mjx-container[display=true] {\n  display: block !important;\n  max-width: 100%;\n  overflow: visible !important;\n}\nbody.phb-export :is(.math-block, .phb-math) {\n  overflow: visible !important;\n}\nbody.phb-export .phb-math-error {\n  border: 2px solid #c00;\n  padding: .5em;\n}\nbody.phb-export .phb-chapter-kicker {\n  font-size: 9pt;\n  font-weight: 600;\n  letter-spacing: .16em;\n  color: var(--phb-thm);\n  margin: 1em 0;\n}\nbody.phb-export .phb-book-title {\n  text-align: center;\n  margin-top: 1.5em;\n}\nbody.phb-export .phb-book-subtitle {\n  text-align: center;\n  color: var(--text-muted,#66776c);\n}\nbody.phb-export .phb-frontmatter {\n  padding-top: 5mm;\n}\nbody.phb-export .phb-probe {\n  position: absolute !important;\n  top: 0 !important;\n  left: 0 !important;\n  display: block !important;\n  width: 2px !important;\n  height: 2px !important;\n  font-size: 1px !important;\n  line-height: 1px !important;\n  padding: 0 !important;\n  margin: 0 !important;\n  border: 0 !important;\n  opacity: 1 !important;\n  color: var(--phb-surface, #fff) !important;\n  background: none !important;\n  z-index: 1 !important;\n}\nbody.phb-export .phb-probe::before,\nbody.phb-export .phb-probe::after {\n  content: none !important;\n}\nbody.phb-export .heading-collapse-indicator,\nbody.phb-export .callout-fold {\n  display: none !important;\n}\nbody.phb-export .callout-title {\n  max-width: 100% !important;\n}\nbody.phb-export .callout-content {\n  display: block !important;\n}\nbody.phb-export .callout-content li::before {\n  display: none !important;\n}\nbody.phb-export .callout-content ul,\nbody.phb-export .callout-content ol {\n  padding-left: 1.6em;\n}\nbody.phb-export img {\n  max-width: 100%;\n  max-height: 220mm;\n  object-fit: contain;\n}\nbody.phb-export .phb-toc {\n  font-size: 10.5pt;\n}\n@media screen {\n  body.phb-export {\n    padding: 12mm !important;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    margin-top: 3em;\n  }\n}\n@media print {\n  @page {\n    size: A4;\n    margin: 18mm 18mm 20mm;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    break-before: page;\n  }\n  body.phb-export .phb-chapter > :first-child {\n    margin-top: 0 !important;\n  }\n  body.phb-export .callout:not(.an-media) {\n    break-inside: auto;\n  }\n  body.phb-export .callout[data-phb-keep=true] {\n    break-inside: avoid !important;\n  }\n  body.phb-export .callout[data-phb-long=true] {\n    break-inside: auto !important;\n  }\n  body.phb-export .callout[data-phb-long=true]::after {\n    display: none !important;\n  }\n  body.phb-export :is(p, li) {\n    orphans: 2;\n    widows: 2;\n  }\n  body.phb-export .phb-toc-title {\n    break-after: avoid;\n  }\n  body.phb-export .phb-toc {\n    break-after: page;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=true] {\n    break-inside: avoid;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=false] {\n    break-inside: auto;\n  }\n  body.phb-export :is(.math-block, .phb-math[data-display=true], mjx-container[display=true]) {\n    break-inside: avoid !important;\n  }\n  body.phb-export tr {\n    break-inside: avoid;\n  }\n}\nbody.phb-export mjx-assistive-mml {\n  display: none !important;\n}\nbody.phb-export .phb-callout-wrap {\n  display: block;\n  padding-top: .95em;\n  margin: .85em 0 1.25em;\n  break-inside: auto;\n  box-sizing: border-box;\n}\nbody.phb-export .phb-callout-wrap > .callout[data-callout] {\n  margin: 0 !important;\n}\n@page {\n  background: var(--phb-page-background, white);\n}\n.phb-glyph-cache {\n  position: absolute;\n  width: 0;\n  height: 0;\n  overflow: hidden;\n}\n';
+var document_default2 = 'html {\n  font-size: 16px;\n  background: var(--phb-page-background, white);\n}\nbody.phb-export {\n  display: block !important;\n  position: static !important;\n  width: auto !important;\n  height: auto !important;\n  min-height: 0 !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  overflow: visible !important;\n  background: var(--phb-surface, #fff) !important;\n  color: var(--phb-text, #24372e) !important;\n  font-family: var(--font-text, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif);\n  font-size: 11pt;\n  line-height: 1.7;\n  -webkit-print-color-adjust: exact;\n  print-color-adjust: exact;\n}\nbody.phb-export *,\nbody.phb-export *::before,\nbody.phb-export *::after {\n  animation: none !important;\n  transition: none !important;\n  caret-color: transparent !important;\n}\nbody.phb-export #phb-document {\n  display: block !important;\n  position: static !important;\n  width: 174mm !important;\n  max-width: none !important;\n  height: auto !important;\n  padding: 0 !important;\n  margin: 0 auto !important;\n  overflow: visible !important;\n  font-size: inherit;\n  line-height: inherit;\n}\nbody.phb-export :is(.markdown-preview-view, .markdown-preview-sizer, .markdown-rendered, .phb-chapter) {\n  min-height: 0 !important;\n  max-height: none !important;\n  height: auto !important;\n  overflow: visible !important;\n  contain: none !important;\n  content-visibility: visible !important;\n}\nbody.phb-export .phb-chapter {\n  display: block;\n}\nbody.phb-export :is(p, li) {\n  line-height: 1.7;\n}\nbody.phb-export p {\n  margin: .65em 0;\n}\nbody.phb-export :is(h1, h2, h3, h4, h5, h6) {\n  position: relative !important;\n  break-after: avoid !important;\n  text-shadow: none !important;\n  transform: none !important;\n}\nbody.phb-export h1 {\n  font-size: 1.9em;\n  line-height: 1.4;\n  margin: 1.1em 0 .8em;\n}\nbody.phb-export h2 {\n  font-size: 1.4em;\n  margin: 1.1em 0 .7em;\n}\nbody.phb-export h3 {\n  font-size: 1.16em;\n  margin: 1em 0 .5em;\n}\nbody.phb-export pre {\n  white-space: pre-wrap !important;\n  overflow-wrap: anywhere;\n}\nbody.phb-export :is(.math-block, .phb-math[data-display=true]) {\n  display: block;\n  text-align: center;\n  margin: .7em 0;\n  text-indent: 0;\n}\nbody.phb-export .phb-math mjx-container {\n  margin: 0 !important;\n}\nbody.phb-export mjx-container[display=true] {\n  display: block !important;\n  max-width: 100%;\n  overflow: visible !important;\n}\nbody.phb-export :is(.math-block, .phb-math) {\n  overflow: visible !important;\n}\nbody.phb-export .phb-math-error {\n  border: 2px solid #c00;\n  padding: .5em;\n}\nbody.phb-export .phb-chapter-kicker {\n  font-size: 9pt;\n  font-weight: 600;\n  letter-spacing: .16em;\n  color: var(--phb-thm);\n  margin: 1em 0;\n}\nbody.phb-export .phb-book-title {\n  text-align: center;\n  margin-top: 1.5em;\n}\nbody.phb-export .phb-book-subtitle {\n  text-align: center;\n  color: var(--text-muted,#66776c);\n}\nbody.phb-export .phb-frontmatter {\n  padding-top: 5mm;\n}\nbody.phb-export #phb-document .phb-probe {\n  position: absolute;\n  top: 0;\n  left: 0;\n  display: block;\n  width: 2px;\n  height: 2px;\n  font-size: 1px;\n  line-height: 1px;\n  padding: 0;\n  margin: 0;\n  border: 0;\n  opacity: 1;\n  color: var(--phb-surface, #fff);\n  background: none;\n  z-index: 1;\n}\nbody.phb-export #phb-document .phb-probe::before,\nbody.phb-export #phb-document .phb-probe::after {\n  content: none;\n}\nbody.phb-export .heading-collapse-indicator,\nbody.phb-export .callout-fold {\n  display: none !important;\n}\nbody.phb-export .callout-title {\n  max-width: 100% !important;\n}\nbody.phb-export .callout-content:not(.an-figure-grid) {\n  display: block !important;\n}\nbody.phb-export .callout-content li::before {\n  display: none !important;\n}\nbody.phb-export .callout-content ul,\nbody.phb-export .callout-content ol {\n  padding-left: 1.6em;\n}\nbody.phb-export img {\n  max-width: 100%;\n  max-height: 220mm;\n  object-fit: contain;\n}\nbody.phb-export .phb-toc {\n  font-size: 10.5pt;\n}\n@media screen {\n  body.phb-export {\n    padding: 12mm !important;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    margin-top: 3em;\n  }\n}\n@media print {\n  @page {\n    size: A4;\n    margin: 18mm 18mm 20mm;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    break-before: page;\n  }\n  body.phb-export .phb-chapter > :first-child {\n    margin-top: 0 !important;\n  }\n  body.phb-export .callout:not(.an-media) {\n    break-inside: auto;\n  }\n  body.phb-export .callout[data-phb-keep=true] {\n    break-inside: avoid !important;\n  }\n  body.phb-export .callout[data-phb-long=true] {\n    break-inside: auto !important;\n  }\n  body.phb-export .callout[data-phb-long=true]::after {\n    display: none !important;\n  }\n  body.phb-export :is(p, li) {\n    orphans: 2;\n    widows: 2;\n  }\n  body.phb-export .phb-toc-title {\n    break-after: avoid;\n  }\n  body.phb-export .phb-toc {\n    break-after: page;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=true] {\n    break-inside: avoid;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=false] {\n    break-inside: auto;\n  }\n  body.phb-export :is(.math-block, .phb-math[data-display=true], mjx-container[display=true]) {\n    break-inside: avoid !important;\n  }\n  body.phb-export tr {\n    break-inside: avoid;\n  }\n}\nbody.phb-export mjx-assistive-mml {\n  display: none !important;\n}\nbody.phb-export .phb-callout-wrap {\n  display: block;\n  padding-top: .95em;\n  margin: .85em 0 1.25em;\n  break-inside: auto;\n  box-sizing: border-box;\n}\nbody.phb-export .phb-callout-wrap > .callout[data-callout] {\n  margin: 0 !important;\n}\n@page {\n  background: var(--phb-page-background, white);\n}\n.phb-glyph-cache {\n  position: absolute;\n  width: 0;\n  height: 0;\n  overflow: hidden;\n}\n';
 
 // src/main.ts
 var sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -23623,7 +23799,7 @@ var jsonSafe = (obj) => JSON.stringify(obj).replace(/</g, "\\u003c").replace(/&/
 function safeFolder(value) {
   const raw = (typeof value === "string" ? value : "").trim().replace(/\\/g, "/");
   if (!raw || raw.startsWith("/") || /^[A-Za-z]:/.test(raw) || raw.split("/").some((p) => p === "..") || /[<>:"|?*\x00-\x1f]/.test(raw))
-    throw new Error("\u5BFC\u51FA\u76EE\u5F55\u987B\u4E3A\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u4E0D\u5141\u8BB8 .. \u6216\u7EDD\u5BF9\u8DEF\u5F84\u3002");
+    throw new Error(t("\u5BFC\u51FA\u76EE\u5F55\u987B\u4E3A\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u4E0D\u5141\u8BB8 .. \u6216\u7EDD\u5BF9\u8DEF\u5F84\u3002"));
   return (0, import_obsidian3.normalizePath)(raw);
 }
 function dataUrl(blob) {
@@ -23652,6 +23828,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     this.pdfJobs = /* @__PURE__ */ new Set();
   }
   async onload() {
+    setLanguage(Obs2.getLanguage());
     this.errors = [];
     this.graph = null;
     this.revision = 0;
@@ -23670,20 +23847,20 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       this.settings = Object.fromEntries(Object.entries(DEFAULTS2).map(([key2, value]) => [key2, typeof data[key2] === typeof value ? data[key2] : value]));
     } catch (e) {
       this.settings = { ...DEFAULTS2 };
-      this.recordError("\u8BFB\u53D6 data.json\uFF08\u5DF2\u56DE\u9000\u9ED8\u8BA4\u503C\uFF09", e);
+      this.recordError(t("\u8BFB\u53D6 data.json\uFF08\u5DF2\u56DE\u9000\u9ED8\u8BA4\u503C\uFF09"), e);
     }
-    this.addCommand({ id: "export-current-pdf", name: "\u76F4\u63A5\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A PDF", callback: () => this.exportActive(false, true) });
-    this.addCommand({ id: "export-selected-pdf", name: "\u9009\u62E9\u591A\u7BC7\u7B14\u8BB0\u5E76\u5BFC\u51FA\u5408\u8BA2\u672C PDF", callback: () => new BookPicker(this).open() });
-    this.addCommand({ id: "export-book-pdf", name: "\u6309 phb-book \u6E05\u5355\u5BFC\u51FA PDF", callback: () => this.exportActive(true, true) });
-    this.addCommand({ id: "export-current", name: "\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A HTML \u5FEB\u7167", callback: () => this.exportActive(false, false) });
-    this.addCommand({ id: "export-book", name: "\u6309 phb-book \u6E05\u5355\u5BFC\u51FA HTML \u5FEB\u7167", callback: () => this.exportActive(true, false) });
-    this.addCommand({ id: "diagnostics", name: "\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883", callback: () => this.diagnostics() });
-    this.addCommand({ id: "refresh", name: "\u91CD\u5EFA\u5B9A\u7406\u516C\u5F0F\u7D22\u5F15\u5E76\u5237\u65B0\u5F15\u7528", callback: () => {
+    this.addCommand({ id: "export-current-pdf", name: t("\u76F4\u63A5\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A PDF"), callback: () => this.exportActive(false, true) });
+    this.addCommand({ id: "export-selected-pdf", name: t("\u9009\u62E9\u591A\u7BC7\u7B14\u8BB0\u5E76\u5BFC\u51FA\u5408\u8BA2\u672C PDF"), callback: () => new BookPicker(this).open() });
+    this.addCommand({ id: "export-book-pdf", name: t("\u6309 phb-book \u6E05\u5355\u5BFC\u51FA PDF"), callback: () => this.exportActive(true, true) });
+    this.addCommand({ id: "export-current", name: t("\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A HTML \u5FEB\u7167"), callback: () => this.exportActive(false, false) });
+    this.addCommand({ id: "export-book", name: t("\u6309 phb-book \u6E05\u5355\u5BFC\u51FA HTML \u5FEB\u7167"), callback: () => this.exportActive(true, false) });
+    this.addCommand({ id: "diagnostics", name: t("\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883"), callback: () => this.diagnostics() });
+    this.addCommand({ id: "refresh", name: t("\u91CD\u5EFA\u5B9A\u7406\u516C\u5F0F\u7D22\u5F15\u5E76\u5237\u65B0\u5F15\u7528"), callback: () => {
       this.parsed.clear();
-      this.rebuild().then(() => new import_obsidian3.Notice("\u7D22\u5F15\u5DF2\u91CD\u5EFA\u3002")).catch((e) => this.fail("\u91CD\u5EFA\u7D22\u5F15", e));
+      this.rebuild().then(() => new import_obsidian3.Notice(t("\u7D22\u5F15\u5DF2\u91CD\u5EFA\u3002"))).catch((e) => this.fail(t("\u91CD\u5EFA\u7D22\u5F15"), e));
     } });
-    this.addCommand({ id: "insert-reference", name: "\u63D2\u5165\u5B9A\u7406\u3001\u516C\u5F0F\u6216\u56FE\u8868\u5F15\u7528", editorCallback: (editor, view) => new ReferencePicker(this, editor, view.file).open() });
-    this.addCommand({ id: "label-block", name: "\u4E3A\u5149\u6807\u6240\u5728\u516C\u5F0F\u3001\u5B9A\u7406\u6216\u56FE\u8868\u6DFB\u52A0\u5757 ID", editorCallback: (editor, view) => this.labelBlock(editor, view.file) });
+    this.addCommand({ id: "insert-reference", name: t("\u63D2\u5165\u5B9A\u7406\u3001\u516C\u5F0F\u6216\u56FE\u8868\u5F15\u7528"), editorCallback: (editor, view) => new ReferencePicker(this, editor, view.file).open() });
+    this.addCommand({ id: "label-block", name: t("\u4E3A\u5149\u6807\u6240\u5728\u516C\u5F0F\u3001\u5B9A\u7406\u6216\u56FE\u8868\u6DFB\u52A0\u5757 ID"), editorCallback: (editor, view) => this.labelBlock(editor, view.file) });
     this.addSettingTab(new AcademicSettings(this.app, this));
     this.registerMarkdownPostProcessor((el, ctx) => this.postprocess(el, ctx), 110);
     const tocProcessor = (source, el, ctx) => {
@@ -23699,14 +23876,14 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     } catch (e) {
       if (!/already registered/i.test(String(e instanceof Error ? e.message : String(e))))
         throw e;
-      this.recordError("academic-toc \u5DF2\u88AB\u5360\u7528\uFF1B\u4FDD\u7559 [toc] \u548C\u7F16\u53F7\u529F\u80FD", e);
+      this.recordError(t("academic-toc \u5DF2\u88AB\u5360\u7528\uFF1B\u4FDD\u7559 [toc] \u548C\u7F16\u53F7\u529F\u80FD"), e);
     }
     try {
       this.registerEditorExtension(createLiveExtension(this));
       this.liveExtension = true;
     } catch (e) {
       this.liveExtension = false;
-      this.recordError("\u52A0\u8F7D\u5B9E\u65F6\u9884\u89C8\u6269\u5C55\uFF08\u9605\u8BFB\u6A21\u5F0F\u4ECD\u53EF\u7528\uFF09", e);
+      this.recordError(t("\u52A0\u8F7D\u5B9E\u65F6\u9884\u89C8\u6269\u5C55\uFF08\u9605\u8BFB\u6A21\u5F0F\u4ECD\u53EF\u7528\uFF09"), e);
     }
     if (Obs2.EditorSuggest)
       this.registerEditorSuggest(new ReferenceSuggest(this));
@@ -23732,7 +23909,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     this.register(() => this.themeObserver.disconnect());
     this.app.workspace.onLayoutReady(() => {
       if (this.active)
-        this.rebuild().catch((e) => this.fail("\u5EFA\u7ACB\u7D22\u5F15", e));
+        this.rebuild().catch((e) => this.fail(t("\u5EFA\u7ACB\u7D22\u5F15"), e));
     });
   }
   onunload() {
@@ -23761,7 +23938,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
   }
   fail(where, error) {
     this.recordError(where, error);
-    new import_obsidian3.Notice(where + "\u5931\u8D25\uFF1A" + (error instanceof Error ? error.message : String(error)) + "\n\u53EF\u8FD0\u884C\u201C\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883\u201D\u3002", 13e3);
+    new import_obsidian3.Notice(t("{0}\u5931\u8D25\uFF1A{1}\n\u53EF\u8FD0\u884C\u201C\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883\u201D\u3002", where, error instanceof Error ? error.message : String(error)), 13e3);
   }
   async saveSettings() {
     await this.saveData(this.settings);
@@ -23787,7 +23964,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       return;
     window.clearTimeout(this.indexTimer);
     this.indexTimer = window.setTimeout(() => {
-      void this.rebuild().catch((e) => this.fail("\u66F4\u65B0\u7D22\u5F15", e));
+      void this.rebuild().catch((e) => this.fail(t("\u66F4\u65B0\u7D22\u5F15"), e));
     }, Math.max(150, this.settings.indexDelay || 450));
   }
   included(file) {
@@ -23836,14 +24013,14 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         try {
           refresh();
         } catch (e) {
-          this.recordError("\u5237\u65B0\u9605\u8BFB\u7247\u6BB5", e);
+          this.recordError(t("\u5237\u65B0\u9605\u8BFB\u7247\u6BB5"), e);
         }
       }
       for (const view of this.editorViews) {
         try {
           view.dispatch({ effects: this.refreshEffect.of(this.revision) });
         } catch (e) {
-          this.recordError("\u5237\u65B0\u7F16\u8F91\u5668", e);
+          this.recordError(t("\u5237\u65B0\u7F16\u8F91\u5668"), e);
         }
       }
     })();
@@ -23886,7 +24063,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
             return;
           event.preventDefault();
           event.stopImmediatePropagation();
-          this.owner.openReference(raw, ctx.sourcePath, !!(event.ctrlKey || event.metaKey)).catch((e) => this.owner.fail("\u6253\u5F00\u5757\u5F15\u7528", e));
+          this.owner.openReference(raw, ctx.sourcePath, !!(event.ctrlKey || event.metaKey)).catch((e) => this.owner.fail(t("\u6253\u5F00\u5757\u5F15\u7528"), e));
         };
         el.addEventListener("click", this.follow, true);
         el.addEventListener("keydown", this.follow, true);
@@ -23900,7 +24077,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     ctx.addChild(new Reader(el, this));
     for (const p of allNodes(el, "p"))
       if (/^\[toc\]$/i.test(p.textContent.trim()) && !p.closest(".callout"))
-        this.renderToc(p, ctx, this.settings.tocDepth).catch((e) => this.recordError("\u76EE\u5F55\u6E32\u67D3", e));
+        this.renderToc(p, ctx, this.settings.tocDepth).catch((e) => this.recordError(t("\u76EE\u5F55\u6E32\u67D3"), e));
   }
   async renderToc(el, ctx, depth) {
     const hs = (this.app.metadataCache.getCache(ctx.sourcePath)?.headings || []).filter((h) => h.level <= depth);
@@ -23937,11 +24114,11 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     const note = engine_default.parse(file.path, editor.getValue()), line = editor.getCursor().line;
     const r = note.records.filter((r2) => r2.line <= line && r2.endLine >= line).sort((a, b) => b.line - a.line)[0];
     if (!r) {
-      new import_obsidian3.Notice("\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table callout \u5185\u3002");
+      new import_obsidian3.Notice(t("\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table callout \u5185\u3002"));
       return;
     }
     if (r.id) {
-      new import_obsidian3.Notice("\u8BE5\u5757\u5DF2\u6709 ID\uFF1A^" + r.id);
+      new import_obsidian3.Notice(t("\u8BE5\u5757\u5DF2\u6709 ID\uFF1A^") + r.id);
       return;
     }
     let id;
@@ -23952,7 +24129,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     const insertion = "\n" + prefix + "\n" + prefix + "^" + id + "\n";
     editor.replaceRange(insertion, { line: r.endLine, ch: note.lines[r.endLine].length });
     this.scheduleIndex();
-    new import_obsidian3.Notice("\u5DF2\u6DFB\u52A0 ^" + id + "\uFF1B\u53EF\u7528 [[#^" + id + "]] \u5F15\u7528\u3002");
+    new import_obsidian3.Notice(t("\u5DF2\u6DFB\u52A0 ^{0}\uFF1B\u53EF\u7528 [[#^{0}]] \u5F15\u7528\u3002", id));
   }
   async openReference(raw, sourcePath, newLeaf = false) {
     const rec = this.graph?.resolve(raw, sourcePath);
@@ -23960,7 +24137,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       return this.app.workspace.openLinkText(raw, sourcePath, newLeaf);
     const file = this.app.vault.getAbstractFileByPath(rec.path);
     if (!(file instanceof import_obsidian3.TFile))
-      throw new Error("\u5F15\u7528\u76EE\u6807\u6587\u4EF6\u4E0D\u5B58\u5728\uFF1A" + rec.path);
+      throw new Error(t("\u5F15\u7528\u76EE\u6807\u6587\u4EF6\u4E0D\u5B58\u5728\uFF1A") + rec.path);
     const leaf = this.app.workspace.getLeaf(newLeaf ? "tab" : false);
     await leaf.openFile(file, { active: true, eState: { line: rec.line } });
     if (leaf.view instanceof import_obsidian3.MarkdownView) {
@@ -23993,29 +24170,29 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
   async resolveSelection(isBook) {
     const file = this.app.workspace.getActiveFile();
     if (!(file instanceof import_obsidian3.TFile) || file.extension !== "md")
-      throw new Error("\u8BF7\u5148\u6253\u5F00\u4E00\u7BC7 Markdown \u7B14\u8BB0\u3002");
+      throw new Error(t("\u8BF7\u5148\u6253\u5F00\u4E00\u7BC7 Markdown \u7B14\u8BB0\u3002"));
     const fm = this.app.metadataCache.getFileCache(file)?.frontmatter || {};
     const rawBook = isBook ? fm["phb-book"] : null;
     const book = rawBook && typeof rawBook === "object" ? rawBook : void 0;
     if (isBook && !Array.isArray(book?.files))
-      throw new Error("\u5F53\u524D\u6587\u4EF6\u7F3A\u5C11 phb-book.files \u6E05\u5355\u3002");
+      throw new Error(t("\u5F53\u524D\u6587\u4EF6\u7F3A\u5C11 phb-book.files \u6E05\u5355\u3002"));
     const items = isBook && Array.isArray(book?.files) ? book.files : [file.path], seen = /* @__PURE__ */ new Set();
     const files = items.map((item) => {
       const entry = item && typeof item === "object" ? item : void 0;
       const raw = typeof item === "string" ? item : entry?.path;
       if (typeof raw !== "string")
-        throw new Error("\u7AE0\u8282\u8DEF\u5F84\u683C\u5F0F\u4E0D\u6B63\u786E\u3002");
+        throw new Error(t("\u7AE0\u8282\u8DEF\u5F84\u683C\u5F0F\u4E0D\u6B63\u786E\u3002"));
       const path = raw.replace(/^\[\[|\]\]$/g, "").split("|")[0];
       const f = this.app.vault.getAbstractFileByPath(path) || this.app.metadataCache.getFirstLinkpathDest(path, file.path);
       if (!(f instanceof import_obsidian3.TFile) || f.extension !== "md")
-        throw new Error("\u627E\u4E0D\u5230\u7AE0\u8282\uFF1A" + path);
+        throw new Error(t("\u627E\u4E0D\u5230\u7AE0\u8282\uFF1A") + path);
       if (seen.has(f.path))
-        throw new Error("\u91CD\u590D\u7AE0\u8282\uFF1A" + f.path);
+        throw new Error(t("\u91CD\u590D\u7AE0\u8282\uFF1A") + f.path);
       seen.add(f.path);
       return { file: f, title: typeof entry?.title === "string" ? entry.title : f.basename };
     });
     if (!files.length)
-      throw new Error("\u7AE0\u8282\u6E05\u5355\u4E3A\u7A7A\u3002");
+      throw new Error(t("\u7AE0\u8282\u6E05\u5355\u4E3A\u7A7A\u3002"));
     return { files, options: { book: isBook, title: typeof book?.title === "string" ? book.title : typeof fm.title === "string" ? fm.title : file.basename, subtitle: typeof book?.subtitle === "string" ? book.subtitle : "", tocDepth: typeof book?.tocDepth === "number" ? book.tocDepth : this.settings.tocDepth } };
   }
   async exportActive(isBook, pdf) {
@@ -24023,23 +24200,23 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       const selection = await this.resolveSelection(isBook);
       await this.exportSelection(selection, pdf);
     } catch (e) {
-      this.fail("\u5BFC\u51FA", e);
+      this.fail(t("\u5BFC\u51FA"), e);
     }
   }
   async exportSelection(selection, pdf = true) {
     if (this.busy) {
-      new import_obsidian3.Notice("\u5DF2\u6709\u5BFC\u51FA\u4EFB\u52A1\u6B63\u5728\u8FD0\u884C\u3002");
+      new import_obsidian3.Notice(t("\u5DF2\u6709\u5BFC\u51FA\u4EFB\u52A1\u6B63\u5728\u8FD0\u884C\u3002"));
       return;
     }
     this.busy = true;
     if (pdf) this.lastPdfExport = { status: "running", time: (/* @__PURE__ */ new Date()).toISOString() };
-    const log = new ProgressModal(this.app, pdf ? "\u5BFC\u51FA PDF" : "\u751F\u6210 HTML \u5FEB\u7167");
+    const log = new ProgressModal(this.app, pdf ? t("\u5BFC\u51FA PDF") : t("\u751F\u6210 HTML \u5FEB\u7167"));
     log.open();
     try {
       await this.rebuild();
-      log.line("\u6B63\u5728\u5B8C\u6574\u6E32\u67D3\u6240\u9009\u7AE0\u8282\u2026");
+      log.line(t("\u6B63\u5728\u5B8C\u6574\u6E32\u67D3\u6240\u9009\u7AE0\u8282\u2026"));
       const snapshot = await this.snapshot(selection, log);
-      log.line("HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A" + snapshot);
+      log.line(t("HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A") + snapshot);
       if (pdf) {
         const out = snapshot.replace(/\.phb\.html$/, ".pdf");
         const controller = new AbortController();
@@ -24048,12 +24225,12 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
           const html = await this.app.vault.adapter.read(snapshot);
           const result = await exportPdf(html, (line) => log.line(line), controller.signal);
           if (!this.active)
-            throw new Error("\u63D2\u4EF6\u5DF2\u505C\u7528\u3002");
+            throw new Error(t("\u63D2\u4EF6\u5DF2\u505C\u7528\u3002"));
           await this.app.vault.adapter.writeBinary(out, new Uint8Array(result.bytes).buffer);
           await this.app.vault.adapter.write(out.replace(/\.pdf$/, ".report.json"), JSON.stringify(result.report, null, 2));
           this.lastPdfExport = { status: "success", time: (/* @__PURE__ */ new Date()).toISOString(), output: out, report: result.report };
-          log.line("\u5DF2\u5B8C\u6210\uFF1A" + out);
-          new import_obsidian3.Notice("PDF \u5DF2\u4FDD\u5B58\uFF1A" + out, 1e4);
+          log.line(t("\u5DF2\u5B8C\u6210\uFF1A") + out);
+          new import_obsidian3.Notice(t("PDF \u5DF2\u4FDD\u5B58\uFF1A") + out, 1e4);
           if (this.settings.openPdf) {
             for (let i = 0; i < 15; i++) {
               const f = this.app.vault.getAbstractFileByPath(out);
@@ -24068,14 +24245,14 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
           this.pdfJobs.delete(controller);
         }
       } else
-        new import_obsidian3.Notice("HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A" + snapshot);
+        new import_obsidian3.Notice(t("HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A") + snapshot);
       log.done();
     } catch (e) {
       if (pdf) this.lastPdfExport = { status: "failed", time: (/* @__PURE__ */ new Date()).toISOString(), message: String(e instanceof Error ? e.message : e) };
-      log.line("\u9519\u8BEF\uFF1A" + (e instanceof Error ? e.message : String(e)));
-      log.line("\u67E5\u770B\u5B8C\u6574\u9519\u8BEF\uFF1A\u547D\u4EE4\u9762\u677F \u2192 \u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883 \u2192 errors\uFF1B\u53EF\u4FDD\u5B58\u8BCA\u65AD JSON\u3002");
+      log.line(t("\u9519\u8BEF\uFF1A") + (e instanceof Error ? e.message : String(e)));
+      log.line(t("\u67E5\u770B\u5B8C\u6574\u9519\u8BEF\uFF1A\u547D\u4EE4\u9762\u677F \u2192 \u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883 \u2192 errors\uFF1B\u53EF\u4FDD\u5B58\u8BCA\u65AD JSON\u3002"));
       log.done();
-      this.fail("\u5BFC\u51FA", e);
+      this.fail(t("\u5BFC\u51FA"), e);
     } finally {
       this.busy = false;
     }
@@ -24140,12 +24317,12 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
             Object.assign(rec, { number: old.number, prefix: old.prefix, subletter: old.subletter, referenced: old.referenced });
         }
       }
-      warnings.push("\u4FDD\u7559\u7B14\u8BB0\u7F16\u53F7\u6A21\u5F0F\uFF1A\u4E0D\u540C\u7AE0\u8282\u53EF\u80FD\u663E\u793A\u76F8\u540C\u7F16\u53F7\uFF1B\u8DF3\u8F6C\u4ECD\u6309\u6587\u4EF6\u8DEF\u5F84\u548C\u5757 ID \u533A\u5206\u3002");
+      warnings.push(t("\u4FDD\u7559\u7B14\u8BB0\u7F16\u53F7\u6A21\u5F0F\uFF1A\u4E0D\u540C\u7AE0\u8282\u53EF\u80FD\u663E\u793A\u76F8\u540C\u7F16\u53F7\uFF1B\u8DF3\u8F6C\u4ECD\u6309\u6587\u4EF6\u8DEF\u5F84\u548C\u5757 ID \u533A\u5206\u3002"));
     }
     for (const n of notes)
       for (const ref of n.refs)
         if (!ref.target)
-          warnings.push(`${n.path}:${ref.line + 1} \u5F15\u7528\u76EE\u6807\u672A\u7EB3\u5165\u672C\u6B21\u5BFC\u51FA\u6216\u4E0D\u53EF\u89E3\u6790\uFF1A${ref.raw}`);
+          warnings.push(t("{0}:{1} \u5F15\u7528\u76EE\u6807\u672A\u7EB3\u5165\u672C\u6B21\u5BFC\u51FA\u6216\u4E0D\u53EF\u89E3\u6790\uFF1A{2}", n.path, ref.line + 1, ref.raw));
     const doc = this.app.workspace.getActiveViewOfType(import_obsidian3.MarkdownView)?.containerEl.ownerDocument || document;
     const stage = doc.win.createEl("main");
     stage.id = "phb-document";
@@ -24191,7 +24368,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
             }
           });
         else
-          warnings.push(f.path + "\uFF1A\u539F\u751F\u6570\u5B66\u8282\u70B9\u6570\u4E0E\u6E90\u7801\u4E0D\u4E00\u81F4\uFF1B\u65E0\u6CD5\u5B9A\u4F4D\u7684\u6570\u5B66\u951A\u70B9\u5C06\u4FDD\u7559\u5728\u539F\u4F4D\u7F6E\u3002");
+          warnings.push(f.path + t("\uFF1A\u539F\u751F\u6570\u5B66\u8282\u70B9\u6570\u4E0E\u6E90\u7801\u4E0D\u4E00\u81F4\uFF1B\u65E0\u6CD5\u5B9A\u4F4D\u7684\u6570\u5B66\u951A\u70B9\u5C06\u4FDD\u7559\u5728\u539F\u4F4D\u7F6E\u3002"));
         const realIds = new Set([...section.querySelectorAll("[data-phb-block]:not(.phb-anchor)")].map((e) => e.dataset.phbBlock));
         section.querySelectorAll(".phb-anchor").forEach((e) => {
           if (realIds.has(e.dataset.phbBlock))
@@ -24209,7 +24386,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
             a.dataset.phbMissing = "true";
           }
         }
-        log.line("\u6E32\u67D3\uFF1A" + f.path);
+        log.line(t("\u6E32\u67D3\uFF1A") + f.path);
       }
       await Obs2.finishRenderMath();
       document_default.unfold(stage);
@@ -24217,7 +24394,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       await this.waitStable(stage);
       await this.inlineImages(stage);
       if (stage.querySelector('[data-mml-node="merror"],mjx-merror'))
-        throw new Error("\u68C0\u6D4B\u5230\u6570\u5B66\u6E32\u67D3\u9519\u8BEF\uFF0C\u5DF2\u505C\u6B62 PDF \u5BFC\u51FA\uFF1B\u8BF7\u5148\u68C0\u67E5\u539F\u516C\u5F0F\u3002");
+        throw new Error(t("\u68C0\u6D4B\u5230\u6570\u5B66\u6E32\u67D3\u9519\u8BEF\uFF0C\u5DF2\u505C\u6B62 PDF \u5BFC\u51FA\uFF1B\u8BF7\u5148\u68C0\u67E5\u539F\u516C\u5F0F\u3002"));
       const opts = { ...options, preNumbered: true, toc: true }, meta = { ...opts, ...document_default.prepare(stage, opts), nativeSnapshot: true, numberingMode: options.book ? this.settings.exportNumbering : "note", targets: notes.flatMap((n) => n.records.filter((r) => r.id).map((r) => ({ path: r.path, block: r.id, kind: r.kind, number: r.number, reference: engine_default.refText(r, graph2.settings) }))) };
       meta.warnings.push(...warnings);
       const svg = doc.win.createSvg("svg"), defs = doc.win.createSvg("defs");
@@ -24244,7 +24421,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
           e.removeAttribute(a.name);
       }));
       const csp = "default-src 'none'; img-src data: blob:; style-src 'unsafe-inline' data:; font-src data:; script-src 'none'; base-uri 'none'; form-action 'none'";
-      const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="phb-version" content="2"><meta http-equiv="Content-Security-Policy" content="${csp}"><title>${document_default.escape(options.title)}</title><style>${css.replace(/<\/style/gi, "<\\/style")}</style><style>${printCss}</style></head><body class="${document_default.escape(classes)}" data-an-palette="${document_default.escape(doc.body.dataset.anPalette || "theme")}" style="${document_default.escape(variables)}">${defs.childNodes.length ? svg.outerHTML : ""}<main id="phb-document" class="markdown-preview-view markdown-rendered">${stage.innerHTML}</main><script id="phb-meta" type="application/json">${jsonSafe(meta)}</script></body></html>`;
+      const html = `<!doctype html><html lang="${language() === "zh" ? "zh-CN" : "en"}"><head><meta charset="utf-8"><meta name="phb-version" content="2"><meta http-equiv="Content-Security-Policy" content="${csp}"><title>${document_default.escape(options.title)}</title><style>${css.replace(/<\/style/gi, "<\\/style")}</style><style>${printCss}</style></head><body class="${document_default.escape(classes)}" data-an-palette="${document_default.escape(doc.body.dataset.anPalette || "theme")}" style="${document_default.escape(variables)}">${defs.childNodes.length ? svg.outerHTML : ""}<main id="phb-document" class="markdown-preview-view markdown-rendered">${stage.innerHTML}</main><script id="phb-meta" type="application/json">${jsonSafe(meta)}</script></body></html>`;
       const folder = safeFolder(this.settings.exportFolder);
       await this.mkdir(folder);
       const safe = String(options.title || "Book").replace(/[<>:"/\\|?*\x00-\x1f]/g, "_").slice(0, 80), stamp = (/* @__PURE__ */ new Date()).toISOString().replace(/[:.]/g, "-");
@@ -24288,7 +24465,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       if (url.startsWith("data:"))
         continue;
       if (!/^(app:|file:|blob:)/i.test(url))
-        throw new Error("\u5FEB\u7167\u9ED8\u8BA4\u4E0D\u4E0B\u8F7D\u7F51\u7EDC\u56FE\u7247\uFF0C\u8BF7\u5148\u5C06\u56FE\u7247\u5B58\u5165 vault\uFF1A" + url);
+        throw new Error(t("\u5FEB\u7167\u9ED8\u8BA4\u4E0D\u4E0B\u8F7D\u7F51\u7EDC\u56FE\u7247\uFF0C\u8BF7\u5148\u5C06\u56FE\u7247\u5B58\u5165 vault\uFF1A") + url);
       let data;
       try {
         const r = await stage.ownerDocument.win.fetch(url);
@@ -24300,11 +24477,11 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         const path = img.closest(".phb-chapter")?.dataset.path || "";
         const file = src && this.app.metadataCache.getFirstLinkpathDest(src, path);
         if (!(file instanceof import_obsidian3.TFile))
-          throw new Error("\u65E0\u6CD5\u5D4C\u5165\u56FE\u7247\uFF1A" + (src || url));
+          throw new Error(t("\u65E0\u6CD5\u5D4C\u5165\u56FE\u7247\uFF1A") + (src || url));
         const bytes = await this.app.vault.readBinary(file);
         const mime = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", svg: "image/svg+xml", webp: "image/webp", gif: "image/gif" }[file.extension];
         if (!mime)
-          throw new Error("\u4E0D\u652F\u6301\u7684\u56FE\u7247\u683C\u5F0F\uFF1A" + file.path);
+          throw new Error(t("\u4E0D\u652F\u6301\u7684\u56FE\u7247\u683C\u5F0F\uFF1A") + file.path);
         data = await dataUrl(new Blob([bytes], { type: mime }));
       }
       img.removeAttribute("srcset");
@@ -24312,7 +24489,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       try {
         await img.decode();
       } catch {
-        throw new Error("\u56FE\u7247\u89E3\u7801\u5931\u8D25\uFF1A" + (img.alt || url));
+        throw new Error(t("\u56FE\u7247\u89E3\u7801\u5931\u8D25\uFF1A") + (img.alt || url));
       }
     }
   }
@@ -24330,7 +24507,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       if (cache.has(absolute))
         return cache.get(absolute);
       if (!/^(app:|file:|blob:)/i.test(absolute)) {
-        warnings.push("\u672A\u8054\u7F51\u4E0B\u8F7D CSS \u8D44\u6E90\uFF1A" + absolute);
+        warnings.push(t("\u672A\u8054\u7F51\u4E0B\u8F7D CSS \u8D44\u6E90\uFF1A") + absolute);
         return url;
       }
       try {
@@ -24341,7 +24518,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         cache.set(absolute, data);
         return data;
       } catch {
-        warnings.push("\u672A\u80FD\u5185\u5D4C CSS \u8D44\u6E90\uFF0C\u53EF\u80FD\u5F71\u54CD\u5B57\u4F53/\u80CC\u666F\uFF1A" + absolute);
+        warnings.push(t("\u672A\u80FD\u5185\u5D4C CSS \u8D44\u6E90\uFF0C\u53EF\u80FD\u5F71\u54CD\u5B57\u4F53/\u80CC\u666F\uFF1A") + absolute);
         return url;
       }
     }
@@ -24353,7 +24530,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       try {
         rules = sheet.cssRules;
       } catch {
-        warnings.push("\u65E0\u6CD5\u8BFB\u53D6\u4E00\u4E2A\u6837\u5F0F\u8868\uFF1A" + sheet.href);
+        warnings.push(t("\u65E0\u6CD5\u8BFB\u53D6\u4E00\u4E2A\u6837\u5F0F\u8868\uFF1A") + sheet.href);
         return;
       }
       for (const rule of rules) {
@@ -24387,18 +24564,18 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       lastPdfExport: this.lastPdfExport || { status: "not-run-this-session" }
     };
     const modal = new import_obsidian3.Modal(this.app);
-    modal.titleEl.setText("Academic Notes \u8BCA\u65AD");
+    modal.titleEl.setText(t("Academic Notes \u8BCA\u65AD"));
     const pre = modal.contentEl.createEl("pre", { text: JSON.stringify(result, null, 2) });
     pre.classList.add("an-diagnostics");
-    new import_obsidian3.Setting(modal.contentEl).addButton((b) => b.setButtonText("\u4FDD\u5B58\u8BCA\u65AD JSON \u5230\u5BFC\u51FA\u76EE\u5F55").onClick(async () => {
+    new import_obsidian3.Setting(modal.contentEl).addButton((b) => b.setButtonText(t("\u4FDD\u5B58\u8BCA\u65AD JSON \u5230\u5BFC\u51FA\u76EE\u5F55")).onClick(async () => {
       try {
         const folder = safeFolder(this.settings.exportFolder);
         await this.mkdir(folder);
         const path = folder + "/academic-diagnostics-" + Date.now() + ".json";
         await this.app.vault.adapter.write(path, JSON.stringify(result, null, 2));
-        new import_obsidian3.Notice("\u5DF2\u4FDD\u5B58 " + path);
+        new import_obsidian3.Notice(t("\u5DF2\u4FDD\u5B58 ") + path);
       } catch (e) {
-        this.fail("\u4FDD\u5B58\u8BCA\u65AD", e);
+        this.fail(t("\u4FDD\u5B58\u8BCA\u65AD"), e);
       }
     }));
     modal.open();

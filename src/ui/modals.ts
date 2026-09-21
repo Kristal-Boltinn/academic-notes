@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import type AcademicNotes from '../main';
 import type { SourceRecord } from '../indexing/engine';
 import type { App, Editor, TFile, EditorPosition, EditorSuggestContext } from 'obsidian';
@@ -7,19 +8,19 @@ class ProgressModal extends Modal {
     caption: string;
     output?: HTMLPreElement;
     constructor(app: App, title: string) { super(app); this.caption = title; }
-    onOpen() { this.titleEl.setText(this.caption); this.output = this.contentEl.createEl('pre', { cls: 'an-progress', text: '' }); this.contentEl.createEl('p', { text: '关闭窗口不会中断任务；输出仍保存到指定目录。' }); }
+    onOpen() { this.titleEl.setText(this.caption); this.output = this.contentEl.createEl('pre', { cls: 'an-progress', text: '' }); this.contentEl.createEl('p', { text: t("关闭窗口不会中断任务；输出仍保存到指定目录。") }); }
     line(s: string) { if (this.output) {
         this.output.textContent = (this.output.textContent + '\n' + s).slice(-35000);
         this.output.scrollTop = this.output.scrollHeight;
     } }
     done() { if (this.titleEl)
-        this.titleEl.setText(this.caption + ' · 结束'); }
+        this.titleEl.setText(this.caption + t(" · 结束")); }
 }
 class ReferencePicker extends FuzzySuggestModal<SourceRecord> {
     plugin: AcademicNotes;
     editor: Editor;
     file: TFile | null;
-    constructor(plugin: AcademicNotes, editor: Editor, file: TFile | null) { super(plugin.app); this.plugin = plugin; this.editor = editor; this.file = file; this.setPlaceholder('搜索编号、定理标题、公式内容或文件名（目标需要块 ID）'); }
+    constructor(plugin: AcademicNotes, editor: Editor, file: TFile | null) { super(plugin.app); this.plugin = plugin; this.editor = editor; this.file = file; this.setPlaceholder(t("搜索编号、定理标题、公式内容或文件名（目标需要块 ID）")); }
     getItems() { return this.plugin.targets(); }
     getItemText(r: SourceRecord) { return `${Engine.refText(r, this.plugin.settings)} ${r.title || r.tex || ''} — ${r.path} ^${r.id}`; }
     onChooseItem(r: SourceRecord) { if (!this.file)
@@ -53,21 +54,21 @@ class BookPicker extends Modal {
     orderList: HTMLDivElement;
     constructor(plugin: AcademicNotes) { super(plugin.app); this.plugin = plugin; this.selected = []; this.files = plugin.app.vault.getMarkdownFiles().sort((a, b) => a.path.localeCompare(b.path)); }
     onOpen() {
-        this.titleEl.setText('多文件合订本');
-        this.contentEl.createEl('p', { text: '搜索并勾选章节；右侧编号表示导出顺序，可上移/下移。不会合并或改写原笔记。' });
-        const title = this.contentEl.createEl('input', { type: 'text', value: '数学讲义', cls: 'an-book-title', attr: { 'aria-label': '合订本标题' } });
+        this.titleEl.setText(t("多文件合订本"));
+        this.contentEl.createEl('p', { text: t("搜索并勾选章节；右侧编号表示导出顺序，可上移/下移。不会合并或改写原笔记。") });
+        const title = this.contentEl.createEl('input', { type: 'text', value: t("数学讲义"), cls: 'an-book-title', attr: { 'aria-label': t("合订本标题") } });
         this.titleInput = title;
-        const filter = this.contentEl.createEl('input', { type: 'search', placeholder: '按完整路径筛选文件', cls: 'an-book-search', attr: { 'aria-label': '筛选章节' } });
+        const filter = this.contentEl.createEl('input', { type: 'search', placeholder: t("按完整路径筛选文件"), cls: 'an-book-search', attr: { 'aria-label': t("筛选章节") } });
         this.filterInput = filter;
         this.fileList = this.contentEl.createDiv({ cls: 'an-book-files' });
         this.orderList = this.contentEl.createDiv({ cls: 'an-book-order' });
         filter.addEventListener('input', () => this.renderFiles());
-        new Setting(this.contentEl).addButton(b => b.setButtonText('取消').onClick(() => this.close())).addButton(b => b.setButtonText('导出 PDF').setCta().onClick(() => {
+        new Setting(this.contentEl).addButton(b => b.setButtonText(t("取消")).onClick(() => this.close())).addButton(b => b.setButtonText(t("导出 PDF")).setCta().onClick(() => {
             if (!this.selected.length) {
-                new Notice('请至少选一篇笔记。');
+                new Notice(t("请至少选一篇笔记。"));
                 return;
             }
-            const files = this.selected.map(f => ({ file: f, title: f.basename })), options = { book: true, title: this.titleInput.value.trim() || '数学讲义', subtitle: '', tocDepth: this.plugin.settings.tocDepth };
+            const files = this.selected.map(f => ({ file: f, title: f.basename })), options = { book: true, title: this.titleInput.value.trim() || t("数学讲义"), subtitle: '', tocDepth: this.plugin.settings.tocDepth };
             this.close();
             void this.plugin.exportSelection({ files, options }, true);
         }));
@@ -87,24 +88,24 @@ class BookPicker extends Modal {
                 this.selected = this.selected.filter(x => x.path !== f.path); this.renderOrder(); });
         }
         if (matching.length > 250)
-            this.fileList.createDiv({ text: '只显示前 250 个结果，请继续输入路径筛选。' });
+            this.fileList.createDiv({ text: t("只显示前 250 个结果，请继续输入路径筛选。") });
     }
     renderOrder() {
         this.orderList.empty();
-        this.orderList.createEl('h4', { text: '章节顺序 · ' + this.selected.length + ' 篇' });
+        this.orderList.createEl('h4', { text: t('章节顺序 · {0} 篇', this.selected.length) });
         this.selected.forEach((f, i) => {
             const row = this.orderList.createDiv({ cls: 'an-order-row' });
             row.createSpan({ text: (i + 1) + '. ' + f.path });
             const button = (text: string, run: () => void) => { const b = row.createEl('button', { text }); b.addEventListener('click', run); };
-            button('上移', () => { if (i > 0) {
+            button(t("上移"), () => { if (i > 0) {
                 [this.selected[i - 1], this.selected[i]] = [this.selected[i], this.selected[i - 1]];
                 this.renderOrder();
             } });
-            button('下移', () => { if (i + 1 < this.selected.length) {
+            button(t("下移"), () => { if (i + 1 < this.selected.length) {
                 [this.selected[i + 1], this.selected[i]] = [this.selected[i], this.selected[i + 1]];
                 this.renderOrder();
             } });
-            button('移除', () => { this.selected.splice(i, 1); this.renderFiles(); this.renderOrder(); });
+            button(t("移除"), () => { this.selected.splice(i, 1); this.renderFiles(); this.renderOrder(); });
         });
     }
 }

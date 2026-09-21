@@ -30,7 +30,6 @@ body {
   --phb-text: var(--text-normal, #24372e);
   --phb-font: var(--font-text, var(--font-interface, sans-serif));
   --phb-badge-ink: #fff;
-  --phb-badge-mix: 100%;
   --phb-tint: 6%;
   --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));
   --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));
@@ -253,15 +252,25 @@ body .callout[data-callout]:is(
 ) {
   --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));
   --callout-blend-mode: normal;
+  --an-box-margin: 1.8em 0 1.25em;
+  --an-box-padding: 0 1em .8em;
+  --an-box-border: var(--phb-border-width) solid var(--phb-accent);
+  --an-box-radius: var(--phb-radius);
+  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));
+  --an-title-margin: -.85em 0 .3em .25em;
+  --an-title-padding: .25em .75em;
+  --an-title-radius: 4px;
+  --an-title-background: var(--phb-accent);
+  --an-title-color: var(--phb-badge-ink);
   position: relative;
   display: block;
   box-sizing: border-box;
   overflow: visible !important;
-  margin: 1.8em 0 1.25em !important;
-  padding: 0 1em .8em !important;
-  border: var(--phb-border-width) solid var(--phb-accent) !important;
-  border-radius: var(--phb-radius) !important;
-  background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface)) !important;
+  margin: var(--an-box-margin) !important;
+  padding: var(--an-box-padding) !important;
+  border: var(--an-box-border) !important;
+  border-radius: var(--an-box-radius) !important;
+  background: var(--an-box-background) !important;
   color: var(--phb-ink) !important;
   box-shadow: none;
   transform: none;
@@ -300,12 +309,12 @@ body .callout[data-callout]:is(
     width: fit-content;
     max-width: calc(100% - 1em);
     box-sizing: border-box;
-    margin: -.85em 0 .3em .25em !important;
-    padding: .25em .75em !important;
+    margin: var(--an-title-margin) !important;
+    padding: var(--an-title-padding) !important;
     border: 0 !important;
-    border-radius: 4px !important;
-    background: var(--phb-accent) !important;
-    color: var(--phb-badge-ink) !important;
+    border-radius: var(--an-title-radius) !important;
+    background: var(--an-title-background) !important;
+    color: var(--an-title-color) !important;
     font: 650 .94em/1.45 var(--phb-font);
     white-space: normal;
     overflow-wrap: anywhere;
@@ -339,7 +348,7 @@ body .callout[data-callout]:is(
     }
   }
   & :is(.math,mjx-container) { color: inherit; }
-  &.is-collapsed { padding-bottom: .2em !important; }
+  &.is-collapsed { --an-box-padding: 0 1em .2em; }
   &.is-collapsed > .callout-content { display: none; }
 
   /* Proof and remark are paragraphs, without the theorem box or motif.
@@ -348,20 +357,20 @@ body .callout[data-callout]:is(
     --phb-accent: var(--phb-text);
     --phb-ink: var(--phb-text);
     display: flow-root;
-    margin: 1em 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
+    --an-box-margin: 1em 0;
+    --an-box-padding: 0;
+    --an-box-border: 0;
+    --an-box-radius: 0;
+    --an-box-background: transparent;
+    --an-title-margin: 0 .6em 0 0;
+    --an-title-padding: 0;
+    --an-title-radius: 0;
+    --an-title-background: transparent;
+    --an-title-color: var(--phb-text);
     &::after { content: none; display: none; }
     & > .callout-title {
       float: left;
       max-width: 100%;
-      margin: 0 .6em 0 0 !important;
-      padding: 0 !important;
-      border-radius: 0 !important;
-      background: transparent !important;
-      color: var(--phb-text) !important;
       font: 600 1em/1.7 var(--phb-font);
       box-shadow: none;
     }
@@ -369,7 +378,7 @@ body .callout[data-callout]:is(
       padding: 0;
       & > :first-child { margin-top: 0; }
     }
-    &:has(> .callout-content > :first-child:not(p)) > .callout-title { float: none; margin-bottom: .35em !important; }
+    &:has(> .callout-content > :first-child:not(p)) > .callout-title { float: none; --an-title-margin: 0 0 .35em; }
     &.is-collapsed > .callout-title { float: none; }
   }
   &:is([data-callout="proof"],[data-callout="pf"]) {
@@ -395,8 +404,8 @@ body .callout[data-callout]:is(
       break-before: avoid;
     }
   }
-  &:is([data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-title {
-    color: var(--an-remark-color) !important;
+  &:is([data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) {
+    --an-title-color: var(--an-remark-color);
   }
   @media print {
     print-color-adjust: exact;

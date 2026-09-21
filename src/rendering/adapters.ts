@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import * as Obs from 'obsidian';
 import Engine from '../indexing/engine';
 import type AcademicNotes from '../main';
@@ -181,7 +182,7 @@ function createLiveExtension(plugin: AcademicNotes) {
             a.href = this.raw;
             a.tabIndex = 0;
             a.setAttribute('aria-label', this.label + ' — ' + this.raw);
-            const open = (evt: MouseEvent | KeyboardEvent) => { evt.preventDefault(); evt.stopPropagation(); plugin.openReference(this.raw, this.path, !!(evt.ctrlKey || evt.metaKey)).catch(e => plugin.fail('打开块引用', e)); };
+            const open = (evt: MouseEvent | KeyboardEvent) => { evt.preventDefault(); evt.stopPropagation(); plugin.openReference(this.raw, this.path, !!(evt.ctrlKey || evt.metaKey)).catch(e => plugin.fail(t("打开块引用"), e)); };
             a.addEventListener('click', open);
             a.addEventListener('keydown', e => { if (e.key === 'Enter')
                 open(e); });

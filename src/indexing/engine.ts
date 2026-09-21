@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 export type ChapterSpec = number | string | { chapter: number | string; mode: string };
 export type NoteGraph = ReturnType<typeof graph>;
 export interface SourceRecord {
@@ -145,12 +146,12 @@ function parse(path: string, source: string, cache: {
             tex, id: null, manual: tags.length === 1 ? tags[0][2] : null, multiTag: tags.length > 1,
             suppress: /\\(?:notag|nonumber)\b/.test(tex) && tags.length === 0, number: '', ids: [] };
         if (rec.multiTag)
-            warnings.push(`${path}:${line + 1} 含多个手写 tag，保留公式但不猜测整块引用编号。`);
+            warnings.push(t("{0}:{1} 含多个手写 tag，保留公式但不猜测整块引用编号。", path, line + 1));
         equations.push(rec);
         records.push(rec);
     }
     if (delimiters.length % 2)
-        warnings.push(`${path}: 存在未闭合的 $$，最后一段不参与编号。`);
+        warnings.push(t("{0}: 存在未闭合的 $$，最后一段不参与编号。", path));
     // Math contents cannot declare headings, callouts, block IDs or links.
     const chars = mask.split('');
     for (const e of equations)
@@ -188,7 +189,7 @@ function parse(path: string, source: string, cache: {
     function bind(rec: SourceRecord | undefined, id: string) { if (!rec || !id)
         return; if (blocks.has(id) && blocks.get(id) !== rec) {
         blocks.set(id, null);
-        warnings.push(`${path}: 重复块 ID ^${id}，不解析歧义引用。`);
+        warnings.push(t("{0}: 重复块 ID ^{1}，不解析歧义引用。", path, id));
         return;
     } blocks.set(id, rec); if (!rec.ids.includes(id))
         rec.ids.push(id); if (!rec.id)
@@ -252,7 +253,7 @@ function parse(path: string, source: string, cache: {
     for (const r of media.filter(r => r.kind === 'subfigure')) {
         r.parent = media.filter(p => p.kind === 'figure' && p.depth < r.depth && p.line < r.line && p.endLine >= r.endLine).sort((a, b) => b.depth - a.depth)[0] || null;
         if (!r.parent)
-            warnings.push(`${path}:${r.line + 1} subfigure 不在 figure 内，仅显示题注，不猜测主图编号。`);
+            warnings.push(t("{0}:{1} subfigure 不在 figure 内，仅显示题注，不猜测主图编号。", path, r.line + 1));
     }
     return { path, source, lines, starts, records, theorems, equations, media, callouts, blocks, refs, headings, warnings };
 }
@@ -375,7 +376,7 @@ function refText(r: SourceRecord | null | undefined, settings = DEFAULTS) {
     const name = r.kind === 'equation' ? 'Equation' : (TYPES[r.key] || MEDIA[r.key])[0];
     const abbr = ABBR[r.key] || r.key, type = settings.shortReferences ? abbr : name;
     if (!r.number)
-        return `${type}${r.title ? ' · ' + plain(r.title) : '（未编号）'}`;
+        return `${type}${r.title ? ' · ' + plain(r.title) : t("（未编号）")}`;
     const format = r.kind === 'equation' ? settings.eqFormat : r.kind === 'table' ? settings.tableFormat : r.kind === 'figure' || r.kind === 'subfigure' ? settings.figureFormat : settings.theoremFormat;
     return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k: 'number' | 'type' | 'name' | 'abbr' | 'title' | 'file') => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, '').split('/').pop() || '' })[k]);
 }

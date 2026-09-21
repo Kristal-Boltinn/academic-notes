@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import * as electron from 'electron';
 import { setTimeout as scheduleTimeout, clearTimeout as cancelTimeout } from 'node:timers';
 import type { BrowserWindow as ElectronWindow, BrowserWindowConstructorOptions } from 'electron';
@@ -14,13 +15,13 @@ function nativeWindow(): WindowConstructor {
     // eslint-disable-next-line @typescript-eslint/no-require-imports -- Optional Obsidian bridge; eager import breaks hosts exposing electron.remote.
     const remote = (electron as typeof electron & { remote?: { BrowserWindow?: WindowConstructor } }).remote || require('@electron/remote') as { BrowserWindow?: WindowConstructor };
     if (typeof remote?.BrowserWindow !== 'function')
-        throw new Error('当前 Obsidian 未提供 Electron PDF 接口，请更新桌面安装程序。');
+        throw new Error(t("当前 Obsidian 未提供 Electron PDF 接口，请更新桌面安装程序。"));
     return remote.BrowserWindow;
 }
 export function pdfAvailability() {
     try {
         nativeWindow();
-        return { interfaceAvailable: true, verification: 'interface-only', engine: 'Electron printToPDF', note: '仅确认 Electron 接口存在，不代表实际导出已通过；请查看 lastPdfExport 和 errors。' };
+        return { interfaceAvailable: true, verification: 'interface-only', engine: 'Electron printToPDF', note: t("仅确认 Electron 接口存在，不代表实际导出已通过；请查看 lastPdfExport 和 errors。") };
     }
     catch (error) {
         return { interfaceAvailable: false, verification: 'interface-only', error: String(error) };
@@ -29,12 +30,12 @@ export function pdfAvailability() {
 /** Only called with an internally generated snapshot. No document scripts or network are enabled. */
 export async function exportPdf(html: string, log: (line: string) => void = () => { }, signal?: AbortSignal, Window: WindowConstructor = nativeWindow()) {
     if (signal?.aborted)
-        throw new Error('导出已取消。');
+        throw new Error(t("导出已取消。"));
     // Enforce the policy before any snapshot resources are parsed. Blob
     // navigations must not rely on inheriting their creator document's CSP.
     const documentHtml = html.replace(/<head>/i, '<head>' + PRINT_POLICY);
     if (documentHtml === html)
-        throw new Error('打印快照缺少 HTML head，无法设置安全策略。');
+        throw new Error(t("打印快照缺少 HTML head，无法设置安全策略。"));
     const win = new Window({
         show: false, width: 1000, height: 800, autoHideMenuBar: true,
         webPreferences: {
@@ -58,7 +59,7 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
         wc.on('will-navigate', event => event.preventDefault());
         wc.on('will-attach-webview', event => event.preventDefault());
         try {
-            log('正在加载内存打印快照（' + Buffer.byteLength(html, 'utf8') + ' 字节）…');
+            log(t('正在加载内存打印快照（{0} 字节）…', Buffer.byteLength(html, 'utf8')));
             await win.loadURL(PRINT_SHELL);
             // JSON serialization keeps document text out of executable code.
             // The Blob is created and consumed inside the sandboxed window.
@@ -73,12 +74,13 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
             const code = (error as {
                 code?: string;
             }).code || 'unknown';
-            throw new Error('Electron 打印窗口加载失败：' + code);
+            throw new Error(t("Electron 打印窗口加载失败：") + code);
         }
         const meta = await wc.executeJavaScript(`JSON.parse(document.getElementById('phb-meta').textContent)`) as ExportMeta;
         if (!meta.prepared || !meta.entries?.length)
-            throw new Error('快照缺少已解析的标题与目录信息。');
-        await wc.executeJavaScript(`(${preparePrint.toString()})()`);
+            throw new Error(t("快照缺少已解析的标题与目录信息。"));
+        const printMessages = { image: t('图片无法加载：'), math: t('公式渲染错误。'), font: t('快照字体加载失败。') };
+        await wc.executeJavaScript(`(${preparePrint.toString()})(${JSON.stringify(printMessages)})`);
         const dark = Boolean(await wc.executeJavaScript(`document.body.classList.contains('theme-dark')`));
         const options = {
             pageSize: 'A4' as const, printBackground: true, preferCSSPageSize: true,
@@ -93,13 +95,13 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
         let iterations = 0;
         for (iterations = 1; iterations <= 6; iterations++) {
             if (signal?.aborted)
-                throw new Error('导出已取消。');
-            log('打印并校准目录：第 ' + iterations + ' 轮');
+                throw new Error(t("导出已取消。"));
+            log(t('打印并校准目录：第 {0} 轮', iterations));
             finalBytes = await wc.printToPDF(options);
             measured = await measurePdf(finalBytes);
             for (const entry of meta.entries)
                 if (!measured.positions[entry.id])
-                    throw new Error('无法定位 PDF 标题：' + entry.title);
+                    throw new Error(t("无法定位 PDF 标题：") + entry.title);
             const signature = JSON.stringify([measured.pages, meta.entries.map(e => measured!.positions[e.id].page)]);
             if (signature === previous)
                 break;
@@ -114,7 +116,7 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
             previous = signature;
         }
         if (iterations > 6 || !finalBytes || !measured)
-            throw new Error('6 轮后目录页码仍未稳定，请调整目录标题或字体。');
+            throw new Error(t("6 轮后目录页码仍未稳定，请调整目录标题或字体。"));
         // Remove probe annotations from the measured PDF itself, avoiding a divergent final reprint.
         const finished = await finishPdf(finalBytes, meta, measured.positions);
         const overflow = await wc.executeJavaScript(`(${findOverflow.toString()})()`) as ReturnType<typeof findOverflow>;
@@ -129,9 +131,9 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
     }
     catch (error) {
         if (timedOut)
-            throw new Error('PDF 导出超过 4 分钟，窗口已关闭。');
+            throw new Error(t("PDF 导出超过 4 分钟，窗口已关闭。"));
         if (signal?.aborted)
-            throw new Error('导出已取消。');
+            throw new Error(t("导出已取消。"));
         throw error;
     }
     finally {
@@ -141,20 +143,20 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
     }
 }
 // This function is serialized into the isolated print window; keep it self-contained.
-async function preparePrint() {
+async function preparePrint(messages: { image: string; math: string; font: string }) {
     await document.fonts.ready;
     await Promise.all([...document.images].map(async (img) => {
         try {
             await img.decode();
         }
         catch {
-            throw new Error('图片无法加载：' + img.alt);
+            throw new Error(messages.image + img.alt);
         }
     }));
     if (document.querySelector('[data-mml-node="merror"],mjx-merror'))
-        throw new Error('公式渲染错误。');
+        throw new Error(messages.math);
     if ([...document.fonts].some(font => font.status === 'error'))
-        throw new Error('快照字体加载失败。');
+        throw new Error(messages.font);
     document.querySelectorAll<HTMLElement>('.callout:not(.an-media)').forEach(box => {
         // Plain proof/remark paragraphs need no floating-title padding. They can
         // span pages naturally, with the QED attached only to the proof ending.

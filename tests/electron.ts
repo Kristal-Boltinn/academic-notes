@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import { buildSync } from 'esbuild';
 import { exportPdf } from '../src/export/pdf';
 import { PDFDocument, PDFName } from 'pdf-lib';
+import { setLanguage } from '../src/i18n';
 
 // Run in a separate Electron process; never connects to the user's Obsidian instance.
 app.setPath('userData', resolve('output/electron-profile'));
@@ -100,7 +101,7 @@ async function run() {
     const figureMarkup = `<main class="markdown-preview-view markdown-rendered"><h1>Figures and references</h1><p>Compare <a class="an-ref" href="#figure">fig 1.1</a> and <a class="an-ref" href="#theorem">thm 1.1</a>.</p>` +
       `<div id="figure" class="callout an-media" data-callout="figure"><div class="callout-title"><div class="callout-title-inner"><span class="an-caption-label">Figure 1.1</span><span class="an-caption-text">Two curves</span></div></div><div class="callout-content an-figure-grid">` +
       ['a', 'b'].map((letter, i) => `<div class="an-subfigure-cell"><div class="callout an-media" data-callout="subfigure"><div class="callout-title"><div class="callout-title-inner">(${letter}) State ${i + 1}</div></div><div class="callout-content"><img alt="Curve ${letter}" src="data:image/svg+xml;base64,${Buffer.from(readFileSync('examples/assets/curve-' + letter + '.svg')).toString('base64')}"></div></div></div>`).join('') +
-      '</div></div>' + box('thm', 'Theorem 1.1 · Reference target') + '</main>';
+      '</div></div>' + box('thm', 'Theorem 1.1 · Reference target').replace('<div class="callout"', '<div id="theorem" class="callout"') + '</main>';
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(figureMarkup)));
     await wc.executeJavaScript(`Promise.all([...document.images].map(img=>img.decode())).then(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))))`);
     const figureLayout = await wc.executeJavaScript(`(() => {
@@ -108,6 +109,22 @@ async function run() {
       return {grid:getComputedStyle(content).display,captionOrder:getComputedStyle(figure.querySelector(':scope > .callout-title')).order,cells:content.querySelectorAll(':scope > .an-subfigure-cell').length};
     })()`);
     assert.deepEqual(figureLayout, { grid: 'flex', captionOrder: '2', cells: 2 }, 'Figure layout must survive theme overrides');
+    const tableMarkup = '<div class="callout an-media an-table" data-callout="table"><div class="callout-title"><div class="callout-title-inner">Table 1.1 · Parameters</div></div><div class="callout-content"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody><tr><td>a</td><td>1</td></tr><tr><td>b</td><td>2</td></tr></tbody></table></div></div>';
+    // Exercise actual theme selectors used by editable tables, including hover.
+    for (const mode of ['light', 'dark']) for (const context of ['markdown-preview-view', 'markdown-source-view mod-cm6']) {
+      await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered ' + context + '"><div class="cm-table-widget">' + tableMarkup + '</div></main>')));
+      const tableChecks = await wc.executeJavaScript(`((mode)=>{document.body.className='theme-'+mode;const table=document.querySelector('table');return {collapse:getComputedStyle(table).borderCollapse,top:getComputedStyle(table).borderTopStyle,bottom:getComputedStyle(table).borderBottomStyle,header:getComputedStyle(table.tHead).borderBottomStyle,cells:[...table.querySelectorAll('td,th')].map(el=>({border:getComputedStyle(el).borderWidth,background:getComputedStyle(el).backgroundColor}))}})(${JSON.stringify(mode)})`);
+      assert.equal(tableChecks.collapse, 'collapse'); assert.equal(tableChecks.top, 'solid'); assert.equal(tableChecks.bottom, 'solid'); assert.equal(tableChecks.header, 'solid');
+      for (const cell of tableChecks.cells) { assert.equal(cell.border, '0px'); assert.equal(cell.background, 'rgba(0, 0, 0, 0)'); }
+      const point = await wc.executeJavaScript(`(()=>{const r=document.querySelector('tbody td').getBoundingClientRect();return {x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2)}})()`);
+      wc.sendInputEvent({ type: 'mouseMove', ...point });
+      const hover = await wc.executeJavaScript(`new Promise(resolve=>requestAnimationFrame(()=>{const el=document.querySelector('tbody td'),s=getComputedStyle(el);resolve({active:el.matches(':hover'),shadow:s.boxShadow,background:s.backgroundColor})}))`);
+      assert.equal(hover.active, true);
+      assert.equal(hover.shadow, 'none', 'Table hover must not restore decorative cell borders');
+      assert.equal(hover.background, 'rgba(0, 0, 0, 0)');
+    }
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(figureMarkup)));
+    await wc.executeJavaScript(`Promise.all([...document.images].map(img=>img.decode()))`);
     writeFileSync('screenshots/figures.png', (await wc.capturePage()).toPNG());
     writeFileSync('screenshots/references.png', (await wc.capturePage({ x: 0, y: 0, width: 950, height: 230 })).toPNG());
     // Run the same document module that is bundled into the plugin, in an isolated DOM.
@@ -117,13 +134,15 @@ async function run() {
       Array.from({ length: 32 }, (_, i) => `<p>Step ${i + 1}. Choose an open neighborhood and apply continuity to each inverse image. This synthetic argument exercises paragraph flow across printed pages without repeating the proof title.</p>`).join('') +
       '<p>END OF LONG PROOF. The last step establishes the required continuity.</p>');
     const book = `<main id="phb-document" class="markdown-preview-view markdown-rendered"><section class="phb-chapter" data-path="a.md" data-title="Chapter A"><h1>Chapter A</h1><h2>Compactness</h2>${content}${longProof}<h6>1.2.3 Ordinary H6 heading</h6>${paragraphs}<a data-href="b.md#Destination" href="b.md#Destination">Go to chapter B</a></section><section class="phb-chapter" data-path="b.md" data-title="Chapter B"><h1>Chapter B</h1><h2>Destination</h2>${paragraphs}</section></main>`;
-    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(book, print)));
+    const illustratedBook = book.replace('<h2>Destination</h2>', '<h2>Destination</h2>' + figureMarkup.replace(/^<main[^>]*>|<\/main>$/g, '') + tableMarkup);
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(illustratedBook, print)));
     // Minimal Obsidian DOM helpers for the snapshot builder; the real print
     // window below has no helpers, Node access, or application runtime.
     await wc.executeJavaScript(`Object.defineProperty(Document.prototype,'win',{get(){return this.defaultView}}); window.createEl=tag=>document.createElement(tag); window.createDiv=()=>document.createElement('div'); window.createSpan=()=>document.createElement('span'); void 0;`);
     await wc.executeJavaScript(client);
     const snapshot = await wc.executeJavaScript(`(() => {
       document.body.classList.add('phb-export');
+      if(getComputedStyle(document.querySelector('.an-figure-grid')).display!=='flex')throw new Error('Export shell disabled the subfigure grid');
       const heading=document.querySelector('h2');
       const emphasis=document.createElement('em');emphasis.textContent=' <formula>';heading.appendChild(emphasis);
       const glyph=document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -190,10 +209,13 @@ async function run() {
         .replace('</body>', '<script>document.body.dataset.executed="script"</script><img hidden id="security-probe" src="data:image/png;base64,broken" onerror="document.body.dataset.executed=\'event\'"></body>');
       result = await exportPdf(guardedSnapshot + '<!--' + 'large snapshot 中文 '.repeat(400000) + '-->', console.log, undefined, GuardedPrintWindow);
       const controller = new AbortController();
-      await assert.rejects(exportPdf(snapshot, () => controller.abort(), controller.signal, GuardedPrintWindow), /导出已取消/);
+      await assert.rejects(exportPdf(snapshot, () => controller.abort(), controller.signal, GuardedPrintWindow), /Export cancelled/);
       const brokenImage = snapshot.replace('</body>', '<img src="data:image/png;base64,broken" alt="invalid fixture"></body>');
+      await assert.rejects(exportPdf(brokenImage, () => {}, undefined, GuardedPrintWindow), /Unable to load image/);
+      setLanguage('zh-CN');
       await assert.rejects(exportPdf(brokenImage, () => {}, undefined, GuardedPrintWindow), /图片无法加载/);
-      assert.equal(guardedLoads, 2);
+      setLanguage('en');
+      assert.equal(guardedLoads, 3);
       assert.equal(requests, 0, 'The working local HTTP server must receive no requests');
       assert.ok(printWindows.every(window => window.isDestroyed()), 'Success, cancellation and failure must close their windows');
       console.log('Memory transport, enforced CSP, blocked Node/file/network access, cancellation and failure cleanup passed.');

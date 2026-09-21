@@ -31,7 +31,9 @@ Requires **Obsidian desktop 1.9.0 or later**. Download `main.js`, `manifest.json
 
 Enable **Academic Notes** under **Settings → Community plugins**. Figure and table styles are included; no CSS snippet is required. PDF export uses Obsidian's bundled Electron, so no Python or separate Chrome installation is needed.
 
-Academic Notes is available through GitHub releases and is awaiting Community Plugins review. The current settings and command labels are primarily in Chinese; the tables below identify commands by their current labels.
+### Interface language
+
+The interface follows **Obsidian → Settings → General → Language** automatically. Chinese locales use Simplified Chinese; English and other languages use English. Restart Obsidian after changing its language. Settings, dropdowns, commands, dialogs, diagnostics and export messages are translated. Your note text, custom titles, reference syntax and saved settings are preserved.
 
 For standalone table and caption styling without automatic numbering, copy [academic-layout.css](snippets/academic-layout.css) into `.obsidian/snippets/` and enable it under Appearance. Avoid enabling duplicate styles alongside the plugin.
 
@@ -139,16 +141,16 @@ Block IDs use letters, digits, and hyphens and must be unique within a note. Lea
 
 Open the command palette (`Ctrl+P` on Windows) and search for **Academic Notes**:
 
-| Action | Current command label |
+| Action | Command label |
 |---|---|
-| Add a unique block ID at the cursor | 为光标所在公式、定理或图表添加块 ID |
-| Select a target and insert its reference | 插入定理、公式或图表引用 |
-| Rebuild the index and refresh references | 重建定理公式索引并刷新引用 |
-| Export the current note as PDF | 直接导出当前笔记为 PDF |
-| Export the current note as HTML | 导出当前笔记为 HTML 快照 |
-| Select notes and export a book | 选择多篇笔记并导出合订本 PDF |
-| Export a book from a manifest | 按 phb-book 清单导出 PDF |
-| Open diagnostics | 检查插件状态与导出环境 |
+| Add a unique block ID at the cursor | Add a block ID to the current equation, theorem or figure |
+| Select a target and insert its reference | Insert theorem, equation or figure reference |
+| Rebuild the index and refresh references | Rebuild index and refresh references |
+| Export the current note as PDF | Export current note to PDF |
+| Export the current note as HTML | Export current note to HTML snapshot |
+| Select notes and export a book | Select notes and export a PDF book |
+| Export a book from a manifest | Export phb-book manifest to PDF |
+| Open diagnostics | Check plugin status and export environment |
 
 Type `\ref`, `\tref`, or `\eqref` for reference suggestions. The latter two filter to mathematical callouts or equations. Reading view and Live Preview replace reference labels; Source mode preserves the syntax. Moving the cursor into a reference in Live Preview also reveals its source. Custom aliases are preserved by default.
 
@@ -285,7 +287,7 @@ Outputs default to `_exports/` inside the vault. Only vault-relative output dire
 
 ## Troubleshooting
 
-The export progress window shows errors. Afterwards, open diagnostics and inspect `errors` and `lastPdfExport`. Use **保存诊断 JSON 到导出目录** to save diagnostics, normally to `_exports/academic-diagnostics-*.json`. Error history lasts for the current plugin session, so save it before reloading.
+The export progress window shows errors. Afterwards, open diagnostics and inspect `errors` and `lastPdfExport`. Use **Save diagnostic JSON to export folder** to save diagnostics, normally to `_exports/academic-diagnostics-*.json`. Error history lasts for the current plugin session, so save it before reloading.
 
 `pdf.interfaceAvailable` only checks whether the interface exists; it does not prove export succeeded. A successful export creates `.report.json`; on failure, a `.phb.html` snapshot may already exist. For more logs, open Developer Tools (`Ctrl+Shift+I` on Windows) and search the Console for `[Academic Notes]`.
 

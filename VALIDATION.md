@@ -1,3 +1,12 @@
+# 2.4.0 language and CSS update — 2026-09-21
+
+- TypeScript/build, eight Node regressions and the three-file release check passed. Chinese (including a zh-TW locale), English and an untranslated locale exercise settings labels, stable dropdown values, English fallback and message placeholders.
+- Native Electron 43 passed 13 palette cases with each of default styles, Phycat and Minimal (39 combinations). Added light/dark reading and editable-table hover checks, and verified exported subfigure grids remain side by side.
+- All three themes exported illustrated books with 15 valid internal links, no invalid links and no horizontal overflow. Default and Minimal produced eight pages; Phycat produced ten. Default PDF pages were rendered for visual inspection of figures, three-line tables and the long proof's final QED.
+- English and Chinese broken-image errors were exercised inside the isolated print window. Cancellation, cleanup, mandatory CSP and denied Node/file/network access passed.
+- Released styles.css contains 61 !important declarations (previously 130). Across that generated file and the four CSS source files, there are 170 occurrences (previously 326); these are occurrence counts, not a prediction of every scanner warning.
+- Actual Obsidian host UI acceptance and the next Community Directory scan remain separate checks. Language is initialized from Obsidian's public getLanguage() API when the plugin loads; changing the application language requires its normal restart.
+
 # 2.3.0 appearance update — 2026-09-21
 
 - TypeScript/build checks, seven Node regressions and the three-file release check passed. ESLint reports no errors and the same one native DOM helper warning in the isolated print window.

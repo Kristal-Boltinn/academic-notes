@@ -1,3 +1,10 @@
+# Community review follow-up: 2.4.0
+
+- Shared callout variables replace repeated geometry and title overrides. Reduced released CSS priority declarations from 130 to 61; total CSS occurrences including sources fell from 326 to 170. Retained table hover overrides are covered against Phycat and Minimal.
+- Export layout now excludes subfigure grids from the generic block-content reset. Tests include parallel figures and three-line tables in actual PDFs.
+- English and Chinese interfaces follow Obsidian's language through its public API. Localization does not change command IDs, settings values or user content, and isolated print messages are passed explicitly into the print window.
+- Scoped MathJax, pagination and theme compatibility rules remain. No scanner suppression was added; the previous explanations below still apply to those remaining findings.
+
 # Community review follow-up: 2.3.0
 
 ## CSS cleanup and appearance

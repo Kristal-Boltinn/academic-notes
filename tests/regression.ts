@@ -5,6 +5,9 @@ import Engine from '../src/indexing/engine';
 import { PDFDocument, PDFName, PDFString } from 'pdf-lib';
 import { measurePdf, finishPdf, PROBE } from '../src/export/pdf-postprocess';
 import AcademicNotes from '../src/main';
+import { ENGLISH, setLanguage, t } from '../src/i18n';
+import { AcademicSettings } from '../src/ui/settings-tab';
+import { setTestLanguage } from './obsidian-mock';
 
 test('plugin lifecycle registers new commands, drops removed settings and restores appearance', async () => {
   const classes = new Set(['theme-light']);
@@ -19,8 +22,10 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
   const plugin: any = new AcademicNotes(app, { id: 'academic-notes', name: 'Academic Notes', version: '2.2.0' } as any);
   plugin.data = { legacy: true, legacyCaptions: true, followPhycat: true, pythonPath: 'unused', neutralBody: true, lightPalette: 'mint' };
   try {
+    setTestLanguage('en');
     await plugin.onload();
     assert.equal(plugin.commands.length, 9);
+    assert.equal(plugin.commands.find((c: any) => c.id === 'export-current-pdf').name, 'Export current note to PDF');
     assert.ok(!plugin.commands.some((c: any) => c.id === 'setup-pdf'));
     for (const key of ['legacy', 'legacyCaptions', 'followPhycat', 'pythonPath']) assert.ok(!(key in plugin.settings));
     assert.equal(body.dataset.anPalette, 'mint');
@@ -28,6 +33,29 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
     plugin.onunload();
     assert.ok(!classes.has('phb-neutral-body') && !classes.has('an-active'));
   } finally { globalThis.window = previous.window; globalThis.document = previous.document; globalThis.MutationObserver = previous.observer; }
+});
+
+test('language follows Obsidian with English fallback; settings values and placeholders stay stable', () => {
+  const plugin: any = { settings: { ...Engine.DEFAULTS, tocDepth: 3, lightPalette: 'forest', darkPalette: 'radiation' }, saveSettings: async () => {} };
+  const names: Record<string, string> = { en: 'Numbering and references', 'zh-CN': '编号与引用', 'zh-TW': '编号与引用', de: 'Numbering and references' };
+  let baseline: string[][] | undefined;
+  for (const [locale, expected] of Object.entries(names)) {
+    setLanguage(locale);
+    const definitions = new AcademicSettings({} as any, plugin).getSettingDefinitions();
+    assert.equal(definitions[0].name, expected);
+    const options: string[][] = [], labels: string[] = [];
+    const control: any = { setValue() { return this; }, onChange() { return this; }, addOptions(values: Record<string,string>) { options.push(Object.keys(values)); labels.push(...Object.values(values)); return this; } };
+    const row: any = { setHeading() {}, addDropdown(fn: any) { fn(control); }, addToggle(fn: any) { fn(control); }, addText(fn: any) { fn(control); } };
+    definitions.forEach(d => d.render(row));
+    if (!baseline) baseline = options;
+    assert.deepEqual(options, baseline, 'Stored option IDs must not depend on language');
+    if (!locale.startsWith('zh')) assert.ok(!/[\p{Script=Han}]/u.test(definitions.map(d => d.name + d.desc).join(' ') + labels.join(' ')));
+    assert.equal(t('重复块 ID：{0}#^{1}', '用户笔记.md', 'block'), locale.startsWith('zh') ? '重复块 ID：用户笔记.md#^block' : 'Duplicate block ID: 用户笔记.md#^block');
+  }
+  for (const [key, value] of Object.entries(ENGLISH)) {
+    assert.deepEqual((key.match(/\{\d+\}/g) || []).sort(), (value.match(/\{\d+\}/g) || []).sort(), key);
+  }
+  setLanguage('en');
 });
 
 test('H6 is a heading; explicit figures are numbered; code fences are not declarations', () => {

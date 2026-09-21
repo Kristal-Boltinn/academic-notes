@@ -1,3 +1,10 @@
+# 2.4.0
+
+- Follow Obsidian’s language for Chinese and English settings, commands, dialogs, diagnostics and export messages; use English for other locales. Existing settings and note syntax remain compatible.
+- Consolidate callout styling with shared variables and reduce redundant CSS priority overrides while preserving theme compatibility.
+- Preserve three-line table styling during Live Preview hover and keep subfigures side by side in PDF exports.
+- Extend regression coverage for localization, editable tables and illustrated PDF books.
+
 # 2.3.0
 
 - Display proofs as plain paragraphs with an inline italic title and one automatic hollow QED square at the end, including proofs spanning PDF pages.

@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 // Build the snapshot in Obsidian; the isolated print window receives static HTML.
 interface TocEntry { id: string; title: string; level: number; path?: string }
 interface Declaration { line: number; type: string; key: string; name: string; number: string }
@@ -136,7 +137,7 @@ function inlineCopy(el: HTMLElement, prefix: string) {
     });
     return clone.childNodes;
 }
-function makeToc(doc: Document, entries: TocEntry[], headingMap = new Map<string, HTMLElement>(), title = '目录') {
+function makeToc(doc: Document, entries: TocEntry[], headingMap = new Map<string, HTMLElement>(), title = t("目录")) {
     const nav = doc.win.createEl('nav');
     nav.className = 'phb-toc';
     nav.setAttribute('aria-label', title);
@@ -244,7 +245,7 @@ function prepare(root: HTMLElement, options: {
                 if (map.has('^' + k) && map.get('^' + k) !== e.id) {
                     map.set('^' + k, null);
                     map.set(k, null);
-                    warnings.push(`重复块 ID：${path}#^${k}`);
+                    warnings.push(t("重复块 ID：{0}#^{1}", path, k));
                 }
                 else {
                     map.set('^' + k, e.id);
@@ -298,7 +299,7 @@ function prepare(root: HTMLElement, options: {
                 a.dataset.phbResolved = id;
             }
             else if (a.classList.contains('internal-link') || raw.startsWith('#') || /\.md(?:#|$)/i.test(raw)) {
-                warnings.push(`未纳入书籍或无法定位的链接：${ch.dataset.path} -> ${raw}`);
+                warnings.push(t("未纳入书籍或无法定位的链接：{0} -> {1}", ch.dataset.path, raw));
                 a.dataset.phbUnresolved = 'true';
                 if (file)
                     a.href = 'obsidian://open?file=' + encodeURIComponent(file + (sub ? '#' + sub : ''));
@@ -322,10 +323,10 @@ function prepare(root: HTMLElement, options: {
         front.className = 'phb-frontmatter';
         const title = doc.win.createEl('h1');
         title.className = 'phb-book-title';
-        title.textContent = options.title || '讲义';
+        title.textContent = options.title || t("讲义");
         const sub = doc.win.createEl('p');
         sub.className = 'phb-book-subtitle';
-        sub.textContent = options.subtitle || '数学笔记 · 合订本';
+        sub.textContent = options.subtitle || t("数学笔记 · 合订本");
         front.append(title, sub, makeToc(doc, entries, headingMap));
         root.prepend(front);
     }
@@ -341,7 +342,7 @@ function prepare(root: HTMLElement, options: {
         holders.forEach(n => n.replaceWith(makeToc(doc, subentries, headingMap)));
     }
     addProbes(root, entries);
-    return { version: 1, prepared: true, title: options.title || chapters[0].dataset.title || '数学笔记', book, entries, warnings };
+    return { version: 1, prepared: true, title: options.title || chapters[0].dataset.title || t("数学笔记"), book, entries, warnings };
 }
 function updatePages(root: HTMLElement, positions: Record<string, { page: number }>) {
     root.querySelectorAll<HTMLElement>('[data-phb-page]').forEach(el => {

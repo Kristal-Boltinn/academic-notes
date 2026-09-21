@@ -8,7 +8,9 @@
 
 数学环境的视觉设计受到 [ElegantBook](https://github.com/ElegantLaTeX/ElegantBook) 启发：定理使用带标题的数学框，证明使用简洁的行内标题和结束方框，注记使用彩色行内标题。颜色随 Academic Notes 当前色板变化。
 
-**2.3.0 · Community Release Candidate**。社区审核进行中，自动检查通过不代表已在 Community Plugins 上架。
+**2.4.0**
+
+界面自动跟随 **Obsidian → 设置 → 通用 → 语言**：中文语言使用简体中文，英文及其他暂未翻译的语言使用英文。更改语言后重启 Obsidian 即可生效。设置、下拉选项、命令、弹窗、诊断和导出提示均支持中英文；笔记正文、自定义标题、引用语法和已保存的设置保持不变。
 
 ![Theorem environments](screenshots/theorem.png)
 
@@ -302,7 +304,7 @@ npm run check:release
 
 原生测试会启动隐藏的独立 Electron 测试窗口，将 README 示意图保存到 `screenshots/`，将 PDF 和报告保存到 `output/`。它验证真实 Chromium 打印和样式，不等同于真实 Obsidian 实时预览验收。可将环境变量 `ACADEMIC_TEST_THEME` 设为本机主题 CSS 路径，额外检查兼容性。完整的证明与注记示例见 [examples/proof-and-remark.md](examples/proof-and-remark.md)。
 
-修改版本时同步 `package.json`、lockfile、`manifest.json`、`versions.json` 和 CHANGELOG。推送与 manifest 版本一致的 tag（例如 `2.3.0`）后，GitHub Actions 构建、测试并创建**草稿 Release**，上传三个安装文件；人工审阅后再公开。发布前按 [RELEASING.md](RELEASING.md) 核对作者、唯一 ID、实际桌面验收和 Community Directory 扫描。
+修改版本时同步 `package.json`、lockfile、`manifest.json`、`versions.json` 和 CHANGELOG。推送与 manifest 版本一致的 tag（例如 `2.4.0`）后，GitHub Actions 构建、测试并创建**草稿 Release**，上传三个安装文件；人工审阅后再公开。发布前按 [RELEASING.md](RELEASING.md) 核对作者、唯一 ID、实际桌面验收和 Community Directory 扫描。
 
 ## License
 

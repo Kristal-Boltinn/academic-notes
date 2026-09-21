@@ -25,6 +25,9 @@ export class Notice {}
 export class Setting {}
 export const MarkdownRenderer = {};
 export const Platform = { isDesktopApp: true };
+let locale = 'en';
+export const getLanguage = () => locale;
+export const setTestLanguage = (value: string) => { locale = value; };
 export const normalizePath = (path: string) => path.replace(/\\/g, '/');
 export const editorInfoField = {}, editorLivePreviewField = {};
 export const finishRenderMath = async () => {};

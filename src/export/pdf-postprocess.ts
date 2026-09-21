@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { PDFArray, PDFDict, PDFDocument, PDFHexString, PDFName, PDFNumber, PDFRef, PDFString } from 'pdf-lib';
 export interface HeadingEntry {
     id: string;
@@ -90,7 +91,7 @@ export async function finishPdf(bytes: Uint8Array, meta: ExportMeta, positions: 
                 (action?.get(key('S'))?.toString() === '/GoTo' ? action.get(key('D')) : undefined);
             if (destination) {
                 if (!validDestination(destination))
-                    throw new Error('PDF 内部链接目标无效，已停止输出。');
+                    throw new Error(t("PDF 内部链接目标无效，已停止输出。"));
                 validInternalLinks++;
             }
             else if (uri)
@@ -110,7 +111,7 @@ export async function finishPdf(bytes: Uint8Array, meta: ExportMeta, positions: 
     for (const entry of meta.entries) {
         const pos = positions[entry.id];
         if (!pos || !pages[pos.page])
-            throw new Error('PDF 缺少目录目标：' + entry.id);
+            throw new Error(t("PDF 缺少目录目标：") + entry.id);
         while (stack.length > 1 && stack.at(-1)!.entry!.level >= entry.level)
             stack.pop();
         const parent = stack.at(-1)!;
