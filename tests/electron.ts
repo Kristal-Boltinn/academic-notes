@@ -17,7 +17,7 @@ const print = readFileSync('src/styles/document.css', 'utf8');
 const extra = process.env.ACADEMIC_TEST_THEME ? readFileSync(process.env.ACADEMIC_TEST_THEME, 'utf8') : '';
 const shell = `body{--text-normal:#292929;--text-muted:#666;--text-accent:#248051;--color-blue:#286b76;--color-purple:#71628c;--color-green:#62752e;--color-cyan:#42786b;--color-orange:#946b2f;font:17px/1.65 'Microsoft YaHei',sans-serif;margin:40px;background:#fff}.theme-dark{--text-normal:#ededed;--text-muted:#aaa;background:#171717;color:#ededed}h1,h2{font-family:inherit}.callout-title{display:flex}.callout-icon{display:none}*{transition:none!important;animation:none!important}`;
 const box = (type: string, title: string, content = '<p>中文正文 · A mathematical statement, with <strong>emphasis</strong>.</p>') =>
-  `<div class="callout" data-callout="${type}"><div class="callout-title"><div class="callout-title-inner">${title}</div></div><div class="callout-content">${content}</div></div>`;
+  `<div class="callout" data-callout="${type}"><div class="callout-title"><div class="callout-icon">◆</div><div class="callout-title-inner">${/^(Proof|Remark)$/.test(title) ? '<span class="phb-type-label">' + title + '</span>' : title}</div></div><div class="callout-content">${content}</div></div>`;
 const content = box('def', 'Definition 1.1 · Compactness') + box('thm', 'Theorem 1.1 · Finite spaces',
   '<p>A finite space is compact.</p>' + box('lem', 'Lemma 1.1 · Nested', '<p>The nested box has its own purple tint.</p>')) +
   box('prop', 'Proposition 1.1') + box('cor', 'Corollary 1.1') + box('example', 'Example 1.1') + box('proof', 'Proof') + box('remark', 'Remark');
@@ -36,37 +36,87 @@ async function run() {
         document.body.className='theme-'+mode+' an-active';document.body.dataset.anPalette=palette;
         const boxes=[...document.querySelectorAll('.callout')];
         const color=v=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=1;const c=canvas.getContext('2d');c.fillStyle=v;c.fillRect(0,0,1,1);return [...c.getImageData(0,0,1,1).data].slice(0,3)};
-        const inspect=()=>boxes.map(box=>{const s=getComputedStyle(box);return {border:color(s.borderTopColor),fill:color(s.backgroundColor),body:getComputedStyle(box.querySelector(':scope > .callout-content')).backgroundColor}});
+        const inspect=()=>boxes.map(box=>{const s=getComputedStyle(box);return {plain:['proof','remark'].includes(box.dataset.callout),background:s.backgroundColor,borderWidth:s.borderTopWidth,border:color(s.borderTopColor),fill:color(s.backgroundColor),body:getComputedStyle(box.querySelector(':scope > .callout-content')).backgroundColor}});
         const before=inspect();document.body.style.setProperty('--background-primary','#ffdf88');const after=inspect();
         document.body.classList.add('phb-neutral-body');
         const neutral=boxes.map(box=>getComputedStyle(box).color===getComputedStyle(document.body).getPropertyValue('--text-normal').trim());
         const texts=boxes.map(box=>color(getComputedStyle(box).color));const expectedText=color(getComputedStyle(document.body).getPropertyValue('--text-normal'));
-        const emphasis=boxes.flatMap(box=>[...box.querySelectorAll('strong,em')].map(el=>color(getComputedStyle(el).color)));return {before,after,texts,expectedText,emphasis};
+        const emphasis=boxes.flatMap(box=>[...box.querySelectorAll('strong,em')].map(el=>color(getComputedStyle(el).color)));
+        const remark=color(getComputedStyle(document.querySelector('[data-callout="remark"] > .callout-title')).color);
+        const expectedRemark=color('color-mix(in srgb,'+getComputedStyle(document.body).getPropertyValue('--phb-def')+' '+(mode==='light'?'98%':'80%')+', white)');
+        return {before,after,texts,expectedText,emphasis,remark,expectedRemark};
       })(${JSON.stringify(mode)},${JSON.stringify(palette)})`);
       assert.deepEqual(result.after, result.before, `${mode}/${palette}: page tint must not change box fill`);
       for (const [index, item] of result.before.entries()) {
         const weight = mode === 'light' ? .06 : .08, surface = mode === 'light' ? [255, 255, 255] : [24, 24, 27];
-        for (let k = 0; k < 3; k++) assert.ok(Math.abs(item.fill[k] - Math.round(item.border[k] * weight + surface[k] * (1 - weight))) <= 1, `${mode}/${palette} box ${index}: same-color fill`);
+        if (item.plain) {
+          assert.equal(item.background, 'rgba(0, 0, 0, 0)', 'Proof/remark must have no colored background');
+          assert.equal(item.borderWidth, '0px', 'Proof/remark must have no frame');
+        } else for (let k = 0; k < 3; k++) assert.ok(Math.abs(item.fill[k] - Math.round(item.border[k] * weight + surface[k] * (1 - weight))) <= 1, `${mode}/${palette} box ${index}: same-color fill`);
         assert.equal(item.body, 'rgba(0, 0, 0, 0)', 'content must not paint a second background');
         assert.deepEqual(result.texts[index], result.expectedText, 'neutral body should work without postprocessor classes');
       }
       for(const color of result.emphasis) assert.deepEqual(color,result.expectedText,'emphasis must inherit the selected body color');
+      assert.deepEqual(result.remark, result.expectedRemark, 'Remark must use a brighter tone of the selected palette, not a fixed color');
       cases++;
     }
     await wc.executeJavaScript(`document.body.className='theme-light an-active';document.body.dataset.anPalette='forest';new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
     writeFileSync('screenshots/theorem.png', (await wc.capturePage()).toPNG());
+    const plainExamples = ['proof', 'pf', 'remark', 'rem', 'rmk'].map(type => box(type,
+      ['proof', 'pf'].includes(type) ? 'Proof' : 'Remark', '<p>Take an open set U. Its inverse image under the composition is open.</p>')).join('') +
+      box('proof', 'Proof · A list ending', '<ul><li>The first step.</li><li>The final step.</li></ul>') +
+      box('proof', 'Proof · A displayed equation', '<div class="math-block">f(g(x)) = (f ∘ g)(x)</div>') +
+      box('proof', 'Proof · Nested argument', '<p>First establish the following fact.</p>' + box('remark', 'Remark', '<p>A nested remark has no QED.</p>') + '<p>This completes the argument.</p>');
+    for (const mode of ['light', 'dark']) for (const context of ['markdown-preview-view', 'markdown-source-view mod-cm6']) {
+      await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered ' + context + '">' + plainExamples + '</main>')));
+      const checks = await wc.executeJavaScript(`((mode)=>{
+        document.body.className='theme-'+mode+' an-active phb-no-motif phb-neutral-body';
+        return [...document.querySelectorAll('.callout')].map(box=>{
+          const title=box.querySelector(':scope > .callout-title'),content=box.querySelector(':scope > .callout-content'),s=getComputedStyle(box),t=getComputedStyle(title);
+          const qed=[getComputedStyle(content,'::after').content,...[...content.children].map(p=>getComputedStyle(p,'::after').content)].filter(s=>s.includes('□')).length;
+          const foldedBefore=t.display;box.classList.add('is-collapsed');const collapsed=getComputedStyle(content).display;box.classList.remove('is-collapsed');
+          const paragraph=content.firstElementChild,inline=paragraph?.tagName==='P';
+          const titleRect=title.getBoundingClientRect(),contentRect=paragraph?.getBoundingClientRect();
+          return {type:box.dataset.callout,border:s.borderTopWidth,background:s.backgroundColor,shadow:s.boxShadow,padding:s.padding,radius:s.borderTopLeftRadius,titlePadding:t.padding,titleBackground:t.backgroundColor,icon:getComputedStyle(title.querySelector('.callout-icon')).display,inline,aligned:!inline||Math.abs(titleRect.top-contentRect.top)<1,qed,collapsed,foldedBefore};
+        });
+      })(${JSON.stringify(mode)})`);
+      for (const check of checks) {
+        assert.equal(check.border, '0px'); assert.equal(check.background, 'rgba(0, 0, 0, 0)');
+        assert.equal(check.shadow, 'none'); assert.equal(check.titleBackground, 'rgba(0, 0, 0, 0)');
+        assert.equal(check.padding, '0px'); assert.equal(check.radius, '0px'); assert.equal(check.titlePadding, '0px');
+        assert.equal(check.icon, 'none'); assert.equal(check.aligned, true, 'A paragraph proof/remark must start beside its inline title');
+        assert.equal(check.collapsed, 'none');
+        assert.equal(check.qed, ['proof', 'pf'].includes(check.type) ? 1 : 0, `${mode}/${context}: QED must appear once, only for a proof`);
+      }
+    }
+    for (const [type, title, text] of [
+      ['proof', 'Proof', '<p>Let U be open. Since f and g are continuous, both f⁻¹(U) and g⁻¹(f⁻¹(U)) are open.</p><p>Thus the composition f ∘ g is continuous.</p>'],
+      ['remark', 'Remark', '<p>The argument only uses inverse images of open sets. It applies to arbitrary topological spaces.</p>']
+    ]) {
+      await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-preview-view markdown-rendered">' + box(type, title, text) + '</main>')));
+      const bounds = await wc.executeJavaScript(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{const r=document.querySelector('main').getBoundingClientRect();resolve({x:0,y:0,width:1000,height:Math.ceil(r.bottom+40)})})))`);
+      writeFileSync('screenshots/' + type + '.png', (await wc.capturePage(bounds)).toPNG());
+    }
     const figureMarkup = `<main class="markdown-preview-view markdown-rendered"><h1>Figures and references</h1><p>Compare <a class="an-ref" href="#figure">fig 1.1</a> and <a class="an-ref" href="#theorem">thm 1.1</a>.</p>` +
       `<div id="figure" class="callout an-media" data-callout="figure"><div class="callout-title"><div class="callout-title-inner"><span class="an-caption-label">Figure 1.1</span><span class="an-caption-text">Two curves</span></div></div><div class="callout-content an-figure-grid">` +
       ['a', 'b'].map((letter, i) => `<div class="an-subfigure-cell"><div class="callout an-media" data-callout="subfigure"><div class="callout-title"><div class="callout-title-inner">(${letter}) State ${i + 1}</div></div><div class="callout-content"><img alt="Curve ${letter}" src="data:image/svg+xml;base64,${Buffer.from(readFileSync('examples/assets/curve-' + letter + '.svg')).toString('base64')}"></div></div></div>`).join('') +
       '</div></div>' + box('thm', 'Theorem 1.1 · Reference target') + '</main>';
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(figureMarkup)));
     await wc.executeJavaScript(`Promise.all([...document.images].map(img=>img.decode())).then(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))))`);
+    const figureLayout = await wc.executeJavaScript(`(() => {
+      const figure=document.getElementById('figure'),content=figure.querySelector(':scope > .callout-content');
+      return {grid:getComputedStyle(content).display,captionOrder:getComputedStyle(figure.querySelector(':scope > .callout-title')).order,cells:content.querySelectorAll(':scope > .an-subfigure-cell').length};
+    })()`);
+    assert.deepEqual(figureLayout, { grid: 'flex', captionOrder: '2', cells: 2 }, 'Figure layout must survive theme overrides');
     writeFileSync('screenshots/figures.png', (await wc.capturePage()).toPNG());
     writeFileSync('screenshots/references.png', (await wc.capturePage({ x: 0, y: 0, width: 950, height: 230 })).toPNG());
     // Run the same document module that is bundled into the plugin, in an isolated DOM.
     const client = buildSync({ stdin: { contents: "import core from './src/export/document'; globalThis.AcademicTestDoc=core;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', target: 'es2022' }).outputFiles[0].text;
     const paragraphs = '<p>A synthetic paragraph used to exercise real page boundaries and repeated printing.</p>'.repeat(25);
-    const book = `<main id="phb-document" class="markdown-preview-view markdown-rendered"><section class="phb-chapter" data-path="a.md" data-title="Chapter A"><h1>Chapter A</h1><h2>Compactness</h2>${content}<h6>1.2.3 Ordinary H6 heading</h6>${paragraphs}<a data-href="b.md#Destination" href="b.md#Destination">Go to chapter B</a></section><section class="phb-chapter" data-path="b.md" data-title="Chapter B"><h1>Chapter B</h1><h2>Destination</h2>${paragraphs}</section></main>`;
+    const longProof = box('proof', 'A longer argument', '<p>We now check an argument that continues across page boundaries.</p>' +
+      Array.from({ length: 32 }, (_, i) => `<p>Step ${i + 1}. Choose an open neighborhood and apply continuity to each inverse image. This synthetic argument exercises paragraph flow across printed pages without repeating the proof title.</p>`).join('') +
+      '<p>END OF LONG PROOF. The last step establishes the required continuity.</p>');
+    const book = `<main id="phb-document" class="markdown-preview-view markdown-rendered"><section class="phb-chapter" data-path="a.md" data-title="Chapter A"><h1>Chapter A</h1><h2>Compactness</h2>${content}${longProof}<h6>1.2.3 Ordinary H6 heading</h6>${paragraphs}<a data-href="b.md#Destination" href="b.md#Destination">Go to chapter B</a></section><section class="phb-chapter" data-path="b.md" data-title="Chapter B"><h1>Chapter B</h1><h2>Destination</h2>${paragraphs}</section></main>`;
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(book, print)));
     // Minimal Obsidian DOM helpers for the snapshot builder; the real print
     // window below has no helpers, Node access, or application runtime.
@@ -77,6 +127,7 @@ async function run() {
       const heading=document.querySelector('h2');
       const emphasis=document.createElement('em');emphasis.textContent=' <formula>';heading.appendChild(emphasis);
       const glyph=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      glyph.setAttribute('width','1');glyph.setAttribute('height','1');
       const path=document.createElementNS(glyph.namespaceURI,'path');path.id='toc-test-glyph';glyph.appendChild(path);
       const use=document.createElementNS(glyph.namespaceURI,'use');use.setAttribute('href','#toc-test-glyph');glyph.appendChild(use);heading.appendChild(glyph);
       const meta=AcademicTestDoc.prepare(document.getElementById('phb-document'),{book:true,title:'Sample Book',tocDepth:6,legacyCaptions:true});

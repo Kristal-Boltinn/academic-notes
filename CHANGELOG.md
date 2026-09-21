@@ -1,3 +1,11 @@
+# 2.3.0
+
+- Display proofs as plain paragraphs with an inline italic title and one automatic hollow QED square at the end, including proofs spanning PDF pages.
+- Display remarks without a frame or background, using a brighter title color from the selected palette in light and dark mode.
+- Consolidate mathematical callout styles, separate plugin UI styles, narrow print selectors, and remove redundant priority overrides and pagination rules. Build the release stylesheet and snapshot styles through the same CSS compiler.
+- Credit ElegantBook as the visual inspiration in both READMEs; add proof/remark usage, screenshots, and a synthetic example note.
+- Extend Electron checks for aliases, nested and folded environments, theme compatibility, palette-matched remarks, and long proofs in PDF export.
+
 # 2.2.3
 
 - Remove Node filesystem access from the installed plugin. Load PDF snapshots in memory, avoiding temporary HTML files and oversized data URLs.

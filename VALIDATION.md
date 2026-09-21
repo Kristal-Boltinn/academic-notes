@@ -1,3 +1,14 @@
+# 2.3.0 appearance update — 2026-09-21
+
+- TypeScript/build checks, seven Node regressions and the three-file release check passed. ESLint reports no errors and the same one native DOM helper warning in the isolated print window.
+- Two consecutive builds produced identical main.js and styles.css SHA-256 hashes.
+- Native Electron 43 checked 13 palette cases each with built-in styles, the installed Phycat stylesheet and the installed Minimal stylesheet (39 combinations). Remark titles track the selected palette. All three runs passed neutral text, same-hue box fills, and figure layout checks.
+- Proof/remark aliases passed borderless layout, inline alignment, hidden icons, folding, nesting, light/dark appearance and single-QED checks in synthetic reading-view and Live Preview DOM contexts. List and displayed-equation endings were included. Hiding corner motifs does not hide QED markers.
+- The final default-style fixture exported an 8,851,139-byte snapshot to eight pages in two calibration passes, with eleven valid internal links, no invalid links and no horizontal overflow. The long proof crosses page boundaries and ends with one QED square. The final fixture gives its SVG ID-cloning probe an explicit size, removing unrelated blank space in the previous nine-page test fixture.
+- PDF pages were rendered with Poppler for visual review. Proof/remark README screenshots were captured from synthetic content using the final built stylesheet. No personal notes, theme files or local paths are included in the release.
+- Released styles.css now contains 130 !important declarations, down from 219 in 2.2.3. Remaining overrides protect properties forced by themes, native figure/table layout and the offscreen export stage. Print resets and probe styling remain scoped to export documents.
+- Print isolation, denied Node/file/network access, cancellation and failure cleanup continue to pass. These are standalone Chromium checks; actual Obsidian Live Preview, the host Electron bridge, other operating systems and the next Community Directory scan are separate acceptance checks.
+
 # 2.2.3 review follow-up — 2026-09-20
 
 - Native Electron exported an 8.8 MB in-memory HTML snapshot to six PDF pages in two calibration passes, with eleven valid internal links, no invalid links and no horizontal overflow. Thirteen light/dark palette cases passed.

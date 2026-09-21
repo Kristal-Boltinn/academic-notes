@@ -1,0 +1,13 @@
+/* Plugin controls and off-screen snapshot stage. */
+.an-progress,.an-diagnostics {white-space:pre-wrap;overflow:auto;max-height:55vh;font:12px/1.6 var(--font-monospace,monospace);padding:1em;background:var(--background-secondary);}
+.an-book-title,.an-book-search {width:100%;margin:.4em 0;}
+.an-book-files{max-height:32vh;overflow:auto;border:1px solid var(--background-modifier-border);padding:.5em;}
+.an-file-choice{display:flex;align-items:center;gap:.7em;padding:.35em;cursor:pointer;}
+.an-book-order{max-height:24vh;overflow:auto;}
+.an-order-row{display:flex;align-items:center;gap:.35em;margin:.4em 0;}
+.an-order-row>span{flex:1;overflow-wrap:anywhere;}
+.an-order-row>button{flex-shrink:0;}
+.an-suggest-detail{color:var(--text-muted);font-size:.85em;}
+
+/* Must stay off-screen even when a captured theme styles rendered notes. */
+.phb-export-stage {position:fixed!important;left:-15000px!important;top:0!important;width:174mm!important;max-width:none!important;visibility:hidden!important;pointer-events:none!important;}

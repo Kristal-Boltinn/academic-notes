@@ -6,7 +6,9 @@
 
 数学环境、公式、图表与子图自动编号；跨文件块引用、目录和多篇笔记合订本。配色独立于特定主题，PDF 使用 Obsidian 自带的 Electron，安装后无需 Python、Chrome 或其他外部程序。
 
-**2.2.3 · Community Release Candidate**。社区审核进行中，自动检查通过不代表已在 Community Plugins 上架。
+数学环境的视觉设计受到 [ElegantBook](https://github.com/ElegantLaTeX/ElegantBook) 启发：定理使用带标题的数学框，证明使用简洁的行内标题和结束方框，注记使用彩色行内标题。颜色随 Academic Notes 当前色板变化。
+
+**2.3.0 · Community Release Candidate**。社区审核进行中，自动检查通过不代表已在 Community Plugins 上架。
 
 ![Theorem environments](screenshots/theorem.png)
 
@@ -69,6 +71,31 @@ academic-notes/
 `> [!thm]- 标题` 为默认折叠，`> [!thm]+ 标题` 为默认展开。嵌套框每层增加一个 `>`；导出时展开折叠内容。
 
 手写编号：`> [!thm|A.1] 标题`。不编号：`> [!thm|*] 标题`；`|-` 和空元数据 `|` 也表示不编号。省略元数据或 `|auto` 表示自动编号。自动计数避开同一计数范围内已有的相同手写编号。
+
+## 证明与注记
+
+使用 `proof` 环境书写不编号的证明。斜体 **Proof** 标题与首段并排，证明末尾自动出现空心方框 **□**，无需手写结束符号。
+
+```markdown
+> [!proof]
+> 设 $U$ 为开集。由于 $f$ 和 $g$ 连续，
+> $f^{-1}(U)$ 和 $g^{-1}(f^{-1}(U))$ 都是开集。
+>
+> 因而复合映射 $f \circ g$ 连续。
+```
+
+![证明：行内标题与末尾空心方框](screenshots/proof.png)
+
+使用 `remark` 环境书写注记。**Remark** 标题采用当前色板主色的明亮同色系，正文使用普通笔记文字颜色，没有外框、底色或结束方框。
+
+```markdown
+> [!remark]
+> 这个论证只用到了开集的原像，适用于一般拓扑空间。
+```
+
+![注记：随色板变化的同色系行内标题](screenshots/remark.png)
+
+两种环境的正文始终使用普通文字颜色。`pf` 是 `proof` 的别名；`rem`、`rmk` 是 `remark` 的别名。可用 `> [!proof] 复合映射` 添加标题，也支持 `+`/`-` 折叠写法、嵌套和多段内容。以列表或独立公式开头时，标题单独占一行；以它们结尾的证明会在最后另起一行显示方框。长证明导出 PDF 时可跨页，方框只出现在整个证明末尾。
 
 ## 公式编号
 
@@ -181,11 +208,11 @@ cssclasses:
 
 浅色：Forest（默认）、Sakura、Mint、Sky、Mauve、Golden、Cherry、Prussian。深色：Radiation（默认）、Vampire、Abyss。每套按数学环境区分颜色。浅深模式跟随 **Obsidian 当前模式**；Obsidian 设为跟随系统时，会间接跟随系统的浅深模式。
 
-**跟随 Obsidian 主题配色**不会匹配某套预设，也不直接读取操作系统主色调。定义取主题公开的 `--text-accent`，定理/断言取蓝色，引理取紫色，命题取绿色，推论取青色，例子取橙色，证明/注记取次要文字色，再混入普通正文色。强调色只影响部分环境。选择固定色板即可让边框与底色色系独立于主题；没有主题专用适配开关。
+**跟随 Obsidian 主题配色**不会匹配某套预设，也不直接读取操作系统主色调。定义取主题公开的 `--text-accent`，定理/断言取蓝色，引理取紫色，命题取绿色，推论取青色，例子取橙色，解答取次要文字色，再混入普通正文色。注记标题取定义主色的明亮同色系，证明标题使用普通文字色。选择固定色板即可让边框与底色色系独立于主题。
 
-**框内正文使用普通正文色**：开启后，正文和笔记普通文字同色；关闭时混入 36% 当前框色。它只影响正文颜色，不改变字体、标题、边框或底色。主题正文色可能带色，并不保证纯黑/纯灰；链接和代码保留各自语义样式。
+**框内正文使用普通正文色**：开启后，带框环境的正文和笔记普通文字同色；关闭时混入 36% 当前框色。证明和注记的正文始终使用普通文字色。该选项不改变字体、标题、边框或底色；链接和代码保留各自语义样式。
 
-浅色框内部为 **6% 框色 + 94% 白色**，深色框为 **8% 框色 + 92% 中性深灰**，避免彩色页面背景使框内部偏色。深色模式保留低亮度同色系底色。嵌套框各用自己的颜色。右下角图案可单独隐藏。可选 Style Settings 可调边框和圆角，并非运行依赖。
+浅色框内部为 **6% 框色 + 94% 白色**，深色框为 **8% 框色 + 92% 中性深灰**，避免彩色页面背景使框内部偏色。嵌套框各用自己的颜色。右下角装饰图案可单独隐藏，此开关不会隐藏证明末尾的方框。可选 Style Settings 可调边框和圆角。
 
 ## 目录
 
@@ -263,6 +290,7 @@ Node.js 22+：
 ```sh
 npm ci
 npm test
+npm run lint
 npm run build
 npm run test:electron
 npm run check:release
@@ -270,9 +298,11 @@ npm run check:release
 
 `npm ci` 仅用于开发/CI，会安装测试用 Electron；用户安装的插件不运行它。`npm run dev` 监听源码。TypeScript 源码位于 `src/`，esbuild 将 pdf-lib 和 CSS 后备资源内嵌；构建只需分发 `main.js`、`manifest.json`、`styles.css`。`snippets/` 是可选独立布局，`examples/` 为合成示例，`tests/` 不使用个人笔记。
 
-原生测试会启动隐藏的独立 Electron 测试窗口，在 `output/` 输出截图、PDF 和报告。它验证真实 Chromium 打印和样式，不等同于真实 Obsidian 实时预览验收。
+样式分别维护在 `src/styles/callouts.css`（数学环境和目录）、`src/styles/ui.css`（插件界面）、`src/styles/document.css`（导出排版）和 `snippets/academic-layout.css`（图表布局）。构建会展开嵌套 CSS，发布样式与导出快照使用同一份编译结果。
 
-修改版本时同步 `package.json`、lockfile、`manifest.json`、`versions.json` 和 CHANGELOG。推送与 manifest 版本一致的 tag（例如 `2.2.3`）后，GitHub Actions 构建、测试并创建**草稿 Release**，上传三个安装文件；人工审阅后再公开。发布前按 [RELEASING.md](RELEASING.md) 核对作者、唯一 ID、实际桌面验收和 Community Directory 扫描。
+原生测试会启动隐藏的独立 Electron 测试窗口，将 README 示意图保存到 `screenshots/`，将 PDF 和报告保存到 `output/`。它验证真实 Chromium 打印和样式，不等同于真实 Obsidian 实时预览验收。可将环境变量 `ACADEMIC_TEST_THEME` 设为本机主题 CSS 路径，额外检查兼容性。完整的证明与注记示例见 [examples/proof-and-remark.md](examples/proof-and-remark.md)。
+
+修改版本时同步 `package.json`、lockfile、`manifest.json`、`versions.json` 和 CHANGELOG。推送与 manifest 版本一致的 tag（例如 `2.3.0`）后，GitHub Actions 构建、测试并创建**草稿 Release**，上传三个安装文件；人工审阅后再公开。发布前按 [RELEASING.md](RELEASING.md) 核对作者、唯一 ID、实际桌面验收和 Community Directory 扫描。
 
 ## License
 

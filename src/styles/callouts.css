@@ -1,4 +1,4 @@
-/* Academic Notes 2.2.0 — standalone mathematical callouts and TOC. */
+/* Academic Notes — inspired by ElegantBook — standalone mathematical callouts and TOC. */
 /* @settings
 name: Academic Notes
 name.zh: 数学框与学术排版
@@ -39,10 +39,12 @@ body {
   --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));
   --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));
   --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));
+  /* A brighter tone of the selected palette's main hue, with a small lift in
+   * light mode to keep text contrast; dark mode can use a stronger lift. */
+  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);
   --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));
-  --phb-remark: color-mix(in srgb, var(--text-muted, #6d766d) 60%, var(--text-normal, #24372e));
 }
-body.theme-dark { --phb-surface:#18181b; --phb-badge-ink:#18181b; --phb-tint:8%; }
+body.theme-dark { --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white); --phb-surface:#18181b; --phb-badge-ink:#18181b; --phb-tint:8%; }
 
 /* Sakura / light */
 body.theme-light[data-an-palette="sakura"] {
@@ -54,7 +56,6 @@ body.theme-light[data-an-palette="sakura"] {
   --phb-claim: #996040;
   --phb-example: #8f6c25;
   --phb-proof: #697455;
-  --phb-remark: #74616e;
 }
 
 /* Mint / light */
@@ -67,7 +68,6 @@ body.theme-light[data-an-palette="mint"] {
   --phb-claim: #4c7192;
   --phb-example: #916b35;
   --phb-proof: #647267;
-  --phb-remark: #60767a;
 }
 
 /* Sky / light */
@@ -80,7 +80,6 @@ body.theme-light[data-an-palette="sky"] {
   --phb-claim: #7f668d;
   --phb-example: #956b35;
   --phb-proof: #5c6d5b;
-  --phb-remark: #687484;
 }
 
 /* Forest / light */
@@ -93,7 +92,6 @@ body.theme-light[data-an-palette="forest"] {
   --phb-claim: #44698c;
   --phb-example: #946b2f;
   --phb-proof: #687252;
-  --phb-remark: #6d766d;
 }
 
 /* Mauve / light */
@@ -106,7 +104,6 @@ body.theme-light[data-an-palette="mauve"] {
   --phb-claim: #896440;
   --phb-example: #936c3f;
   --phb-proof: #72736c;
-  --phb-remark: #76687d;
 }
 
 /* Golden / light */
@@ -119,7 +116,6 @@ body.theme-light[data-an-palette="golden"] {
   --phb-claim: #587a7b;
   --phb-example: #a75c3c;
   --phb-proof: #77705b;
-  --phb-remark: #7c705e;
 }
 
 /* Cherry / light */
@@ -132,7 +128,6 @@ body.theme-light[data-an-palette="cherry"] {
   --phb-claim: #9c5e36;
   --phb-example: #906c32;
   --phb-proof: #69725b;
-  --phb-remark: #7e656b;
 }
 
 /* Prussian / light */
@@ -145,7 +140,6 @@ body.theme-light[data-an-palette="prussian"] {
   --phb-claim: #887052;
   --phb-example: #926938;
   --phb-proof: #5b7172;
-  --phb-remark: #647285;
 }
 
 /* Vampire / dark */
@@ -158,7 +152,6 @@ body.theme-dark[data-an-palette="vampire"] {
   --phb-claim: #e5b78f;
   --phb-example: #dfc67d;
   --phb-proof: #a4b9a5;
-  --phb-remark: #b0b4c7;
 }
 
 /* Abyss / dark */
@@ -171,7 +164,6 @@ body.theme-dark[data-an-palette="abyss"] {
   --phb-claim: #d0ac8e;
   --phb-example: #d6c07c;
   --phb-proof: #a1b7b6;
-  --phb-remark: #9faec4;
 }
 
 /* Radiation / dark */
@@ -184,7 +176,6 @@ body.theme-dark[data-an-palette="radiation"] {
   --phb-claim: #9baed0;
   --phb-example: #dec178;
   --phb-proof: #a8b898;
-  --phb-remark: #a7b6aa;
 }
 
 /* Role variables live on EACH callout: nested boxes do not borrow their parent color. */
@@ -216,117 +207,210 @@ body .callout:is([data-callout="example"],[data-callout="exm"],[data-callout="ex
   --phb-accent: var(--phb-example);
   --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E");
 }
-body .callout:is([data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"]) {
+body .callout:is([data-callout="solution"],[data-callout="sol"]) {
   --phb-accent: var(--phb-proof);
   --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E");
 }
-body .callout:is([data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) {
-  --phb-accent: var(--phb-remark);
-  --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M9%2012a7%207%200%200%201%2014%200c0%205-4%205-4%2010h-6c0-5-4-5-4-10m4%2014h6M16%201v2M3%2012h2m22%200h2%22%2F%3E%3C%2Fsvg%3E");
-}
-
-/* Reset conflicting theme properties which conflict with the tcolorbox-like geometry. */
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) {
+/* Shared structure. esbuild flattens nesting for the released stylesheet.
+ * Important declarations are limited to properties that themes also force:
+ * callout paint, padding, rounded badges, hidden icons and decorative motifs.
+ * Other layout and typography rely on these scoped selectors. */
+body .callout[data-callout]:is(
+  [data-callout="def"],
+  [data-callout="assumption"],
+  [data-callout="asm"],
+  [data-callout="definition"],
+  [data-callout="thm"],
+  [data-callout="axiom"],
+  [data-callout="axm"],
+  [data-callout="hypothesis"],
+  [data-callout="hyp"],
+  [data-callout="theorem"],
+  [data-callout="lem"],
+  [data-callout="lemma"],
+  [data-callout="prp"],
+  [data-callout="prop"],
+  [data-callout="proposition"],
+  [data-callout="cor"],
+  [data-callout="corollary"],
+  [data-callout="claim"],
+  [data-callout="clm"],
+  [data-callout="conjecture"],
+  [data-callout="cnj"],
+  [data-callout="example"],
+  [data-callout="exm"],
+  [data-callout="exercise"],
+  [data-callout="exr"],
+  [data-callout="ex"],
+  [data-callout="exa"],
+  [data-callout="solution"],
+  [data-callout="sol"],
+  [data-callout="proof"],
+  [data-callout="pf"],
+  [data-callout="remark"],
+  [data-callout="rem"],
+  [data-callout="rmk"]
+) {
   --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));
-  position: relative !important;
-  display: block !important;
+  --callout-blend-mode: normal;
+  position: relative;
+  display: block;
+  box-sizing: border-box;
   overflow: visible !important;
-  box-sizing: border-box !important;
   margin: 1.8em 0 1.25em !important;
   padding: 0 1em .8em !important;
   border: var(--phb-border-width) solid var(--phb-accent) !important;
   border-radius: var(--phb-radius) !important;
   background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface)) !important;
   color: var(--phb-ink) !important;
-  box-shadow: none !important;
-  transform: none !important;
-  filter: none !important;
-  backdrop-filter: none !important;
-  mix-blend-mode: normal !important;
-  transition: none !important;
+  box-shadow: none;
+  transform: none;
+  filter: none;
+  backdrop-filter: none;
+  mix-blend-mode: normal;
   isolation: isolate;
-  text-indent: 0 !important;
+  text-indent: 0;
+  transition: none !important;
+
+  &:where(body.phb-neutral-body *) { --phb-ink: var(--phb-text); }
+  &:hover { transform: none; box-shadow: none; z-index: auto; }
+  &::before { content: none; display: none; }
+  &::after {
+    content: "";
+    position: absolute;
+    right: 10px !important; bottom: 8px !important; left: auto; top: auto;
+    width: 27px; height: 27px;
+    display: block;
+    background: var(--phb-accent);
+    mask: var(--phb-symbol) center / contain no-repeat;
+    opacity: .33 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+    pointer-events: none;
+    z-index: 0;
+  }
+  &:where(body.phb-no-motif *)::after, &.is-collapsed::after { display: none; }
+
+  & > .callout-title {
+    position: relative;
+    inset: auto;
+    display: flex !important;
+    align-items: center;
+    width: fit-content;
+    max-width: calc(100% - 1em);
+    box-sizing: border-box;
+    margin: -.85em 0 .3em .25em !important;
+    padding: .25em .75em !important;
+    border: 0 !important;
+    border-radius: 4px !important;
+    background: var(--phb-accent) !important;
+    color: var(--phb-badge-ink) !important;
+    font: 650 .94em/1.45 var(--phb-font);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-shadow: none;
+    box-shadow: 0 2px 4px rgb(0 0 0 / .12);
+    z-index: 2;
+    & > .callout-icon { display: none !important; }
+    & > .callout-title-inner { color: inherit; font: inherit; min-width: 0; white-space: normal; }
+    & > .callout-fold { display: flex; color: inherit; flex: 0 0 auto; margin-inline-start: .5em; }
+    & :is(strong,em,a) { color: inherit; background: none; }
+  }
+  & > .callout-content {
+    position: relative;
+    z-index: 1;
+    background: transparent !important;
+    box-shadow: none;
+    padding: .2em 0 1.1em;
+    color: var(--phb-ink);
+    line-height: 1.7;
+    overflow: visible;
+    text-indent: 0;
+    & :is(p,li,strong,em,b,i) { color: inherit; text-indent: 0; line-height: inherit; }
+    & > :first-child { margin-top: .3em; }
+    & > :last-child { margin-bottom: 0; }
+    & blockquote:not(.callout) {
+      padding: .3em .8em; margin: .8em 0;
+      border: 0; border-left: 2px solid var(--phb-accent);
+      border-radius: 0; background: transparent;
+      box-shadow: none; transform: none;
+      &::before { content: none; }
+    }
+  }
+  & :is(.math,mjx-container) { color: inherit; }
+  &.is-collapsed { padding-bottom: .2em !important; }
+  &.is-collapsed > .callout-content { display: none; }
+
+  /* Proof and remark are paragraphs, without the theorem box or motif.
+   * Direct-child selectors keep nested theorems and proofs independent. */
+  &:is([data-callout="proof"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) {
+    --phb-accent: var(--phb-text);
+    --phb-ink: var(--phb-text);
+    display: flow-root;
+    margin: 1em 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    &::after { content: none; display: none; }
+    & > .callout-title {
+      float: left;
+      max-width: 100%;
+      margin: 0 .6em 0 0 !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      color: var(--phb-text) !important;
+      font: 600 1em/1.7 var(--phb-font);
+      box-shadow: none;
+    }
+    & > .callout-content {
+      padding: 0;
+      & > :first-child { margin-top: 0; }
+    }
+    &:has(> .callout-content > :first-child:not(p)) > .callout-title { float: none; margin-bottom: .35em !important; }
+    &.is-collapsed > .callout-title { float: none; }
+  }
+  &:is([data-callout="proof"],[data-callout="pf"]) {
+    & > .callout-title { font-style: italic; }
+    /* Attach one QED to the final paragraph. Other endings (math, lists,
+     * nested callouts) receive a separate final line; never mark every child. */
+    & > .callout-content > p:last-child::after {
+      content: "□";
+      float: right;
+      margin-inline-start: .75em;
+      font-style: normal;
+      font-weight: 400;
+      color: var(--phb-text);
+    }
+    & > .callout-content:not(:has(> p:last-child))::after {
+      content: "□";
+      display: block;
+      clear: both;
+      text-align: end;
+      font-style: normal;
+      font-weight: 400;
+      color: var(--phb-text);
+      break-before: avoid;
+    }
+  }
+  &:is([data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-title {
+    color: var(--an-remark-color) !important;
+  }
+  @media print {
+    print-color-adjust: exact;
+    break-inside: auto;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    & > .callout-title { break-after: avoid; }
+    & > .callout-content > :first-child { break-before: avoid; }
+    &[data-phb-keep="true"] { break-inside: avoid; }
+    & :is(.math-block,mjx-container[display="true"],tr,img) { break-inside: avoid; }
+  }
 }
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]):hover {
-  transform: none !important;
-  box-shadow: none !important;
-  z-index: auto !important;
-}
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"])::before { content: none !important; display: none !important; }
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"])::after,
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]):hover::after {
-  content: "" !important;
-  position: absolute !important;
-  right: 10px !important; bottom: 8px !important;
-  left: auto !important; top: auto !important;
-  width: 27px !important; height: 27px !important;
-  display: block !important;
-  background: var(--phb-accent) !important;
-  mask: var(--phb-symbol) center / contain no-repeat !important;
-  -webkit-mask: var(--phb-symbol) center / contain no-repeat !important;
-  opacity: .33 !important;
-  transform: none !important; filter: none !important;
-  transition: none !important; pointer-events: none !important;
-  z-index: 0 !important;
-}
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-title {
-  position: relative !important; top: auto !important; left: auto !important;
-  display: flex !important; align-items: center !important;
-  width: fit-content !important; max-width: calc(100% - 1em) !important;
-  box-sizing: border-box !important;
-  margin: -.85em 0 .3em .25em !important;
-  padding: .25em .75em !important;
-  border: 0 !important; border-radius: 4px !important;
-  background: var(--phb-accent) !important;
-  color: var(--phb-badge-ink) !important;
-  font: 650 .94em/1.45 var(--phb-font) !important;
-  white-space: normal !important; overflow-wrap: anywhere !important;
-  text-shadow: none !important;
-  box-shadow: 0 2px 4px rgb(0 0 0 / .12) !important;
-  z-index: 2 !important;
-}
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-title > .callout-icon { display: none !important; }
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-title > .callout-title-inner {
-  color: inherit !important; font: inherit !important;
-  min-width: 0 !important; white-space: normal !important;
-}
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-title > .callout-fold {
-  display: flex !important; color: inherit !important;
-  flex: 0 0 auto; margin-inline-start: .5em;
-}
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-title :is(strong,em,a) { color: inherit !important; background: none !important; }
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-content {
-  position: relative !important; z-index: 1 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: .2em 0 1.1em !important;
-  color: var(--phb-ink) !important;
-  line-height: 1.7 !important;
-  overflow: visible !important;
-  text-indent: 0 !important;
-}
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-content :is(p,li,strong,em,b,i) {
-  color: inherit !important; text-indent: 0 !important;
-  line-height: inherit !important;
-}
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-content > :first-child { margin-top: .3em !important; }
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-content > :last-child { margin-bottom: 0 !important; }
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) .math, body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) mjx-container { color: inherit !important; }
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]).is-collapsed { padding-bottom: .2em !important; }
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]).is-collapsed::after { display: none !important; }
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]).is-collapsed > .callout-content { display: none !important; }
-body.phb-neutral-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) { --phb-ink: var(--phb-text); }
-body.phb-no-motif .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"])::after { display: none !important; }
 .phb-type-label { font-weight: 700; }
 .phb-title-name:not(:empty)::before { content: " · "; opacity: .7; }
-/* A quotation INSIDE a math box is not another decorated quotation card. */
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-content blockquote:not(.callout) {
-  padding: .3em .8em !important; margin: .8em 0 !important;
-  border: 0 !important; border-left: 2px solid var(--phb-accent) !important;
-  border-radius: 0 !important; background: transparent !important;
-  box-shadow: none !important; transform: none !important;
-}
-body .callout[data-callout]:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"],[data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"],[data-callout="lem"],[data-callout="lemma"],[data-callout="prp"],[data-callout="prop"],[data-callout="proposition"],[data-callout="cor"],[data-callout="corollary"],[data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"],[data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"],[data-callout="proof"],[data-callout="solution"],[data-callout="sol"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) > .callout-content blockquote:not(.callout)::before { content: none !important; }
 
 /* Table of contents: the PDF's two horizontal rules and centered floating tab. */
 body .phb-toc {
@@ -356,40 +440,18 @@ body .phb-toc-row::before {
 body .phb-toc-row[data-level="2"]::before,
 body .phb-toc-row[data-level="3"]::before { width: .2em; height: .2em; border-radius: 50%; }
 body .phb-toc a {
-  color: inherit !important; text-decoration: none !important;
-  background: none !important; border: none !important; padding: 0 !important;
+  color: inherit; text-decoration: none;
+  background: none; border: none; padding: 0;
 }
-body .phb-toc a::before, body .phb-toc a::after { content: none !important; }
-body .phb-toc a:hover { text-decoration: underline !important; }
+body .phb-toc a::before, body .phb-toc a::after { content: none; }
+body .phb-toc a:hover { text-decoration: underline; }
 body .phb-toc-leader { flex: 1 1 auto; min-width: 1em; border-bottom: 1px dotted currentColor; opacity: .35; }
 body .phb-toc-page { flex: 0 0 3.5ch; text-align: right; font-variant-numeric: tabular-nums; }
 body:not(.phb-export) .phb-toc-page, body:not(.phb-export) .phb-toc-leader { display: none; }
 body .phb-anchor { display: block; height: 0; margin: 0; padding: 0; }
-@media print {
-  .callout, .callout *, .callout::after, .phb-toc, .phb-toc * {
-    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-  }
-  /* Long boxes may split. The exporter marks only short boxes as keep-together. */
-  .callout[data-callout] { break-inside: auto; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-  .callout-title { break-after: avoid !important; }
-  .callout-content > :first-child { break-before: avoid; }
-  .callout[data-phb-keep="true"] { break-inside: avoid !important; }
-  .math-block, mjx-container[display="true"], tr, img { break-inside: avoid; }
-  .phb-toc-row { break-inside: avoid; }
+body a.an-ref, body .markdown-preview-view a.an-ref {
+  color: var(--phb-thm,var(--text-accent,#247651));
+  white-space: normal; cursor: pointer; font-variant-numeric: tabular-nums;
 }
-
-/* Academic Notes UI */
-.an-progress,.an-diagnostics {white-space:pre-wrap;overflow:auto;max-height:55vh;font:12px/1.6 var(--font-monospace,monospace);padding:1em;background:var(--background-secondary);}
-.an-book-title,.an-book-search {width:100%;margin:.4em 0;}
-.an-book-files{max-height:32vh;overflow:auto;border:1px solid var(--background-modifier-border);padding:.5em;}
-.an-file-choice{display:flex;align-items:center;gap:.7em;padding:.35em;cursor:pointer;}
-.an-book-order{max-height:24vh;overflow:auto;}
-.an-order-row{display:flex;align-items:center;gap:.35em;margin:.4em 0;}
-.an-order-row>span{flex:1;overflow-wrap:anywhere;}
-.an-order-row>button{flex-shrink:0;}
-.an-suggest-detail{color:var(--text-muted);font-size:.85em;}
-body a.an-ref, body .markdown-preview-view a.an-ref{color:var(--phb-thm,var(--text-accent,#247651))!important;white-space:normal;cursor:pointer;font-variant-numeric:tabular-nums;}
-body a.an-ref::before,body a.an-ref::after{content:none!important;display:none!important;}
-body.phb-neutral-body .callout[data-callout].an-math-callout {--phb-ink:var(--phb-text)!important;}
-.phb-export-stage {position:fixed!important;left:-15000px!important;top:0!important;width:174mm!important;max-width:none!important;visibility:hidden!important;pointer-events:none!important;}
-body .an-live-toc .phb-toc-row {gap:.65em;}
+body a.an-ref::before, body a.an-ref::after { content: none; display: none; }
+body .an-live-toc .phb-toc-row { gap: .65em; }

@@ -1,5 +1,7 @@
-/* Standalone shell + print layout. Included LAST, after Obsidian/theme/snippet CSS. */
-html { font-size: 16px; }
+/* Standalone export shell, loaded LAST after the captured theme and snippets.
+ * Host-layout resets and measurement probes deliberately override theme rules.
+ * Plugin-owned wrappers and ordinary pagination need no priority override. */
+html { font-size: 16px; background: var(--phb-page-background, white); }
 body.phb-export {
   display: block !important; position: static !important;
   width: auto !important; height: auto !important; min-height: 0 !important;
@@ -68,14 +70,19 @@ body.phb-export .phb-toc { font-size:10.5pt; }
 @media print {
   @page { size:A4; margin:18mm 18mm 20mm; }
   body.phb-export .phb-frontmatter ~ .phb-chapter { break-before:page; }
-  body.phb-export #phb-document { width:174mm !important; }
   body.phb-export .phb-chapter > :first-child { margin-top:0 !important; }
-  body.phb-export .callout { break-inside:auto; }
+  body.phb-export .callout:not(.an-media) { break-inside:auto; }
   body.phb-export .callout[data-phb-keep="true"] { break-inside:avoid !important; }
   body.phb-export .callout[data-phb-long="true"] { break-inside:auto !important; }
   body.phb-export .callout[data-phb-long="true"]::after { display:none !important; }
   body.phb-export :is(p,li) { orphans:2; widows:2; }
   body.phb-export .phb-toc-title { break-after:avoid; }
+  body.phb-export .phb-toc { break-after:page; }
+  body.phb-export .phb-callout-wrap[data-phb-keep="true"] { break-inside:avoid; }
+  body.phb-export .phb-callout-wrap[data-phb-keep="false"] { break-inside:auto; }
+  /* Keep a display formula (including a matrix/cases pair) on one page. */
+  body.phb-export :is(.math-block,.phb-math[data-display="true"],mjx-container[display="true"]) { break-inside:avoid !important; }
+  body.phb-export tr { break-inside:avoid; }
 }
 
 /* MathJax accessibility MathML must not be painted beside the SVG. */
@@ -88,20 +95,5 @@ body.phb-export .phb-callout-wrap {
   break-inside:auto; box-sizing:border-box;
 }
 body.phb-export .phb-callout-wrap > .callout[data-callout] { margin:0 !important; }
-@media print {
-  body.phb-export .phb-callout-wrap[data-phb-keep="true"] { break-inside:avoid !important; }
-  body.phb-export .phb-callout-wrap[data-phb-keep="false"] { break-inside:auto !important; }
-}
-
-@media print { body.phb-export .phb-toc { break-after: page; } }
-
-/* Keep a display formula (including a matrix/cases pair) on one page. */
-@media print {
-  body.phb-export :is(.math-block,.phb-math[data-display="true"],mjx-container[display="true"]) {
-    break-inside:avoid !important; page-break-inside:avoid !important;
-  }
-  body.phb-export tr { break-inside:avoid; }
-}
-html { background: var(--phb-page-background, white); }
 @page { background: var(--phb-page-background, white); }
 .phb-glyph-cache { position: absolute; width: 0; height: 0; overflow: hidden; }

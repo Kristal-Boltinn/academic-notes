@@ -156,6 +156,10 @@ async function preparePrint() {
     if ([...document.fonts].some(font => font.status === 'error'))
         throw new Error('快照字体加载失败。');
     document.querySelectorAll<HTMLElement>('.callout:not(.an-media)').forEach(box => {
+        // Plain proof/remark paragraphs need no floating-title padding. They can
+        // span pages naturally, with the QED attached only to the proof ending.
+        if (['proof', 'pf', 'remark', 'rem', 'rmk'].includes(box.dataset.callout || ''))
+            return;
         // Runs serialized in isolated Chromium, without Obsidian DOM helpers.
         const wrapper = document.createElement('div');
         wrapper.className = 'phb-callout-wrap';

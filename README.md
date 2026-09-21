@@ -4,6 +4,8 @@
 
 LaTeX-like numbering, cross-references, figures, tables, and local PDF export for Obsidian.
 
+The mathematical environments are visually inspired by [ElegantBook](https://github.com/ElegantLaTeX/ElegantBook): framed theorems, simple proofs with an end-of-proof square, and remarks with an inline colored title. Colors follow the selected Academic Notes palette.
+
 ![Theorem environments](screenshots/theorem.png)
 
 ## Features
@@ -11,6 +13,7 @@ LaTeX-like numbering, cross-references, figures, tables, and local PDF export fo
 - Number theorems, definitions, lemmas, equations, figures, tables, and subfigures automatically or manually.
 - Reference blocks across notes, with reference suggestions and an option to number only referenced equations.
 - Choose light and dark color palettes, style nested callouts, and use three-line tables.
+- Write borderless proofs with an automatic QED square and remarks with a palette-matched title.
 - Add clickable tables of contents, PDF bookmarks, and measured PDF page numbers.
 - Export a single note or a multi-note book to PDF or HTML without modifying the source notes.
 - Process notes locally, without telemetry, an account, or a separately installed export engine.
@@ -78,6 +81,32 @@ Use `> [!thm]- Title` for an initially collapsed callout, or `> [!thm]+ Title` f
 - Manual number: `> [!thm|A.1] Title`.
 - No number: `> [!thm|*] Title`. `|-` and empty metadata `|` also suppress numbering.
 - Automatic number: omit metadata or use `|auto`. Automatic counters avoid manual numbers already used in the same scope.
+
+## Proofs and remarks
+
+Use a `proof` callout for an unnumbered proof. Its italic **Proof** label sits beside the first paragraph; a hollow square **□** appears at the end automatically. You do not need to type the square.
+
+```markdown
+> [!proof]
+> Let $U$ be open. Since $f$ and $g$ are continuous, both
+> $f^{-1}(U)$ and $g^{-1}(f^{-1}(U))$ are open.
+>
+> Thus the composition $f \circ g$ is continuous.
+```
+
+![Proof with an inline label and an end-of-proof square](screenshots/proof.png)
+
+A `remark` callout has an inline title in a brighter shade of the selected palette's main hue, with ordinary text underneath or beside it. It has no frame, shaded background, or QED square.
+
+```markdown
+> [!remark]
+> The argument only uses inverse images of open sets.
+> It applies to arbitrary topological spaces.
+```
+
+![Remark with a palette-matched inline title](screenshots/remark.png)
+
+Both environments use normal note text color for their content. `pf` is an alias for `proof`; `rem` and `rmk` are aliases for `remark`. Add a title such as `> [!proof] Composition` or use the usual `+`/`-` folding syntax. They support nested callouts and multi-paragraph content. If a proof starts with a list or display equation, its title occupies a separate line; if it ends with one, the square follows on its own final line. Long proofs can continue across PDF pages, with a single square at the end.
 
 ## Equation numbering
 
@@ -197,11 +226,11 @@ cssclasses:
 
 Light palettes: Forest (default), Sakura, Mint, Sky, Mauve, Golden, Cherry, and Prussian. Dark palettes: Radiation (default), Vampire, and Abyss. Each palette assigns colors by environment type. Light/dark mode follows **Obsidian's current mode**, which can itself follow the operating system.
 
-The **follow Obsidian theme colors** option uses the theme's public accent for definitions, blue for theorems/claims, purple for lemmas, green for propositions, cyan for corollaries, orange for examples, and secondary text color for proofs/remarks, mixed with normal text color. It does not choose a preset automatically or read the operating system's accent directly. Select a fixed palette to control border and fill colors independently of the theme.
+The **follow Obsidian theme colors** option uses the theme's public accent for definitions, blue for theorems/claims, purple for lemmas, green for propositions, cyan for corollaries, orange for examples, and secondary text color for solutions, mixed with normal text color. Remark titles use a brighter tone of the definition color; proof titles use normal text color. It does not choose a preset automatically or read the operating system's accent directly. Select a fixed palette to control border and fill colors independently of the theme.
 
-**Use normal text color inside callouts** makes body text match ordinary note text. When disabled, 36% of the callout color is mixed in. It affects body text only; links and code keep their own styles.
+**Use normal text color inside callouts** makes framed callout text match ordinary note text. When disabled, 36% of the callout color is mixed in. Proof and remark content always uses normal text color. Links and code keep their own styles.
 
-Light fills mix 6% callout color with 94% white; dark fills mix 8% callout color with 92% neutral dark gray. Nested callouts use their own colors. The corner decoration can be hidden. The optional Style Settings plugin can adjust borders and corner radii.
+Framed callouts mix 6% callout color with 94% white in light mode, or 8% callout color with 92% neutral dark gray in dark mode. Nested callouts use their own colors. The corner decoration can be hidden; this does not hide a proof's QED square. The optional Style Settings plugin can adjust borders and corner radii.
 
 ## Table of contents
 
@@ -287,7 +316,9 @@ npm run check:release
 
 `npm ci` installs development dependencies, including the Electron test runtime; the installed plugin never runs it. `npm run dev` watches source files. TypeScript lives in `src/`; esbuild bundles pdf-lib and fallback CSS. Distribution requires only `main.js`, `manifest.json`, and `styles.css`.
 
-`examples/` contains synthetic notes and images. Native tests launch a hidden standalone Electron window and write screenshots, PDFs, and reports into `output/`. They verify Chromium printing and styles, but do not replace testing inside Obsidian. Linux CI uses Xvfb and configures Electron's sandbox helper; see [ci.yml](.github/workflows/ci.yml).
+Styles are maintained in `src/styles/callouts.css` (environments and TOC), `src/styles/ui.css` (plugin controls), `src/styles/document.css` (export layout), and `snippets/academic-layout.css` (figures and tables). The build flattens CSS nesting and uses the same compiled callout styles in the release and export snapshots.
+
+`examples/` contains synthetic notes and images, including [proofs and remarks](examples/proof-and-remark.md). Native tests launch a hidden standalone Electron window, save README screenshots to `screenshots/`, and write PDFs and reports into `output/`. They verify Chromium printing and styles, but do not replace testing inside Obsidian. Set `ACADEMIC_TEST_THEME` to a local theme stylesheet path for additional compatibility checks. Linux CI uses Xvfb and configures Electron's sandbox helper; see [ci.yml](.github/workflows/ci.yml).
 
 For releases, update `package.json`, the lockfile, `manifest.json`, `versions.json`, and the changelog together. Push a tag matching the manifest version. GitHub Actions tests and builds the plugin, checks reproducibility, and creates a draft release with three installable assets. See [RELEASING.md](RELEASING.md).
 

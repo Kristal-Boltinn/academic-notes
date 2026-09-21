@@ -1,3 +1,14 @@
+# Community review follow-up: 2.3.0
+
+## CSS cleanup and appearance
+
+- Consolidate mathematical callout rules with CSS nesting; esbuild expands them for both styles.css and snapshot CSS. Move plugin controls and offscreen-stage styles into ui.css. Narrow mathematical print rules to supported environments and consolidate export pagination rules.
+- Reduce !important declarations in released styles.css from 219 to 130. Remove unnecessary priority overrides from shared typography, private grid cells and pagination; retain targeted overrides for properties actually forced by themes and the hidden rendering stage. Compatibility tests include the actual installed Phycat and Minimal stylesheets. This reduces scanner noise without claiming every CSS warning is resolved.
+- Proof and remark now use borderless paragraph layouts. Proofs end with one QED marker; remark titles follow the selected palette. Native PDF tests cover a multi-page proof and retain all print-window isolation checks.
+- Both READMEs link to ElegantBook as the visual inspiration and document the new environments with rendered examples.
+
+The filesystem, native DOM helper, MathJax and browser-compatibility notes below still apply. No scanner rules are disabled to hide findings.
+
 # Community review follow-up: 2.2.3
 
 ## Changes responding to the supplied 2.2.2 report

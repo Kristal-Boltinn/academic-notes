@@ -1,9 +1,11 @@
-/* Academic Layout 2.2.0 — standalone figure and table layout.
+/* Academic Layout — standalone figure and table layout.
  * Install: .obsidian/snippets/academic-layout.css, then enable this snippet.
  * Native markup: [!figure], nested [!subfigure], [!table]. No H6 conversion.
  * Academic Notes supplies numbers; this file ONLY supplies presentation.
  * Optional note cssclasses: academic-indent, academic-serif, academic-keep-table-style.
  * Ordinary images are not auto-captioned from alt text. No CSS counters are used.
+ * Priority overrides counter theme decoration on native tables and callouts;
+ * plugin-owned grid cells and pagination use ordinary scoped declarations.
  */
 
 body {
@@ -191,8 +193,8 @@ body .callout:is([data-callout="table"],[data-callout="tbl"]) table { margin: 0 
  * The plugin marks wrapper cells rather than dismantling the native render tree. */
 body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
   .callout:is([data-callout="figure"],[data-callout="fig"]) > .callout-content.an-figure-grid {
-  display: flex !important;
-  flex-wrap: wrap !important;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
   gap: var(--an-layout-image-gap);
@@ -202,11 +204,11 @@ body .an-figure-grid > .an-subfigure-cell {
   flex: 1 1 calc(50% - var(--an-layout-image-gap));
   min-width: min(100%, var(--an-layout-subfigure-min));
   max-width: 100%;
-  margin: 0 !important;
+  margin: 0;
 }
 body :is(.markdown-preview-view,.markdown-source-view.mod-cm6,.markdown-rendered)
   .an-figure-grid .callout:is([data-callout="subfigure"],[data-callout="subfig"]) { margin: 0 !important; }
-body .an-figure-grid > .an-empty-anchor { display: none !important; }
+body .an-figure-grid > .an-empty-anchor { display: none; }
 
 /* Optional article typography. Add cssclasses in the note's properties to opt in. */
 body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-indent p { text-indent: 2em; }
@@ -216,11 +218,11 @@ body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-ser
 }
 
 @media print {
-  body .an-media { break-inside: avoid !important; page-break-inside: avoid !important; }
-  body .an-media > .callout-title { break-before: avoid !important; break-after: auto !important; }
-  body .an-table { display: block !important; break-inside: auto !important; page-break-inside: auto !important; }
-  body .an-table > .callout-title { break-before: auto !important; break-after: avoid !important; }
-  body .an-media img { max-height: 155mm !important; }
+  body .an-media { break-inside: avoid; }
+  body .an-media > .callout-title { break-before: avoid; break-after: auto; }
+  body .an-table { display: block !important; break-inside: auto; }
+  body .an-table > .callout-title { break-before: auto; break-after: avoid; }
+  body .an-media img { max-height: 155mm; }
   body .an-figure-grid { gap: 4mm; }
   body .an-figure-grid > .an-subfigure-cell { min-width: 0; flex-basis: calc(50% - 4mm); }
   body :is(.markdown-preview-view,.markdown-rendered) table { break-inside: auto; }
