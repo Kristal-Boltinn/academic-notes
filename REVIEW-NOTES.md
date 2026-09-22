@@ -1,3 +1,9 @@
+# Community review follow-up: 2.6.0
+
+- Per-environment CSS overrides accept only known environment IDs, six-digit hex colors and bundled original SVG motif IDs. No external SVG or user-supplied CSS is accepted.
+- Custom properties remain scoped to plugin callouts and are restored on unload. No additional !important declarations, dependencies, network or filesystem capabilities are introduced.
+- Added mock settings tests and native Chromium/PDF regressions; the next Community Directory scan and real Obsidian UI acceptance remain separate checks.
+
 # Community review follow-up: 2.5.1
 
 - Hide unneeded subfigure captions through a scoped variable in the existing caption rule, without additional !important declarations. Preserve actual references, explicit numbering and interactive folding controls.

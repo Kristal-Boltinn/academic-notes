@@ -8,6 +8,7 @@ import { buildSync } from 'esbuild';
 import { exportPdf } from '../src/export/pdf';
 import { PDFDocument, PDFName } from 'pdf-lib';
 import { setLanguage } from '../src/i18n';
+import { MOTIFS, motifMask, appearanceValues } from '../src/rendering/custom-appearance';
 
 // Run in a separate Electron process; never connects to the user's Obsidian instance.
 app.setPath('userData', resolve('output/electron-profile'));
@@ -98,6 +99,25 @@ async function run() {
       const bounds = await wc.executeJavaScript(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>{const r=document.querySelector('main').getBoundingClientRect();resolve({x:0,y:0,width:1000,height:Math.ceil(r.bottom+40)})})))`);
       writeFileSync('screenshots/' + type + '.png', (await wc.capturePage(bounds)).toPNG());
     }
+    const customConfig = JSON.stringify({ thm: { light: '#eebbee', dark: '#325577', motif: 'compass', motifLight: '#993366', motifDark: '#eecc66' }, axiom: { light: '#445566', dark: '#445566', motif: 'none' }, proof: { light: '#993366', dark: '#993366' }, remark: { light: '#993366', dark: '#993366' } });
+    for (const dark of [false, true]) {
+      await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered markdown-preview-view">' + box('thm', 'Theorem', '<p>Custom appearance</p>' + box('def', 'Definition')) + box('axiom', 'Axiom') + box('proof', 'Proof') + box('remark', 'Remark') + '</main>')));
+      const values = appearanceValues(customConfig, dark);
+      const result = await wc.executeJavaScript(`(()=>{document.body.classList.toggle('theme-dark',${dark});document.body.classList.toggle('theme-light',${!dark});Object.entries(${JSON.stringify(values)}).forEach(([k,v])=>document.body.style.setProperty(k,v));const thm=document.querySelector('[data-callout="thm"]'),title=thm.querySelector('.callout-title'),motif=getComputedStyle(thm,'::after');return {accent:getComputedStyle(thm).borderTopColor,title:getComputedStyle(title).color,motif:motif.backgroundColor,mask:motif.maskImage,child:getComputedStyle(thm.querySelector('[data-callout="def"]')).borderTopColor,axiom:getComputedStyle(document.querySelector('[data-callout="axiom"]')).borderTopColor,none:getComputedStyle(document.querySelector('[data-callout="axiom"]'),'::after').display,plain:[...document.querySelectorAll('[data-callout="proof"],[data-callout="remark"]')].map(el=>({color:getComputedStyle(el.querySelector('.callout-title')).color,border:getComputedStyle(el).borderTopWidth,motif:getComputedStyle(el,'::after').display}))}})()`);
+      assert.equal(result.accent, dark ? 'rgb(50, 85, 119)' : 'rgb(238, 187, 238)');
+      assert.equal(result.title, dark ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)');
+      assert.equal(result.motif, dark ? 'rgb(238, 204, 102)' : 'rgb(153, 51, 102)');
+      assert.ok(result.mask.includes('data:image/svg+xml')); assert.notEqual(result.child, result.accent);
+      assert.equal(result.axiom, 'rgb(68, 85, 102)'); assert.equal(result.none, 'none');
+      for (const plain of result.plain) assert.deepEqual(plain, { color: 'rgb(153, 51, 102)', border: '0px', motif: 'none' });
+      const knobs = await wc.executeJavaScript(`(()=>{for(const [k,v] of Object.entries({'--phb-radius':'0px','--phb-border-width':'2px','--an-motif-size':'36px','--an-motif-opacity':'.6'}))document.body.style.setProperty(k,v);const el=document.querySelector('[data-callout="thm"]'),s=getComputedStyle(el),m=getComputedStyle(el,'::after');return {radius:s.borderTopLeftRadius,width:s.borderTopWidth,size:m.width,opacity:m.opacity}})()`);
+      assert.deepEqual(knobs, { radius: '0px', width: '2px', size: '36px', opacity: '0.6' });
+    }
+    const gallery = '<main><h1>Corner motifs</h1><p>Original vector drawings · large preview and actual 27 px size</p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">' + Object.keys(MOTIFS).map(id => `<div style="border:1px solid #ccd6d6;border-radius:8px;padding:18px;text-align:center"><div style="display:flex;align-items:center;justify-content:center;gap:18px"><span class="an-motif-sample" style="width:68px;height:68px;--an-preview-mask:${motifMask(id).replace(/"/g, '&quot;')}"></span><span class="an-motif-sample" style="width:27px;height:27px;--an-preview-mask:${motifMask(id).replace(/"/g, '&quot;')}"></span></div><p>${id}</p></div>`).join('') + '</div></main>';
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(gallery)));
+    await wc.executeJavaScript('document.fonts.ready');
+    const galleryBounds = await wc.executeJavaScript(`(()=>{const r=document.querySelector('main').getBoundingClientRect();return {x:0,y:0,width:1000,height:Math.ceil(r.bottom+40)}})()`);
+    writeFileSync('screenshots/motifs.png', (await wc.capturePage(galleryBounds)).toPNG());
     const captionClient = buildSync({ stdin: { contents: "import Engine from './src/indexing/engine'; import {mediaRecord} from './src/rendering/adapters'; globalThis.captionEngine=Engine; globalThis.decorateMedia=mediaRecord;", resolveDir: process.cwd() }, alias: { obsidian: resolve('tests/obsidian-mock.ts') }, bundle: true, write: false, format: 'iife', platform: 'browser', target: 'es2022' }).outputFiles[0].text;
     const captionSource = '> [!figure] Mixed captions\n> > [!subfig]\n> > ![[a.svg]]\n>\n> ^blank\n>\n> > [!subfigure] Subfigure\n> > ![[b.svg]]';
     const captionImage = `<p><img alt="Decorative curve" src="data:image/svg+xml;base64,${Buffer.from(readFileSync('examples/assets/curve-a.svg')).toString('base64')}"></p>`;
@@ -182,6 +202,7 @@ async function run() {
     await wc.executeJavaScript(client);
     const snapshot = await wc.executeJavaScript(`(() => {
       document.body.classList.add('phb-export');
+      Object.entries(${JSON.stringify(appearanceValues(customConfig, false))}).forEach(([k,v])=>document.body.style.setProperty(k,v));
       if(getComputedStyle(document.querySelector('.an-figure-grid')).display!=='flex')throw new Error('Export shell disabled the subfigure grid');
       const heading=document.querySelector('h2');
       const emphasis=document.createElement('em');emphasis.textContent=' <formula>';heading.appendChild(emphasis);

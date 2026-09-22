@@ -1,4 +1,6 @@
 import { t } from '../i18n';
+import Engine from '../indexing/engine';
+import { MOTIFS, motifMask, parseAppearance, type AppearanceEntry } from '../rendering/custom-appearance';
 import type AcademicNotes from '../main';
 import type { App } from 'obsidian';
 import type { AcademicSettingsData } from '../settings';
@@ -7,13 +9,61 @@ type StringKey = { [K in keyof AcademicSettingsData]: AcademicSettingsData[K] ex
 import { PluginSettingTab, Setting } from 'obsidian';
 class AcademicSettings extends PluginSettingTab {
     plugin: AcademicNotes;
+    appearanceType = 'thm';
     constructor(app: App, plugin: AcademicNotes) { super(app, plugin); this.plugin = plugin; }
-    display() {
+    display() { this.refreshSettings(); }
+    refreshSettings() {
         this.containerEl.empty();
         for (const definition of this.getSettingDefinitions()) {
             const setting = new Setting(this.containerEl).setName(definition.name).setDesc(definition.desc || '');
             definition.render(setting);
         }
+    }
+    async changeAppearance(field: keyof AppearanceEntry, value: string) {
+        const all = parseAppearance(this.plugin.settings.customAppearance);
+        const entry = all[this.appearanceType] || {};
+        if (value) entry[field] = value; else delete entry[field];
+        all[this.appearanceType] = entry;
+        this.plugin.settings.customAppearance = JSON.stringify(all);
+        await this.plugin.saveSettings();
+    }
+    renderAppearance(container: HTMLElement) {
+        const root = container.createDiv({ cls: 'an-appearance-settings' });
+        new Setting(root).setName(t('环境自定义')).setHeading();
+        new Setting(root).setName(t('选择环境')).setDesc(t('每类环境独立设置；关闭颜色开关即恢复当前色板。')).addDropdown(d => d.addOptions(Object.fromEntries(Object.entries(Engine.TYPES).map(([key, names]) => [key, names[0]]))).setValue(this.appearanceType).onChange(value => { this.appearanceType = value; this.refreshSettings(); }));
+        const entry = parseAppearance(this.plugin.settings.customAppearance)[this.appearanceType] || {};
+        const colors: [keyof AppearanceEntry, string, string][] = [
+            ['light', t('浅色模式主色'), '#286b76'], ['dark', t('深色模式主色'), '#8dc8d0']
+        ];
+        const plain = ['proof', 'remark'].includes(this.appearanceType);
+        if (!plain) colors.push(['motifLight', t('浅色模式角标颜色'), '#286b76'], ['motifDark', t('深色模式角标颜色'), '#8dc8d0']);
+        for (const [field, name, fallback] of colors) {
+            const row = new Setting(root).setName(name).setDesc(entry[field] || t('跟随默认配色'));
+            row.addToggle(c => c.setValue(!!entry[field]).onChange(async enabled => { await this.changeAppearance(field, enabled ? fallback : ''); this.refreshSettings(); }));
+            row.addColorPicker(c => c.setValue(entry[field] || fallback).setDisabled(!entry[field]).onChange(async value => { await this.changeAppearance(field, value); row.setDesc(value); }));
+        }
+        const names = { laurel: t('月桂'), compass: t('罗盘'), rosette: t('花章'), orbit: t('轨道'), lattice: t('晶格'), knot: t('编结'), arch: t('拱廊'), quill: t('羽笔'), folio: t('书页') };
+        if (!plain) {
+            new Setting(root).setName(t('角标图案')).addDropdown(d => d.addOptions({ default: t('原有图案'), none: t('无角标'), ...names }).setValue(entry.motif || 'default').onChange(async value => { await this.changeAppearance('motif', value === 'default' ? '' : value); this.refreshSettings(); }));
+            const gallery = root.createDiv({ cls: 'an-motif-gallery' });
+            for (const id of Object.keys(MOTIFS) as (keyof typeof MOTIFS)[]) {
+                const button = gallery.createEl('button', { attr: { 'aria-label': names[id], 'aria-pressed': String(entry.motif === id) } });
+                const symbol = button.createSpan({ cls: 'an-motif-sample', attr: { 'aria-hidden': 'true' } });
+                symbol.style.setProperty('--an-preview-mask', motifMask(id));
+                button.createSpan({ text: names[id] });
+                button.addEventListener('click', () => { void this.changeAppearance('motif', id).then(() => this.refreshSettings()); });
+            }
+        }
+        root.createEl('p', { text: plain ? t('Proof 与 Remark 保持无框段落；自定义主色只改变标题，Proof 的结束方框保持不变。') : t('主色同步用于标题底色、边框和浅色同色系背景；标题文字自动选择黑色或白色。角标默认跟随主色。') });
+        const preview = root.createDiv({ cls: 'markdown-rendered an-appearance-preview' });
+        const callout = preview.createDiv({ cls: 'callout', attr: { 'data-callout': this.appearanceType } });
+        callout.createDiv({ cls: 'callout-title' }).createDiv({ cls: 'callout-title-inner', text: Engine.TYPES[this.appearanceType][0] });
+        callout.createDiv({ cls: 'callout-content' }).createEl('p', { text: t('这是当前模式下的外观预览。') });
+        new Setting(root).setName(t('恢复此环境默认外观')).addButton(b => b.setButtonText(t('恢复默认')).onClick(async () => {
+            const all = parseAppearance(this.plugin.settings.customAppearance); delete all[this.appearanceType];
+            this.plugin.settings.customAppearance = JSON.stringify(all); await this.plugin.saveSettings(); this.refreshSettings();
+        }));
+        root.createEl('p', { text: t('边框粗细、圆角、角标大小与透明度可在 Style Settings → Academic Notes 调整；圆角 0 为直角。') });
     }
     getSettingDefinitions() {
         const definitions: { name: string; desc?: string; render: (setting: Setting) => void }[] = [];
@@ -51,6 +101,7 @@ class AcademicSettings extends PluginSettingTab {
         text('exportFolder', t("导出目录"), t("库内相对路径，默认 _exports。"));
         toggle('captureTheme', t("PDF 捕获当前主题与片段样式"), t("关闭时使用插件自己的数学框与基础排版。"));
         toggle('openPdf', t("生成后在 Obsidian 打开 PDF"));
+        definitions.push({ name: '', render: setting => { setting.settingEl.addClass('an-custom-appearance-row'); this.renderAppearance(setting.settingEl); } });
         return definitions;
     }
 }

@@ -1,3 +1,10 @@
+# 2.6.0 custom environment appearance
+
+- Twelve Node regressions pass, including validated color/motif settings, independent environment edits/reset and restoration of pre-existing inline variables on unload. TypeScript and ESLint pass with only the existing isolated print-window DOM-helper warning.
+- Native Electron tests pass against default styles, Phycat and Minimal: 39 default palette cases plus custom light/dark accents, title contrast, independent nested callouts, motif colors, hidden motifs, unframed Proof/Remark and Style Settings geometry controls.
+- All three actual PDF exports retain valid links and report no horizontal overflow: default/Minimal ten pages and 17 internal links; Phycat eleven pages and 25 internal links. Custom appearance is included in the export fixture. Existing subfigure, cross-chapter reference, CSP, cancellation and cleanup checks pass.
+- The nine original vector motifs were inspected enlarged and at 27 px. Settings controls are tested with an Obsidian API mock; actual Obsidian host UI acceptance remains separate.
+
 # 2.5.1 untitled subfigure captions
 
 - Ten Node regressions pass, including untitled subfigures with existing IDs, mixed titled/untitled groups, explicit manual/suppressed numbers, cross-file references and reference removal. Decorative subfigures retain anchors but do not consume a letter.

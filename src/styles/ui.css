@@ -8,6 +8,14 @@
 .an-order-row>span{flex:1;overflow-wrap:anywhere;}
 .an-order-row>button{flex-shrink:0;}
 .an-suggest-detail{color:var(--text-muted);font-size:.85em;}
+.an-motif-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin:12px 0;}
+.an-motif-gallery button{height:auto;min-height:88px;display:flex;flex-direction:column;gap:6px;padding:10px;border:1px solid var(--background-modifier-border);}
+.an-motif-gallery button[aria-pressed="true"]{border-color:var(--interactive-accent);background:var(--background-modifier-hover);}
+.an-motif-sample{display:block;width:40px;height:40px;background:currentColor;mask:var(--an-preview-mask) center/contain no-repeat;}
+.an-appearance-preview{padding:8px 0;}
 
 /* Must stay off-screen even when a captured theme styles rendered notes. */
 .phb-export-stage {position:fixed!important;left:-15000px!important;top:0!important;width:174mm!important;max-width:none!important;visibility:hidden!important;pointer-events:none!important;}
+
+.an-custom-appearance-row { display: block; }
+.an-custom-appearance-row > .setting-item-info, .an-custom-appearance-row > .setting-item-control { display: none; }

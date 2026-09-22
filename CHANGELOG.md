@@ -1,3 +1,10 @@
+# 2.6.0
+
+- Add independent light/dark accent and corner-motif color overrides for each mathematical environment, with automatic title contrast and per-environment reset.
+- Add nine original vector corner motifs with a settings gallery and live preview; retain original designs by default and allow individual motifs to be hidden.
+- Add optional Style Settings controls for motif size and opacity alongside border width and corner radius. Preserve unframed Proof/Remark and the QED square.
+- Preserve custom appearance in PDF snapshots and restore pre-existing inline variables when unloading the plugin.
+
 # 2.5.1
 
 - Untitled, unreferenced subfigures no longer show a letter, reserve caption space or consume a subfigure letter. Existing IDs remain available; referenced or manually numbered subfigures retain labels.

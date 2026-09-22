@@ -11,6 +11,7 @@ import DocCore from './export/document';
 import { DEFAULTS, type AcademicSettingsData } from './settings';
 import { titleRecord, mediaRecord, renderFragment, createLiveExtension, allNodes } from './rendering/adapters';
 import { updateFigureImageRatio } from './rendering/figure-layout';
+import { appearanceVariables, appearanceValues } from './rendering/custom-appearance';
 import { ProgressModal, ReferencePicker, ReferenceSuggest, BookPicker, EnvironmentModal } from './ui/modals';
 import { AcademicSettings } from './ui/settings-tab';
 import { exportPdf, pdfAvailability } from './export/pdf';
@@ -38,7 +39,7 @@ export default class AcademicNotes extends Plugin {
     rerun = false;
     indexPromise: Promise<void> | undefined;
     indexTimer: number | undefined;
-    appearanceBefore: { palette: string | null; classes: Record<string, boolean> };
+    appearanceBefore: { palette: string | null; classes: Record<string, boolean>; variables: Record<string, [string, string]> };
     editorViews = new Set<EditorView>();
     readers = new Set<() => void>();
     parsed = new Map<string, ParsedNote>();
@@ -56,7 +57,7 @@ export default class AcademicNotes extends Plugin {
         this.active = true;
         this.busy = false;
         this.indexRunning = false;
-        this.appearanceBefore = { palette: document.body.getAttribute('data-an-palette'), classes: Object.fromEntries(['an-active', 'phb-neutral-body', 'phb-no-motif'].map(c => [c, document.body.classList.contains(c)])) };
+        this.appearanceBefore = { palette: document.body.getAttribute('data-an-palette'), classes: Object.fromEntries(['an-active', 'phb-neutral-body', 'phb-no-motif'].map(c => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map(k => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
         this.editorViews = new Set();
         this.readers = new Set();
         this.parsed = new Map();
@@ -145,6 +146,10 @@ export default class AcademicNotes extends Plugin {
                 document.body.setAttribute('data-an-palette', before.palette);
             for (const [c, v] of Object.entries(before.classes))
                 document.body.classList.toggle(c, Boolean(v));
+            for (const [key, [value, priority]] of Object.entries(before.variables)) {
+                if (value) document.body.style.setProperty(key, value, priority);
+                else document.body.style.removeProperty(key);
+            }
         }
         // Restoring native render trees is left to Obsidian when notes are reopened.
     }
@@ -163,6 +168,11 @@ export default class AcademicNotes extends Plugin {
         set('an-active', true);
         set('phb-neutral-body', !!this.settings.neutralBody);
         set('phb-no-motif', !!this.settings.hideMotif);
+        const values = appearanceValues(this.settings.customAppearance, dark);
+        for (const key of appearanceVariables) {
+            if (values[key]) b.style.setProperty(key, values[key]);
+            else b.style.removeProperty(key);
+        }
     }
     scheduleIndex() { if (!this.active)
         return; window.clearTimeout(this.indexTimer); this.indexTimer = window.setTimeout(() => { void this.rebuild().catch(e => this.fail(t("更新索引"), e)); }, Math.max(150, this.settings.indexDelay || 450)); }

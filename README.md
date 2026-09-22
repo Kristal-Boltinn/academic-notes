@@ -260,7 +260,13 @@ The **follow Obsidian theme colors** option uses the theme's public accent for d
 
 **Use normal text color inside callouts** makes framed callout text match ordinary note text. When disabled, 36% of the callout color is mixed in. Proof and remark content always uses normal text color. Links and code keep their own styles.
 
-Framed callouts mix 6% callout color with 94% white in light mode, or 8% callout color with 92% neutral dark gray in dark mode. Nested callouts use their own colors. The corner decoration can be hidden; this does not hide a proof's QED square. The optional Style Settings plugin can adjust borders and corner radii.
+Framed callouts mix 6% callout color with 94% white in light mode, or 8% callout color with 92% neutral dark gray in dark mode. Nested callouts use their own colors. The corner decoration can be hidden; this does not hide a proof's QED square. The optional Style Settings plugin can adjust border width, corner radius (0 means square corners), motif size and opacity.
+
+Under **Settings → Academic Notes → Environment customization**, select an environment such as Theorem, Definition or Axiom. Enable a color override and choose a color separately for light and dark modes. Turning its switch off restores the selected palette. The accent controls the border, title background and subtle same-hue fill; title text automatically uses black or white for contrast. Proof and Remark keep their unframed layout, and their accent changes only the title.
+
+Each framed environment also has independent light/dark motif colors and a motif selector: keep the original drawing, hide it, or choose one of nine fine-line vector designs. Click a gallery tile to select it; the callout preview shows the current mode. **Reset this environment** clears only the selected environment's overrides. The global hide-decoration option takes precedence and never hides the proof's QED square. Custom appearance is preserved in PDF exports, including exports with theme capture disabled.
+
+![Nine original corner motifs, enlarged and at actual size](screenshots/motifs.png)
 
 ## Table of contents
 

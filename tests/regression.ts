@@ -7,13 +7,16 @@ import { measurePdf, finishPdf, PROBE } from '../src/export/pdf-postprocess';
 import AcademicNotes from '../src/main';
 import { ENGLISH, setLanguage, t } from '../src/i18n';
 import { AcademicSettings } from '../src/ui/settings-tab';
-import { setTestLanguage } from './obsidian-mock';
+import { setTestLanguage, MockElement, Setting } from './obsidian-mock';
 import { environmentTemplate } from '../src/ui/environment';
 import { figureMetadata } from '../src/rendering/figure-layout';
+import { appearanceValues, parseAppearance, titleInk, MOTIFS } from '../src/rendering/custom-appearance';
 
 test('plugin lifecycle registers new commands, drops removed settings and restores appearance', async () => {
   const classes = new Set(['theme-light']);
+  const inline = new Map<string, string>([['--an-color-thm', '#123456']]);
   const body = { dataset: {} as Record<string, string>,
+    style: { getPropertyValue: (key: string) => inline.get(key) || '', getPropertyPriority: () => '', setProperty: (key: string, value: string) => inline.set(key, value), removeProperty: (key: string) => inline.delete(key) },
     getAttribute: () => null, removeAttribute: () => {},
     classList: { contains: (s: string) => classes.has(s), toggle: (s: string, value: boolean) => value ? classes.add(s) : classes.delete(s) } };
   const previous = { window: globalThis.window, document: globalThis.document, observer: globalThis.MutationObserver };
@@ -22,7 +25,7 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
   globalThis.MutationObserver = class { observe() {} disconnect() {} } as any;
   const app: any = { metadataCache: { on() {} }, vault: { on() {} }, workspace: { on() {}, onLayoutReady() {} } };
   const plugin: any = new AcademicNotes(app, { id: 'academic-notes', name: 'Academic Notes', version: '2.2.0' } as any);
-  plugin.data = { legacy: true, legacyCaptions: true, followPhycat: true, pythonPath: 'unused', neutralBody: true, lightPalette: 'mint' };
+  plugin.data = { legacy: true, legacyCaptions: true, followPhycat: true, pythonPath: 'unused', neutralBody: true, lightPalette: 'mint', customAppearance: JSON.stringify({ thm: { light: '#abcdef', dark: '#fedcba', motif: 'laurel' } }) };
   try {
     setTestLanguage('en');
     await plugin.onload();
@@ -32,7 +35,12 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
     for (const key of ['legacy', 'legacyCaptions', 'followPhycat', 'pythonPath']) assert.ok(!(key in plugin.settings));
     assert.equal(body.dataset.anPalette, 'mint');
     assert.ok(classes.has('phb-neutral-body'));
+    assert.equal(inline.get('--an-color-thm'), '#abcdef');
+    classes.delete('theme-light'); classes.add('theme-dark'); plugin.applyAppearance();
+    assert.equal(inline.get('--an-color-thm'), '#fedcba');
     plugin.onunload();
+    assert.equal(inline.get('--an-color-thm'), '#123456');
+    assert.equal(inline.has('--an-symbol-thm'), false);
     assert.ok(!classes.has('phb-neutral-body') && !classes.has('an-active'));
   } finally { globalThis.window = previous.window; globalThis.document = previous.document; globalThis.MutationObserver = previous.observer; }
 });
@@ -47,7 +55,7 @@ test('language follows Obsidian with English fallback; settings values and place
     assert.equal(definitions[0].name, expected);
     const options: string[][] = [], labels: string[] = [];
     const control: any = { setValue() { return this; }, onChange() { return this; }, addOptions(values: Record<string,string>) { options.push(Object.keys(values)); labels.push(...Object.values(values)); return this; } };
-    const row: any = { setHeading() {}, addDropdown(fn: any) { fn(control); }, addToggle(fn: any) { fn(control); }, addText(fn: any) { fn(control); } };
+    const row: any = { settingEl: new MockElement(), setHeading() {}, addDropdown(fn: any) { fn(control); }, addToggle(fn: any) { fn(control); }, addText(fn: any) { fn(control); } };
     definitions.forEach(d => d.render(row));
     if (!baseline) baseline = options;
     assert.deepEqual(options, baseline, 'Stored option IDs must not depend on language');
@@ -58,6 +66,20 @@ test('language follows Obsidian with English fallback; settings values and place
     assert.deepEqual((key.match(/\{\d+\}/g) || []).sort(), (value.match(/\{\d+\}/g) || []).sort(), key);
   }
   setLanguage('en');
+});
+
+test('custom appearance accepts only known roles, safe colors and bundled motifs', () => {
+  assert.deepEqual(parseAppearance('invalid'), {});
+  const settings = JSON.stringify({ thm: { light: '#f0eedd', dark: '#112233', motifLight: '#345678', motif: 'quill' }, assumption: { light: 'url(https://bad.invalid)', motif: 'url(x)' }, unknown: { light: '#ffffff' } });
+  const light = appearanceValues(settings, false), dark = appearanceValues(settings, true);
+  assert.equal(light['--an-color-thm'], '#f0eedd'); assert.equal(dark['--an-color-thm'], '#112233');
+  assert.equal(light['--an-ink-thm'], '#000000'); assert.equal(dark['--an-ink-thm'], '#ffffff');
+  assert.equal(light['--an-motif-color-thm'], '#345678'); assert.equal(dark['--an-motif-color-thm'], undefined);
+  assert.ok(light['--an-symbol-thm'].startsWith('url("data:image/svg+xml,'));
+  assert.equal(light['--an-color-assumption'], undefined); assert.equal(light['--an-color-unknown'], undefined);
+  assert.equal(appearanceValues('{"thm":{"motif":"none"}}', false)['--an-symbol-thm'], 'none');
+  assert.equal(titleInk('#ffffff'), '#000000'); assert.equal(titleInk('#000000'), '#ffffff');
+  assert.equal(Object.keys(MOTIFS).length, 9);
 });
 
 test('H6 is a heading; explicit figures are numbered; code fences are not declarations', () => {
@@ -160,4 +182,23 @@ test('PDF annotations supply exact page positions and become nested outlines', a
   assert.ok(final.catalog.get(PDFName.of('Outlines')));
   assert.equal(final.getPages()[0].node.Annots()?.size(), 0);
   assert.equal(result.stats.pages, 2);
+});
+
+
+test('appearance settings persist changes independently and reset the selected environment', async () => {
+  let saves = 0;
+  const plugin: any = { settings: { customAppearance: '{}' }, saveSettings: async () => { saves++; } };
+  const tab = new AcademicSettings({} as any, plugin);
+  (tab as any).refreshSettings = () => {};
+  await tab.changeAppearance('light', '#123456');
+  tab.appearanceType = 'def'; await tab.changeAppearance('motif', 'folio');
+  Setting.controls = []; tab.renderAppearance(new MockElement() as any);
+  const selector = Setting.controls.find(c => c.options?.laurel);
+  await selector.change('none');
+  assert.equal(parseAppearance(plugin.settings.customAppearance).def.motif, 'none');
+  await Setting.controls.find(c => c.click).click();
+  assert.deepEqual(parseAppearance(plugin.settings.customAppearance), { thm: { light: '#123456' } });
+  assert.equal(saves, 4);
+  tab.appearanceType = 'proof'; Setting.controls = []; tab.renderAppearance(new MockElement() as any);
+  assert.ok(!Setting.controls.some(c => c.options?.laurel));
 });

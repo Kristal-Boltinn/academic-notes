@@ -22,6 +22,23 @@ settings:
     max: 16
     step: 1
     format: px
+  - id: an-motif-size
+    title: Corner motif size
+    title.zh: 角标大小
+    type: variable-number-slider
+    default: 27
+    min: 20
+    max: 44
+    step: 1
+    format: px
+  - id: an-motif-opacity
+    title: Corner motif opacity
+    title.zh: 角标不透明度
+    type: variable-number-slider
+    default: 0.33
+    min: 0.1
+    max: 1
+    step: 0.05
 */
 body {
   --phb-border-width: 1.4px;
@@ -180,35 +197,35 @@ body.theme-dark[data-an-palette="radiation"] {
 /* Role variables live on EACH callout: nested boxes do not borrow their parent color. */
 body .callout:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"]) {
   --phb-accent: var(--phb-def);
-  --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E");
+  --an-original-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E");
 }
 body .callout:is([data-callout="thm"],[data-callout="axiom"],[data-callout="axm"],[data-callout="hypothesis"],[data-callout="hyp"],[data-callout="theorem"]) {
   --phb-accent: var(--phb-thm);
-  --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E");
+  --an-original-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E");
 }
 body .callout:is([data-callout="lem"],[data-callout="lemma"]) {
   --phb-accent: var(--phb-lem);
-  --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E");
+  --an-original-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E");
 }
 body .callout:is([data-callout="prp"],[data-callout="prop"],[data-callout="proposition"]) {
   --phb-accent: var(--phb-prop);
-  --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E");
+  --an-original-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E");
 }
 body .callout:is([data-callout="cor"],[data-callout="corollary"]) {
   --phb-accent: var(--phb-cor);
-  --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E");
+  --an-original-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E");
 }
 body .callout:is([data-callout="claim"],[data-callout="clm"],[data-callout="conjecture"],[data-callout="cnj"]) {
   --phb-accent: var(--phb-claim);
-  --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E");
+  --an-original-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E");
 }
 body .callout:is([data-callout="example"],[data-callout="exm"],[data-callout="exercise"],[data-callout="exr"],[data-callout="ex"],[data-callout="exa"]) {
   --phb-accent: var(--phb-example);
-  --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E");
+  --an-original-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E");
 }
 body .callout:is([data-callout="solution"],[data-callout="sol"]) {
   --phb-accent: var(--phb-proof);
-  --phb-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E");
+  --an-original-symbol: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E");
 }
 /* Shared structure. esbuild flattens nesting for the released stylesheet.
  * Important declarations are limited to properties that themes also force:
@@ -288,11 +305,12 @@ body .callout[data-callout]:is(
     content: "";
     position: absolute;
     right: 10px !important; bottom: 8px !important; left: auto; top: auto;
-    width: 27px; height: 27px;
+    width: var(--an-motif-size, 27px); height: var(--an-motif-size, 27px);
     display: block;
-    background: var(--phb-accent);
-    mask: var(--phb-symbol) center / contain no-repeat;
-    opacity: .33 !important;
+    display: var(--an-motif-display, block);
+    background: var(--an-motif-color, var(--phb-accent));
+    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;
+    opacity: var(--an-motif-opacity, .33) !important;
     transform: none !important;
     filter: none !important;
     transition: none !important;
@@ -464,3 +482,102 @@ body a.an-ref, body .markdown-preview-view a.an-ref {
 }
 body a.an-ref::before, body a.an-ref::after { content: none; display: none; }
 body .an-live-toc .phb-toc-row { gap: .65em; }
+
+/* Per-environment overrides reset on each native callout, including nested aliases. */
+body.an-active .callout[data-callout]:is([data-callout="definition"],[data-callout="def"]) {
+  --phb-accent: var(--an-color-def, var(--phb-def));
+  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-def, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="theorem"],[data-callout="thm"]) {
+  --phb-accent: var(--an-color-thm, var(--phb-thm));
+  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-thm, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="lemma"],[data-callout="lem"]) {
+  --phb-accent: var(--an-color-lem, var(--phb-lem));
+  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-lem, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="proposition"],[data-callout="prop"],[data-callout="prp"]) {
+  --phb-accent: var(--an-color-prop, var(--phb-prop));
+  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-prop, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="corollary"],[data-callout="cor"]) {
+  --phb-accent: var(--an-color-cor, var(--phb-cor));
+  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-cor, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="claim"],[data-callout="clm"]) {
+  --phb-accent: var(--an-color-claim, var(--phb-claim));
+  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-claim, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="example"],[data-callout="ex"],[data-callout="exa"],[data-callout="exm"]) {
+  --phb-accent: var(--an-color-example, var(--phb-example));
+  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-example, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="proof"],[data-callout="pf"]) {
+  --an-title-color: var(--an-color-proof, var(--phb-text));
+}
+body.an-active .callout[data-callout]:is([data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) {
+  --an-title-color: var(--an-color-remark, var(--an-remark-color));
+}
+body.an-active .callout[data-callout]:is([data-callout="axiom"],[data-callout="axm"]) {
+  --phb-accent: var(--an-color-axiom, var(--phb-thm));
+  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-axiom, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="assumption"],[data-callout="asm"]) {
+  --phb-accent: var(--an-color-assumption, var(--phb-def));
+  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-assumption, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="exercise"],[data-callout="exr"]) {
+  --phb-accent: var(--an-color-exercise, var(--phb-example));
+  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-exercise, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="conjecture"],[data-callout="cnj"]) {
+  --phb-accent: var(--an-color-conjecture, var(--phb-claim));
+  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-conjecture, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="hypothesis"],[data-callout="hyp"]) {
+  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));
+  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-hypothesis, block);
+}
+body.an-active .callout[data-callout]:is([data-callout="solution"],[data-callout="sol"]) {
+  --phb-accent: var(--an-color-solution, var(--phb-proof));
+  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));
+  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));
+  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));
+  --an-motif-display: var(--an-motif-display-solution, block);
+}
