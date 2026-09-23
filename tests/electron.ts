@@ -10,6 +10,9 @@ import { PDFDocument, PDFName } from 'pdf-lib';
 import { setLanguage } from '../src/i18n';
 import { MOTIFS, motifMask, appearanceValues } from '../src/rendering/custom-appearance';
 
+// The plugin runs in Obsidian's renderer; the standalone Electron test invokes it in the main process.
+(globalThis as typeof globalThis & { window: Window }).window = globalThis as typeof globalThis & Window;
+
 // Run in a separate Electron process; never connects to the user's Obsidian instance.
 app.setPath('userData', resolve('output/electron-profile'));
 app.commandLine.appendSwitch('disable-gpu');

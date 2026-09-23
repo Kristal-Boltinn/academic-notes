@@ -6,7 +6,7 @@ import type { App } from 'obsidian';
 import type { AcademicSettingsData } from '../settings';
 type BooleanKey = { [K in keyof AcademicSettingsData]: AcademicSettingsData[K] extends boolean ? K : never }[keyof AcademicSettingsData];
 type StringKey = { [K in keyof AcademicSettingsData]: AcademicSettingsData[K] extends string ? K : never }[keyof AcademicSettingsData];
-import { PluginSettingTab, Setting } from 'obsidian';
+import { Platform, PluginSettingTab, Setting } from 'obsidian';
 class AcademicSettings extends PluginSettingTab {
     plugin: AcademicNotes;
     appearanceType = 'thm';
@@ -95,12 +95,12 @@ class AcademicSettings extends PluginSettingTab {
         toggle('neutralBody', t("框内正文使用普通正文色"), t("开启：正文与笔记普通文字同色；关闭：正文混入 36% 的当前框色。只改变正文，不改变标题、边框和底色。"));
         toggle('hideMotif', t("隐藏右下角小图案"));
         heading(t("目录与 PDF"));
-        description(t("PDF 使用 Obsidian 自带的 Electron 引擎，无需安装 Python 或外部浏览器。"));
+        description(Platform.isDesktopApp ? t("PDF 使用 Obsidian 自带的 Electron 引擎，无需安装 Python 或外部浏览器。") : t('移动端可使用编号、引用、样式和 HTML 快照；PDF 导出仅在桌面版可用。'));
         select('tocDepth', t("目录层级"), { '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6' });
         select('exportNumbering', t("合订本编号"), { 'chapter-section': t("章.节.序号（如 2.3.1）"), chapter: t("章.序号（如 2.1，章内连续）"), note: t("保留库内显示编号（可能跨章重号）") }, t("前两种按入选章节重新编号和解析引用；保留模式沿用全库编号。原笔记不改写。"));
         text('exportFolder', t("导出目录"), t("库内相对路径，默认 _exports。"));
         toggle('captureTheme', t("PDF 捕获当前主题与片段样式"), t("关闭时使用插件自己的数学框与基础排版。"));
-        toggle('openPdf', t("生成后在 Obsidian 打开 PDF"));
+        if (Platform.isDesktopApp) toggle('openPdf', t("生成后在 Obsidian 打开 PDF"));
         definitions.push({ name: '', render: setting => { setting.settingEl.addClass('an-custom-appearance-row'); this.renderAppearance(setting.settingEl); } });
         return definitions;
     }

@@ -1,6 +1,5 @@
 import { t } from '../i18n';
-import * as electron from 'electron';
-import { setTimeout as scheduleTimeout, clearTimeout as cancelTimeout } from 'node:timers';
+import { Platform } from 'obsidian';
 import type { BrowserWindow as ElectronWindow, BrowserWindowConstructorOptions } from 'electron';
 import { finishPdf, measurePdf, type ExportMeta } from './pdf-postprocess';
 type WindowConstructor = new (options: BrowserWindowConstructorOptions) => ElectronWindow;
@@ -11,9 +10,13 @@ const PRINT_POLICY = '<meta http-equiv="Content-Security-Policy" content="' + PR
 const PRINT_SHELL = 'data:text/html;charset=utf-8,' + encodeURIComponent(
     '<!doctype html><meta charset="utf-8">' + PRINT_POLICY);
 function nativeWindow(): WindowConstructor {
+    if (!Platform.isDesktopApp)
+        throw new Error(t('PDF 导出仅在 Obsidian 桌面版可用。'));
     // Obsidian exposes Electron's main-process API through its remote bridge.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports -- Optional Obsidian bridge; eager import breaks hosts exposing electron.remote.
-    const remote = (electron as typeof electron & { remote?: { BrowserWindow?: WindowConstructor } }).remote || require('@electron/remote') as { BrowserWindow?: WindowConstructor };
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef -- Guarded desktop-only module; mobile must never load Electron.
+    const electron = require('electron') as { remote?: { BrowserWindow?: WindowConstructor } };
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, no-undef -- Obsidian desktop exposes either electron.remote or this bridge.
+    const remote = electron.remote || require('@electron/remote') as { BrowserWindow?: WindowConstructor };
     if (typeof remote?.BrowserWindow !== 'function')
         throw new Error(t("当前 Obsidian 未提供 Electron PDF 接口，请更新桌面安装程序。"));
     return remote.BrowserWindow;
@@ -46,7 +49,7 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
     let timedOut = false;
     const close = () => { if (!win.isDestroyed())
         win.destroy(); };
-    const timer = scheduleTimeout(() => { timedOut = true; close(); }, 240000);
+    const timer = window.setTimeout(() => { timedOut = true; close(); }, 240000);
     signal?.addEventListener('abort', close, { once: true });
     try {
         const wc = win.webContents;
@@ -59,7 +62,7 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
         wc.on('will-navigate', event => event.preventDefault());
         wc.on('will-attach-webview', event => event.preventDefault());
         try {
-            log(t('正在加载内存打印快照（{0} 字节）…', Buffer.byteLength(html, 'utf8')));
+            log(t('正在加载内存打印快照（{0} 字节）…', new TextEncoder().encode(html).byteLength));
             await win.loadURL(PRINT_SHELL);
             // JSON serialization keeps document text out of executable code.
             // The Blob is created and consumed inside the sandboxed window.
@@ -137,7 +140,7 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
         throw error;
     }
     finally {
-        cancelTimeout(timer);
+        window.clearTimeout(timer);
         signal?.removeEventListener('abort', close);
         close();
     }

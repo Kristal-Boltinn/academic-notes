@@ -20,7 +20,7 @@ The mathematical environments are visually inspired by [ElegantBook](https://git
 
 ## Installation
 
-Requires **Obsidian desktop 1.9.0 or later**. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/Kristal-Boltinn/academic-notes/releases/latest), then place them in your vault:
+Requires **Obsidian 1.9.0 or later** on desktop or mobile. Install Academic Notes from Community plugins when it is listed for your device, or download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/Kristal-Boltinn/academic-notes/releases/latest) and place them in your vault:
 
 ```text
 .obsidian/plugins/academic-notes/
@@ -29,7 +29,7 @@ Requires **Obsidian desktop 1.9.0 or later**. Download `main.js`, `manifest.json
 └─ styles.css
 ```
 
-Enable **Academic Notes** under **Settings → Community plugins**. Figure and table styles are included; no CSS snippet is required. PDF export uses Obsidian's bundled Electron, so no Python or separate Chrome installation is needed.
+Enable **Academic Notes** under **Settings → Community plugins**. Figure and table styles are included; no CSS snippet is required. The same plugin runs on iPad and desktop. On mobile, numbering, cross-file references, the table of contents, academic environments, settings and HTML snapshot commands remain available. PDF export and its commands run only on desktop, using Obsidian's bundled Electron; no Python or separate Chrome installation is needed.
 
 ### Interface language
 
@@ -335,7 +335,7 @@ The export progress window shows errors. Afterwards, open diagnostics and inspec
 | PDF export fails | Inspect progress and diagnostics; ensure local images, math, and fonts load correctly. |
 | Numbering is stale | Run the rebuild-index command. |
 
-This plugin is desktop-only. The minimum app version is an API requirement, not a guarantee that every OS, theme, and plugin combination has been tested. Native PDF access depends on Electron interfaces exposed by Obsidian desktop and should be retested after application updates.
+The minimum app version is an API requirement, not a guarantee that every OS, theme, and plugin combination has been tested. Mobile support is checked with a mock Obsidian host and a no-Node/no-Electron load test of the release bundle; an actual iPad installation still needs acceptance testing. Native PDF access depends on Electron interfaces exposed by Obsidian desktop and should be retested after application updates.
 
 ## Development
 

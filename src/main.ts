@@ -73,9 +73,11 @@ export default class AcademicNotes extends Plugin {
             this.recordError(t("读取 data.json（已回退默认值）"), e);
         }
         // Registration does not depend on the PDF runtime or other plugins.
-        this.addCommand({ id: 'export-current-pdf', name: t("直接导出当前笔记为 PDF"), callback: () => this.exportActive(false, true) });
-        this.addCommand({ id: 'export-selected-pdf', name: t("选择多篇笔记并导出合订本 PDF"), callback: () => new BookPicker(this).open() });
-        this.addCommand({ id: 'export-book-pdf', name: t("按 phb-book 清单导出 PDF"), callback: () => this.exportActive(true, true) });
+        if (Obs.Platform.isDesktopApp) {
+            this.addCommand({ id: 'export-current-pdf', name: t("直接导出当前笔记为 PDF"), callback: () => this.exportActive(false, true) });
+            this.addCommand({ id: 'export-selected-pdf', name: t("选择多篇笔记并导出合订本 PDF"), callback: () => new BookPicker(this).open() });
+            this.addCommand({ id: 'export-book-pdf', name: t("按 phb-book 清单导出 PDF"), callback: () => this.exportActive(true, true) });
+        }
         this.addCommand({ id: 'export-current', name: t("导出当前笔记为 HTML 快照"), callback: () => this.exportActive(false, false) });
         this.addCommand({ id: 'export-book', name: t("按 phb-book 清单导出 HTML 快照"), callback: () => this.exportActive(true, false) });
         this.addCommand({ id: 'diagnostics', name: t("检查插件状态与导出环境"), callback: () => this.diagnostics() });
@@ -385,6 +387,10 @@ export default class AcademicNotes extends Plugin {
         this.fail(t("导出"), e);
     } }
     async exportSelection(selection: ExportSelection, pdf = true) {
+        if (pdf && !Obs.Platform.isDesktopApp) {
+            new Notice(t('PDF 导出仅在 Obsidian 桌面版可用。'));
+            return;
+        }
         if (this.busy) {
             new Notice(t("已有导出任务正在运行。"));
             return;

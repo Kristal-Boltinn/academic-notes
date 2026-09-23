@@ -1,3 +1,9 @@
+# 2.7.0
+
+- Enable the existing plugin on iPad and other Obsidian mobile devices for numbering, cross-file references, academic callouts, settings and HTML snapshots.
+- Load Electron only inside guarded desktop PDF actions. PDF commands remain on desktop; the mobile diagnostic reports the platform limitation without loading Node or Electron modules.
+- Add a release-bundle mobile smoke test and preserve the existing desktop PDF workflow.
+
 # 2.6.0
 
 - Add independent light/dark accent and corner-motif color overrides for each mathematical environment, with automatic title contrast and per-environment reset.

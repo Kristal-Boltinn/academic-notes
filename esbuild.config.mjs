@@ -9,7 +9,7 @@ const options = {
   plugins: [{ name: 'snapshot-css', setup(build) {
     build.onLoad({ filter: /\.css$/ }, async ({ path }) => ({ contents: await compileStyle(path), loader: 'text' }));
   } }], logLevel: 'info', legalComments: 'eof',
-  banner: { js: '/* Academic Notes 2.6.0 | MIT | generated from src/main.ts */' }
+  banner: { js: '/* Academic Notes 2.7.0 | MIT | generated from src/main.ts */' }
 };
 const licenseFiles = (await readdir('licenses')).sort();
 options.footer = { js: '/*! Bundled dependency licenses\n' +

@@ -7,7 +7,8 @@ import { measurePdf, finishPdf, PROBE } from '../src/export/pdf-postprocess';
 import AcademicNotes from '../src/main';
 import { ENGLISH, setLanguage, t } from '../src/i18n';
 import { AcademicSettings } from '../src/ui/settings-tab';
-import { setTestLanguage, MockElement, Setting } from './obsidian-mock';
+import { setTestLanguage, MockElement, Setting, Platform } from './obsidian-mock';
+import { pdfAvailability } from '../src/export/pdf';
 import { environmentTemplate } from '../src/ui/environment';
 import { figureMetadata } from '../src/rendering/figure-layout';
 import { appearanceValues, parseAppearance, titleInk, MOTIFS } from '../src/rendering/custom-appearance';
@@ -43,6 +44,34 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
     assert.equal(inline.has('--an-symbol-thm'), false);
     assert.ok(!classes.has('phb-neutral-body') && !classes.has('an-active'));
   } finally { globalThis.window = previous.window; globalThis.document = previous.document; globalThis.MutationObserver = previous.observer; }
+});
+
+test('mobile registers numbering and HTML commands without desktop PDF', async () => {
+  const previous = { window: globalThis.window, document: globalThis.document, observer: globalThis.MutationObserver };
+  const classes = new Set(['theme-light']);
+  const body = { dataset: {} as Record<string, string>,
+    style: { getPropertyValue: () => '', getPropertyPriority: () => '', setProperty() {}, removeProperty() {} },
+    getAttribute: () => null, removeAttribute() {},
+    classList: { contains: (name: string) => classes.has(name), toggle: (name: string, enabled: boolean) => enabled ? classes.add(name) : classes.delete(name) } };
+  globalThis.window = globalThis as any;
+  globalThis.document = { body } as any;
+  globalThis.MutationObserver = class { observe() {} disconnect() {} } as any;
+  Platform.isDesktopApp = false;
+  const app: any = { metadataCache: { on() {} }, vault: { on() {} }, workspace: { on() {}, onLayoutReady() {} } };
+  const plugin: any = new AcademicNotes(app, { id: 'academic-notes', name: 'Academic Notes', version: '2.7.0' } as any);
+  try {
+    await plugin.onload();
+    assert.equal(plugin.commands.length, 7);
+    assert.ok(plugin.commands.every((command: any) => !command.id.endsWith('-pdf')));
+    for (const id of ['export-current', 'export-book', 'insert-reference', 'label-block', 'insert-environment', 'refresh'])
+      assert.ok(plugin.commands.some((command: any) => command.id === id), id);
+    assert.ok(!new AcademicSettings(app, plugin).getSettingDefinitions().some(setting => setting.name === 'Open the PDF in Obsidian after export'));
+    assert.equal(pdfAvailability().interfaceAvailable, false);
+    plugin.onunload();
+  } finally {
+    Platform.isDesktopApp = true;
+    globalThis.window = previous.window; globalThis.document = previous.document; globalThis.MutationObserver = previous.observer;
+  }
 });
 
 test('language follows Obsidian with English fallback; settings values and placeholders stay stable', () => {

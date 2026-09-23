@@ -1,6 +1,8 @@
 // Application language is set from Obsidian's public getLanguage() API on load.
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
+  "PDF 导出仅在 Obsidian 桌面版可用。": "PDF export is available only in Obsidian desktop.",
+  "移动端可使用编号、引用、样式和 HTML 快照；PDF 导出仅在桌面版可用。": "Numbering, references, styling and HTML snapshots are available on mobile. PDF export requires Obsidian desktop.",
   "环境自定义": "Environment appearance",
   "选择环境": "Choose an environment",
   "每类环境独立设置；关闭颜色开关即恢复当前色板。": "Customize each environment independently. Disable a color override to restore the current palette.",

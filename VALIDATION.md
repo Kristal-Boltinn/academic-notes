@@ -1,3 +1,9 @@
+# 2.7.0 iPad and mobile availability
+
+- Thirteen Node regressions pass, including mobile command registration, no PDF commands on mobile, and unavailable-PDF diagnostics. The distributable `main.js` loads in a simulated iPad host that throws on Electron or Node module imports.
+- Native Electron verification passed 13 palette cases and a ten-page PDF with 17 valid internal links, no invalid links, no horizontal overflow, and print-window isolation checks.
+- This does not constitute testing on a physical iPad or guarantee that the Community directory has refreshed its listing. The actual iPad installation and reading/Live Preview interface remain to be checked by a user with that device.
+
 # 2.6.0 custom environment appearance
 
 - Twelve Node regressions pass, including validated color/motif settings, independent environment edits/reset and restoration of pre-existing inline variables on unload. TypeScript and ESLint pass with only the existing isolated print-window DOM-helper warning.

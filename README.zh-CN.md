@@ -8,7 +8,7 @@
 
 数学环境的视觉设计受到 [ElegantBook](https://github.com/ElegantLaTeX/ElegantBook) 启发：定理使用带标题的数学框，证明使用简洁的行内标题和结束方框，注记使用彩色行内标题。颜色随 Academic Notes 当前色板变化。
 
-**2.6.0**
+**2.7.0**
 
 界面自动跟随 **Obsidian → 设置 → 通用 → 语言**：中文语言使用简体中文，英文及其他暂未翻译的语言使用英文。更改语言后重启 Obsidian 即可生效。设置、下拉选项、命令、弹窗、诊断和导出提示均支持中英文；笔记正文、自定义标题、引用语法和已保存的设置保持不变。
 
@@ -16,7 +16,7 @@
 
 ## 安装
 
-需要桌面版 Obsidian 1.9.0+。将 [最新 Release](https://github.com/Kristal-Boltinn/academic-notes/releases/latest) 的三个文件放入笔记库的 `.obsidian/plugins/academic-notes/`：
+需要 Obsidian 1.9.0+，桌面或移动端均可安装。可在第三方插件目录安装；若暂未显示，则将 [最新 Release](https://github.com/Kristal-Boltinn/academic-notes/releases/latest) 的三个文件放入笔记库的 `.obsidian/plugins/academic-notes/`：
 
 ```text
 academic-notes/
@@ -25,7 +25,7 @@ academic-notes/
 └─ styles.css
 ```
 
-在「设置 → 第三方插件」启用 **Academic Notes**。图表布局已内置，不需要再启用 CSS 片段。插件设置保存在本机 `data.json`；不要将它上传到公共仓库。
+在「设置 → 第三方插件」启用 **Academic Notes**。iPad 可用编号、引用、数学框和 HTML 快照；PDF 导出仅在桌面版显示。图表布局已内置，不需要再启用 CSS 片段。插件设置保存在本机 `data.json`；不要将它上传到公共仓库。
 
 仅需三线表和手写图表题注布局、不需编号时，可以单独使用 [snippets/academic-layout.css](snippets/academic-layout.css)，复制到 `.obsidian/snippets/` 后在外观设置中启用。
 
@@ -317,7 +317,7 @@ phb-book:
 | PDF 导出失败 | 查看进度窗口和报告；确认图片已存入库、公式和字体可正常加载 |
 | 编号没有刷新 | 运行重建索引命令 |
 
-桌面专用；不支持移动端 PDF。最低应用版本表示 API 下限，不代表所有操作系统、主题和插件组合都已实机验收。PDF 原生窗口桥接依赖 Obsidian 桌面提供的 Electron 接口；应用更新后应重新测试。
+同一个插件可在桌面和 iPad 上安装。移动端提供数学环境、编号、跨文件引用、目录、外观设置和 HTML 快照；PDF 命令只在桌面版显示，使用 Obsidian 自带的 Electron。最低应用版本 1.9.0 表示 API 下限，不代表所有设备组合都已实机验收。目前移动端通过模拟 Obsidian 宿主和发布包无 Node／Electron 加载测试，仍需在真实 iPad 上确认。若社区插件目录尚未显示本插件，可等待目录条目更新，或把发布页的三个安装文件同步到库内 `.obsidian/plugins/academic-notes/` 后在 iPad 的社区插件设置中启用。
 
 ## 开发与发布
 

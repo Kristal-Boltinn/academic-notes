@@ -1,3 +1,9 @@
+# Community review follow-up: 2.7.0
+
+- `isDesktopOnly` is false so Obsidian can offer the existing plugin on mobile. PDF commands are registered only on desktop. The PDF runtime uses `Platform.isDesktopApp` before its dynamic Electron require; there are no top-level Electron or Node imports in the distributable plugin.
+- The published `main.js` is evaluated in a simulated iPad host that throws if Electron or Node is loaded. Desktop PDF output remains covered by the existing Chromium regression.
+- The plugin continues to use Obsidian vault APIs. No new network or filesystem access is introduced.
+
 # Community review follow-up: 2.6.0
 
 - Per-environment CSS overrides accept only known environment IDs, six-digit hex colors and bundled original SVG motif IDs. No external SVG or user-supplied CSS is accepted.

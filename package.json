@@ -1,6 +1,6 @@
 {
   "name": "academic-notes",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "description": "Local academic numbering and PDF export for Obsidian",
   "license": "MIT",
@@ -8,6 +8,7 @@
     "dev": "node esbuild.config.mjs --watch",
     "build": "tsc --noEmit && node esbuild.config.mjs",
     "test": "node scripts/test.mjs",
+    "test:mobile": "node scripts/test-mobile.mjs",
     "test:electron": "node scripts/test-electron.mjs",
     "check:release": "node scripts/check-release.mjs",
     "lint": "eslint src"

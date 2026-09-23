@@ -1,4 +1,4 @@
-/* Academic Notes 2.6.0 | MIT | generated from src/main.ts */
+/* Academic Notes 2.7.0 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -22023,6 +22023,8 @@ module.exports = __toCommonJS(main_exports);
 
 // src/i18n.ts
 var ENGLISH = {
+  "PDF \u5BFC\u51FA\u4EC5\u5728 Obsidian \u684C\u9762\u7248\u53EF\u7528\u3002": "PDF export is available only in Obsidian desktop.",
+  "\u79FB\u52A8\u7AEF\u53EF\u4F7F\u7528\u7F16\u53F7\u3001\u5F15\u7528\u3001\u6837\u5F0F\u548C HTML \u5FEB\u7167\uFF1BPDF \u5BFC\u51FA\u4EC5\u5728\u684C\u9762\u7248\u53EF\u7528\u3002": "Numbering, references, styling and HTML snapshots are available on mobile. PDF export requires Obsidian desktop.",
   "\u73AF\u5883\u81EA\u5B9A\u4E49": "Environment appearance",
   "\u9009\u62E9\u73AF\u5883": "Choose an environment",
   "\u6BCF\u7C7B\u73AF\u5883\u72EC\u7ACB\u8BBE\u7F6E\uFF1B\u5173\u95ED\u989C\u8272\u5F00\u5173\u5373\u6062\u590D\u5F53\u524D\u8272\u677F\u3002": "Customize each environment independently. Disable a color override to restore the current palette.",
@@ -22244,7 +22246,7 @@ function t(key2, ...values) {
 
 // src/main.ts
 var Obs2 = __toESM(require("obsidian"));
-var import_obsidian3 = require("obsidian");
+var import_obsidian4 = require("obsidian");
 
 // src/rendering/figure-layout.ts
 var pendingImages = /* @__PURE__ */ new WeakSet();
@@ -23771,12 +23773,12 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     toggle("neutralBody", t("\u6846\u5185\u6B63\u6587\u4F7F\u7528\u666E\u901A\u6B63\u6587\u8272"), t("\u5F00\u542F\uFF1A\u6B63\u6587\u4E0E\u7B14\u8BB0\u666E\u901A\u6587\u5B57\u540C\u8272\uFF1B\u5173\u95ED\uFF1A\u6B63\u6587\u6DF7\u5165 36% \u7684\u5F53\u524D\u6846\u8272\u3002\u53EA\u6539\u53D8\u6B63\u6587\uFF0C\u4E0D\u6539\u53D8\u6807\u9898\u3001\u8FB9\u6846\u548C\u5E95\u8272\u3002"));
     toggle("hideMotif", t("\u9690\u85CF\u53F3\u4E0B\u89D2\u5C0F\u56FE\u6848"));
     heading(t("\u76EE\u5F55\u4E0E PDF"));
-    description(t("PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002"));
+    description(import_obsidian2.Platform.isDesktopApp ? t("PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002") : t("\u79FB\u52A8\u7AEF\u53EF\u4F7F\u7528\u7F16\u53F7\u3001\u5F15\u7528\u3001\u6837\u5F0F\u548C HTML \u5FEB\u7167\uFF1BPDF \u5BFC\u51FA\u4EC5\u5728\u684C\u9762\u7248\u53EF\u7528\u3002"));
     select("tocDepth", t("\u76EE\u5F55\u5C42\u7EA7"), { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6" });
     select("exportNumbering", t("\u5408\u8BA2\u672C\u7F16\u53F7"), { "chapter-section": t("\u7AE0.\u8282.\u5E8F\u53F7\uFF08\u5982 2.3.1\uFF09"), chapter: t("\u7AE0.\u5E8F\u53F7\uFF08\u5982 2.1\uFF0C\u7AE0\u5185\u8FDE\u7EED\uFF09"), note: t("\u4FDD\u7559\u5E93\u5185\u663E\u793A\u7F16\u53F7\uFF08\u53EF\u80FD\u8DE8\u7AE0\u91CD\u53F7\uFF09") }, t("\u524D\u4E24\u79CD\u6309\u5165\u9009\u7AE0\u8282\u91CD\u65B0\u7F16\u53F7\u548C\u89E3\u6790\u5F15\u7528\uFF1B\u4FDD\u7559\u6A21\u5F0F\u6CBF\u7528\u5168\u5E93\u7F16\u53F7\u3002\u539F\u7B14\u8BB0\u4E0D\u6539\u5199\u3002"));
     text("exportFolder", t("\u5BFC\u51FA\u76EE\u5F55"), t("\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u9ED8\u8BA4 _exports\u3002"));
     toggle("captureTheme", t("PDF \u6355\u83B7\u5F53\u524D\u4E3B\u9898\u4E0E\u7247\u6BB5\u6837\u5F0F"), t("\u5173\u95ED\u65F6\u4F7F\u7528\u63D2\u4EF6\u81EA\u5DF1\u7684\u6570\u5B66\u6846\u4E0E\u57FA\u7840\u6392\u7248\u3002"));
-    toggle("openPdf", t("\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF"));
+    if (import_obsidian2.Platform.isDesktopApp) toggle("openPdf", t("\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF"));
     definitions.push({ name: "", render: (setting) => {
       setting.settingEl.addClass("an-custom-appearance-row");
       this.renderAppearance(setting.settingEl);
@@ -23786,8 +23788,7 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
 };
 
 // src/export/pdf.ts
-var electron = __toESM(require("electron"));
-var import_node_timers = require("node:timers");
+var import_obsidian3 = require("obsidian");
 
 // src/export/pdf-postprocess.ts
 var import_pdf_lib = __toESM(require_cjs());
@@ -23924,10 +23925,13 @@ var PRINT_SHELL = "data:text/html;charset=utf-8," + encodeURIComponent(
   '<!doctype html><meta charset="utf-8">' + PRINT_POLICY
 );
 function nativeWindow() {
-  const remote2 = electron.remote || require("@electron/remote");
-  if (typeof remote2?.BrowserWindow !== "function")
+  if (!import_obsidian3.Platform.isDesktopApp)
+    throw new Error(t("PDF \u5BFC\u51FA\u4EC5\u5728 Obsidian \u684C\u9762\u7248\u53EF\u7528\u3002"));
+  const electron = require("electron");
+  const remote = electron.remote || require("@electron/remote");
+  if (typeof remote?.BrowserWindow !== "function")
     throw new Error(t("\u5F53\u524D Obsidian \u672A\u63D0\u4F9B Electron PDF \u63A5\u53E3\uFF0C\u8BF7\u66F4\u65B0\u684C\u9762\u5B89\u88C5\u7A0B\u5E8F\u3002"));
-  return remote2.BrowserWindow;
+  return remote.BrowserWindow;
 }
 function pdfAvailability() {
   try {
@@ -23962,7 +23966,7 @@ async function exportPdf(html, log = () => {
     if (!win.isDestroyed())
       win.destroy();
   };
-  const timer = (0, import_node_timers.setTimeout)(() => {
+  const timer = window.setTimeout(() => {
     timedOut = true;
     close();
   }, 24e4);
@@ -23978,7 +23982,7 @@ async function exportPdf(html, log = () => {
     wc.on("will-navigate", (event) => event.preventDefault());
     wc.on("will-attach-webview", (event) => event.preventDefault());
     try {
-      log(t("\u6B63\u5728\u52A0\u8F7D\u5185\u5B58\u6253\u5370\u5FEB\u7167\uFF08{0} \u5B57\u8282\uFF09\u2026", Buffer.byteLength(html, "utf8")));
+      log(t("\u6B63\u5728\u52A0\u8F7D\u5185\u5B58\u6253\u5370\u5FEB\u7167\uFF08{0} \u5B57\u8282\uFF09\u2026", new TextEncoder().encode(html).byteLength));
       await win.loadURL(PRINT_SHELL);
       const documentUrl = await wc.executeJavaScript(
         `URL.createObjectURL(new Blob([${JSON.stringify(documentHtml)}], {type: 'text/html;charset=utf-8'}))`
@@ -24053,7 +24057,7 @@ async function exportPdf(html, log = () => {
       throw new Error(t("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002"));
     throw error;
   } finally {
-    (0, import_node_timers.clearTimeout)(timer);
+    window.clearTimeout(timer);
     signal?.removeEventListener("abort", close);
     close();
   }
@@ -24118,7 +24122,7 @@ function safeFolder(value) {
   const raw = (typeof value === "string" ? value : "").trim().replace(/\\/g, "/");
   if (!raw || raw.startsWith("/") || /^[A-Za-z]:/.test(raw) || raw.split("/").some((p) => p === "..") || /[<>:"|?*\x00-\x1f]/.test(raw))
     throw new Error(t("\u5BFC\u51FA\u76EE\u5F55\u987B\u4E3A\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u4E0D\u5141\u8BB8 .. \u6216\u7EDD\u5BF9\u8DEF\u5F84\u3002"));
-  return (0, import_obsidian3.normalizePath)(raw);
+  return (0, import_obsidian4.normalizePath)(raw);
 }
 function dataUrl(blob) {
   return new Promise((resolve, reject) => {
@@ -24128,7 +24132,7 @@ function dataUrl(blob) {
     r.readAsDataURL(blob);
   });
 }
-var AcademicNotes = class extends import_obsidian3.Plugin {
+var AcademicNotes = class extends import_obsidian4.Plugin {
   constructor() {
     super(...arguments);
     this.errors = [];
@@ -24167,15 +24171,17 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       this.settings = { ...DEFAULTS2 };
       this.recordError(t("\u8BFB\u53D6 data.json\uFF08\u5DF2\u56DE\u9000\u9ED8\u8BA4\u503C\uFF09"), e);
     }
-    this.addCommand({ id: "export-current-pdf", name: t("\u76F4\u63A5\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A PDF"), callback: () => this.exportActive(false, true) });
-    this.addCommand({ id: "export-selected-pdf", name: t("\u9009\u62E9\u591A\u7BC7\u7B14\u8BB0\u5E76\u5BFC\u51FA\u5408\u8BA2\u672C PDF"), callback: () => new BookPicker(this).open() });
-    this.addCommand({ id: "export-book-pdf", name: t("\u6309 phb-book \u6E05\u5355\u5BFC\u51FA PDF"), callback: () => this.exportActive(true, true) });
+    if (Obs2.Platform.isDesktopApp) {
+      this.addCommand({ id: "export-current-pdf", name: t("\u76F4\u63A5\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A PDF"), callback: () => this.exportActive(false, true) });
+      this.addCommand({ id: "export-selected-pdf", name: t("\u9009\u62E9\u591A\u7BC7\u7B14\u8BB0\u5E76\u5BFC\u51FA\u5408\u8BA2\u672C PDF"), callback: () => new BookPicker(this).open() });
+      this.addCommand({ id: "export-book-pdf", name: t("\u6309 phb-book \u6E05\u5355\u5BFC\u51FA PDF"), callback: () => this.exportActive(true, true) });
+    }
     this.addCommand({ id: "export-current", name: t("\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A HTML \u5FEB\u7167"), callback: () => this.exportActive(false, false) });
     this.addCommand({ id: "export-book", name: t("\u6309 phb-book \u6E05\u5355\u5BFC\u51FA HTML \u5FEB\u7167"), callback: () => this.exportActive(true, false) });
     this.addCommand({ id: "diagnostics", name: t("\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883"), callback: () => this.diagnostics() });
     this.addCommand({ id: "refresh", name: t("\u91CD\u5EFA\u5B9A\u7406\u516C\u5F0F\u7D22\u5F15\u5E76\u5237\u65B0\u5F15\u7528"), callback: () => {
       this.parsed.clear();
-      this.rebuild().then(() => new import_obsidian3.Notice(t("\u7D22\u5F15\u5DF2\u91CD\u5EFA\u3002"))).catch((e) => this.fail(t("\u91CD\u5EFA\u7D22\u5F15"), e));
+      this.rebuild().then(() => new import_obsidian4.Notice(t("\u7D22\u5F15\u5DF2\u91CD\u5EFA\u3002"))).catch((e) => this.fail(t("\u91CD\u5EFA\u7D22\u5F15"), e));
     } });
     this.addCommand({ id: "insert-reference", name: t("\u63D2\u5165\u5B9A\u7406\u3001\u516C\u5F0F\u6216\u56FE\u8868\u5F15\u7528"), editorCallback: (editor, view) => new ReferencePicker(this, editor, view.file).open() });
     this.addCommand({ id: "label-block", name: t("\u4E3A\u5149\u6807\u6240\u5728\u516C\u5F0F\u3001\u5B9A\u7406\u6216\u56FE\u8868\u6DFB\u52A0\u5757 ID"), editorCallback: (editor, view) => this.labelBlock(editor, view.file) });
@@ -24261,7 +24267,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
   }
   fail(where, error) {
     this.recordError(where, error);
-    new import_obsidian3.Notice(t("{0}\u5931\u8D25\uFF1A{1}\n\u53EF\u8FD0\u884C\u201C\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883\u201D\u3002", where, error instanceof Error ? error.message : String(error)), 13e3);
+    new import_obsidian4.Notice(t("{0}\u5931\u8D25\uFF1A{1}\n\u53EF\u8FD0\u884C\u201C\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883\u201D\u3002", where, error instanceof Error ? error.message : String(error)), 13e3);
   }
   async saveSettings() {
     await this.saveData(this.settings);
@@ -24313,7 +24319,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       const files = this.app.vault.getMarkdownFiles().filter((f) => this.included(f)), notes = [];
       const open = /* @__PURE__ */ new Map();
       for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
-        if (leaf.view instanceof import_obsidian3.MarkdownView && leaf.view.file && leaf.view.getMode() === "source")
+        if (leaf.view instanceof import_obsidian4.MarkdownView && leaf.view.file && leaf.view.getMode() === "source")
           open.set(leaf.view.file.path, leaf.view.editor.getValue());
       }
       for (let i = 0; i < files.length; i++) {
@@ -24371,7 +24377,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         return;
       renderFragment(el, n, this.graph, (node) => ctx.getSectionInfo(node) || ctx.getSectionInfo(el));
     };
-    class Reader extends import_obsidian3.MarkdownRenderChild {
+    class Reader extends import_obsidian4.MarkdownRenderChild {
       constructor(el2, owner) {
         super(el2);
         this.owner = owner;
@@ -24424,13 +24430,13 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       el.replaceWith(nav);
     else
       el.replaceChildren(nav);
-    const child = new import_obsidian3.MarkdownRenderChild(nav);
+    const child = new import_obsidian4.MarkdownRenderChild(nav);
     ctx.addChild(child);
     const links = [...nav.querySelectorAll("[data-phb-target]")];
     for (let i = 0; i < links.length; i++) {
       const a = links[i];
       a.replaceChildren();
-      await import_obsidian3.MarkdownRenderer.render(this.app, list[i].heading, a, ctx.sourcePath, child);
+      await import_obsidian4.MarkdownRenderer.render(this.app, list[i].heading, a, ctx.sourcePath, child);
       if (a.firstElementChild?.tagName === "P")
         a.replaceChildren(...a.firstElementChild.childNodes);
     }
@@ -24442,11 +24448,11 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     const note = engine_default.parse(file.path, editor.getValue()), line = editor.getCursor().line;
     const r = note.records.filter((r2) => r2.line <= line && r2.endLine >= line).sort((a, b) => b.line - a.line)[0];
     if (!r) {
-      new import_obsidian3.Notice(t("\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table callout \u5185\u3002"));
+      new import_obsidian4.Notice(t("\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table callout \u5185\u3002"));
       return;
     }
     if (r.id) {
-      new import_obsidian3.Notice(t("\u8BE5\u5757\u5DF2\u6709 ID\uFF1A^") + r.id);
+      new import_obsidian4.Notice(t("\u8BE5\u5757\u5DF2\u6709 ID\uFF1A^") + r.id);
       return;
     }
     let id;
@@ -24457,18 +24463,18 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     const insertion = "\n" + prefix + "\n" + prefix + "^" + id + "\n";
     editor.replaceRange(insertion, { line: r.endLine, ch: note.lines[r.endLine].length });
     this.scheduleIndex();
-    new import_obsidian3.Notice(t("\u5DF2\u6DFB\u52A0 ^{0}\uFF1B\u53EF\u7528 [[#^{0}]] \u5F15\u7528\u3002", id));
+    new import_obsidian4.Notice(t("\u5DF2\u6DFB\u52A0 ^{0}\uFF1B\u53EF\u7528 [[#^{0}]] \u5F15\u7528\u3002", id));
   }
   async openReference(raw, sourcePath, newLeaf = false) {
     const rec = this.graph?.resolve(raw, sourcePath);
     if (!rec)
       return this.app.workspace.openLinkText(raw, sourcePath, newLeaf);
     const file = this.app.vault.getAbstractFileByPath(rec.path);
-    if (!(file instanceof import_obsidian3.TFile))
+    if (!(file instanceof import_obsidian4.TFile))
       throw new Error(t("\u5F15\u7528\u76EE\u6807\u6587\u4EF6\u4E0D\u5B58\u5728\uFF1A") + rec.path);
     const leaf = this.app.workspace.getLeaf(newLeaf ? "tab" : false);
     await leaf.openFile(file, { active: true, eState: { line: rec.line } });
-    if (leaf.view instanceof import_obsidian3.MarkdownView) {
+    if (leaf.view instanceof import_obsidian4.MarkdownView) {
       leaf.view.setEphemeralState({ line: rec.line });
       if (leaf.view.getMode() === "source") {
         const from = { line: rec.line, ch: 0 };
@@ -24485,7 +24491,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     return this.graph ? [...this.graph.notes.values()].flatMap((n) => n.records.filter((r) => r.id)) : [];
   }
   pluginDir() {
-    return this.manifest.dir || (0, import_obsidian3.normalizePath)(this.app.vault.configDir + "/plugins/" + this.manifest.id);
+    return this.manifest.dir || (0, import_obsidian4.normalizePath)(this.app.vault.configDir + "/plugins/" + this.manifest.id);
   }
   async mkdir(folder) {
     let p = "";
@@ -24497,7 +24503,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
   }
   async resolveSelection(isBook) {
     const file = this.app.workspace.getActiveFile();
-    if (!(file instanceof import_obsidian3.TFile) || file.extension !== "md")
+    if (!(file instanceof import_obsidian4.TFile) || file.extension !== "md")
       throw new Error(t("\u8BF7\u5148\u6253\u5F00\u4E00\u7BC7 Markdown \u7B14\u8BB0\u3002"));
     const fm = this.app.metadataCache.getFileCache(file)?.frontmatter || {};
     const rawBook = isBook ? fm["phb-book"] : null;
@@ -24512,7 +24518,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         throw new Error(t("\u7AE0\u8282\u8DEF\u5F84\u683C\u5F0F\u4E0D\u6B63\u786E\u3002"));
       const path = raw.replace(/^\[\[|\]\]$/g, "").split("|")[0];
       const f = this.app.vault.getAbstractFileByPath(path) || this.app.metadataCache.getFirstLinkpathDest(path, file.path);
-      if (!(f instanceof import_obsidian3.TFile) || f.extension !== "md")
+      if (!(f instanceof import_obsidian4.TFile) || f.extension !== "md")
         throw new Error(t("\u627E\u4E0D\u5230\u7AE0\u8282\uFF1A") + path);
       if (seen.has(f.path))
         throw new Error(t("\u91CD\u590D\u7AE0\u8282\uFF1A") + f.path);
@@ -24532,8 +24538,12 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
     }
   }
   async exportSelection(selection, pdf = true) {
+    if (pdf && !Obs2.Platform.isDesktopApp) {
+      new import_obsidian4.Notice(t("PDF \u5BFC\u51FA\u4EC5\u5728 Obsidian \u684C\u9762\u7248\u53EF\u7528\u3002"));
+      return;
+    }
     if (this.busy) {
-      new import_obsidian3.Notice(t("\u5DF2\u6709\u5BFC\u51FA\u4EFB\u52A1\u6B63\u5728\u8FD0\u884C\u3002"));
+      new import_obsidian4.Notice(t("\u5DF2\u6709\u5BFC\u51FA\u4EFB\u52A1\u6B63\u5728\u8FD0\u884C\u3002"));
       return;
     }
     this.busy = true;
@@ -24558,11 +24568,11 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
           await this.app.vault.adapter.write(out.replace(/\.pdf$/, ".report.json"), JSON.stringify(result.report, null, 2));
           this.lastPdfExport = { status: "success", time: (/* @__PURE__ */ new Date()).toISOString(), output: out, report: result.report };
           log.line(t("\u5DF2\u5B8C\u6210\uFF1A") + out);
-          new import_obsidian3.Notice(t("PDF \u5DF2\u4FDD\u5B58\uFF1A") + out, 1e4);
+          new import_obsidian4.Notice(t("PDF \u5DF2\u4FDD\u5B58\uFF1A") + out, 1e4);
           if (this.settings.openPdf) {
             for (let i = 0; i < 15; i++) {
               const f = this.app.vault.getAbstractFileByPath(out);
-              if (f instanceof import_obsidian3.TFile) {
+              if (f instanceof import_obsidian4.TFile) {
                 await this.app.workspace.getLeaf("tab").openFile(f);
                 break;
               }
@@ -24573,7 +24583,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
           this.pdfJobs.delete(controller);
         }
       } else
-        new import_obsidian3.Notice(t("HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A") + snapshot);
+        new import_obsidian4.Notice(t("HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A") + snapshot);
       log.done();
     } catch (e) {
       if (pdf) this.lastPdfExport = { status: "failed", time: (/* @__PURE__ */ new Date()).toISOString(), message: String(e instanceof Error ? e.message : e) };
@@ -24651,12 +24661,12 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       for (const ref of n.refs)
         if (!ref.target)
           warnings.push(t("{0}:{1} \u5F15\u7528\u76EE\u6807\u672A\u7EB3\u5165\u672C\u6B21\u5BFC\u51FA\u6216\u4E0D\u53EF\u89E3\u6790\uFF1A{2}", n.path, ref.line + 1, ref.raw));
-    const doc = this.app.workspace.getActiveViewOfType(import_obsidian3.MarkdownView)?.containerEl.ownerDocument || document;
+    const doc = this.app.workspace.getActiveViewOfType(import_obsidian4.MarkdownView)?.containerEl.ownerDocument || document;
     const stage = doc.win.createEl("main");
     stage.id = "phb-document";
     stage.className = "phb-export-stage markdown-preview-view markdown-rendered";
     doc.body.appendChild(stage);
-    const component = new import_obsidian3.Component();
+    const component = new import_obsidian4.Component();
     component.load();
     try {
       for (let i = 0; i < files.length; i++) {
@@ -24669,7 +24679,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
           if (typeof c === "string" && /^[A-Za-z_][A-Za-z0-9_-]*$/.test(c))
             section.classList.add(c);
         stage.appendChild(section);
-        await import_obsidian3.MarkdownRenderer.render(this.app, this.exportSource(note, graph2), section, f.path, component);
+        await import_obsidian4.MarkdownRenderer.render(this.app, this.exportSource(note, graph2), section, f.path, component);
         await Obs2.finishRenderMath();
         const boxes = [...section.querySelectorAll(".callout[data-callout]")], math = [...section.querySelectorAll('mjx-container[display="true"]')];
         const consumed = /* @__PURE__ */ new Set();
@@ -24805,7 +24815,7 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
         const src = img.closest(".image-embed")?.getAttribute("src") || img.getAttribute("data-src");
         const path = img.closest(".phb-chapter")?.dataset.path || "";
         const file = src && this.app.metadataCache.getFirstLinkpathDest(src, path);
-        if (!(file instanceof import_obsidian3.TFile))
+        if (!(file instanceof import_obsidian4.TFile))
           throw new Error(t("\u65E0\u6CD5\u5D4C\u5165\u56FE\u7247\uFF1A") + (src || url));
         const bytes = await this.app.vault.readBinary(file);
         const mime = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", svg: "image/svg+xml", webp: "image/webp", gif: "image/gif" }[file.extension];
@@ -24892,17 +24902,17 @@ var AcademicNotes = class extends import_obsidian3.Plugin {
       pdf: pdfAvailability(),
       lastPdfExport: this.lastPdfExport || { status: "not-run-this-session" }
     };
-    const modal = new import_obsidian3.Modal(this.app);
+    const modal = new import_obsidian4.Modal(this.app);
     modal.titleEl.setText(t("Academic Notes \u8BCA\u65AD"));
     const pre = modal.contentEl.createEl("pre", { text: JSON.stringify(result, null, 2) });
     pre.classList.add("an-diagnostics");
-    new import_obsidian3.Setting(modal.contentEl).addButton((b) => b.setButtonText(t("\u4FDD\u5B58\u8BCA\u65AD JSON \u5230\u5BFC\u51FA\u76EE\u5F55")).onClick(async () => {
+    new import_obsidian4.Setting(modal.contentEl).addButton((b) => b.setButtonText(t("\u4FDD\u5B58\u8BCA\u65AD JSON \u5230\u5BFC\u51FA\u76EE\u5F55")).onClick(async () => {
       try {
         const folder = safeFolder(this.settings.exportFolder);
         await this.mkdir(folder);
         const path = folder + "/academic-diagnostics-" + Date.now() + ".json";
         await this.app.vault.adapter.write(path, JSON.stringify(result, null, 2));
-        new import_obsidian3.Notice(t("\u5DF2\u4FDD\u5B58 ") + path);
+        new import_obsidian4.Notice(t("\u5DF2\u4FDD\u5B58 ") + path);
       } catch (e) {
         this.fail(t("\u4FDD\u5B58\u8BCA\u65AD"), e);
       }
