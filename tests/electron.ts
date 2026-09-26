@@ -16,6 +16,8 @@ import { MOTIFS, motifMask, appearanceValues } from '../src/rendering/custom-app
 // Run in a separate Electron process; never connects to the user's Obsidian instance.
 app.setPath('userData', resolve('output/electron-profile'));
 app.commandLine.appendSwitch('disable-gpu');
+// Geometry assertions must not depend on the workstation's display scaling.
+app.commandLine.appendSwitch('force-device-scale-factor', '1');
 
 const base = readFileSync('styles.css', 'utf8');
 const print = readFileSync('src/styles/document.css', 'utf8');
@@ -33,6 +35,12 @@ async function run() {
   const win = new BrowserWindow({ show: false, width: 1000, height: 1300, webPreferences: { sandbox: true, nodeIntegration: false, contextIsolation: true, backgroundThrottling: false } });
   try {
     const wc = win.webContents;
+    console.log('Building browser UI regression fixture');
+    const uiClient = buildSync({ stdin: { contents: "import { runUiRegressions } from './tests/browser-regression'; globalThis.runUiRegressions = runUiRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', alias: { obsidian: resolve('tests/browser-host.ts') } }).outputFiles[0].text;
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('')));
+    console.log('Running browser UI regression fixture');
+    await wc.executeJavaScript(uiClient);
+    console.log(await wc.executeJavaScript('runUiRegressions()'));
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-preview-view markdown-rendered">' + content + '</main>')));
     const palettes = { light: ['forest', 'sakura', 'mint', 'sky', 'mauve', 'golden', 'cherry', 'prussian', 'theme'], dark: ['radiation', 'vampire', 'abyss', 'theme'] };
     let cases = 0;

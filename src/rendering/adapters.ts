@@ -7,17 +7,26 @@ import type { ParsedNote, SourceRecord, SourceReference, NoteGraph } from '../in
 import { ViewPlugin, Decoration, WidgetType, type EditorView, type ViewUpdate, type DecorationSet } from '@codemirror/view';
 import { StateEffect, type Range } from '@codemirror/state';
 type SectionInfo = { lineStart: number; lineEnd: number };
+// CodeMirror owns editable DOM. Reparenting its text while a title is edited can
+// trigger DOM reconciliation and repeated selection/scroll restoration.
+function editableLiveNode(node: HTMLElement) {
+    const active = node.ownerDocument.activeElement;
+    return !!node.closest('.cm-content') && (node.isContentEditable || !!node.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]') ||
+        !!(active?.matches('input,textarea') && node.contains(active)));
+}
+function setAttribute(node: HTMLElement, name: string, value: string) { if (node.getAttribute(name) !== value) node.setAttribute(name, value); }
+function setClass(node: Element, name: string, enabled = true) { if (node.classList.contains(name) !== enabled) node.classList.toggle(name, enabled); }
 /* Read-view and Live Preview adapters. No theme-name or MathLinks dependency. */
 function allNodes(el: HTMLElement, selector: string): HTMLElement[] { return [...(el.matches?.(selector) ? [el] : []), ...el.querySelectorAll<HTMLElement>(selector)]; }
 function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
-    if (!r)
+    if (!r || editableLiveNode(box))
         return;
     const inner = box.querySelector(':scope > .callout-title > .callout-title-inner');
     if (!inner)
         return;
-    box.classList.add('an-math-callout');
-    box.dataset.anType = r.key;
-    box.dataset.anLine = String(r.line);
+    setClass(box, 'an-math-callout');
+    setAttribute(box, 'data-an-type', r.key);
+    setAttribute(box, 'data-an-line', String(r.line));
     let label = inner.querySelector(':scope > .phb-type-label');
     if (!label) {
         const original = box.ownerDocument.win.createSpan();
@@ -38,13 +47,13 @@ function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
 }
 /** Captions keep Obsidian's native callout tree and block links; only decorate it. */
 function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
-    if (!r)
+    if (!r || editableLiveNode(box))
         return;
-    box.classList.add('an-media', 'an-' + r.kind);
-    box.dataset.anLine = String(r.line);
-    box.dataset.anType = r.kind;
-    box.classList.toggle('an-captionless', r.kind === 'subfigure' && !r.title?.trim() && !r.number);
-    box.setAttribute('role', r.kind === 'table' ? 'group' : 'figure');
+    setClass(box, 'an-media'); setClass(box, 'an-' + r.kind);
+    setAttribute(box, 'data-an-line', String(r.line));
+    setAttribute(box, 'data-an-type', r.kind);
+    setClass(box, 'an-captionless', r.kind === 'subfigure' && !r.title?.trim() && !r.number);
+    setAttribute(box, 'role', r.kind === 'table' ? 'group' : 'figure');
     const inner = box.querySelector(':scope > .callout-title > .callout-title-inner');
     if (!inner)
         return;
@@ -68,22 +77,22 @@ function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
         if (!content)
             return;
         const subfigs = [...content.querySelectorAll<HTMLElement>('.callout[data-callout]')].filter(n => Engine.mediaCanon(n.dataset.callout) === 'subfigure' && n.parentElement!.closest('.callout') === box);
-        content.classList.toggle('an-figure-grid', subfigs.length > 0);
+        setClass(content, 'an-figure-grid', subfigs.length > 0);
         applyFigureLayout(box, subfigs.length, r.layout);
         for (const sub of subfigs) {
             let cell = sub;
             while (cell.parentElement !== content)
                 cell = cell.parentElement!;
-            cell.classList.add('an-subfigure-cell');
+            setClass(cell, 'an-subfigure-cell');
         }
         // Block declaration markers have no visible content but can occupy a grid cell.
         for (const child of content.children)
             if (child.matches('p') && !child.textContent.trim() && !child.querySelector('img,svg,math'))
-                child.classList.add('an-empty-anchor');
+                setClass(child, 'an-empty-anchor');
     }
 }
 function mathRecord(mjx: HTMLElement, r: SourceRecord | null | undefined) {
-    if (!r)
+    if (!r || editableLiveNode(mjx))
         return false;
     const tex = Engine.taggedTex(r), signature = JSON.stringify([tex, r.number]);
     if (mjx.dataset.anMath === signature)
@@ -146,7 +155,7 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
         Promise.resolve(Obs.finishRenderMath()).catch(console.error);
     const usedRefs = new Set<SourceReference>();
     for (const a of allNodes(el, 'a.internal-link,a[data-href]')) {
-        if (a.closest('svg,mjx-container,.phb-toc'))
+        if (editableLiveNode(a) || a.closest('svg,mjx-container,.phb-toc'))
             continue;
         const raw = a.dataset.href || a.getAttribute('href') || '';
         const r = graph.resolve(raw, note.path);
@@ -165,9 +174,9 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
         const text = Engine.refText(r, graph.settings);
         if (a.textContent !== text)
             a.textContent = text;
-        a.classList.add('an-ref');
-        a.dataset.anRef = 'true';
-        a.setAttribute('aria-label', `${text} — ${r.path} ^${ref.block}`);
+        setClass(a, 'an-ref');
+        setAttribute(a, 'data-an-ref', 'true');
+        setAttribute(a, 'aria-label', `${text} — ${r.path} ^${ref.block}`);
     }
 }
 function createLiveExtension(plugin: AcademicNotes) {
@@ -196,6 +205,7 @@ function createLiveExtension(plugin: AcademicNotes) {
     }
     return ViewPlugin.fromClass(class {
         view: EditorView; disposed: boolean; decorations: DecorationSet; observer: MutationObserver; timer: number | null = null;
+        compositionEnd = () => this.schedule();
         constructor(view: EditorView) {
             this.view = view;
             this.disposed = false;
@@ -204,9 +214,10 @@ function createLiveExtension(plugin: AcademicNotes) {
             this.schedule();
             this.observer = new MutationObserver(() => this.schedule());
             this.observer.observe(view.contentDOM, { childList: true, subtree: true });
+            view.contentDOM.addEventListener('compositionend', this.compositionEnd);
         }
-        update(update: ViewUpdate) { if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some(t => t.effects.some(e => e.is(refresh))))
-            this.decorations = this.links(update.view); this.schedule(); }
+        update(update: ViewUpdate) { if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some(t => t.effects.some(e => e.is(refresh)))) {
+            this.decorations = this.links(update.view); this.schedule(); } }
         links(view: EditorView) {
             const live = view.state.field(Obs.editorLivePreviewField, false), info = view.state.field(Obs.editorInfoField, false);
             if (!live || !info?.file || !plugin.settings.livePreview || !plugin.graph)
@@ -239,7 +250,7 @@ function createLiveExtension(plugin: AcademicNotes) {
         } }, 30); }
         paint() {
             const view = this.view, info = view.state.field(Obs.editorInfoField, false);
-            if (this.disposed || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file || !plugin.settings.livePreview)
+            if (this.disposed || view.composing || view.compositionStarted || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file || !plugin.settings.livePreview)
                 return;
             const note = plugin.graph?.notes.get(info.file.path);
             if (!note || note.source !== view.state.doc.toString())
@@ -258,9 +269,11 @@ function createLiveExtension(plugin: AcademicNotes) {
                 const box = note.callouts.filter(r => r.line <= line && r.endLine >= line).sort((a, b) => b.depth - a.depth)[0];
                 return { lineStart: box?.line ?? line, lineEnd: box?.endLine ?? line };
             };
-            renderFragment(view.contentDOM, note, plugin.graph, infoFor);
+            this.observer.disconnect();
+            try { renderFragment(view.contentDOM, note, plugin.graph, infoFor); }
+            finally { if (!this.disposed) this.observer.observe(view.contentDOM, { childList: true, subtree: true }); }
         }
-        destroy() { this.disposed = true; window.clearTimeout(this.timer ?? undefined); this.observer.disconnect(); plugin.editorViews.delete(this.view); }
+        destroy() { this.disposed = true; window.clearTimeout(this.timer ?? undefined); this.observer.disconnect(); this.view.contentDOM.removeEventListener('compositionend', this.compositionEnd); plugin.editorViews.delete(this.view); }
     }, { decorations: v => v.decorations });
 }
 export { titleRecord, mediaRecord, renderFragment, createLiveExtension, allNodes };

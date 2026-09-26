@@ -1,3 +1,10 @@
+# 2.7.1
+
+- Keep the settings page at its current scroll position and retain control focus when choosing motifs, switching environments, enabling colors or resetting appearance.
+- Leave editable Live Preview titles to Obsidian, defer decoration during IME composition, and avoid redundant DOM writes and self-triggered refreshes. This addresses a possible repaint/selection feedback path behind the reported iPad scrolling freeze.
+- Add browser and real CodeMirror regression coverage for settings interactions, native title ownership, caret retention and scrolling after editing.
+- Add GitHub star and issue invitations to both README translations.
+
 # 2.7.0
 
 - Enable the existing plugin on iPad and other Obsidian mobile devices for numbering, cross-file references, academic callouts, settings and HTML snapshots.

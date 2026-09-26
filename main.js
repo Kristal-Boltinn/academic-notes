@@ -1,4 +1,4 @@
-/* Academic Notes 2.7.0 | MIT | generated from src/main.ts */
+/* Academic Notes 2.7.1 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -22255,7 +22255,8 @@ function groupImages(box) {
 }
 function updateFigureImageRatio(box) {
   const ratios = groupImages(box).filter((img) => img.naturalWidth && img.naturalHeight).map((img) => img.naturalWidth / img.naturalHeight);
-  box.style.setProperty("--an-max-image-ratio", String(ratios.length ? Math.max(...ratios) : 1));
+  const ratio = String(ratios.length ? Math.max(...ratios) : 1);
+  if (box.style.getPropertyValue("--an-max-image-ratio") !== ratio) box.style.setProperty("--an-max-image-ratio", ratio);
 }
 function figureMetadata(metadata) {
   const layout = { columns: "auto" };
@@ -22279,10 +22280,11 @@ function figureMetadata(metadata) {
 }
 function applyFigureLayout(box, count, layout = { columns: "auto" }) {
   const columns = layout.columns === "auto" ? count === 4 ? 4 : Math.min(3, Math.max(1, count)) : layout.columns;
-  for (let n = 1; n <= 4; n++) box.classList.toggle("an-columns-" + n, n === columns);
-  box.classList.toggle("an-uniform-height", !!layout.height);
-  if (layout.height) box.style.setProperty("--an-subfigure-height", layout.height + "px");
-  else box.style.removeProperty("--an-subfigure-height");
+  for (let n = 1; n <= 4; n++) if (box.classList.contains("an-columns-" + n) !== (n === columns)) box.classList.toggle("an-columns-" + n, n === columns);
+  if (box.classList.contains("an-uniform-height") !== !!layout.height) box.classList.toggle("an-uniform-height", !!layout.height);
+  if (layout.height) {
+    if (box.style.getPropertyValue("--an-subfigure-height") !== layout.height + "px") box.style.setProperty("--an-subfigure-height", layout.height + "px");
+  } else if (box.style.getPropertyValue("--an-subfigure-height")) box.style.removeProperty("--an-subfigure-height");
   if (!layout.height) return;
   updateFigureImageRatio(box);
   for (const img of groupImages(box)) if (!pendingImages.has(img)) {
@@ -23060,18 +23062,28 @@ var DEFAULTS2 = {
 var Obs = __toESM(require("obsidian"));
 var import_view = require("@codemirror/view");
 var import_state = require("@codemirror/state");
+function editableLiveNode(node) {
+  const active = node.ownerDocument.activeElement;
+  return !!node.closest(".cm-content") && (node.isContentEditable || !!node.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]') || !!(active?.matches("input,textarea") && node.contains(active)));
+}
+function setAttribute(node, name, value) {
+  if (node.getAttribute(name) !== value) node.setAttribute(name, value);
+}
+function setClass(node, name, enabled = true) {
+  if (node.classList.contains(name) !== enabled) node.classList.toggle(name, enabled);
+}
 function allNodes(el, selector) {
   return [...el.matches?.(selector) ? [el] : [], ...el.querySelectorAll(selector)];
 }
 function titleRecord(box, r) {
-  if (!r)
+  if (!r || editableLiveNode(box))
     return;
   const inner = box.querySelector(":scope > .callout-title > .callout-title-inner");
   if (!inner)
     return;
-  box.classList.add("an-math-callout");
-  box.dataset.anType = r.key;
-  box.dataset.anLine = String(r.line);
+  setClass(box, "an-math-callout");
+  setAttribute(box, "data-an-type", r.key);
+  setAttribute(box, "data-an-line", String(r.line));
   let label = inner.querySelector(":scope > .phb-type-label");
   if (!label) {
     const original = box.ownerDocument.win.createSpan();
@@ -23091,13 +23103,14 @@ function titleRecord(box, r) {
     label.textContent = text;
 }
 function mediaRecord(box, r) {
-  if (!r)
+  if (!r || editableLiveNode(box))
     return;
-  box.classList.add("an-media", "an-" + r.kind);
-  box.dataset.anLine = String(r.line);
-  box.dataset.anType = r.kind;
-  box.classList.toggle("an-captionless", r.kind === "subfigure" && !r.title?.trim() && !r.number);
-  box.setAttribute("role", r.kind === "table" ? "group" : "figure");
+  setClass(box, "an-media");
+  setClass(box, "an-" + r.kind);
+  setAttribute(box, "data-an-line", String(r.line));
+  setAttribute(box, "data-an-type", r.kind);
+  setClass(box, "an-captionless", r.kind === "subfigure" && !r.title?.trim() && !r.number);
+  setAttribute(box, "role", r.kind === "table" ? "group" : "figure");
   const inner = box.querySelector(":scope > .callout-title > .callout-title-inner");
   if (!inner)
     return;
@@ -23121,21 +23134,21 @@ function mediaRecord(box, r) {
     if (!content)
       return;
     const subfigs = [...content.querySelectorAll(".callout[data-callout]")].filter((n) => engine_default.mediaCanon(n.dataset.callout) === "subfigure" && n.parentElement.closest(".callout") === box);
-    content.classList.toggle("an-figure-grid", subfigs.length > 0);
+    setClass(content, "an-figure-grid", subfigs.length > 0);
     applyFigureLayout(box, subfigs.length, r.layout);
     for (const sub of subfigs) {
       let cell = sub;
       while (cell.parentElement !== content)
         cell = cell.parentElement;
-      cell.classList.add("an-subfigure-cell");
+      setClass(cell, "an-subfigure-cell");
     }
     for (const child of content.children)
       if (child.matches("p") && !child.textContent.trim() && !child.querySelector("img,svg,math"))
-        child.classList.add("an-empty-anchor");
+        setClass(child, "an-empty-anchor");
   }
 }
 function mathRecord(mjx, r) {
-  if (!r)
+  if (!r || editableLiveNode(mjx))
     return false;
   const tex = engine_default.taggedTex(r), signature = JSON.stringify([tex, r.number]);
   if (mjx.dataset.anMath === signature)
@@ -23197,7 +23210,7 @@ function renderFragment(el, note, graph2, infoFor) {
     Promise.resolve(Obs.finishRenderMath()).catch(console.error);
   const usedRefs = /* @__PURE__ */ new Set();
   for (const a of allNodes(el, "a.internal-link,a[data-href]")) {
-    if (a.closest("svg,mjx-container,.phb-toc"))
+    if (editableLiveNode(a) || a.closest("svg,mjx-container,.phb-toc"))
       continue;
     const raw = a.dataset.href || a.getAttribute("href") || "";
     const r = graph2.resolve(raw, note.path);
@@ -23214,9 +23227,9 @@ function renderFragment(el, note, graph2, infoFor) {
     const text = engine_default.refText(r, graph2.settings);
     if (a.textContent !== text)
       a.textContent = text;
-    a.classList.add("an-ref");
-    a.dataset.anRef = "true";
-    a.setAttribute("aria-label", `${text} \u2014 ${r.path} ^${ref.block}`);
+    setClass(a, "an-ref");
+    setAttribute(a, "data-an-ref", "true");
+    setAttribute(a, "aria-label", `${text} \u2014 ${r.path} ^${ref.block}`);
   }
 }
 function createLiveExtension(plugin) {
@@ -23262,6 +23275,7 @@ function createLiveExtension(plugin) {
   return import_view.ViewPlugin.fromClass(class {
     constructor(view) {
       this.timer = null;
+      this.compositionEnd = () => this.schedule();
       this.view = view;
       this.disposed = false;
       plugin.editorViews.add(view);
@@ -23269,11 +23283,13 @@ function createLiveExtension(plugin) {
       this.schedule();
       this.observer = new MutationObserver(() => this.schedule());
       this.observer.observe(view.contentDOM, { childList: true, subtree: true });
+      view.contentDOM.addEventListener("compositionend", this.compositionEnd);
     }
     update(update) {
-      if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some((t2) => t2.effects.some((e) => e.is(refresh))))
+      if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some((t2) => t2.effects.some((e) => e.is(refresh)))) {
         this.decorations = this.links(update.view);
-      this.schedule();
+        this.schedule();
+      }
     }
     links(view) {
       const live = view.state.field(Obs.editorLivePreviewField, false), info = view.state.field(Obs.editorInfoField, false);
@@ -23311,7 +23327,7 @@ function createLiveExtension(plugin) {
     }
     paint() {
       const view = this.view, info = view.state.field(Obs.editorInfoField, false);
-      if (this.disposed || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file || !plugin.settings.livePreview)
+      if (this.disposed || view.composing || view.compositionStarted || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file || !plugin.settings.livePreview)
         return;
       const note = plugin.graph?.notes.get(info.file.path);
       if (!note || note.source !== view.state.doc.toString())
@@ -23329,12 +23345,18 @@ function createLiveExtension(plugin) {
         const box = note.callouts.filter((r) => r.line <= line && r.endLine >= line).sort((a, b) => b.depth - a.depth)[0];
         return { lineStart: box?.line ?? line, lineEnd: box?.endLine ?? line };
       };
-      renderFragment(view.contentDOM, note, plugin.graph, infoFor);
+      this.observer.disconnect();
+      try {
+        renderFragment(view.contentDOM, note, plugin.graph, infoFor);
+      } finally {
+        if (!this.disposed) this.observer.observe(view.contentDOM, { childList: true, subtree: true });
+      }
     }
     destroy() {
       this.disposed = true;
       window.clearTimeout(this.timer ?? void 0);
       this.observer.disconnect();
+      this.view.contentDOM.removeEventListener("compositionend", this.compositionEnd);
       plugin.editorViews.delete(this.view);
     }
   }, { decorations: (v) => v.decorations });
@@ -23668,13 +23690,31 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     this.plugin.settings.customAppearance = JSON.stringify(all);
     await this.plugin.saveSettings();
   }
+  refreshAppearance(container) {
+    const positions = [];
+    for (let node = container; node; node = node.parentElement)
+      if (node.scrollTop) positions.push([node, node.scrollTop]);
+    const focused = container.ownerDocument.activeElement;
+    const control = focused?.dataset.anControl;
+    const staging = container.ownerDocument.win.createDiv();
+    this.renderAppearance(staging);
+    container.replaceChildren(...staging.childNodes);
+    if (control) container.querySelector(`[data-an-control="${control}"]`)?.focus({ preventScroll: true });
+    for (const [node, top] of positions) node.scrollTop = top;
+  }
   renderAppearance(container) {
     const root = container.createDiv({ cls: "an-appearance-settings" });
+    const redraw = () => {
+      if (root.parentElement) this.refreshAppearance(root.parentElement);
+    };
     new import_obsidian2.Setting(root).setName(t("\u73AF\u5883\u81EA\u5B9A\u4E49")).setHeading();
-    new import_obsidian2.Setting(root).setName(t("\u9009\u62E9\u73AF\u5883")).setDesc(t("\u6BCF\u7C7B\u73AF\u5883\u72EC\u7ACB\u8BBE\u7F6E\uFF1B\u5173\u95ED\u989C\u8272\u5F00\u5173\u5373\u6062\u590D\u5F53\u524D\u8272\u677F\u3002")).addDropdown((d) => d.addOptions(Object.fromEntries(Object.entries(engine_default.TYPES).map(([key2, names2]) => [key2, names2[0]]))).setValue(this.appearanceType).onChange((value) => {
-      this.appearanceType = value;
-      this.refreshSettings();
-    }));
+    new import_obsidian2.Setting(root).setName(t("\u9009\u62E9\u73AF\u5883")).setDesc(t("\u6BCF\u7C7B\u73AF\u5883\u72EC\u7ACB\u8BBE\u7F6E\uFF1B\u5173\u95ED\u989C\u8272\u5F00\u5173\u5373\u6062\u590D\u5F53\u524D\u8272\u677F\u3002")).addDropdown((d) => {
+      d.selectEl.dataset.anControl = "environment";
+      d.addOptions(Object.fromEntries(Object.entries(engine_default.TYPES).map(([key2, names2]) => [key2, names2[0]]))).setValue(this.appearanceType).onChange((value) => {
+        this.appearanceType = value;
+        redraw();
+      });
+    });
     const entry = parseAppearance(this.plugin.settings.customAppearance)[this.appearanceType] || {};
     const colors = [
       ["light", t("\u6D45\u8272\u6A21\u5F0F\u4E3B\u8272"), "#286b76"],
@@ -23684,10 +23724,13 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     if (!plain2) colors.push(["motifLight", t("\u6D45\u8272\u6A21\u5F0F\u89D2\u6807\u989C\u8272"), "#286b76"], ["motifDark", t("\u6DF1\u8272\u6A21\u5F0F\u89D2\u6807\u989C\u8272"), "#8dc8d0"]);
     for (const [field, name, fallback] of colors) {
       const row = new import_obsidian2.Setting(root).setName(name).setDesc(entry[field] || t("\u8DDF\u968F\u9ED8\u8BA4\u914D\u8272"));
-      row.addToggle((c) => c.setValue(!!entry[field]).onChange(async (enabled) => {
-        await this.changeAppearance(field, enabled ? fallback : "");
-        this.refreshSettings();
-      }));
+      row.addToggle((c) => {
+        c.toggleEl.dataset.anControl = field;
+        c.setValue(!!entry[field]).onChange(async (enabled) => {
+          await this.changeAppearance(field, enabled ? fallback : "");
+          redraw();
+        });
+      });
       row.addColorPicker((c) => c.setValue(entry[field] || fallback).setDisabled(!entry[field]).onChange(async (value) => {
         await this.changeAppearance(field, value);
         row.setDesc(value);
@@ -23695,18 +23738,21 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     }
     const names = { laurel: t("\u6708\u6842"), compass: t("\u7F57\u76D8"), rosette: t("\u82B1\u7AE0"), orbit: t("\u8F68\u9053"), lattice: t("\u6676\u683C"), knot: t("\u7F16\u7ED3"), arch: t("\u62F1\u5ECA"), quill: t("\u7FBD\u7B14"), folio: t("\u4E66\u9875") };
     if (!plain2) {
-      new import_obsidian2.Setting(root).setName(t("\u89D2\u6807\u56FE\u6848")).addDropdown((d) => d.addOptions({ default: t("\u539F\u6709\u56FE\u6848"), none: t("\u65E0\u89D2\u6807"), ...names }).setValue(entry.motif || "default").onChange(async (value) => {
-        await this.changeAppearance("motif", value === "default" ? "" : value);
-        this.refreshSettings();
-      }));
+      new import_obsidian2.Setting(root).setName(t("\u89D2\u6807\u56FE\u6848")).addDropdown((d) => {
+        d.selectEl.dataset.anControl = "motif";
+        d.addOptions({ default: t("\u539F\u6709\u56FE\u6848"), none: t("\u65E0\u89D2\u6807"), ...names }).setValue(entry.motif || "default").onChange(async (value) => {
+          await this.changeAppearance("motif", value === "default" ? "" : value);
+          redraw();
+        });
+      });
       const gallery = root.createDiv({ cls: "an-motif-gallery" });
       for (const id of Object.keys(MOTIFS)) {
-        const button = gallery.createEl("button", { attr: { "aria-label": names[id], "aria-pressed": String(entry.motif === id) } });
+        const button = gallery.createEl("button", { attr: { "aria-label": names[id], "aria-pressed": String(entry.motif === id), "data-an-control": id } });
         const symbol = button.createSpan({ cls: "an-motif-sample", attr: { "aria-hidden": "true" } });
         symbol.style.setProperty("--an-preview-mask", motifMask(id));
         button.createSpan({ text: names[id] });
         button.addEventListener("click", () => {
-          void this.changeAppearance("motif", id).then(() => this.refreshSettings());
+          void this.changeAppearance("motif", id).then(redraw);
         });
       }
     }
@@ -23715,13 +23761,16 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     const callout = preview.createDiv({ cls: "callout", attr: { "data-callout": this.appearanceType } });
     callout.createDiv({ cls: "callout-title" }).createDiv({ cls: "callout-title-inner", text: engine_default.TYPES[this.appearanceType][0] });
     callout.createDiv({ cls: "callout-content" }).createEl("p", { text: t("\u8FD9\u662F\u5F53\u524D\u6A21\u5F0F\u4E0B\u7684\u5916\u89C2\u9884\u89C8\u3002") });
-    new import_obsidian2.Setting(root).setName(t("\u6062\u590D\u6B64\u73AF\u5883\u9ED8\u8BA4\u5916\u89C2")).addButton((b) => b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
-      const all = parseAppearance(this.plugin.settings.customAppearance);
-      delete all[this.appearanceType];
-      this.plugin.settings.customAppearance = JSON.stringify(all);
-      await this.plugin.saveSettings();
-      this.refreshSettings();
-    }));
+    new import_obsidian2.Setting(root).setName(t("\u6062\u590D\u6B64\u73AF\u5883\u9ED8\u8BA4\u5916\u89C2")).addButton((b) => {
+      b.buttonEl.dataset.anControl = "reset";
+      b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
+        const all = parseAppearance(this.plugin.settings.customAppearance);
+        delete all[this.appearanceType];
+        this.plugin.settings.customAppearance = JSON.stringify(all);
+        await this.plugin.saveSettings();
+        redraw();
+      });
+    });
     root.createEl("p", { text: t("\u8FB9\u6846\u7C97\u7EC6\u3001\u5706\u89D2\u3001\u89D2\u6807\u5927\u5C0F\u4E0E\u900F\u660E\u5EA6\u53EF\u5728 Style Settings \u2192 Academic Notes \u8C03\u6574\uFF1B\u5706\u89D2 0 \u4E3A\u76F4\u89D2\u3002") });
   }
   getSettingDefinitions() {

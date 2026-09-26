@@ -1,7 +1,7 @@
 {
   "id": "academic-notes",
   "name": "Academic Notes",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "minAppVersion": "1.9.0",
   "description": "Number and reference theorems, equations, figures, and tables across notes, with cross-file links, a table of contents, and desktop PDF export.",
   "author": "Academic Notes contributors",

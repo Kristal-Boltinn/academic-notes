@@ -1,3 +1,10 @@
+# 2.7.1 settings and Live Preview stability
+
+- Browser regressions exercise repeated motif choices, color toggles, environment switching and reset. They require the settings scroll position and focused control to survive, and unrelated settings DOM to remain unchanged.
+- Actual CodeMirror regressions use a native-style callout widget with an editable title. Repeated refreshes must preserve its text node and caret; after editing ends, numbering resumes and scrolling remains stable. Unchanged callout and figure decoration must produce zero DOM mutations.
+- The reported iPad issue requires restarting Obsidian 1.13.7 to recover. These tests cover a concrete DOM/selection feedback path, but do not reproduce the full Obsidian iPad host. Physical iPad verification is still required.
+- TypeScript and ESLint pass with the existing isolated print-window DOM-helper warning. Thirteen Node regressions and the built-plugin mobile smoke test pass. Native Electron verification passes 13 palettes and a ten-page PDF with 17 valid internal links, no invalid links and no horizontal overflow.
+
 # 2.7.0 iPad and mobile availability
 
 - Thirteen Node regressions pass, including mobile command registration, no PDF commands on mobile, and unavailable-PDF diagnostics. The distributable `main.js` loads in a simulated iPad host that throws on Electron or Node module imports.

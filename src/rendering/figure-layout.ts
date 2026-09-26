@@ -3,7 +3,8 @@ const pendingImages = new WeakSet<HTMLImageElement>();
 function groupImages(box: HTMLElement) { return [...box.querySelectorAll<HTMLImageElement>(':scope > .an-figure-grid .callout:is([data-callout="subfigure"],[data-callout="subfig"]) img')]; }
 export function updateFigureImageRatio(box: HTMLElement) {
     const ratios = groupImages(box).filter(img => img.naturalWidth && img.naturalHeight).map(img => img.naturalWidth / img.naturalHeight);
-    box.style.setProperty('--an-max-image-ratio', String(ratios.length ? Math.max(...ratios) : 1));
+    const ratio = String(ratios.length ? Math.max(...ratios) : 1);
+    if (box.style.getPropertyValue('--an-max-image-ratio') !== ratio) box.style.setProperty('--an-max-image-ratio', ratio);
 }
 
 /** Layout tokens coexist with the existing manual-number / suppression token. */
@@ -30,10 +31,10 @@ export function figureMetadata(metadata: string): { numbering: string; layout: F
 
 export function applyFigureLayout(box: HTMLElement, count: number, layout: FigureLayout = { columns: 'auto' }) {
     const columns = layout.columns === 'auto' ? (count === 4 ? 4 : Math.min(3, Math.max(1, count))) : layout.columns;
-    for (let n = 1; n <= 4; n++) box.classList.toggle('an-columns-' + n, n === columns);
-    box.classList.toggle('an-uniform-height', !!layout.height);
-    if (layout.height) box.style.setProperty('--an-subfigure-height', layout.height + 'px');
-    else box.style.removeProperty('--an-subfigure-height');
+    for (let n = 1; n <= 4; n++) if (box.classList.contains('an-columns-' + n) !== (n === columns)) box.classList.toggle('an-columns-' + n, n === columns);
+    if (box.classList.contains('an-uniform-height') !== !!layout.height) box.classList.toggle('an-uniform-height', !!layout.height);
+    if (layout.height) { if (box.style.getPropertyValue('--an-subfigure-height') !== layout.height + 'px') box.style.setProperty('--an-subfigure-height', layout.height + 'px'); }
+    else if (box.style.getPropertyValue('--an-subfigure-height')) box.style.removeProperty('--an-subfigure-height');
     if (!layout.height) return;
     updateFigureImageRatio(box);
     for (const img of groupImages(box)) if (!pendingImages.has(img)) {

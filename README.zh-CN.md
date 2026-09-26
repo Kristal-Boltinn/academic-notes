@@ -8,7 +8,7 @@
 
 数学环境的视觉设计受到 [ElegantBook](https://github.com/ElegantLaTeX/ElegantBook) 启发：定理使用带标题的数学框，证明使用简洁的行内标题和结束方框，注记使用彩色行内标题。颜色随 Academic Notes 当前色板变化。
 
-**2.7.0**
+**2.7.1**
 
 界面自动跟随 **Obsidian → 设置 → 通用 → 语言**：中文语言使用简体中文，英文及其他暂未翻译的语言使用英文。更改语言后重启 Obsidian 即可生效。设置、下拉选项、命令、弹窗、诊断和导出提示均支持中英文；笔记正文、自定义标题、引用语法和已保存的设置保持不变。
 
@@ -343,3 +343,7 @@ npm run check:release
 ## License
 
 [MIT](LICENSE)。第三方依赖许可见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+
+## 支持与反馈
+
+如果你觉得 Academic Notes 好用，欢迎在 [GitHub 上点一个 Star](https://github.com/Kristal-Boltinn/academic-notes) 支持项目。如果遇到任何问题，或有功能建议，欢迎[提交 Issue](https://github.com/Kristal-Boltinn/academic-notes/issues)。你的反馈会帮助插件持续完善。

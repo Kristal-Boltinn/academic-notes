@@ -1,3 +1,9 @@
+# Community review follow-up: 2.7.1
+
+- Restrict appearance settings redraws to their own section and preserve scroll/focus.
+- Skip editable editor DOM and composition, make decoration writes idempotent, and disconnect the plugin observer during its own rendering pass.
+- No new dependencies, CSS rules, network access or filesystem capabilities. Physical iPad verification remains separate from browser/CodeMirror regression coverage.
+
 # Community review follow-up: 2.7.0
 
 - `isDesktopOnly` is false so Obsidian can offer the existing plugin on mobile. PDF commands are registered only on desktop. The PDF runtime uses `Platform.isDesktopApp` before its dynamic Electron require; there are no top-level Electron or Node imports in the distributable plugin.

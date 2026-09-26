@@ -361,3 +361,7 @@ For releases, update `package.json`, the lockfile, `manifest.json`, `versions.js
 ## License
 
 [MIT](LICENSE). Dependency licenses are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
+## Support and feedback
+
+If you find Academic Notes useful, please consider giving the project a [star on GitHub](https://github.com/Kristal-Boltinn/academic-notes). If you encounter a bug or have a suggestion, you are welcome to [open an issue](https://github.com/Kristal-Boltinn/academic-notes/issues). Your feedback helps improve the plugin.
