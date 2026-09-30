@@ -5,7 +5,7 @@ import { renderDiagram } from './render';
 export class DiagramEditor {
     data: DiagramData; selected = ''; selectedArrow = ''; mode = 'nodes'; start = ''; history: string[] = [];
     gridEl: HTMLElement; preview: HTMLElement; list: HTMLElement; status: HTMLElement;
-    gridSelect: HTMLSelectElement; enabled: HTMLInputElement; nodeLabel: HTMLInputElement; arrowLabel: HTMLInputElement; style: HTMLSelectElement; side: HTMLSelectElement;
+    gridSelect: HTMLSelectElement; enabled: HTMLInputElement; caption: HTMLInputElement; nodeLabel: HTMLInputElement; arrowLabel: HTMLInputElement; style: HTMLSelectElement; side: HTMLSelectElement;
     constructor(private root: HTMLElement, initial: DiagramData = emptyDiagram(), private save: (data: DiagramData) => Promise<void> = async () => {}) {
         this.data = parseDiagram(JSON.stringify(initial)); root.addClass('an-diagram-editor');
         root.createEl('p', { text: t('点击网格启用或选择节点；在连线模式依次点起点和终点。公式使用 LaTeX，可省略两侧的 $。') });
@@ -23,6 +23,7 @@ export class DiagramEditor {
         const nodeRow = fields.createEl('label', { text: t('启用当前节点') }); this.enabled = nodeRow.createEl('input', { type: 'checkbox' });
         this.enabled.addEventListener('change', () => { this.remember(); if (!this.enabled.checked) removeNode(this.data, this.selected); else this.activate(this.selected); this.refresh(); });
         const input = (name: string, action: (text: string) => void) => { const row = fields.createEl('label', { text: name }); const el = row.createEl('input', { type: 'text', attr: { maxlength: '200', 'aria-label': name } }); el.addEventListener('input', () => { this.remember(); action(el.value); this.refresh(); }); return el; };
+        this.caption = input(t('图注（可留空）'), text => { this.data.caption = text; });
         this.nodeLabel = input(t('节点公式'), text => { const node = this.data.nodes.find(n => n.id === this.selected); if (node) node.label = text; });
         this.arrowLabel = input(t('箭头标注'), text => { const arrow = this.data.arrows.find(a => a.id === this.selectedArrow); if (arrow) arrow.label = text; });
         this.style = select(fields, t('箭头线型'), { solid: t('实线'), dashed: t('虚线') }, 'solid', v => { const arrow = this.data.arrows.find(a => a.id === this.selectedArrow); if (arrow) { this.remember(); arrow.style = v as 'solid' | 'dashed'; this.refresh(); } });
@@ -53,6 +54,7 @@ export class DiagramEditor {
         this.refresh();
     }
     refresh() {
+        if (this.caption.value !== (this.data.caption || '')) this.caption.value = this.data.caption || '';
         this.gridSelect.value = String(this.data.grid); this.gridEl.dataset.grid = String(this.data.grid); this.gridEl.empty();
         for (let row = 0; row < this.data.grid; row++) for (let col = 0; col < this.data.grid; col++) {
             const id = `n-${row}-${col}`, node = this.data.nodes.find(n => n.row === row && n.col === col);
@@ -71,6 +73,6 @@ export class DiagramEditor {
             const button = this.list.createEl('button', { text: name, attr: { 'aria-pressed': String(item.id === this.selectedArrow) } }); button.addEventListener('click', () => { this.selectedArrow = item.id; this.refresh(); });
         }
         this.status.textContent = this.start ? t('已选择起点，请点击终点。') : t('预览');
-        void renderDiagram(this.preview, this.data).catch(error => { this.status.textContent = String(error); });
+        void renderDiagram(this.preview, this.data, id => { this.selectedArrow = id; this.refresh(); }, this.selectedArrow).catch(error => { this.status.textContent = String(error); });
     }
 }

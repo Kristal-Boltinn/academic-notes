@@ -1,7 +1,7 @@
 /** Serialized into isolated Chromium. Keep this function independent of imports. */
 export function prepareMediaForPrint() {
     const pageHeight = (297 - 18 - 20) * 96 / 25.4 - 24;
-    const groups = [...document.querySelectorAll<HTMLElement>('.callout:is([data-callout="figure"],[data-callout="fig"]),.an-diagram-figure,.block-language-tikz')].filter(el => !el.parentElement?.closest('.callout:is([data-callout="figure"],[data-callout="fig"])'));
+    const groups = [...document.querySelectorAll<HTMLElement>('.callout:is([data-callout="figure"],[data-callout="fig"]),.an-diagram-block,.an-diagram-figure,.block-language-tikz')].filter(el => !el.parentElement?.closest('.callout:is([data-callout="figure"],[data-callout="fig"]),.an-diagram-block'));
     let scaled = 0, oversized = 0;
     for (const group of groups) {
         group.classList.add('an-print-figure');

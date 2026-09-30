@@ -1,3 +1,11 @@
+# 2.9.0 Experimental figure layout and mobile diagrams
+
+- Eighteen Node regressions cover figure/diagram shared counters, cross-file and book references, wrapper deduplication, ignored/invalid fences, caption validation and deletion of only owned adjacent anchors. TypeScript, mobile bundle loading and three-file release checks pass. ESLint retains the existing isolated print-window DOM-helper warning.
+- Browser checks use real development-only MathJax SVG and CodeMirror. At 300/700-pixel widths, formulas and horizontal arrows retain their common viewBox coordinates; no foreignObject remains. Preview arrows are selectable, selected arrows and whole rendered diagrams can be removed, and unrelated text is preserved. Formula glyph IDs are unique across diagrams.
+- Actual PDF boundary tests cover 80% shrinking, both priority orders, safe paragraph movement, oversized-paragraph rejection, environment boundaries, nested-figure exclusion and attempt-limit rollback. An enabled experiment also passes book TOC calibration. Probe annotations are absent from finished PDFs and internal links remain valid.
+- Default, Phycat and Minimal runs pass all 39 palette cases and PDF/layout regressions. Default/Minimal illustrated books have 12 pages and 18 internal links; Phycat has 13 pages and 30 links. No invalid links or horizontal overflow were reported. The diagram page and shrink/move/fallback pages were rendered for visual inspection.
+- PDF print isolation, blocked Node/file/network access and cancellation/failure cleanup remain covered. No runtime dependencies were added. Physical iPad/Safari and the actual optional TikZJax compiler remain separate acceptance checks.
+
 # 2.8.0 Proof, diagrams and pagination
 
 - Fifteen Node regressions pass, including compact Proof references, own-line headers, cross-chapter numbering, diagram JSON validation, quoted fences and endpoint pruning. TypeScript and ESLint pass with the existing isolated print-window DOM-helper warning.

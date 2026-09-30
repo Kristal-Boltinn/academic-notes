@@ -7,6 +7,8 @@ tags: [academic-notes, example]
 
 Open the command palette and run **Academic Notes: Insert or edit commutative diagram (Beta)** while the cursor is in the code block, or use the rendered diagram's edit button.
 
+This example uses an enclosing figure. A standalone `academic-diagram` block also receives a Figure number from the same counter. The optional JSON `caption` field supplies its caption; the editor adds a unique `^fig-diagram-N` anchor for new diagrams. Existing anchors below a block can be retained. Tap a preview arrow to select it, use Delete selected arrow to remove it, or use Delete diagram below the rendered figure to remove the whole code block without opening source mode.
+
 > [!figure] Factorization of a bilinear map
 > ```academic-diagram
 > {

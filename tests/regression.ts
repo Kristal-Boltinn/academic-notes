@@ -13,6 +13,62 @@ import { environmentTemplate } from '../src/ui/environment';
 import { figureMetadata } from '../src/rendering/figure-layout';
 import { appearanceValues, parseAppearance, titleInk, MOTIFS } from '../src/rendering/custom-appearance';
 import { parseDiagram, diagramFence, diagramBlocks, resizeDiagram, removeNode } from '../src/diagrams/model';
+import { normalizeFloatOptions } from '../src/export/floats';
+import { DEFAULTS as PluginDefaults } from '../src/settings';
+import { diagramDeletionRange } from '../src/ui/diagram-modal';
+
+test('diagrams share figure counters and references without double-counting wrappers', () => {
+  const data = parseDiagram('{"version":1,"grid":2,"caption":"Tensor diagram","nodes":[],"arrows":[]}');
+  const fence = diagramFence(data);
+  const note = Engine.parse('figures.md', '## Figures\n> [!figure] First\n> ![[a.png]]\n\n^first\n\n' + fence + '\n\n^diagram\n\n> [!figure] Third\n> ![[b.png]]\n\n^third');
+  const refs = Engine.parse('references.md', '[[figures#^diagram]]');
+  const graph = Engine.graph([note, refs]);
+  assert.deepEqual(note.media.map(r => r.number), ['1.1', '1.2', '1.3']);
+  assert.equal(note.blocks.get('diagram')?.title, 'Tensor diagram');
+  assert.equal(Engine.refText(graph.resolve('figures#^diagram', 'references.md'), graph.settings), 'fig 1.2');
+  Engine.graph([note], {}, undefined, new Map([['figures.md', { chapter: 3, mode: 'chapter' }]]));
+  assert.equal(note.blocks.get('diagram')?.number, '3.2');
+  const wrapped = Engine.parse('wrapped.md', '> [!figure] Wrapper\n' + diagramFence(data, '> ') + '\n\n^wrapper');
+  Engine.graph([wrapped]); assert.equal(wrapped.media.length, 1); assert.equal(wrapped.media[0].diagram, undefined);
+  for (const source of ['%%\n' + fence + '\n%%', '````markdown\n' + fence + '\n````', '```academic-diagram\ninvalid\n```']) assert.equal(Engine.parse('ignored.md', source).media.length, 0);
+  assert.equal(parseDiagram(diagramBlocks(fence)[0].source).caption, 'Tensor diagram');
+  assert.throws(() => parseDiagram(JSON.stringify({ ...data, caption: 'x'.repeat(201) })));
+  let nestedSource = '> [!proof]\n' + diagramFence(data, '> ') + '\n>\n> The proof continues.';
+  const plugin: any = new AcademicNotes(); plugin.scheduleIndex = () => {};
+  const editor: any = { getValue: () => nestedSource, getCursor: () => ({ line: 2, ch: 0 }), replaceRange: (text: string, pos: {line:number;ch:number}) => {
+    const offset = nestedSource.split('\n').slice(0, pos.line).reduce((n, line) => n + line.length + 1, 0) + pos.ch;
+    nestedSource = nestedSource.slice(0, offset) + text + nestedSource.slice(offset);
+  } };
+  plugin.labelBlock(editor, { path: 'nested.md' });
+  const labelled = Engine.parse('nested.md', nestedSource);
+  assert.ok(labelled.media[0].id, 'Add-ID command must retain quote depth for a diagram inside a proof');
+  assert.equal(labelled.blocks.get(labelled.media[0].id!)?.diagram, true);
+});
+
+test('diagram deletion removes its own anchor and preserves surrounding notes and parent anchors', () => {
+  const data = parseDiagram('{"version":1,"grid":2,"nodes":[],"arrows":[]}');
+  const source = 'Before\n\n' + diagramFence(data) + '\n\n^diagram\n\nAfter';
+  const block = diagramBlocks(source)[0], range = diagramDeletionRange(source, block.from, block.to);
+  const remaining = source.slice(0, range.from) + source.slice(range.to);
+  assert.match(remaining, /^Before/); assert.match(remaining, /After$/); assert.ok(!remaining.includes('^diagram'));
+  const quoted = '> [!figure] Parent\n' + diagramFence(data, '> ') + '\n\n^parent\n\nAfter';
+  const child = diagramBlocks(quoted)[0], nested = diagramDeletionRange(quoted, child.from, child.to);
+  assert.equal(nested.to, child.to); assert.ok((quoted.slice(0, nested.from) + quoted.slice(nested.to)).includes('^parent'));
+});
+
+test('PDF floating settings validate priorities and bound adjustment attempts', () => {
+  assert.deepEqual(normalizeFloatOptions('invalid', Infinity), { mode: 'off', maxRounds: 6 });
+  assert.deepEqual(normalizeFloatOptions('move-shrink', 999), { mode: 'move-shrink', maxRounds: 10 });
+  assert.equal(normalizeFloatOptions('shrink', -2).maxRounds, 1);
+  const plugin: any = { settings: { ...PluginDefaults }, saveSettings: async () => {} };
+  const definitions = new AcademicSettings({} as any, plugin).getSettingDefinitions();
+  const choice = definitions.find(d => d.name === 'Figure layout priority (experimental)')!;
+  const options: Record<string,string> = {}; let callback: ((v: string) => Promise<void>) | undefined;
+  const control: any = { addOptions(v: Record<string,string>) { Object.assign(options,v); return this; }, setValue() { return this; }, onChange(fn: typeof callback) { callback=fn; return this; } };
+  choice.render({ addDropdown(fn: (v: unknown) => void) { fn(control); } } as any);
+  assert.deepEqual(Object.keys(options), ['off','shrink-move','move-shrink','shrink','move']);
+  void callback!('move-shrink'); assert.equal(plugin.settings.pdfFloatMode, 'move-shrink');
+});
 
 test('plugin lifecycle registers new commands, drops removed settings and restores appearance', async () => {
   const classes = new Set(['theme-light']);

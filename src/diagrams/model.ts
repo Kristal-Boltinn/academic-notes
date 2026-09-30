@@ -1,6 +1,6 @@
 export interface DiagramNode { id: string; row: number; col: number; label: string }
 export interface DiagramArrow { id: string; from: string; to: string; label: string; style: 'solid' | 'dashed'; side: 'above' | 'below' }
-export interface DiagramData { version: 1; grid: 2 | 3; nodes: DiagramNode[]; arrows: DiagramArrow[] }
+export interface DiagramData { version: 1; grid: 2 | 3; nodes: DiagramNode[]; arrows: DiagramArrow[]; caption?: string }
 export const emptyDiagram = (): DiagramData => ({ version: 1, grid: 2, nodes: [], arrows: [] });
 const label = (value: unknown): string => {
     if (typeof value !== 'string' || value.length > 200 || /[\r\n]/.test(value)) throw new Error('Invalid diagram label (maximum 200 characters, one line).');
@@ -26,7 +26,7 @@ export function parseDiagram(source: string): DiagramData {
         return { id: id(a.id), from: a.from, to: a.to, label: label(a.label), style: a.style, side: a.side };
     });
     if (new Set(arrows.map(a => a.id)).size !== arrows.length) throw new Error('Duplicate diagram arrow.');
-    return { version: 1, grid: value.grid as 2 | 3, nodes, arrows };
+    return { version: 1, grid: value.grid as 2 | 3, nodes, arrows, ...(value.caption === undefined ? {} : { caption: label(value.caption) }) };
 }
 export function diagramFence(data: DiagramData, prefix = '') {
     const valid = parseDiagram(JSON.stringify(data));

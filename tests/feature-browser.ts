@@ -1,5 +1,7 @@
 import Engine from '../src/indexing/engine';
-import { titleRecord } from '../src/rendering/adapters';
+import { titleRecord, renderFragment } from '../src/rendering/adapters';
+import { TFile } from 'obsidian';
+import { diagramProcessor } from '../src/ui/diagram-modal';
 import { DiagramEditor } from '../src/diagrams/editor';
 import { diagramFence, parseDiagram, type DiagramData } from '../src/diagrams/model';
 import { renderDiagram } from '../src/diagrams/render';
@@ -37,13 +39,48 @@ export async function runFeatureRegressions() {
   check(editor.data.nodes.every(n => n.row < 2 && n.col < 2), 'Grid shrinking must remove out-of-grid nodes');
   click('[data-an-action="undo"]'); check(editor.data.grid === 3 && editor.data.nodes.some(n => n.row === 2), 'Undo must restore removed nodes');
   click('[data-an-action="save"]'); await settle(); check(saved && parseDiagram(JSON.stringify(saved)).arrows.length === 1, 'Save must persist a valid diagram');
+  await settle();
+  editorHost.querySelector('g[data-an-arrow]')!.dispatchEvent(new MouseEvent('click', { bubbles: true })); await settle();
+  check(editor.selectedArrow === editor.data.arrows[0].id, 'Tapping the preview must select an editable arrow');
+  click('[data-an-action="remove-arrow"]'); check(editor.data.arrows.length === 0, 'Selected preview arrow must be removable');
   editorHost.remove();
   const fixture = host.createDiv({ cls: 'an-diagram-figure' }); const svg = await renderDiagram(fixture, tensorDiagram);
-  check(svg.querySelectorAll('foreignObject mjx-container svg').length === 6 && !svg.querySelector('[data-mml-node="merror"]'), 'Node and arrow labels must use actual MathJax SVG');
+  check(svg.querySelectorAll('svg.an-diagram-math').length === 6 && !svg.querySelector('foreignObject') && !svg.querySelector('[data-mml-node="merror"]'), 'Node and arrow labels must share pure SVG coordinates with arrows');
+  const selectable = host.createDiv(); let picked = '';
+  await renderDiagram(selectable, tensorDiagram, id => { picked = id; });
+  selectable.querySelector('g[data-an-arrow="a-1"]')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  check(picked === 'a-1' && !!selectable.querySelector('path[pointer-events="stroke"]'), 'Touch-sized arrow targets must select arrows'); selectable.remove();
   check(svg.querySelectorAll('path[marker-end]').length === 3 && svg.querySelector('[stroke-dasharray]'), 'Arrow geometry and dashed style must survive rendering');
+  for (const width of [300, 700]) {
+    fixture.style.width = width + 'px';
+    const bounds = svg.getBoundingClientRect(), scale = bounds.width / 460;
+    const labels = [...svg.querySelectorAll<SVGSVGElement>(':scope > svg.an-diagram-math')];
+    check(Math.abs((labels[0].getBoundingClientRect().left + labels[0].getBoundingClientRect().width / 2 - bounds.left) / scale - 110) < 1, 'Resizing must preserve the source-node SVG center');
+    const arrow = svg.querySelector<SVGPathElement>('g[data-an-arrow="a-1"] path[marker-end]')!.getBoundingClientRect();
+    check(Math.abs((arrow.top - bounds.top) / scale - 85) < 1, 'Resizing must keep the horizontal arrow on the node row');
+  }
+  fixture.style.removeProperty('width');
   const again = host.createDiv({ cls: 'an-diagram-figure' }); const second = await renderDiagram(again, tensorDiagram);
   check(svg.querySelector('marker')!.id !== second.querySelector('marker')!.id, 'Multiple diagrams must have independent markers');
+  const glyphIds = [...host.querySelectorAll('[id]')].map(n => n.id); check(new Set(glyphIds).size === glyphIds.length, 'Cloned formula glyphs must have unique IDs');
   again.remove();
+  const diagramSource = diagramFence({ ...tensorDiagram, caption: 'Shared numbering' });
+  let content = 'Before\n\n' + diagramSource + '\n\n^diagram\n\nAfter';
+  const file = new TFile(); const changes: string[] = [];
+  const app: any = { workspace: { getActiveViewOfType: () => null }, vault: { getAbstractFileByPath: () => file, read: async () => content, process: async (_file: unknown, update: (text: string) => string) => { content = update(content); changes.push(content); } } };
+  const rendered = host.createDiv();
+  const ctx: any = { sourcePath: 'diagram.md', getSectionInfo: () => ({ lineStart: 2, lineEnd: 99 }) };
+  await diagramProcessor(app, JSON.stringify({ ...tensorDiagram, caption: 'Shared numbering' }, null, 2), rendered, ctx);
+  const diagramNote = Engine.parse('diagram.md', content), diagramGraph = Engine.graph([diagramNote]);
+  renderFragment(rendered, diagramNote, diagramGraph, () => ctx.getSectionInfo());
+  check(rendered.querySelector('.an-caption-label')?.textContent === 'Figure 1' && !rendered.querySelector<HTMLElement>('.an-diagram-caption')!.hidden, 'Standalone diagram must display the shared figure counter');
+  const exportDiagram = rendered.cloneNode(true) as HTMLElement; exportDiagram.querySelector('.an-diagram-actions')!.remove(); exportDiagram.dataset.phbBlock = 'diagram';
+  const diagramMarkup = exportDiagram.outerHTML;
+  rendered.querySelector<HTMLButtonElement>('.an-diagram-delete')!.click(); await settle();
+  check(changes.length === 1 && !content.includes('academic-diagram') && !content.includes('^diagram') && content.includes('Before') && content.includes('After'), 'Rendered deletion must work without opening source mode and preserve surrounding text');
+  const hidden = rendered.querySelector<HTMLElement>('.an-diagram-caption')!; hidden.hidden = true;
+  check(getComputedStyle(hidden).display === 'none', 'Wrapped or unindexed diagrams must not display a second caption');
+  rendered.remove();
   const tikz = host.createDiv();
   const firstBlock = tikz.createDiv({ cls: 'block-language-tikz' }); const secondBlock = tikz.createDiv({ cls: 'block-language-tikz' });
   window.setTimeout(() => { for (const block of [firstBlock, secondBlock]) { const picture = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); const path = document.createElementNS(picture.namespaceURI, 'path'); path.id = 'glyph'; const use = document.createElementNS(picture.namespaceURI, 'use'); use.setAttribute('href', '#glyph'); picture.append(path, use); block.appendChild(picture); } }, 150);
@@ -65,5 +102,5 @@ export async function runFeatureRegressions() {
   tall.remove(); proof.remove(); standalone.remove();
   // Leave this synthetic figure for the README screenshot and PDF fixture.
   host.id = 'an-diagram-test-fixture';
-  return { message: 'Proof titles, diagram editing and MathJax, TikZ waiting and picture fitting passed', svg: svg.outerHTML, fence: diagramFence(tensorDiagram), proofMarkup };
+  return { message: 'Proof titles, responsive pure-SVG diagrams, touch selection, direct deletion, shared numbering, TikZ waiting and picture fitting passed', svg: svg.outerHTML, diagramMarkup, fence: diagramFence(tensorDiagram), proofMarkup };
 }

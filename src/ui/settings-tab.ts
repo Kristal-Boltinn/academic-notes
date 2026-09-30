@@ -87,7 +87,7 @@ class AcademicSettings extends PluginSettingTab {
         const p = this.plugin, s = p.settings;
         const toggle = (key: BooleanKey, name: string, desc = '') => definitions.push({ name, desc, render: row => { row.addToggle(t => t.setValue(s[key]).onChange(async v => { s[key] = v; await p.saveSettings(); })); } });
         const text = (key: StringKey, name: string, desc = '') => definitions.push({ name, desc, render: row => { row.addText(t => t.setValue(s[key]).onChange(async v => { s[key] = v; await p.saveSettings(); })); } });
-        const select = (key: StringKey | 'tocDepth', name: string, options: Record<string, string>, desc = '') => definitions.push({ name, desc, render: row => { row.addDropdown(d => d.addOptions(options).setValue(String(s[key])).onChange(async v => { if (key === 'tocDepth') s.tocDepth = Number(v); else s[key] = v; await p.saveSettings(); })); } });
+        const select = (key: StringKey | 'tocDepth' | 'pdfFloatMaxRounds', name: string, options: Record<string, string>, desc = '') => definitions.push({ name, desc, render: row => { row.addDropdown(d => d.addOptions(options).setValue(String(s[key])).onChange(async v => { if (key === 'tocDepth' || key === 'pdfFloatMaxRounds') s[key] = Number(v); else s[key] = v; await p.saveSettings(); })); } });
         const heading = (name: string) => definitions.push({ name, render: row => { row.setHeading(); } });
         const description = (desc: string) => definitions.push({ name: '', desc, render: () => {} });
         heading(t("编号与引用"));
@@ -117,6 +117,10 @@ class AcademicSettings extends PluginSettingTab {
         select('exportNumbering', t("合订本编号"), { 'chapter-section': t("章.节.序号（如 2.3.1）"), chapter: t("章.序号（如 2.1，章内连续）"), note: t("保留库内显示编号（可能跨章重号）") }, t("前两种按入选章节重新编号和解析引用；保留模式沿用全库编号。原笔记不改写。"));
         text('exportFolder', t("导出目录"), t("库内相对路径，默认 _exports。"));
         toggle('captureTheme', t("PDF 捕获当前主题与片段样式"), t("关闭时使用插件自己的数学框与基础排版。"));
+        if (Platform.isDesktopApp) {
+            select('pdfFloatMode', t('图片排版优先级（实验）'), { off: t('直接留白（关闭）'), 'shrink-move': t('缩至 80% → 浮动 → 留白'), 'move-shrink': t('浮动 → 缩至 80% → 留白'), shrink: t('仅缩至 80%，否则留白'), move: t('仅浮动，否则留白') }, t('只调整 PDF 副本中的独立 figure。浮动最多提前三段普通正文，不跨标题、列表或数学环境，不把图片移入环境。调整后以实际 PDF 验证；无法安全排版则留白。'));
+            select('pdfFloatMaxRounds', t('最大图片调整次数'), { '1': '1', '3': '3', '6': '6', '10': '10' }, t('整次导出最多尝试这些次数；需要更多尝试时撤销全部实验调整并保留留白。目录校准次数单独计算。'));
+        }
         if (Platform.isDesktopApp) toggle('openPdf', t("生成后在 Obsidian 打开 PDF"));
         definitions.push({ name: '', render: setting => { setting.settingEl.addClass('an-custom-appearance-row'); this.renderAppearance(setting.settingEl); } });
         return definitions;

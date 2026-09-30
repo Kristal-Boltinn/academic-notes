@@ -1,3 +1,11 @@
+# Community review follow-up: 2.9.0
+
+- Experimental floating is disabled by default and affects only the isolated PDF copy. Actual printed boundary probes validate every accepted change and the final calibrated layout. A bounded attempt limit restores the full pre-experiment document rather than retaining uncertain changes.
+- Only complete standalone figure callouts and a short consecutive prefix of ordinary paragraphs can move. Headings, callouts, lists, tables, other pictures and nested environments are boundaries. Source notes and source-order counters remain unchanged.
+- Diagram labels use native MathJax converted to SVG with namespaced local glyph IDs; formulas and arrows share a viewBox. No foreignObject or user-provided HTML is used. Preview arrows have large hit targets, and owned diagram widgets are read-only in Live Preview.
+- Diagram removal uses active-editor operations or vault.process, verifies the source range before mutation, removes only owned adjacent IDs, and preserves parent figure anchors. Shared numbering reads validated diagram data locally.
+- No dependencies, network or filesystem capabilities were added. The existing print-window DOM-helper lint warning remains; physical iPad verification is separate from Chromium regression tests.
+
 # Community review follow-up: 2.8.0
 
 - Appearance dropdown refreshes preserve scroll but intentionally do not restore select focus, which could reopen native option menus.

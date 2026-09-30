@@ -1,4 +1,4 @@
-/* Academic Notes 2.8.0 | MIT | generated from src/main.ts */
+/* Academic Notes 2.9.0 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -22023,6 +22023,22 @@ module.exports = __toCommonJS(main_exports);
 
 // src/i18n.ts
 var ENGLISH = {
+  "\u56FE\u6CE8\uFF08\u53EF\u7559\u7A7A\uFF09": "Caption (optional)",
+  "\u5220\u9664\u4EA4\u6362\u56FE": "Delete diagram",
+  "\u56FE\u7247\u6392\u7248\u4F18\u5148\u7EA7\uFF08\u5B9E\u9A8C\uFF09": "Figure layout priority (experimental)",
+  "\u76F4\u63A5\u7559\u767D\uFF08\u5173\u95ED\uFF09": "Keep whitespace (off)",
+  "\u7F29\u81F3 80% \u2192 \u6D6E\u52A8 \u2192 \u7559\u767D": "Shrink to 80% \u2192 Float \u2192 Whitespace",
+  "\u6D6E\u52A8 \u2192 \u7F29\u81F3 80% \u2192 \u7559\u767D": "Float \u2192 Shrink to 80% \u2192 Whitespace",
+  "\u4EC5\u7F29\u81F3 80%\uFF0C\u5426\u5219\u7559\u767D": "Only shrink to 80%, otherwise whitespace",
+  "\u4EC5\u6D6E\u52A8\uFF0C\u5426\u5219\u7559\u767D": "Only float, otherwise whitespace",
+  "\u53EA\u8C03\u6574 PDF \u526F\u672C\u4E2D\u7684\u72EC\u7ACB figure\u3002\u6D6E\u52A8\u6700\u591A\u63D0\u524D\u4E09\u6BB5\u666E\u901A\u6B63\u6587\uFF0C\u4E0D\u8DE8\u6807\u9898\u3001\u5217\u8868\u6216\u6570\u5B66\u73AF\u5883\uFF0C\u4E0D\u628A\u56FE\u7247\u79FB\u5165\u73AF\u5883\u3002\u8C03\u6574\u540E\u4EE5\u5B9E\u9645 PDF \u9A8C\u8BC1\uFF1B\u65E0\u6CD5\u5B89\u5168\u6392\u7248\u5219\u7559\u767D\u3002": "Adjust standalone figures in the PDF copy only. Float past at most three ordinary paragraphs, never across headings, lists or mathematical environments, or into an environment. Verify the actual PDF; keep whitespace when safe layout is unavailable.",
+  "\u6700\u5927\u56FE\u7247\u8C03\u6574\u6B21\u6570": "Maximum figure adjustment attempts",
+  "\u6574\u6B21\u5BFC\u51FA\u6700\u591A\u5C1D\u8BD5\u8FD9\u4E9B\u6B21\u6570\uFF1B\u9700\u8981\u66F4\u591A\u5C1D\u8BD5\u65F6\u64A4\u9500\u5168\u90E8\u5B9E\u9A8C\u8C03\u6574\u5E76\u4FDD\u7559\u7559\u767D\u3002\u76EE\u5F55\u6821\u51C6\u6B21\u6570\u5355\u72EC\u8BA1\u7B97\u3002": "Limit attempts for the whole export. If more attempts are needed, undo all experimental adjustments and keep whitespace. TOC calibration has a separate limit.",
+  "\u56FE\u7247\u6392\u7248\u5B9E\u9A8C\uFF1A\u7B2C {0} \u6B21\u8C03\u6574": "Experimental figure layout: attempt {0}",
+  "\u56FE\u7247\u6392\u7248\u5B9E\u9A8C\u5DF2\u56DE\u9000\uFF1A": "Experimental figure layout reverted: ",
+  "\u8D85\u8FC7\u6700\u5927\u8C03\u6574\u6B21\u6570\uFF0C\u4FDD\u7559\u7559\u767D\u3002": "Adjustment limit reached; keep whitespace.",
+  "\u76EE\u5F55\u6821\u51C6\u540E\u56FE\u7247\u8FB9\u754C\u6539\u53D8\uFF0C\u4FDD\u7559\u7559\u767D\u3002": "Figure boundaries changed after TOC calibration; keep whitespace.",
+  "\u56FE\u7247\u6D4B\u91CF\u4FE1\u606F\u4E0D\u8DB3\uFF0C\u4FDD\u7559\u7559\u767D\u3002": "Figure measurements are unavailable; keep whitespace.",
   "TikZ \u672A\u6E32\u67D3\uFF1A\u8BF7\u5B89\u88C5\u5E76\u542F\u7528\u53EF\u9009\u7684 TikZJax \u63D2\u4EF6\uFF0C\u518D\u91CD\u65B0\u5BFC\u51FA\u3002": "TikZ has not rendered. Install and enable the optional TikZJax plugin, then export again.",
   "TikZ \u7ED8\u56FE\u672A\u5728 60 \u79D2\u5185\u5B8C\u6210\uFF1B\u8BF7\u5148\u5728\u9605\u8BFB\u6A21\u5F0F\u786E\u8BA4 TikZ \u6E90\u7801\u80FD\u6B63\u5E38\u6E32\u67D3\u3002": "TikZ rendering did not finish within 60 seconds. Check that the source renders in reading view before exporting.",
   "\u70B9\u51FB\u7F51\u683C\u542F\u7528\u6216\u9009\u62E9\u8282\u70B9\uFF1B\u5728\u8FDE\u7EBF\u6A21\u5F0F\u4F9D\u6B21\u70B9\u8D77\u70B9\u548C\u7EC8\u70B9\u3002\u516C\u5F0F\u4F7F\u7528 LaTeX\uFF0C\u53EF\u7701\u7565\u4E24\u4FA7\u7684 $\u3002": "Click a grid point to activate or select a node. In arrow mode, click the source then the target. Labels use LaTeX; surrounding $ signs are optional.",
@@ -22275,6 +22291,63 @@ function t(key2, ...values) {
 var Obs2 = __toESM(require("obsidian"));
 var import_obsidian6 = require("obsidian");
 
+// src/diagrams/model.ts
+var emptyDiagram = () => ({ version: 1, grid: 2, nodes: [], arrows: [] });
+var label = (value) => {
+  if (typeof value !== "string" || value.length > 200 || /[\r\n]/.test(value)) throw new Error("Invalid diagram label (maximum 200 characters, one line).");
+  return value;
+};
+var id = (value) => {
+  if (typeof value !== "string" || !/^[a-zA-Z0-9-]{1,40}$/.test(value)) throw new Error("Invalid diagram identifier.");
+  return value;
+};
+function parseDiagram(source) {
+  if (source.length > 2e4) throw new Error("Diagram data is too large.");
+  const value = JSON.parse(source);
+  if (!value || value.version !== 1 || ![2, 3].includes(value.grid) || !Array.isArray(value.nodes) || value.nodes.length > 9 || !Array.isArray(value.arrows) || value.arrows.length > 36) throw new Error("Invalid diagram: expected version 1, a 2\xD72 or 3\xD73 grid, at most 9 nodes and 36 arrows.");
+  const nodes = value.nodes.map((n) => {
+    if (!n || !Number.isInteger(n.row) || !Number.isInteger(n.col) || n.row < 0 || n.col < 0 || n.row >= value.grid || n.col >= value.grid) throw new Error("Node is outside the diagram grid.");
+    return { id: id(n.id), row: n.row, col: n.col, label: label(n.label) };
+  });
+  if (new Set(nodes.map((n) => n.id)).size !== nodes.length || new Set(nodes.map((n) => `${n.row},${n.col}`)).size !== nodes.length) throw new Error("Duplicate diagram node.");
+  const ids = new Set(nodes.map((n) => n.id));
+  const arrows = value.arrows.map((a) => {
+    if (!a || !ids.has(a.from) || !ids.has(a.to) || a.from === a.to || !["solid", "dashed"].includes(a.style) || !["above", "below"].includes(a.side)) throw new Error("Invalid diagram arrow.");
+    return { id: id(a.id), from: a.from, to: a.to, label: label(a.label), style: a.style, side: a.side };
+  });
+  if (new Set(arrows.map((a) => a.id)).size !== arrows.length) throw new Error("Duplicate diagram arrow.");
+  return { version: 1, grid: value.grid, nodes, arrows, ...value.caption === void 0 ? {} : { caption: label(value.caption) } };
+}
+function diagramFence(data, prefix = "") {
+  const valid = parseDiagram(JSON.stringify(data));
+  return ["```academic-diagram", JSON.stringify(valid, null, 2), "```"].join("\n").split("\n").map((line) => prefix + line).join("\n");
+}
+function resizeDiagram(data, grid) {
+  data.grid = grid;
+  data.nodes = data.nodes.filter((n) => n.row < grid && n.col < grid);
+  const ids = new Set(data.nodes.map((n) => n.id));
+  data.arrows = data.arrows.filter((a) => ids.has(a.from) && ids.has(a.to));
+}
+function removeNode(data, nodeId) {
+  data.nodes = data.nodes.filter((n) => n.id !== nodeId);
+  data.arrows = data.arrows.filter((a) => a.from !== nodeId && a.to !== nodeId);
+}
+function diagramBlocks(source) {
+  const blocks = [];
+  let start = 0, fence = null;
+  for (const [line, raw] of source.split("\n").entries()) {
+    const prefix = raw.match(/^[ \t]*(?:>[ \t]*)*/)?.[0] || "", bare = raw.slice(prefix.length).trimEnd();
+    const marker = bare.match(/^(`{3,}|~{3,})(.*)$/);
+    if (!fence && marker) fence = { marker: marker[1], from: start, body: start + raw.length + 1, line, prefix, diagram: marker[2].trim() === "academic-diagram" };
+    else if (fence && marker && marker[1][0] === fence.marker[0] && marker[1].length >= fence.marker.length && !marker[2].trim()) {
+      if (fence.diagram) blocks.push({ from: fence.from, to: start + raw.length, line: fence.line, prefix: fence.prefix, source: source.slice(fence.body, start).split("\n").map((l) => l.startsWith(fence.prefix) ? l.slice(fence.prefix.length) : l).join("\n").trim() });
+      fence = null;
+    }
+    start += raw.length + 1;
+  }
+  return blocks;
+}
+
 // src/rendering/figure-layout.ts
 var pendingImages = /* @__PURE__ */ new WeakSet();
 function groupImages(box) {
@@ -22512,6 +22585,19 @@ function parse(path, source, cache = {}) {
     callouts.push(rec);
     records.push(rec);
   }
+  const visible = source.replace(/^\uFEFF?---\r?\n[\s\S]*?\r?\n---[^\S\r\n]*(?:\r?\n|$)/, blank).replace(/<!--[\s\S]*?(?:-->|$)/g, blank).replace(/%%[\s\S]*?(?:%%|$)/g, blank).split("\n");
+  for (const block of diagramBlocks(source)) {
+    const line = lineOf(starts, block.from), endLine = lineOf(starts, Math.max(block.from, block.to - 1)), depth = quote(lines[line]).depth;
+    if (!visible[line]?.trim()) continue;
+    if (!depth && /^(?: {4}|\t)/.test(lines[line]) || media.some((r) => ["figure", "subfigure"].includes(r.kind) && r.line < line && r.endLine >= endLine)) continue;
+    try {
+      const data = parseDiagram(block.source);
+      const rec = { kind: "figure", key: "figure", path, line, endLine, from: block.from, to: block.to, depth, title: data.caption || "", manual: null, suppress: false, number: "", id: null, ids: [], diagram: true };
+      media.push(rec);
+      records.push(rec);
+    } catch {
+    }
+  }
   const blocks = /* @__PURE__ */ new Map();
   function bind(rec, id2) {
     if (!rec || !id2)
@@ -22572,6 +22658,7 @@ function parse(path, source, cache = {}) {
   }
   refs.sort((a, b) => a.from - b.from);
   records.sort((a, b) => a.from - b.from);
+  media.sort((a, b) => a.from - b.from);
   const headings = [];
   for (let i = 0; i < proseLines.length; i++) {
     const m = proseLines[i].match(/^ {0,3}(#{1,6})[ \t]+(.+?)\s*#*\s*$/);
@@ -23081,6 +23168,8 @@ var DEFAULTS2 = {
   customAppearance: "{}",
   captureTheme: true,
   openPdf: true,
+  pdfFloatMode: "off",
+  pdfFloatMaxRounds: 6,
   exportNumbering: "chapter-section",
   excludedFolders: "",
   indexDelay: 450
@@ -23148,7 +23237,7 @@ function mediaRecord(box, r) {
   setAttribute(box, "data-an-type", r.kind);
   setClass(box, "an-captionless", r.kind === "subfigure" && !r.title?.trim() && !r.number);
   setAttribute(box, "role", r.kind === "table" ? "group" : "figure");
-  const inner = box.querySelector(":scope > .callout-title > .callout-title-inner");
+  const inner = box.querySelector(":scope > :is(.callout-title,.an-diagram-caption) > .callout-title-inner");
   if (!inner)
     return;
   let label2 = inner.querySelector(":scope > .an-caption-label");
@@ -23232,12 +23321,19 @@ function renderFragment(el, note, graph2, infoFor) {
     const key2 = engine_default.mediaCanon(box.dataset.callout);
     if (!key2)
       continue;
-    const r = pick(box, note.media.filter((r2) => r2.key === key2));
+    const r = pick(box, note.media.filter((r2) => r2.key === key2 && !r2.diagram));
     if (r)
       mediaRecord(box, r);
   }
   used.clear();
   let mathChanged = false;
+  for (const diagram of allNodes(el, ".an-diagram-block")) {
+    const record = pick(diagram, note.media.filter((r) => r.diagram));
+    const caption = diagram.querySelector(".an-diagram-caption");
+    if (caption && caption.hidden !== !record) caption.hidden = !record;
+    if (record) mediaRecord(diagram, record);
+  }
+  used.clear();
   for (const mjx of allNodes(el, 'mjx-container[display="true"]')) {
     const r = pick(mjx, note.equations);
     if (r)
@@ -23376,6 +23472,8 @@ function createLiveExtension(plugin) {
         } catch {
           return null;
         }
+        const diagram = node.matches(".an-diagram-block") && note.media.find((r) => r.diagram && r.line <= line && r.endLine >= line);
+        if (diagram) return { lineStart: diagram.line, lineEnd: diagram.endLine };
         const eq = note.equations.find((r) => r.line <= line && r.endLine >= line);
         if (eq && !node.matches(".callout"))
           return { lineStart: eq.line, lineEnd: eq.endLine };
@@ -23832,7 +23930,7 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     } });
     const select = (key2, name, options, desc = "") => definitions.push({ name, desc, render: (row) => {
       row.addDropdown((d) => d.addOptions(options).setValue(String(s[key2])).onChange(async (v) => {
-        if (key2 === "tocDepth") s.tocDepth = Number(v);
+        if (key2 === "tocDepth" || key2 === "pdfFloatMaxRounds") s[key2] = Number(v);
         else s[key2] = v;
         await p.saveSettings();
       }));
@@ -23869,6 +23967,10 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     select("exportNumbering", t("\u5408\u8BA2\u672C\u7F16\u53F7"), { "chapter-section": t("\u7AE0.\u8282.\u5E8F\u53F7\uFF08\u5982 2.3.1\uFF09"), chapter: t("\u7AE0.\u5E8F\u53F7\uFF08\u5982 2.1\uFF0C\u7AE0\u5185\u8FDE\u7EED\uFF09"), note: t("\u4FDD\u7559\u5E93\u5185\u663E\u793A\u7F16\u53F7\uFF08\u53EF\u80FD\u8DE8\u7AE0\u91CD\u53F7\uFF09") }, t("\u524D\u4E24\u79CD\u6309\u5165\u9009\u7AE0\u8282\u91CD\u65B0\u7F16\u53F7\u548C\u89E3\u6790\u5F15\u7528\uFF1B\u4FDD\u7559\u6A21\u5F0F\u6CBF\u7528\u5168\u5E93\u7F16\u53F7\u3002\u539F\u7B14\u8BB0\u4E0D\u6539\u5199\u3002"));
     text("exportFolder", t("\u5BFC\u51FA\u76EE\u5F55"), t("\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u9ED8\u8BA4 _exports\u3002"));
     toggle("captureTheme", t("PDF \u6355\u83B7\u5F53\u524D\u4E3B\u9898\u4E0E\u7247\u6BB5\u6837\u5F0F"), t("\u5173\u95ED\u65F6\u4F7F\u7528\u63D2\u4EF6\u81EA\u5DF1\u7684\u6570\u5B66\u6846\u4E0E\u57FA\u7840\u6392\u7248\u3002"));
+    if (import_obsidian2.Platform.isDesktopApp) {
+      select("pdfFloatMode", t("\u56FE\u7247\u6392\u7248\u4F18\u5148\u7EA7\uFF08\u5B9E\u9A8C\uFF09"), { off: t("\u76F4\u63A5\u7559\u767D\uFF08\u5173\u95ED\uFF09"), "shrink-move": t("\u7F29\u81F3 80% \u2192 \u6D6E\u52A8 \u2192 \u7559\u767D"), "move-shrink": t("\u6D6E\u52A8 \u2192 \u7F29\u81F3 80% \u2192 \u7559\u767D"), shrink: t("\u4EC5\u7F29\u81F3 80%\uFF0C\u5426\u5219\u7559\u767D"), move: t("\u4EC5\u6D6E\u52A8\uFF0C\u5426\u5219\u7559\u767D") }, t("\u53EA\u8C03\u6574 PDF \u526F\u672C\u4E2D\u7684\u72EC\u7ACB figure\u3002\u6D6E\u52A8\u6700\u591A\u63D0\u524D\u4E09\u6BB5\u666E\u901A\u6B63\u6587\uFF0C\u4E0D\u8DE8\u6807\u9898\u3001\u5217\u8868\u6216\u6570\u5B66\u73AF\u5883\uFF0C\u4E0D\u628A\u56FE\u7247\u79FB\u5165\u73AF\u5883\u3002\u8C03\u6574\u540E\u4EE5\u5B9E\u9645 PDF \u9A8C\u8BC1\uFF1B\u65E0\u6CD5\u5B89\u5168\u6392\u7248\u5219\u7559\u767D\u3002"));
+      select("pdfFloatMaxRounds", t("\u6700\u5927\u56FE\u7247\u8C03\u6574\u6B21\u6570"), { "1": "1", "3": "3", "6": "6", "10": "10" }, t("\u6574\u6B21\u5BFC\u51FA\u6700\u591A\u5C1D\u8BD5\u8FD9\u4E9B\u6B21\u6570\uFF1B\u9700\u8981\u66F4\u591A\u5C1D\u8BD5\u65F6\u64A4\u9500\u5168\u90E8\u5B9E\u9A8C\u8C03\u6574\u5E76\u4FDD\u7559\u7559\u767D\u3002\u76EE\u5F55\u6821\u51C6\u6B21\u6570\u5355\u72EC\u8BA1\u7B97\u3002"));
+    }
     if (import_obsidian2.Platform.isDesktopApp) toggle("openPdf", t("\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF"));
     definitions.push({ name: "", render: (setting) => {
       setting.settingEl.addClass("an-custom-appearance-row");
@@ -23884,7 +23986,7 @@ var import_obsidian3 = require("obsidian");
 // src/export/pagination.ts
 function prepareMediaForPrint() {
   const pageHeight = (297 - 18 - 20) * 96 / 25.4 - 24;
-  const groups = [...document.querySelectorAll('.callout:is([data-callout="figure"],[data-callout="fig"]),.an-diagram-figure,.block-language-tikz')].filter((el) => !el.parentElement?.closest('.callout:is([data-callout="figure"],[data-callout="fig"])'));
+  const groups = [...document.querySelectorAll('.callout:is([data-callout="figure"],[data-callout="fig"]),.an-diagram-block,.an-diagram-figure,.block-language-tikz')].filter((el) => !el.parentElement?.closest('.callout:is([data-callout="figure"],[data-callout="fig"]),.an-diagram-block'));
   let scaled = 0, oversized = 0;
   for (const group of groups) {
     group.classList.add("an-print-figure");
@@ -23928,6 +24030,135 @@ function prepareMediaForPrint() {
     if (paragraph && !paragraph.textContent?.trim() && paragraph.querySelectorAll("img").length === 1) paragraph.classList.add("an-print-image");
   }
   return { groups: groups.length, scaled, oversized };
+}
+
+// src/export/floats.ts
+function normalizeFloatOptions(mode = "off", maxRounds = 6) {
+  return { mode: ["shrink-move", "move-shrink", "shrink", "move"].includes(mode) ? mode : "off", maxRounds: Number.isInteger(maxRounds) ? Math.max(1, Math.min(10, maxRounds)) : 6 };
+}
+function createFloatLayout(options) {
+  const root = document.getElementById("phb-document");
+  const backup = root.cloneNode(true);
+  const template = root.querySelector("a.phb-probe");
+  const report = { mode: options.mode, attempts: 0, shrunk: 0, moved: 0, skipped: 0, fallback: "" };
+  const actions = options.mode === "shrink-move" ? ["shrink", "move"] : options.mode === "move-shrink" ? ["move", "shrink"] : options.mode === "off" ? [] : [options.mode];
+  let inactive = !template || !actions.length;
+  if (!template && actions.length) report.fallback = "missing-probes";
+  const blocks = /* @__PURE__ */ new Map(), accepted = [], candidates = [];
+  let pending = null, serial = 0;
+  const plain2 = (node) => !!node?.matches("p") && !!node.textContent?.trim() && !node.querySelector('img,.math-block,mjx-container[display="true"],.callout,table,pre,iframe');
+  const block = (node) => {
+    if (blocks.has(node)) return blocks.get(node);
+    const key2 = "an-float-" + ++serial, value = { node, start: key2 + "-start", end: key2 + "-end" };
+    node.classList.add("an-float-block");
+    for (const [id2, side] of [[value.start, "start"], [value.end, "end"]]) {
+      const probe = template.cloneNode(true);
+      probe.removeAttribute("id");
+      probe.href = "https://phb-anchor.invalid/" + id2;
+      probe.classList.add("an-float-" + side);
+      node.appendChild(probe);
+    }
+    blocks.set(node, value);
+    return value;
+  };
+  if (!inactive) for (const figure of root.querySelectorAll('.callout:is([data-callout="figure"],[data-callout="fig"])')) {
+    const previous = figure.previousElementSibling;
+    if (!figure.parentElement?.matches(".phb-chapter") || figure.parentElement.closest(".callout,blockquote,li,table") || !plain2(previous) || figure.classList.contains("an-print-oversized") || !figure.querySelector("img,svg") || getComputedStyle(figure).breakBefore === "page") {
+      report.skipped++;
+      continue;
+    }
+    const following = [];
+    for (let next = figure.nextElementSibling; plain2(next) && following.length < 3; next = next.nextElementSibling) following.push(next);
+    figure.classList.add("an-float-figure");
+    candidates.push({ figure: block(figure), previous: block(previous), following: following.map(block), done: false, action: 0 });
+  }
+  const samePage = (item, positions) => positions[item.start] && positions[item.end] && positions[item.start].page === positions[item.end].page;
+  const valid = (trial, positions) => {
+    const { candidate: c } = trial, previous = positions[c.previous.end], picture = positions[c.figure.start];
+    if (!previous || !picture || !samePage(c.figure, positions)) return false;
+    return trial.kind === "shrink" ? picture.page === previous.page : picture.page === previous.page + 1 && trial.moved.every((p) => samePage(p, positions) && positions[p.start].page === previous.page);
+  };
+  const restore = (trial) => {
+    const node = trial.candidate.figure.node;
+    if (trial.next) trial.next.before(node);
+    else node.parentElement.appendChild(node);
+    for (const [element, style] of trial.styles) {
+      if (style === null) element.removeAttribute("style");
+      else element.setAttribute("style", style);
+    }
+  };
+  const rollback = (reason) => {
+    root.replaceWith(backup.cloneNode(true));
+    inactive = true;
+    pending = null;
+    accepted.length = 0;
+    report.shrunk = report.moved = 0;
+    report.fallback = reason;
+    return { changed: true, report: { ...report } };
+  };
+  const step = (printed) => {
+    if (inactive) return { changed: false, report: { ...report } };
+    let positions = printed, dirty = false;
+    if (pending) {
+      const trial = pending;
+      pending = null;
+      if (valid(trial, printed)) {
+        accepted.push(trial);
+        trial.candidate.done = true;
+        if (trial.kind === "shrink") report.shrunk++;
+        else report.moved++;
+      } else {
+        restore(trial);
+        positions = trial.before;
+        dirty = true;
+      }
+    }
+    for (const c of candidates) {
+      if (c.done) continue;
+      const previous = positions[c.previous.end], picture = positions[c.figure.start];
+      if (!previous || !picture || !positions[c.figure.end]) return rollback("missing-measurements");
+      if (!samePage(c.figure, positions) || picture.page !== previous.page + 1 || previous.y < 85) {
+        c.done = true;
+        continue;
+      }
+      while (c.action < actions.length) {
+        const kind = actions[c.action++];
+        const visuals = [...c.figure.node.querySelectorAll("img,svg")].filter((v) => !v.parentElement?.closest("svg,mjx-container"));
+        if (kind === "shrink" && !visuals.length || kind === "move" && !c.following.length) continue;
+        if (report.attempts >= options.maxRounds) return rollback("round-limit");
+        const trial = { candidate: c, kind, moved: [], next: c.figure.node.nextElementSibling, styles: [], before: positions };
+        if (kind === "shrink") {
+          trial.styles = [c.figure.node, ...visuals].map((element) => [element, element.getAttribute("style")]);
+          for (const visual of visuals) {
+            const rect = visual.getBoundingClientRect();
+            visual.style.setProperty("width", rect.width * 0.8 + "px", "important");
+            visual.style.setProperty("height", rect.height * 0.8 + "px", "important");
+          }
+          const shared = parseFloat(getComputedStyle(c.figure.node).getPropertyValue("--an-subfigure-height"));
+          if (shared) c.figure.node.style.setProperty("--an-subfigure-height", shared * 0.8 + "px");
+        } else {
+          const available = (previous.y - 20 * 72 / 25.4 - 12) * 96 / 72;
+          let height = 0;
+          for (const paragraph of c.following) {
+            const style = getComputedStyle(paragraph.node);
+            const extra = paragraph.node.getBoundingClientRect().height + (parseFloat(style.marginTop) || 0) + (parseFloat(style.marginBottom) || 0);
+            if (height + extra > available && trial.moved.length) break;
+            trial.moved.push(paragraph);
+            height += extra;
+            if (height > available) break;
+          }
+          trial.moved.at(-1).node.after(c.figure.node);
+        }
+        report.attempts++;
+        pending = trial;
+        return { changed: true, report: { ...report } };
+      }
+      c.done = true;
+      report.skipped++;
+    }
+    return { changed: dirty, report: { ...report } };
+  };
+  return { step, rollback, validate: (positions) => accepted.every((trial) => valid(trial, positions)), report };
 }
 
 // src/export/pdf-postprocess.ts
@@ -24059,6 +24290,7 @@ async function finishPdf(bytes, meta, positions) {
 }
 
 // src/export/pdf.ts
+var floatFallbackMessage = (reason) => reason === "round-limit" ? t("\u8D85\u8FC7\u6700\u5927\u8C03\u6574\u6B21\u6570\uFF0C\u4FDD\u7559\u7559\u767D\u3002") : ["final-validation", "calibration-limit"].includes(reason) ? t("\u76EE\u5F55\u6821\u51C6\u540E\u56FE\u7247\u8FB9\u754C\u6539\u53D8\uFF0C\u4FDD\u7559\u7559\u767D\u3002") : t("\u56FE\u7247\u6D4B\u91CF\u4FE1\u606F\u4E0D\u8DB3\uFF0C\u4FDD\u7559\u7559\u767D\u3002");
 var PRINT_CSP = "default-src 'none'; img-src data: blob:; style-src 'unsafe-inline' data:; font-src data:; script-src 'none'; base-uri 'none'; form-action 'none'";
 var PRINT_POLICY = '<meta http-equiv="Content-Security-Policy" content="' + PRINT_CSP + '">';
 var PRINT_SHELL = "data:text/html;charset=utf-8," + encodeURIComponent(
@@ -24082,7 +24314,7 @@ function pdfAvailability() {
   }
 }
 async function exportPdf(html, log = () => {
-}, signal, Window = nativeWindow()) {
+}, signal, Window = nativeWindow(), figureOptions = {}) {
   if (signal?.aborted)
     throw new Error(t("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002"));
   const documentHtml = html.replace(/<head>/i, "<head>" + PRINT_POLICY);
@@ -24151,33 +24383,63 @@ async function exportPdf(html, log = () => {
       margins: { top: 18 / 25.4, right: 18 / 25.4, bottom: 20 / 25.4, left: 18 / 25.4 },
       scale: 1
     };
-    let previous = "", finalBytes;
+    const floatOptions = normalizeFloatOptions(figureOptions.mode, figureOptions.maxRounds);
+    let floatReport = { mode: floatOptions.mode, attempts: 0, shrunk: 0, moved: 0, skipped: 0, fallback: "" };
+    if (floatOptions.mode !== "off") {
+      await wc.executeJavaScript(`globalThis.__academicFloat = (${createFloatLayout.toString()})(${JSON.stringify(floatOptions)}); void 0`);
+      for (let round = 0; round <= floatOptions.maxRounds + 2; round++) {
+        if (signal?.aborted) throw new Error(t("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002"));
+        const trial = await wc.printToPDF(options), positions = (await measurePdf(trial)).positions;
+        const step = await wc.executeJavaScript(`globalThis.__academicFloat.step(${JSON.stringify(positions)})`);
+        floatReport = step.report;
+        if (!step.changed) break;
+        if (round === floatOptions.maxRounds + 2) {
+          const reset = await wc.executeJavaScript("globalThis.__academicFloat.rollback('round-limit')");
+          floatReport = reset.report;
+          break;
+        }
+        log(t("\u56FE\u7247\u6392\u7248\u5B9E\u9A8C\uFF1A\u7B2C {0} \u6B21\u8C03\u6574", floatReport.attempts));
+      }
+      if (floatReport.fallback) log(t("\u56FE\u7247\u6392\u7248\u5B9E\u9A8C\u5DF2\u56DE\u9000\uFF1A") + floatFallbackMessage(floatReport.fallback));
+    }
+    let finalBytes;
     let measured;
     let iterations = 0;
-    for (iterations = 1; iterations <= 6; iterations++) {
-      if (signal?.aborted)
-        throw new Error(t("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002"));
-      log(t("\u6253\u5370\u5E76\u6821\u51C6\u76EE\u5F55\uFF1A\u7B2C {0} \u8F6E", iterations));
-      finalBytes = await wc.printToPDF(options);
-      measured = await measurePdf(finalBytes);
-      for (const entry of meta.entries)
-        if (!measured.positions[entry.id])
-          throw new Error(t("\u65E0\u6CD5\u5B9A\u4F4D PDF \u6807\u9898\uFF1A") + entry.title);
-      const signature = JSON.stringify([measured.pages, meta.entries.map((e) => measured.positions[e.id].page)]);
-      if (signature === previous)
-        break;
-      const positions = JSON.stringify(measured.positions);
-      await wc.executeJavaScript(`((positions) => {
+    for (let pass = 0; pass < 2; pass++) {
+      let previous = "";
+      for (iterations = 1; iterations <= 6; iterations++) {
+        if (signal?.aborted)
+          throw new Error(t("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002"));
+        log(t("\u6253\u5370\u5E76\u6821\u51C6\u76EE\u5F55\uFF1A\u7B2C {0} \u8F6E", iterations));
+        finalBytes = await wc.printToPDF(options);
+        measured = await measurePdf(finalBytes);
+        for (const entry of meta.entries)
+          if (!measured.positions[entry.id])
+            throw new Error(t("\u65E0\u6CD5\u5B9A\u4F4D PDF \u6807\u9898\uFF1A") + entry.title);
+        const signature = JSON.stringify([measured.pages, meta.entries.map((e) => measured.positions[e.id].page)]);
+        if (signature === previous)
+          break;
+        const positions = JSON.stringify(measured.positions);
+        await wc.executeJavaScript(`((positions) => {
         document.querySelectorAll('[data-phb-page]').forEach(el => {
           const position = positions[el.dataset.phbPage];
           if (!position) throw new Error('Missing printed destination');
           el.textContent = String(position.page + 1);
         });
       })(${positions})`);
-      previous = signature;
+        previous = signature;
+      }
+      const calibrationFailed = iterations > 6 || !finalBytes || !measured;
+      if (pass === 0 && floatOptions.mode !== "off" && (calibrationFailed || !await wc.executeJavaScript(`globalThis.__academicFloat.validate(${JSON.stringify(measured.positions)})`))) {
+        const reason = calibrationFailed ? "calibration-limit" : "final-validation";
+        const reset = await wc.executeJavaScript(`globalThis.__academicFloat.rollback(${JSON.stringify(reason)})`);
+        floatReport = reset.report;
+        log(t("\u56FE\u7247\u6392\u7248\u5B9E\u9A8C\u5DF2\u56DE\u9000\uFF1A") + floatFallbackMessage(floatReport.fallback));
+        continue;
+      }
+      if (calibrationFailed) throw new Error(t("6 \u8F6E\u540E\u76EE\u5F55\u9875\u7801\u4ECD\u672A\u7A33\u5B9A\uFF0C\u8BF7\u8C03\u6574\u76EE\u5F55\u6807\u9898\u6216\u5B57\u4F53\u3002"));
+      break;
     }
-    if (iterations > 6 || !finalBytes || !measured)
-      throw new Error(t("6 \u8F6E\u540E\u76EE\u5F55\u9875\u7801\u4ECD\u672A\u7A33\u5B9A\uFF0C\u8BF7\u8C03\u6574\u76EE\u5F55\u6807\u9898\u6216\u5B57\u4F53\u3002"));
     const finished = await finishPdf(finalBytes, meta, measured.positions);
     const overflow = await wc.executeJavaScript(`(${findOverflow.toString()})()`);
     return {
@@ -24189,6 +24451,7 @@ async function exportPdf(html, log = () => {
         warnings: meta.warnings || [],
         horizontalOverflow: overflow,
         mediaPagination,
+        figureLayout: floatReport,
         entries: meta.entries.map((e) => ({ ...e, ...measured.positions[e.id], printedPage: measured.positions[e.id].page + 1 }))
       }
     };
@@ -24279,68 +24542,12 @@ async function waitForTikz(root, timeout = 6e4, active = () => true) {
 // src/ui/diagram-modal.ts
 var import_obsidian5 = require("obsidian");
 
-// src/diagrams/model.ts
-var emptyDiagram = () => ({ version: 1, grid: 2, nodes: [], arrows: [] });
-var label = (value) => {
-  if (typeof value !== "string" || value.length > 200 || /[\r\n]/.test(value)) throw new Error("Invalid diagram label (maximum 200 characters, one line).");
-  return value;
-};
-var id = (value) => {
-  if (typeof value !== "string" || !/^[a-zA-Z0-9-]{1,40}$/.test(value)) throw new Error("Invalid diagram identifier.");
-  return value;
-};
-function parseDiagram(source) {
-  if (source.length > 2e4) throw new Error("Diagram data is too large.");
-  const value = JSON.parse(source);
-  if (!value || value.version !== 1 || ![2, 3].includes(value.grid) || !Array.isArray(value.nodes) || value.nodes.length > 9 || !Array.isArray(value.arrows) || value.arrows.length > 36) throw new Error("Invalid diagram: expected version 1, a 2\xD72 or 3\xD73 grid, at most 9 nodes and 36 arrows.");
-  const nodes = value.nodes.map((n) => {
-    if (!n || !Number.isInteger(n.row) || !Number.isInteger(n.col) || n.row < 0 || n.col < 0 || n.row >= value.grid || n.col >= value.grid) throw new Error("Node is outside the diagram grid.");
-    return { id: id(n.id), row: n.row, col: n.col, label: label(n.label) };
-  });
-  if (new Set(nodes.map((n) => n.id)).size !== nodes.length || new Set(nodes.map((n) => `${n.row},${n.col}`)).size !== nodes.length) throw new Error("Duplicate diagram node.");
-  const ids = new Set(nodes.map((n) => n.id));
-  const arrows = value.arrows.map((a) => {
-    if (!a || !ids.has(a.from) || !ids.has(a.to) || a.from === a.to || !["solid", "dashed"].includes(a.style) || !["above", "below"].includes(a.side)) throw new Error("Invalid diagram arrow.");
-    return { id: id(a.id), from: a.from, to: a.to, label: label(a.label), style: a.style, side: a.side };
-  });
-  if (new Set(arrows.map((a) => a.id)).size !== arrows.length) throw new Error("Duplicate diagram arrow.");
-  return { version: 1, grid: value.grid, nodes, arrows };
-}
-function diagramFence(data, prefix = "") {
-  const valid = parseDiagram(JSON.stringify(data));
-  return ["```academic-diagram", JSON.stringify(valid, null, 2), "```"].join("\n").split("\n").map((line) => prefix + line).join("\n");
-}
-function resizeDiagram(data, grid) {
-  data.grid = grid;
-  data.nodes = data.nodes.filter((n) => n.row < grid && n.col < grid);
-  const ids = new Set(data.nodes.map((n) => n.id));
-  data.arrows = data.arrows.filter((a) => ids.has(a.from) && ids.has(a.to));
-}
-function removeNode(data, nodeId) {
-  data.nodes = data.nodes.filter((n) => n.id !== nodeId);
-  data.arrows = data.arrows.filter((a) => a.from !== nodeId && a.to !== nodeId);
-}
-function diagramBlocks(source) {
-  const blocks = [];
-  let start = 0, fence = null;
-  for (const [line, raw] of source.split("\n").entries()) {
-    const prefix = raw.match(/^[ \t]*(?:>[ \t]*)*/)?.[0] || "", bare = raw.slice(prefix.length).trimEnd();
-    const marker = bare.match(/^(`{3,}|~{3,})(.*)$/);
-    if (!fence && marker) fence = { marker: marker[1], from: start, body: start + raw.length + 1, line, prefix, diagram: marker[2].trim() === "academic-diagram" };
-    else if (fence && marker && marker[1][0] === fence.marker[0] && marker[1].length >= fence.marker.length && !marker[2].trim()) {
-      if (fence.diagram) blocks.push({ from: fence.from, to: start + raw.length, line: fence.line, prefix: fence.prefix, source: source.slice(fence.body, start).split("\n").map((l) => l.startsWith(fence.prefix) ? l.slice(fence.prefix.length) : l).join("\n").trim() });
-      fence = null;
-    }
-    start += raw.length + 1;
-  }
-  return blocks;
-}
-
 // src/diagrams/render.ts
 var import_obsidian4 = require("obsidian");
 var sequence2 = 0;
 var NS = "http://www.w3.org/2000/svg";
-async function renderDiagram(container, data) {
+async function renderDiagram(container, data, selectArrow, selectedArrow = "") {
+  data = { ...data, nodes: data.nodes.map((n) => ({ ...n })), arrows: data.arrows.map((a) => ({ ...a })) };
   const doc = container.ownerDocument, svg = doc.createElementNS(NS, "svg");
   const width = 220 + (data.grid - 1) * 240, height = 170 + (data.grid - 1) * 160;
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
@@ -24356,18 +24563,60 @@ async function renderDiagram(container, data) {
   const markerId = "an-diagram-arrow-" + ++sequence2;
   const defs = element("defs", {}), marker = element("marker", { id: markerId, viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto-start-reverse" }, defs);
   element("path", { d: "M 1 1 L 9 5 L 1 9", fill: "none", stroke: "currentColor", "stroke-width": 1.4 }, marker);
-  const label2 = (text, x, y, nodeLabel) => {
-    if (!text) return;
-    const foreign = element("foreignObject", { x: x - 100, y: y - 32, width: 200, height: 64 });
-    const body = doc.createElementNS("http://www.w3.org/1999/xhtml", "div");
-    body.className = "an-diagram-label" + (nodeLabel ? " an-diagram-node-label" : "");
-    foreign.appendChild(body);
-    const tex = text.replace(/^\$(.*)\$$/, "$1");
+  const stage = doc.win.createDiv({ cls: "an-diagram-math-stage" });
+  const formulas = /* @__PURE__ */ new Map();
+  for (const text of [...data.nodes.map((n) => n.label), ...data.arrows.map((a) => a.label)]) {
+    if (!text || formulas.has(text)) continue;
+    const holder = stage.createSpan();
     try {
-      const math = (0, import_obsidian4.renderMath)(tex, false);
-      body.appendChild(math);
+      holder.appendChild((0, import_obsidian4.renderMath)(text.replace(/^\$(.*)\$$/, "$1"), false));
     } catch {
-      body.textContent = text;
+      holder.textContent = text;
+    }
+    formulas.set(text, holder);
+  }
+  container.replaceChildren(svg, stage);
+  await (0, import_obsidian4.finishRenderMath)();
+  if (svg.parentElement !== container) {
+    stage.remove();
+    return svg;
+  }
+  const sizes = /* @__PURE__ */ new Map();
+  for (const [text, holder] of formulas) {
+    const picture = holder.querySelector("svg"), rect = picture?.getBoundingClientRect();
+    const width2 = rect?.width || text.length * 11, height2 = rect?.height || 24;
+    const scale = Math.min(1, 190 / width2, 56 / height2);
+    sizes.set(text, { width: width2 * scale, height: height2 * scale });
+  }
+  let labelSerial = 0;
+  const label2 = (text, x, y, parent = svg) => {
+    if (!text) return;
+    const size = sizes.get(text), picture = formulas.get(text).querySelector("svg");
+    element("rect", { x: x - size.width / 2 - 3, y: y - size.height / 2 - 2, width: size.width + 6, height: size.height + 4, fill: "var(--background-primary,white)" }, parent);
+    if (picture) {
+      const clone = picture.cloneNode(true);
+      clone.classList.add("an-diagram-math");
+      clone.setAttribute("x", String(x - size.width / 2));
+      clone.setAttribute("y", String(y - size.height / 2));
+      clone.setAttribute("width", String(size.width));
+      clone.setAttribute("height", String(size.height));
+      clone.style.setProperty("width", size.width + "px");
+      clone.style.setProperty("height", size.height + "px");
+      clone.style.removeProperty("vertical-align");
+      parent.appendChild(clone);
+      const ids = /* @__PURE__ */ new Map(), prefix = markerId + "-math-" + ++labelSerial + "-";
+      clone.querySelectorAll("[id]").forEach((node) => {
+        const old = node.id;
+        ids.set(old, prefix + old);
+        node.id = prefix + old;
+      });
+      clone.querySelectorAll("*").forEach((node) => [...node.attributes].forEach((attr) => {
+        if (["href", "xlink:href"].includes(attr.name) && attr.value.startsWith("#") && ids.has(attr.value.slice(1))) node.setAttribute(attr.name, "#" + ids.get(attr.value.slice(1)));
+        else if (attr.value.includes("url(#")) node.setAttribute(attr.name, attr.value.replace(/url\(#([^)]*)\)/g, (all, key2) => ids.has(key2) ? `url(#${ids.get(key2)})` : all));
+      }));
+    } else {
+      const fallback = element("text", { x, y, "font-size": 20, "text-anchor": "middle", "dominant-baseline": "middle", fill: "currentColor" }, parent);
+      fallback.textContent = text;
     }
   };
   const position = (id2) => {
@@ -24376,16 +24625,36 @@ async function renderDiagram(container, data) {
   };
   for (const arrow of data.arrows) {
     const a = position(arrow.from), b = position(arrow.to), dx = b.x - a.x, dy = b.y - a.y, length = Math.hypot(dx, dy), ux = dx / length, uy = dy / length;
-    const inset = Math.min(ux ? 96 / Math.abs(ux) : Infinity, uy ? 36 / Math.abs(uy) : Infinity), shift = arrow.side === "above" ? -24 : 24;
-    element("path", { d: `M ${a.x + ux * inset} ${a.y + uy * inset} L ${b.x - ux * inset} ${b.y - uy * inset}`, fill: "none", stroke: "currentColor", "stroke-width": 1.6, "marker-end": `url(#${markerId})`, ...arrow.style === "dashed" ? { "stroke-dasharray": "6 5" } : {} });
-    label2(arrow.label, (a.x + b.x) / 2 + (Math.abs(dy) > Math.abs(dx) ? shift * 1.5 : 0), (a.y + b.y) / 2 + (Math.abs(dx) >= Math.abs(dy) ? shift : 0), false);
+    const inset = (id2) => {
+      const size = sizes.get(data.nodes.find((n) => n.id === id2).label) || { width: 20, height: 20 };
+      return Math.min(ux ? (size.width / 2 + 12) / Math.abs(ux) : Infinity, uy ? (size.height / 2 + 12) / Math.abs(uy) : Infinity);
+    };
+    const from = inset(arrow.from), to = inset(arrow.to), shift = arrow.side === "above" ? -24 : 24;
+    const path = `M ${a.x + ux * from} ${a.y + uy * from} L ${b.x - ux * to} ${b.y - uy * to}`;
+    const group = element("g", { "data-an-arrow": arrow.id });
+    if (selectArrow) {
+      group.setAttribute("tabindex", "0");
+      group.setAttribute("role", "button");
+      group.setAttribute("aria-label", arrow.from + " \u2192 " + arrow.to);
+      group.classList.add("an-diagram-interactive-arrow");
+      group.classList.toggle("is-selected", arrow.id === selectedArrow);
+      group.addEventListener("click", () => selectArrow(arrow.id));
+      group.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectArrow(arrow.id);
+        }
+      });
+      element("path", { d: path, fill: "none", stroke: "transparent", "stroke-width": 24, "pointer-events": "stroke" }, group);
+    }
+    element("path", { d: path, fill: "none", stroke: "currentColor", "stroke-width": 1.6, "marker-end": `url(#${markerId})`, ...arrow.style === "dashed" ? { "stroke-dasharray": "6 5" } : {} }, group);
+    label2(arrow.label, (a.x + b.x) / 2 + (Math.abs(dy) > Math.abs(dx) ? shift * 1.5 : 0), (a.y + b.y) / 2 + (Math.abs(dx) >= Math.abs(dy) ? shift : 0), group);
   }
   for (const node of data.nodes) {
     const p = position(node.id);
-    label2(node.label, p.x, p.y, true);
+    label2(node.label, p.x, p.y);
   }
-  container.replaceChildren(svg);
-  await (0, import_obsidian4.finishRenderMath)();
+  stage.remove();
   return svg;
 }
 
@@ -24453,6 +24722,9 @@ var DiagramEditor = class {
       });
       return el;
     };
+    this.caption = input(t("\u56FE\u6CE8\uFF08\u53EF\u7559\u7A7A\uFF09"), (text) => {
+      this.data.caption = text;
+    });
     this.nodeLabel = input(t("\u8282\u70B9\u516C\u5F0F"), (text) => {
       const node = this.data.nodes.find((n) => n.id === this.selected);
       if (node) node.label = text;
@@ -24530,6 +24802,7 @@ var DiagramEditor = class {
     this.refresh();
   }
   refresh() {
+    if (this.caption.value !== (this.data.caption || "")) this.caption.value = this.data.caption || "";
     this.gridSelect.value = String(this.data.grid);
     this.gridEl.dataset.grid = String(this.data.grid);
     this.gridEl.empty();
@@ -24560,13 +24833,23 @@ var DiagramEditor = class {
       });
     }
     this.status.textContent = this.start ? t("\u5DF2\u9009\u62E9\u8D77\u70B9\uFF0C\u8BF7\u70B9\u51FB\u7EC8\u70B9\u3002") : t("\u9884\u89C8");
-    void renderDiagram(this.preview, this.data).catch((error) => {
+    void renderDiagram(this.preview, this.data, (id2) => {
+      this.selectedArrow = id2;
+      this.refresh();
+    }, this.selectedArrow).catch((error) => {
       this.status.textContent = String(error);
     });
   }
 };
 
 // src/ui/diagram-modal.ts
+function diagramDeletionRange(content, from, to) {
+  const record = engine_default.parse("", content).media.find((r) => r.diagram && r.from === from);
+  const next = content.slice(to).match(/^\r?\n(?:[ \t]*(?:>[ \t]*)*\r?\n)*([^\r\n]*)/);
+  const marker = next && engine_default.quote(next[1]).body.trim().match(/^\^([\w-]+)$/);
+  if (record && marker && record.ids.includes(marker[1])) to += next[0].length;
+  return { from, to };
+}
 var DiagramModal = class extends import_obsidian5.Modal {
   constructor(app, initial, save) {
     super(app);
@@ -24593,7 +24876,9 @@ function openDiagramEditor(app, editor) {
     if (block) editor.replaceRange(diagramFence(data, block.prefix), editor.offsetToPos(block.from), editor.offsetToPos(block.to));
     else {
       const line = editor.getCursor().line, raw = editor.getLine(line), prefix = raw.match(/^[ \t]*(?:>[ \t]*)*/)?.[0] || "";
-      editor.replaceRange(diagramFence(data, prefix) + "\n" + prefix + "\n", { line, ch: 0 });
+      let id2 = 1;
+      while (new RegExp("\\^fig-diagram-" + id2 + "(?![\\w-])").test(source)) id2++;
+      editor.replaceRange(diagramFence(data, prefix) + "\n" + prefix + "\n" + prefix + "^fig-diagram-" + id2 + "\n" + prefix + "\n", { line, ch: 0 });
     }
     editor.focus();
   }).open();
@@ -24602,20 +24887,36 @@ async function diagramProcessor(app, source, el, ctx) {
   try {
     const data = parseDiagram(source);
     el.addClass("an-diagram-block");
+    el.contentEditable = "false";
     const figure = el.createDiv({ cls: "an-diagram-figure" });
     await renderDiagram(figure, data);
+    const caption = el.createDiv({ cls: "an-diagram-caption" });
+    caption.hidden = true;
+    caption.createDiv({ cls: "callout-title-inner", text: data.caption || "" });
     if (el.closest(".phb-export-stage")) return;
-    const button = el.createEl("button", { text: t("\u7F16\u8F91\u4EA4\u6362\u56FE"), cls: "an-diagram-edit" });
-    button.addEventListener("click", () => {
+    const actions = el.createDiv({ cls: "an-diagram-actions" });
+    actions.addEventListener("pointerdown", (event) => event.stopPropagation());
+    const button = actions.createEl("button", { text: t("\u7F16\u8F91\u4EA4\u6362\u56FE"), cls: "an-diagram-edit" });
+    const remove = actions.createEl("button", { text: t("\u5220\u9664\u4EA4\u6362\u56FE"), cls: "an-diagram-delete" });
+    const locate = async () => {
+      const file = app.vault.getAbstractFileByPath(ctx.sourcePath);
+      if (!(file instanceof import_obsidian5.TFile)) return;
+      const view = app.workspace.getActiveViewOfType(import_obsidian5.MarkdownView), editor = view?.file?.path === ctx.sourcePath && view.getMode() === "source" ? view.editor : null;
+      const content = editor ? editor.getValue() : await app.vault.read(file), info = ctx.getSectionInfo(el);
+      const matching = diagramBlocks(content).filter((b) => b.source.trim() === source.trim());
+      const block = matching.find((b) => b.line === info?.lineStart) || (matching.length === 1 ? matching[0] : null);
+      if (!block) throw new Error(t("\u65E0\u6CD5\u552F\u4E00\u5B9A\u4F4D\u4EA4\u6362\u56FE\uFF0C\u8BF7\u628A\u5149\u6807\u653E\u5165\u4EE3\u7801\u5757\u540E\u8FD0\u884C\u7F16\u8F91\u547D\u4EE4\u3002"));
+      return { file, editor, content, block };
+    };
+    const fail = (error) => {
+      new import_obsidian5.Notice(String(error instanceof Error ? error.message : error));
+    };
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
       void (async () => {
-        const file = app.vault.getAbstractFileByPath(ctx.sourcePath);
-        if (!(file instanceof import_obsidian5.TFile)) return;
-        const view = app.workspace.getActiveViewOfType(import_obsidian5.MarkdownView), editor = view?.file?.path === ctx.sourcePath && view.getMode() === "source" ? view.editor : null;
-        const content = editor ? editor.getValue() : await app.vault.read(file), info = ctx.getSectionInfo(el);
-        const matching = diagramBlocks(content).filter((b) => b.source.trim() === source.trim());
-        const block = matching.find((b) => b.line === info?.lineStart) || (matching.length === 1 ? matching[0] : null);
-        if (!block) throw new Error(t("\u65E0\u6CD5\u552F\u4E00\u5B9A\u4F4D\u4EA4\u6362\u56FE\uFF0C\u8BF7\u628A\u5149\u6807\u653E\u5165\u4EE3\u7801\u5757\u540E\u8FD0\u884C\u7F16\u8F91\u547D\u4EE4\u3002"));
-        const old = content.slice(block.from, block.to);
+        const located = await locate();
+        if (!located) return;
+        const { file, editor, content, block } = located, old = content.slice(block.from, block.to);
         new DiagramModal(app, data, async (updated) => {
           const replace = (current2) => {
             if (current2.slice(block.from, block.to) !== old) throw new Error(t("\u7B14\u8BB0\u5DF2\u53D8\u5316\uFF0C\u8BF7\u91CD\u65B0\u6253\u5F00\u4EA4\u6362\u56FE\u7F16\u8F91\u5668\u3002"));
@@ -24626,9 +24927,23 @@ async function diagramProcessor(app, source, el, ctx) {
             editor.replaceRange(diagramFence(updated, block.prefix), editor.offsetToPos(block.from), editor.offsetToPos(block.to));
           } else await app.vault.process(file, replace);
         }).open();
-      })().catch((error) => {
-        new import_obsidian5.Notice(String(error instanceof Error ? error.message : error));
-      });
+      })().catch(fail);
+    });
+    remove.addEventListener("click", (event) => {
+      event.stopPropagation();
+      void (async () => {
+        const located = await locate();
+        if (!located) return;
+        const { file, editor, content, block } = located, range = diagramDeletionRange(content, block.from, block.to), old = content.slice(range.from, range.to);
+        const replace = (current2) => {
+          if (current2.slice(range.from, range.to) !== old) throw new Error(t("\u7B14\u8BB0\u5DF2\u53D8\u5316\uFF0C\u8BF7\u91CD\u65B0\u6253\u5F00\u4EA4\u6362\u56FE\u7F16\u8F91\u5668\u3002"));
+          return current2.slice(0, range.from) + current2.slice(range.to);
+        };
+        if (editor) {
+          replace(editor.getValue());
+          editor.replaceRange("", editor.offsetToPos(range.from), editor.offsetToPos(range.to));
+        } else await app.vault.process(file, replace);
+      })().catch(fail);
     });
   } catch (error) {
     el.createEl("p", { text: t("\u4EA4\u6362\u56FE\u6570\u636E\u65E0\u6548\uFF1A") + String(error instanceof Error ? error.message : error) });
@@ -24636,7 +24951,7 @@ async function diagramProcessor(app, source, el, ctx) {
 }
 
 // src/styles/diagrams.css
-var diagrams_default = '.an-diagram-modal {\n  width: min(850px, 96vw);\n}\n.an-diagram-toolbar,\n.an-diagram-fields,\n.an-diagram-arrow-list {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 12px;\n  margin: 12px 0;\n}\n.an-diagram-editor label {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.an-diagram-editor input[type=text] {\n  min-width: 140px;\n  max-width: 100%;\n}\n.an-diagram-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 10px;\n  max-width: 420px;\n  margin: 16px auto;\n}\n.an-diagram-grid[data-grid="3"] {\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n}\n.an-diagram-grid button {\n  min-height: 48px;\n  height: auto;\n  overflow-wrap: anywhere;\n}\n.an-diagram-grid button[aria-pressed=true] {\n  background: var(--background-modifier-hover);\n}\n.an-diagram-grid button:is(.is-selected, .is-start) {\n  outline: 2px solid var(--interactive-accent);\n  outline-offset: 2px;\n}\n.an-diagram-arrow-list button[aria-pressed=true] {\n  border-color: var(--interactive-accent);\n}\n.an-diagram-figure {\n  display: block;\n  width: 100%;\n  margin: 1em auto;\n  text-align: center;\n  break-inside: avoid;\n}\n.an-diagram-svg {\n  display: block;\n  width: 100%;\n  max-width: 700px;\n  height: auto;\n  margin: auto;\n  color: var(--text-normal,currentColor);\n}\n.an-diagram-label {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 20px;\n  line-height: 1.2;\n  color: inherit;\n}\n.an-diagram-label mjx-container {\n  background: var(--background-primary,white);\n  max-width: 190px;\n}\n.an-diagram-label mjx-container > svg {\n  max-width: 190px;\n  height: auto;\n}\n.an-diagram-status {\n  color: var(--text-muted);\n  margin: 8px 0;\n}\n.block-language-tikz svg {\n  max-width: 100%;\n  height: auto;\n}\n@media print {\n  .an-diagram-edit {\n    display: none;\n  }\n  .an-diagram-figure,\n  .block-language-tikz {\n    break-inside: avoid;\n  }\n}\n';
+var diagrams_default = '.an-diagram-modal {\n  width: min(850px, 96vw);\n}\n.an-diagram-toolbar,\n.an-diagram-fields,\n.an-diagram-arrow-list {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 12px;\n  margin: 12px 0;\n}\n.an-diagram-editor label {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.an-diagram-editor input[type=text] {\n  min-width: 140px;\n  max-width: 100%;\n}\n.an-diagram-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 10px;\n  max-width: 420px;\n  margin: 16px auto;\n}\n.an-diagram-grid[data-grid="3"] {\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n}\n.an-diagram-grid button {\n  min-height: 48px;\n  height: auto;\n  overflow-wrap: anywhere;\n}\n.an-diagram-grid button[aria-pressed=true] {\n  background: var(--background-modifier-hover);\n}\n.an-diagram-grid button:is(.is-selected, .is-start) {\n  outline: 2px solid var(--interactive-accent);\n  outline-offset: 2px;\n}\n.an-diagram-arrow-list button[aria-pressed=true] {\n  border-color: var(--interactive-accent);\n}\n.an-diagram-figure {\n  display: block;\n  width: 100%;\n  margin: 1em auto;\n  text-align: center;\n  break-inside: avoid;\n}\n.an-diagram-svg {\n  display: block;\n  width: 100%;\n  max-width: 700px;\n  height: auto;\n  margin: auto;\n  color: var(--text-normal,currentColor);\n}\n.an-diagram-math-stage {\n  position: fixed;\n  left: -10000px;\n  top: 0;\n  font-size: 20px;\n  opacity: 0;\n  pointer-events: none;\n  white-space: nowrap;\n}\n.an-diagram-math-stage mjx-container {\n  font-size: 20px;\n}\n.an-diagram-interactive-arrow {\n  cursor: pointer;\n}\n.an-diagram-interactive-arrow.is-selected {\n  color: var(--interactive-accent);\n}\n.an-diagram-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin: 8px 0;\n}\n.an-diagram-caption {\n  display: flex;\n  justify-content: center;\n  font-size: .9em;\n  margin-top: .5em;\n}\n.an-diagram-caption[hidden] {\n  display: none;\n}\n.an-diagram-status {\n  color: var(--text-muted);\n  margin: 8px 0;\n}\n.block-language-tikz svg {\n  max-width: 100%;\n  height: auto;\n}\n@media print {\n  .an-diagram-actions,\n  .an-diagram-edit {\n    display: none;\n  }\n  .an-diagram-block,\n  .an-diagram-figure,\n  .block-language-tikz {\n    break-inside: avoid;\n  }\n}\n';
 
 // src/styles/callouts.css
 var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def: #a63c67;\n  --phb-thm: #6952a0;\n  --phb-lem: #8a4e8d;\n  --phb-prop: #406e68;\n  --phb-cor: #536c9a;\n  --phb-claim: #996040;\n  --phb-example: #8f6c25;\n  --phb-proof: #697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def: #227c77;\n  --phb-thm: #326694;\n  --phb-lem: #65709d;\n  --phb-prop: #457d5b;\n  --phb-cor: #6b7552;\n  --phb-claim: #4c7192;\n  --phb-example: #916b35;\n  --phb-proof: #647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def: #256f83;\n  --phb-thm: #2f609c;\n  --phb-lem: #665d98;\n  --phb-prop: #3d7a70;\n  --phb-cor: #536d86;\n  --phb-claim: #7f668d;\n  --phb-example: #956b35;\n  --phb-proof: #5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def: #247651;\n  --phb-thm: #286b76;\n  --phb-lem: #71628c;\n  --phb-prop: #62752e;\n  --phb-cor: #42786b;\n  --phb-claim: #44698c;\n  --phb-example: #946b2f;\n  --phb-proof: #687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def: #776085;\n  --phb-thm: #674386;\n  --phb-lem: #925d86;\n  --phb-prop: #5d7767;\n  --phb-cor: #646998;\n  --phb-claim: #896440;\n  --phb-example: #936c3f;\n  --phb-proof: #72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def: #88712e;\n  --phb-thm: #9c582d;\n  --phb-lem: #826489;\n  --phb-prop: #617542;\n  --phb-cor: #946640;\n  --phb-claim: #587a7b;\n  --phb-example: #a75c3c;\n  --phb-proof: #77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def: #9c3a55;\n  --phb-thm: #7f3f65;\n  --phb-lem: #845786;\n  --phb-prop: #3e756b;\n  --phb-cor: #626987;\n  --phb-claim: #9c5e36;\n  --phb-example: #906c32;\n  --phb-proof: #69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def: #2a6c76;\n  --phb-thm: #28558a;\n  --phb-lem: #6c608c;\n  --phb-prop: #477966;\n  --phb-cor: #526d94;\n  --phb-claim: #887052;\n  --phb-example: #926938;\n  --phb-proof: #5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def: #82d6ac;\n  --phb-thm: #bca1e2;\n  --phb-lem: #db9bc4;\n  --phb-prop: #afd294;\n  --phb-cor: #83c7d1;\n  --phb-claim: #e5b78f;\n  --phb-example: #dfc67d;\n  --phb-proof: #a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def: #73c9bc;\n  --phb-thm: #82b6df;\n  --phb-lem: #b4a1e0;\n  --phb-prop: #9bcba7;\n  --phb-cor: #78ccd2;\n  --phb-claim: #d0ac8e;\n  --phb-example: #d6c07c;\n  --phb-proof: #a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def: #86ca98;\n  --phb-thm: #83bbce;\n  --phb-lem: #b7a7ca;\n  --phb-prop: #b8c984;\n  --phb-cor: #8dcbb4;\n  --phb-claim: #9baed0;\n  --phb-example: #dec178;\n  --phb-proof: #a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\n';
@@ -24645,7 +24960,7 @@ var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B6
 var academic_layout_default = 'body {\n  --an-layout-caption-size: .9em;\n  --an-layout-caption-gap: .55em;\n  --an-layout-image-gap: 1.25em;\n  --an-layout-subfigure-min: 12rem;\n  --an-layout-rule: var(--text-normal, #26352c);\n  --an-layout-rule-heavy: 1.6px;\n  --an-layout-rule-light: 1px;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) {\n  border-collapse: collapse !important;\n  border-spacing: 0 !important;\n  border-radius: 0;\n  border: 0 !important;\n  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  background: transparent !important;\n  box-shadow: none;\n  width: auto;\n  min-width: min(100%, 22rem);\n  max-width: 100%;\n  margin: 1.25em auto;\n  font-variant-numeric: tabular-nums;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td, tr, thead, tbody, tfoot) {\n  border: 0 !important;\n  border-radius: 0;\n  background: transparent !important;\n  box-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) thead {\n  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td) {\n  padding: .5em .85em;\n  line-height: 1.5;\n  color: var(--text-normal, inherit) !important;\n  text-indent: 0;\n  overflow-wrap: anywhere;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) th {\n  font-weight: 650;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td):hover {\n  box-shadow: none !important;\n  background: transparent !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) {\n  --callout-blend-mode: normal;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: visible !important;\n  width: auto;\n  min-width: 0;\n  max-width: 100%;\n  margin: 1.5em 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit);\n  transform: none;\n  filter: none;\n  isolation: auto;\n  mix-blend-mode: normal;\n  box-sizing: border-box;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::before,\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::after {\n  content: none;\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {\n  position: static;\n  inset: auto;\n  display: var(--an-caption-display, flex) !important;\n  align-items: baseline;\n  justify-content: center;\n  order: 2;\n  width: auto;\n  max-width: 100%;\n  margin: var(--an-layout-caption-gap) 0 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit) !important;\n  text-align: center;\n  font: inherit;\n  font-size: var(--an-layout-caption-size);\n  line-height: 1.55;\n  white-space: normal;\n  overflow-wrap: anywhere;\n  transform: none;\n  text-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-icon {\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-title-inner {\n  display: block;\n  color: inherit;\n  font: inherit;\n  white-space: normal;\n  text-indent: 0;\n  padding: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content {\n  order: 1;\n  position: static;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--text-normal, inherit);\n  overflow: visible;\n  min-width: 0;\n  text-align: center;\n}\nbody .an-caption-label {\n  font-weight: 650;\n}\nbody .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {\n  content: "\\2002";\n}\nbody .an-caption-text {\n  font-weight: 400;\n}\nbody .callout.an-captionless:not(.is-collapsible) > .callout-title,\nbody.phb-export .callout.an-captionless > .callout-title {\n  --an-caption-display: none;\n}\nbody :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {\n  margin: .35em 0;\n  text-indent: 0;\n}\nbody .an-media .image-embed,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  display: inline-block !important;\n  margin: 0;\n  padding: 0;\n  min-width: 0;\n  max-width: 100%;\n  background: transparent;\n  border: 0;\n  box-shadow: none;\n  vertical-align: top;\n}\nbody .an-media img,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n  margin: 0 auto;\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n  object-fit: contain;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=table], [data-callout=tbl]) > .callout-title {\n  order: 0;\n  margin: 0 0 var(--an-layout-caption-gap) !important;\n}\nbody .callout:is([data-callout=table], [data-callout=tbl]) table {\n  margin: 0 auto !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig]) > .callout-content.an-figure-grid {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: flex-start;\n  gap: var(--an-layout-image-gap);\n}\nbody .an-figure-grid > :not(.an-subfigure-cell) {\n  flex: 0 0 100%;\n}\nbody .an-figure-grid > .an-subfigure-cell {\n  flex: 1 1 calc(50% - var(--an-layout-image-gap));\n  min-width: min(100%, var(--an-layout-subfigure-min));\n  max-width: 100%;\n  margin: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) {\n  margin: 0 !important;\n}\nbody .an-figure-grid > .an-empty-anchor {\n  display: none;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig]) {\n  container: an-figure / inline-size;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n  --an-columns: 1;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid > .an-subfigure-cell {\n  flex: 0 0 calc((100% - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns));\n  min-width: 0;\n}\n@container an-figure (min-width: 26rem) {\n  body .callout:is(.an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n    --an-columns: 2;\n  }\n}\n@container an-figure (min-width: 39rem) {\n  body .callout.an-columns-3 > .an-figure-grid {\n    --an-columns: 3;\n  }\n}\n@container an-figure (min-width: 52rem) {\n  body .callout.an-columns-4 > .an-figure-grid {\n    --an-columns: 4;\n  }\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  width: 100% !important;\n  max-width: 100%;\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) img {\n  width: auto !important;\n  height: min(var(--an-subfigure-height), calc((100cqw - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns) / var(--an-max-image-ratio, 1))) !important;\n  max-height: none;\n  object-fit: contain;\n  object-position: center;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {\n  text-indent: 2em;\n}\nbody .academic-indent :is(.callout, blockquote, li, td, th, figcaption, .phb-toc) p {\n  text-indent: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-serif {\n  font-family:\n    "Latin Modern Roman",\n    "Times New Roman",\n    "Noto Serif CJK SC",\n    "Source Han Serif SC",\n    "Songti SC",\n    "SimSun",\n    serif;\n}\n@media print {\n  body .an-media {\n    break-inside: avoid;\n  }\n  body .an-media > .callout-title {\n    break-before: avoid;\n    break-after: auto;\n  }\n  body .an-table {\n    display: block !important;\n    break-inside: auto;\n  }\n  body .an-table > .callout-title {\n    break-before: auto;\n    break-after: avoid;\n  }\n  body .callout.an-media img {\n    max-height: 155mm;\n  }\n  body .an-figure-grid {\n    --an-layout-image-gap: 4mm;\n    gap: var(--an-layout-image-gap);\n  }\n  body .an-figure-grid > .an-subfigure-cell {\n    min-width: 0;\n    flex-basis: calc(50% - 4mm);\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) table {\n    break-inside: auto;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) thead {\n    display: table-header-group;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) tr {\n    break-inside: avoid;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) :is(table, .an-media) {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n  }\n}\n';
 
 // src/styles/document.css
-var document_default2 = 'html {\n  font-size: 16px;\n  background: var(--phb-page-background, white);\n}\nbody.phb-export {\n  display: block !important;\n  position: static !important;\n  width: auto !important;\n  height: auto !important;\n  min-height: 0 !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  overflow: visible !important;\n  background: var(--phb-surface, #fff) !important;\n  color: var(--phb-text, #24372e) !important;\n  font-family: var(--font-text, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif);\n  font-size: 11pt;\n  line-height: 1.7;\n  -webkit-print-color-adjust: exact;\n  print-color-adjust: exact;\n}\nbody.phb-export *,\nbody.phb-export *::before,\nbody.phb-export *::after {\n  animation: none !important;\n  transition: none !important;\n  caret-color: transparent !important;\n}\nbody.phb-export #phb-document {\n  display: block !important;\n  position: static !important;\n  width: 174mm !important;\n  max-width: none !important;\n  height: auto !important;\n  padding: 0 !important;\n  margin: 0 auto !important;\n  overflow: visible !important;\n  font-size: inherit;\n  line-height: inherit;\n}\nbody.phb-export :is(.markdown-preview-view, .markdown-preview-sizer, .markdown-rendered, .phb-chapter) {\n  min-height: 0 !important;\n  max-height: none !important;\n  height: auto !important;\n  overflow: visible !important;\n  contain: none !important;\n  content-visibility: visible !important;\n}\nbody.phb-export .phb-chapter {\n  display: block;\n}\nbody.phb-export :is(p, li) {\n  line-height: 1.7;\n}\nbody.phb-export p {\n  margin: .65em 0;\n}\nbody.phb-export :is(h1, h2, h3, h4, h5, h6) {\n  position: relative !important;\n  break-after: avoid !important;\n  text-shadow: none !important;\n  transform: none !important;\n}\nbody.phb-export h1 {\n  font-size: 1.9em;\n  line-height: 1.4;\n  margin: 1.1em 0 .8em;\n}\nbody.phb-export h2 {\n  font-size: 1.4em;\n  margin: 1.1em 0 .7em;\n}\nbody.phb-export h3 {\n  font-size: 1.16em;\n  margin: 1em 0 .5em;\n}\nbody.phb-export pre {\n  white-space: pre-wrap !important;\n  overflow-wrap: anywhere;\n}\nbody.phb-export :is(.math-block, .phb-math[data-display=true]) {\n  display: block;\n  text-align: center;\n  margin: .7em 0;\n  text-indent: 0;\n}\nbody.phb-export .phb-math mjx-container {\n  margin: 0 !important;\n}\nbody.phb-export mjx-container[display=true] {\n  display: block !important;\n  max-width: 100%;\n  overflow: visible !important;\n}\nbody.phb-export :is(.math-block, .phb-math) {\n  overflow: visible !important;\n}\nbody.phb-export .phb-math-error {\n  border: 2px solid #c00;\n  padding: .5em;\n}\nbody.phb-export .phb-chapter-kicker {\n  font-size: 9pt;\n  font-weight: 600;\n  letter-spacing: .16em;\n  color: var(--phb-thm);\n  margin: 1em 0;\n}\nbody.phb-export .phb-book-title {\n  text-align: center;\n  margin-top: 1.5em;\n}\nbody.phb-export .phb-book-subtitle {\n  text-align: center;\n  color: var(--text-muted,#66776c);\n}\nbody.phb-export .phb-frontmatter {\n  padding-top: 5mm;\n}\nbody.phb-export #phb-document .phb-probe {\n  position: absolute;\n  top: 0;\n  left: 0;\n  display: block;\n  width: 2px;\n  height: 2px;\n  font-size: 1px;\n  line-height: 1px;\n  padding: 0;\n  margin: 0;\n  border: 0;\n  opacity: 1;\n  color: var(--phb-surface, #fff);\n  background: none;\n  z-index: 1;\n}\nbody.phb-export #phb-document .phb-probe::before,\nbody.phb-export #phb-document .phb-probe::after {\n  content: none;\n}\nbody.phb-export .heading-collapse-indicator,\nbody.phb-export .callout-fold {\n  display: none !important;\n}\nbody.phb-export .callout-title {\n  max-width: 100% !important;\n}\nbody.phb-export .callout-content:not(.an-figure-grid) {\n  display: block !important;\n}\nbody.phb-export .callout-content li::before {\n  display: none !important;\n}\nbody.phb-export .callout-content ul,\nbody.phb-export .callout-content ol {\n  padding-left: 1.6em;\n}\nbody.phb-export img {\n  max-width: 100%;\n  max-height: 220mm;\n  object-fit: contain;\n}\nbody.phb-export .phb-toc {\n  font-size: 10.5pt;\n}\n@media screen {\n  body.phb-export {\n    padding: 12mm !important;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    margin-top: 3em;\n  }\n}\n@media print {\n  @page {\n    size: A4;\n    margin: 18mm 18mm 20mm;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    break-before: page;\n  }\n  body.phb-export .phb-chapter > :first-child {\n    margin-top: 0 !important;\n  }\n  body.phb-export .callout:not(.an-media) {\n    break-inside: auto;\n  }\n  body.phb-export .callout[data-phb-keep=true] {\n    break-inside: avoid !important;\n  }\n  body.phb-export .callout[data-phb-long=true] {\n    break-inside: auto !important;\n  }\n  body.phb-export .callout[data-phb-long=true]::after {\n    display: none !important;\n  }\n  body.phb-export :is(p, li) {\n    orphans: 2;\n    widows: 2;\n  }\n  body.phb-export .phb-toc-title {\n    break-after: avoid;\n  }\n  body.phb-export .phb-toc {\n    break-after: page;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=true] {\n    break-inside: avoid;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=false] {\n    break-inside: auto;\n  }\n  body.phb-export :is(.math-block, .phb-math[data-display=true], mjx-container[display=true]) {\n    break-inside: avoid !important;\n  }\n  body.phb-export tr {\n    break-inside: avoid;\n  }\n  body.phb-export .callout.an-print-figure {\n    display: block !important;\n  }\n  body.phb-export :is(.an-print-figure, .an-print-image, img) {\n    break-inside: avoid;\n  }\n  body.phb-export .an-print-figure > .callout-title {\n    break-before: avoid;\n  }\n  body.phb-export .an-print-figure.an-print-oversized {\n    break-inside: auto;\n  }\n}\nbody.phb-export mjx-assistive-mml {\n  display: none !important;\n}\nbody.phb-export .phb-callout-wrap {\n  display: block;\n  padding-top: .95em;\n  margin: .85em 0 1.25em;\n  break-inside: auto;\n  box-sizing: border-box;\n}\nbody.phb-export .phb-callout-wrap > .callout[data-callout] {\n  margin: 0 !important;\n}\n@page {\n  size: A4;\n  margin: 18mm 18mm 20mm;\n  background: var(--phb-page-background, white);\n}\n.phb-glyph-cache {\n  position: absolute;\n  width: 0;\n  height: 0;\n  overflow: hidden;\n}\n';
+var document_default2 = 'html {\n  font-size: 16px;\n  background: var(--phb-page-background, white);\n}\nbody.phb-export {\n  display: block !important;\n  position: static !important;\n  width: auto !important;\n  height: auto !important;\n  min-height: 0 !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  overflow: visible !important;\n  background: var(--phb-surface, #fff) !important;\n  color: var(--phb-text, #24372e) !important;\n  font-family: var(--font-text, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif);\n  font-size: 11pt;\n  line-height: 1.7;\n  -webkit-print-color-adjust: exact;\n  print-color-adjust: exact;\n}\nbody.phb-export *,\nbody.phb-export *::before,\nbody.phb-export *::after {\n  animation: none !important;\n  transition: none !important;\n  caret-color: transparent !important;\n}\nbody.phb-export #phb-document {\n  display: block !important;\n  position: static !important;\n  width: 174mm !important;\n  max-width: none !important;\n  height: auto !important;\n  padding: 0 !important;\n  margin: 0 auto !important;\n  overflow: visible !important;\n  font-size: inherit;\n  line-height: inherit;\n}\nbody.phb-export :is(.markdown-preview-view, .markdown-preview-sizer, .markdown-rendered, .phb-chapter) {\n  min-height: 0 !important;\n  max-height: none !important;\n  height: auto !important;\n  overflow: visible !important;\n  contain: none !important;\n  content-visibility: visible !important;\n}\nbody.phb-export .phb-chapter {\n  display: block;\n}\nbody.phb-export :is(p, li) {\n  line-height: 1.7;\n}\nbody.phb-export p {\n  margin: .65em 0;\n}\nbody.phb-export :is(h1, h2, h3, h4, h5, h6) {\n  position: relative !important;\n  break-after: avoid !important;\n  text-shadow: none !important;\n  transform: none !important;\n}\nbody.phb-export h1 {\n  font-size: 1.9em;\n  line-height: 1.4;\n  margin: 1.1em 0 .8em;\n}\nbody.phb-export h2 {\n  font-size: 1.4em;\n  margin: 1.1em 0 .7em;\n}\nbody.phb-export h3 {\n  font-size: 1.16em;\n  margin: 1em 0 .5em;\n}\nbody.phb-export pre {\n  white-space: pre-wrap !important;\n  overflow-wrap: anywhere;\n}\nbody.phb-export :is(.math-block, .phb-math[data-display=true]) {\n  display: block;\n  text-align: center;\n  margin: .7em 0;\n  text-indent: 0;\n}\nbody.phb-export .phb-math mjx-container {\n  margin: 0 !important;\n}\nbody.phb-export mjx-container[display=true] {\n  display: block !important;\n  max-width: 100%;\n  overflow: visible !important;\n}\nbody.phb-export :is(.math-block, .phb-math) {\n  overflow: visible !important;\n}\nbody.phb-export .phb-math-error {\n  border: 2px solid #c00;\n  padding: .5em;\n}\nbody.phb-export .phb-chapter-kicker {\n  font-size: 9pt;\n  font-weight: 600;\n  letter-spacing: .16em;\n  color: var(--phb-thm);\n  margin: 1em 0;\n}\nbody.phb-export .phb-book-title {\n  text-align: center;\n  margin-top: 1.5em;\n}\nbody.phb-export .phb-book-subtitle {\n  text-align: center;\n  color: var(--text-muted,#66776c);\n}\nbody.phb-export .phb-frontmatter {\n  padding-top: 5mm;\n}\nbody.phb-export #phb-document .phb-probe {\n  position: absolute;\n  top: 0;\n  left: 0;\n  display: block;\n  width: 2px;\n  height: 2px;\n  font-size: 1px;\n  line-height: 1px;\n  padding: 0;\n  margin: 0;\n  border: 0;\n  opacity: 1;\n  color: var(--phb-surface, #fff);\n  background: none;\n  z-index: 1;\n}\nbody.phb-export #phb-document .phb-probe::before,\nbody.phb-export #phb-document .phb-probe::after {\n  content: none;\n}\nbody.phb-export .heading-collapse-indicator,\nbody.phb-export .callout-fold {\n  display: none !important;\n}\nbody.phb-export .callout-title {\n  max-width: 100% !important;\n}\nbody.phb-export .callout-content:not(.an-figure-grid) {\n  display: block !important;\n}\nbody.phb-export .callout-content li::before {\n  display: none !important;\n}\nbody.phb-export .callout-content ul,\nbody.phb-export .callout-content ol {\n  padding-left: 1.6em;\n}\nbody.phb-export img {\n  max-width: 100%;\n  max-height: 220mm;\n  object-fit: contain;\n}\nbody.phb-export .phb-toc {\n  font-size: 10.5pt;\n}\n@media screen {\n  body.phb-export {\n    padding: 12mm !important;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    margin-top: 3em;\n  }\n}\n@media print {\n  @page {\n    size: A4;\n    margin: 18mm 18mm 20mm;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    break-before: page;\n  }\n  body.phb-export .phb-chapter > :first-child {\n    margin-top: 0 !important;\n  }\n  body.phb-export .callout:not(.an-media) {\n    break-inside: auto;\n  }\n  body.phb-export .callout[data-phb-keep=true] {\n    break-inside: avoid !important;\n  }\n  body.phb-export .callout[data-phb-long=true] {\n    break-inside: auto !important;\n  }\n  body.phb-export .callout[data-phb-long=true]::after {\n    display: none !important;\n  }\n  body.phb-export :is(p, li) {\n    orphans: 2;\n    widows: 2;\n  }\n  body.phb-export .phb-toc-title {\n    break-after: avoid;\n  }\n  body.phb-export .phb-toc {\n    break-after: page;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=true] {\n    break-inside: avoid;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=false] {\n    break-inside: auto;\n  }\n  body.phb-export :is(.math-block, .phb-math[data-display=true], mjx-container[display=true]) {\n    break-inside: avoid !important;\n  }\n  body.phb-export tr {\n    break-inside: avoid;\n  }\n  body.phb-export .callout.an-print-figure {\n    display: block !important;\n  }\n  body.phb-export :is(.an-print-figure, .an-print-image, img) {\n    break-inside: avoid;\n  }\n  body.phb-export .an-print-figure > :is(.callout-title, .an-diagram-caption) {\n    break-before: avoid;\n  }\n  body.phb-export .an-print-figure.an-print-oversized {\n    break-inside: auto;\n  }\n}\nbody.phb-export mjx-assistive-mml {\n  display: none !important;\n}\nbody.phb-export .phb-callout-wrap {\n  display: block;\n  padding-top: .95em;\n  margin: .85em 0 1.25em;\n  break-inside: auto;\n  box-sizing: border-box;\n}\nbody.phb-export .phb-callout-wrap > .callout[data-callout] {\n  margin: 0 !important;\n}\n@page {\n  size: A4;\n  margin: 18mm 18mm 20mm;\n  background: var(--phb-page-background, white);\n}\n.phb-glyph-cache {\n  position: absolute;\n  width: 0;\n  height: 0;\n  overflow: hidden;\n}\nbody.phb-export #phb-document .an-float-block {\n  position: relative;\n}\nbody.phb-export #phb-document p.an-float-block > .phb-probe.an-float-end {\n  position: relative;\n  display: inline-block;\n  top: auto;\n  left: auto;\n  width: 1px;\n  height: 1px;\n  margin-left: -1px;\n  vertical-align: baseline;\n}\nbody.phb-export #phb-document .an-float-figure > .phb-probe.an-float-end {\n  top: auto;\n  bottom: 0;\n}\n';
 
 // src/main.ts
 var sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -24999,7 +25314,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
     do {
       id2 = "an-" + Math.random().toString(36).slice(2, 10);
     } while (note.blocks.has(id2));
-    const prefix = r.kind === "equation" ? engine_default.quote(note.lines[r.endLine]).prefix : r.depth > 1 ? "> ".repeat(r.depth - 1) : "";
+    const prefix = r.kind === "equation" || r.diagram ? engine_default.quote(note.lines[r.endLine]).prefix : r.depth > 1 ? "> ".repeat(r.depth - 1) : "";
     const insertion = "\n" + prefix + "\n" + prefix + "^" + id2 + "\n";
     editor.replaceRange(insertion, { line: r.endLine, ch: note.lines[r.endLine].length });
     this.scheduleIndex();
@@ -25101,7 +25416,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
         this.pdfJobs.add(controller);
         try {
           const html = await this.app.vault.adapter.read(snapshot);
-          const result = await exportPdf(html, (line) => log.line(line), controller.signal);
+          const result = await exportPdf(html, (line) => log.line(line), controller.signal, void 0, { mode: this.settings.pdfFloatMode, maxRounds: this.settings.pdfFloatMaxRounds });
           if (!this.active)
             throw new Error(t("\u63D2\u4EF6\u5DF2\u505C\u7528\u3002"));
           await this.app.vault.adapter.writeBinary(out, new Uint8Array(result.bytes).buffer);
@@ -25223,6 +25538,16 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
         await Obs2.finishRenderMath();
         await waitForTikz(section, 6e4, () => this.active);
         const boxes = [...section.querySelectorAll(".callout[data-callout]")], math = [...section.querySelectorAll('mjx-container[display="true"]')];
+        const diagrams = [...section.querySelectorAll(".an-diagram-block")];
+        for (const [index, record] of note.media.filter((r) => r.diagram).entries()) {
+          const box = diagrams.filter((d) => !d.parentElement?.closest('.callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"])'))[index];
+          if (!box) continue;
+          const caption = box.querySelector(".an-diagram-caption");
+          if (caption) caption.hidden = false;
+          mediaRecord(box, record);
+          if (record.id) box.dataset.phbBlock = record.id;
+          box.dataset.phbBlocks = JSON.stringify(record.ids);
+        }
         const consumed = /* @__PURE__ */ new Set();
         for (const rec of note.callouts) {
           const box = boxes.find((b) => !consumed.has(b) && (engine_default.canon(b.dataset.callout) || engine_default.mediaCanon(b.dataset.callout)) === rec.key);
@@ -25296,7 +25621,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
       const bodyStyle = doc.defaultView.getComputedStyle(doc.body), variables = [...bodyStyle].filter((k) => k.startsWith("--")).map((k) => `${k}:${bodyStyle.getPropertyValue(k)};`).join("");
       const classes = [...doc.body.classList].filter((c) => !["is-mobile", "is-phone"].includes(c)).join(" ") + " phb-export";
       stage.querySelectorAll("script,iframe,object,embed,form,audio,video").forEach((e) => e.remove());
-      stage.querySelectorAll(".an-diagram-edit").forEach((e) => e.remove());
+      stage.querySelectorAll(".an-diagram-actions,.an-diagram-edit").forEach((e) => e.remove());
       stage.querySelectorAll("*").forEach((e) => [...e.attributes].forEach((a) => {
         if (a.name.toLowerCase().startsWith("on") || ["href", "src"].includes(a.name) && /^javascript:/i.test(a.value))
           e.removeAttribute(a.name);

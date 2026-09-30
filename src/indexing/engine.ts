@@ -1,4 +1,5 @@
 import { t } from '../i18n';
+import { diagramBlocks, parseDiagram } from '../diagrams/model';
 import { figureMetadata, type FigureLayout } from '../rendering/figure-layout';
 export type ChapterSpec = number | string | { chapter: number | string; mode: string };
 export type NoteGraph = ReturnType<typeof graph>;
@@ -27,6 +28,7 @@ export interface SourceRecord {
     referenced?: boolean;
     layout?: FigureLayout;
     proofOwnLine?: boolean;
+    diagram?: boolean;
 }
 export interface SourceReference {
     file: string;
@@ -191,6 +193,17 @@ function parse(path: string, source: string, cache: {
         callouts.push(rec);
         records.push(rec);
     }
+    const visible = source.replace(/^\uFEFF?---\r?\n[\s\S]*?\r?\n---[^\S\r\n]*(?:\r?\n|$)/, blank).replace(/<!--[\s\S]*?(?:-->|$)/g, blank).replace(/%%[\s\S]*?(?:%%|$)/g, blank).split('\n');
+    for (const block of diagramBlocks(source)) {
+        const line = lineOf(starts, block.from), endLine = lineOf(starts, Math.max(block.from, block.to - 1)), depth = quote(lines[line]).depth;
+        if (!visible[line]?.trim()) continue;
+        if (!depth && /^(?: {4}|\t)/.test(lines[line]) || media.some(r => ['figure','subfigure'].includes(r.kind) && r.line < line && r.endLine >= endLine)) continue;
+        try {
+            const data = parseDiagram(block.source);
+            const rec: SourceRecord = { kind: 'figure', key: 'figure', path, line, endLine, from: block.from, to: block.to, depth, title: data.caption || '', manual: null, suppress: false, number: '', id: null, ids: [], diagram: true };
+            media.push(rec); records.push(rec);
+        } catch { /* Invalid diagrams render their own error and do not consume a number. */ }
+    }
     const blocks = new Map<string, SourceRecord | null>();
     function bind(rec: SourceRecord | undefined, id: string) { if (!rec || !id)
         return; if (blocks.has(id) && blocks.get(id) !== rec) {
@@ -250,6 +263,7 @@ function parse(path: string, source: string, cache: {
     }
     refs.sort((a, b) => a.from - b.from);
     records.sort((a, b) => a.from - b.from);
+    media.sort((a, b) => a.from - b.from);
     const headings: ParsedNote["headings"] = [];
     for (let i = 0; i < proseLines.length; i++) {
         const m = proseLines[i].match(/^ {0,3}(#{1,6})[ \t]+(.+?)\s*#*\s*$/);

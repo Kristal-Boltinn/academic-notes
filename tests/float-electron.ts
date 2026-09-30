@@ -1,0 +1,70 @@
+import assert from 'node:assert/strict';
+import { writeFileSync } from 'node:fs';
+import { BrowserWindow } from 'electron';
+import { exportPdf } from '../src/export/pdf';
+import { measurePdf } from '../src/export/pdf-postprocess';
+
+/** Deterministic page gaps, tested against actual PDF annotations, not DOM estimates. */
+export async function runFloatRegressions(win: BrowserWindow, html: (body: string, css?: string) => string, printCss: string, client: string) {
+    const photo = (height: number) => '<div id="picture" class="callout an-media" data-callout="figure"><div class="callout-title">Figure 1 · Protected caption</div><div class="callout-content"><img style="width:300px!important;height:' + height + 'px!important;max-height:none!important" src="data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="' + height + '"><rect width="300" height="' + height + '" fill="teal"/></svg>') + '"></div></div>';
+    const fixture = async (height: number, after = '<p id="after">A complete paragraph that may precede the picture.</p>', nested = false, book = false) => {
+        const before = '<p id="before" style="padding-top:480px">The preceding paragraph ends above a controlled page gap.</p>';
+        const contents = nested ? '<div class="callout" data-callout="proof"><div class="callout-title">Proof</div><div class="callout-content">' + before + photo(height) + after + '</div></div>' : before + photo(height) + after;
+        await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main id="phb-document" class="markdown-rendered"><section class="phb-chapter" data-path="float.md" data-title="Float test"><h1>Figure layout test</h1>' + contents + '<h2>Next section</h2><p>Keep this heading after the picture.</p><a href="#picture">Figure link</a></section></main>', printCss + 'body.phb-export #phb-document h1{font-size:20px!important;line-height:40px!important;margin:0!important;padding:0!important;border:0!important;text-align:left!important}')));
+        await win.webContents.executeJavaScript(`Object.defineProperty(Document.prototype,'win',{get(){return this.defaultView}});window.createEl=tag=>document.createElement(tag);window.createDiv=()=>document.createElement('div');window.createSpan=()=>document.createElement('span');void 0;`);
+        await win.webContents.executeJavaScript(client);
+        return await win.webContents.executeJavaScript(`(() => {
+            document.body.classList.add('phb-export');
+            const root=document.getElementById('phb-document'),meta=AcademicTestDoc.prepare(root,{toc:${book},book:${book},title:'Figure layout book'});
+            const entries=['before','picture','after'].map(key=>({id:'phb-c1-i-'+key,title:key,level:6}));
+            const present=entries.filter(entry=>document.getElementById(entry.id));
+            present.forEach(entry=>document.getElementById(entry.id).style.position='relative');
+            AcademicTestDoc.addProbes(root,present);meta.entries.push(...present);
+            const script=document.createElement('script');script.id='phb-meta';script.type='application/json';script.textContent=JSON.stringify(meta);document.body.appendChild(script);
+            return '<!doctype html>'+document.documentElement.outerHTML;
+        })()`) as string;
+    };
+    const run = (source: string, mode: string, maxRounds = 6) => exportPdf(source, () => {}, undefined, BrowserWindow, { mode, maxRounds });
+    const page = (result: Awaited<ReturnType<typeof exportPdf>>, key: string) => result.report.entries.find(e => e.title === key)!.printedPage;
+    const shrinkSource = await fixture(400);
+    const baseline = await run(shrinkSource, 'off');
+    assert.ok(page(baseline, 'picture') > page(baseline, 'before'), 'Fixture must leave a genuine page gap');
+    const shrink = await run(shrinkSource, 'shrink-move');
+    writeFileSync('output/float-trace.json', JSON.stringify({ baseline: baseline.report, shrink: shrink.report }, null, 2));
+    assert.equal(shrink.report.figureLayout.shrunk, 1, '80% picture must fill the gap');
+    assert.equal(shrink.report.figureLayout.moved, 0, 'Shrink-first must not float a picture that can shrink to fit');
+    assert.equal(page(shrink, 'picture'), page(shrink, 'before'));
+    writeFileSync('output/float-shrink.pdf', shrink.bytes);
+    const moveFirst = await run(shrinkSource, 'move-shrink');
+    assert.equal(moveFirst.report.figureLayout.moved, 1, 'The selected priority must try movement before shrinking');
+    assert.equal(moveFirst.report.figureLayout.shrunk, 0);
+    const book = await run(await fixture(400, undefined, false, true), 'shrink-move');
+    assert.equal(book.report.figureLayout.shrunk, 1, 'Book contents calibration must retain a verified 80% layout');
+    assert.equal(page(book, 'picture'), page(book, 'before'));
+    assert.ok(book.report.validInternalLinks > 0); assert.deepEqual(book.report.invalidInternalLinks, []);
+    const moveSource = await fixture(520);
+    const moved = await run(moveSource, 'shrink-move');
+    assert.equal(moved.report.figureLayout.moved, 1, 'A picture that cannot fit at 80% must allow a safe paragraph to precede it');
+    assert.equal(page(moved, 'after'), page(moved, 'before'));
+    assert.equal(page(moved, 'picture'), page(moved, 'before') + 1);
+    assert.equal(moved.report.figureLayout.shrunk, 0);
+    assert.equal(moved.report.externalLinks, 0, 'Measurement links must be removed from the final PDF');
+    assert.deepEqual((await measurePdf(moved.bytes)).positions, {}, 'All experimental and heading probes must be removed');
+    assert.ok(moved.report.validInternalLinks > 0);
+    writeFileSync('output/float-move.pdf', moved.bytes);
+    const limited = await run(moveSource, 'shrink-move', 1);
+    assert.equal(limited.report.figureLayout.fallback, 'round-limit');
+    assert.equal(limited.report.figureLayout.moved + limited.report.figureLayout.shrunk, 0);
+    assert.ok(page(limited, 'after') >= page(limited, 'picture'), 'Budget fallback must restore source order');
+    writeFileSync('output/float-fallback.pdf', limited.bytes);
+    const environment = '<div class="callout" data-callout="thm"><div class="callout-title">Theorem</div><div class="callout-content"><p id="after">An environment must never be moved ahead of the picture.</p></div></div>';
+    const blocked = await run(await fixture(520, environment), 'move');
+    assert.equal(blocked.report.figureLayout.attempts, 0);
+    assert.ok(page(blocked, 'after') >= page(blocked, 'picture'));
+    const nested = await run(await fixture(520, undefined, true), 'shrink-move');
+    assert.equal(nested.report.figureLayout.attempts, 0, 'A picture inside a proof must never float');
+    const oversizedParagraph = await run(await fixture(520, '<p id="after">' + 'This paragraph is too long to advance without splitting. '.repeat(160) + '</p>'), 'move');
+    assert.equal(oversizedParagraph.report.figureLayout.moved, 0, 'Moving a paragraph that spans pages must be rejected');
+    assert.ok(page(oversizedParagraph, 'after') >= page(oversizedParagraph, 'picture'));
+    console.log('Actual PDF figure priorities, 80% shrinking, safe floating, environment boundaries and round-limit rollback passed.');
+}

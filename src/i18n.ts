@@ -1,6 +1,21 @@
 // Application language is set from Obsidian's public getLanguage() API on load.
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
+  "图注（可留空）": "Caption (optional)", "删除交换图": "Delete diagram",
+  "图片排版优先级（实验）": "Figure layout priority (experimental)",
+  "直接留白（关闭）": "Keep whitespace (off)",
+  "缩至 80% → 浮动 → 留白": "Shrink to 80% → Float → Whitespace",
+  "浮动 → 缩至 80% → 留白": "Float → Shrink to 80% → Whitespace",
+  "仅缩至 80%，否则留白": "Only shrink to 80%, otherwise whitespace",
+  "仅浮动，否则留白": "Only float, otherwise whitespace",
+  "只调整 PDF 副本中的独立 figure。浮动最多提前三段普通正文，不跨标题、列表或数学环境，不把图片移入环境。调整后以实际 PDF 验证；无法安全排版则留白。": "Adjust standalone figures in the PDF copy only. Float past at most three ordinary paragraphs, never across headings, lists or mathematical environments, or into an environment. Verify the actual PDF; keep whitespace when safe layout is unavailable.",
+  "最大图片调整次数": "Maximum figure adjustment attempts",
+  "整次导出最多尝试这些次数；需要更多尝试时撤销全部实验调整并保留留白。目录校准次数单独计算。": "Limit attempts for the whole export. If more attempts are needed, undo all experimental adjustments and keep whitespace. TOC calibration has a separate limit.",
+  "图片排版实验：第 {0} 次调整": "Experimental figure layout: attempt {0}",
+  "图片排版实验已回退：": "Experimental figure layout reverted: ",
+  "超过最大调整次数，保留留白。": "Adjustment limit reached; keep whitespace.",
+  "目录校准后图片边界改变，保留留白。": "Figure boundaries changed after TOC calibration; keep whitespace.",
+  "图片测量信息不足，保留留白。": "Figure measurements are unavailable; keep whitespace.",
   "TikZ 未渲染：请安装并启用可选的 TikZJax 插件，再重新导出。": "TikZ has not rendered. Install and enable the optional TikZJax plugin, then export again.",
   "TikZ 绘图未在 60 秒内完成；请先在阅读模式确认 TikZ 源码能正常渲染。": "TikZ rendering did not finish within 60 seconds. Check that the source renders in reading view before exporting.",
   "点击网格启用或选择节点；在连线模式依次点起点和终点。公式使用 LaTeX，可省略两侧的 $。": "Click a grid point to activate or select a node. In arrow mode, click the source then the target. Labels use LaTeX; surrounding $ signs are optional.",

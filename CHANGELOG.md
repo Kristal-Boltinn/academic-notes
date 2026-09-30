@@ -1,3 +1,10 @@
+# 2.9.0
+
+- Add experimental desktop PDF figure layout priorities: shrink visuals to 80%, advance a safe prefix of following paragraphs, or retain page gaps. Bound total attempts and restore normal layout on exhausted attempts or failed final validation/calibration. Source notes and numbering remain unchanged.
+- Render commutative-diagram formulas and arrows in one SVG coordinate system to address mobile positioning. Add touch-sized arrow selection targets and direct rendered diagram deletion without switching to source mode.
+- Share Figure numbering and cross-file/book references between standalone diagrams and pictures; retain enclosing figure/subfigure numbering without duplicate counts. Add optional diagram captions and unique block IDs for newly inserted diagrams.
+- Extend bilingual documentation, synthetic examples, actual-PDF layout checks and browser regressions. Preserve existing mobile support and print-window isolation.
+
 # 2.8.0
 
 - Close appearance dropdowns after selection without losing the settings scroll position.

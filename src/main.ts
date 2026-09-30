@@ -323,7 +323,7 @@ export default class AcademicNotes extends Plugin {
         do {
             id = 'an-' + Math.random().toString(36).slice(2, 10);
         } while (note.blocks.has(id));
-        const prefix = r.kind === 'equation' ? Engine.quote(note.lines[r.endLine]).prefix : (r.depth > 1 ? '> '.repeat(r.depth - 1) : '');
+        const prefix = r.kind === 'equation' || r.diagram ? Engine.quote(note.lines[r.endLine]).prefix : (r.depth > 1 ? '> '.repeat(r.depth - 1) : '');
         const insertion = '\n' + prefix + '\n' + prefix + '^' + id + '\n';
         editor.replaceRange(insertion, { line: r.endLine, ch: note.lines[r.endLine].length });
         this.scheduleIndex();
@@ -415,7 +415,7 @@ export default class AcademicNotes extends Plugin {
                 this.pdfJobs.add(controller);
                 try {
                     const html = await this.app.vault.adapter.read(snapshot);
-                    const result = await exportPdf(html, line => log.line(line), controller.signal);
+                    const result = await exportPdf(html, line => log.line(line), controller.signal, undefined, { mode: this.settings.pdfFloatMode, maxRounds: this.settings.pdfFloatMaxRounds });
                     if (!this.active)
                         throw new Error(t("插件已停用。"));
                     await this.app.vault.adapter.writeBinary(out, new Uint8Array(result.bytes).buffer);
@@ -545,6 +545,13 @@ export default class AcademicNotes extends Plugin {
                 await waitForTikz(section, 60000, () => this.active);
                 // Map declaration anchors to their actual rendered boxes/equations.
                 const boxes = [...section.querySelectorAll<HTMLElement>('.callout[data-callout]')], math = [...section.querySelectorAll<HTMLElement>('mjx-container[display="true"]')];
+                const diagrams = [...section.querySelectorAll<HTMLElement>('.an-diagram-block')];
+                for (const [index, record] of note.media.filter(r => r.diagram).entries()) {
+                    const box = diagrams.filter(d => !d.parentElement?.closest('.callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"])'))[index];
+                    if (!box) continue;
+                    const caption = box.querySelector<HTMLElement>('.an-diagram-caption'); if (caption) caption.hidden = false;
+                    mediaRecord(box, record); if (record.id) box.dataset.phbBlock = record.id; box.dataset.phbBlocks = JSON.stringify(record.ids);
+                }
                 const consumed = new Set();
                 for (const rec of note.callouts) {
                     const box = boxes.find(b => !consumed.has(b) && (Engine.canon(b.dataset.callout) || Engine.mediaCanon(b.dataset.callout)) === rec.key);
@@ -613,7 +620,7 @@ export default class AcademicNotes extends Plugin {
             const bodyStyle = doc.defaultView!.getComputedStyle(doc.body), variables = [...bodyStyle].filter(k => k.startsWith('--')).map(k => `${k}:${bodyStyle.getPropertyValue(k)};`).join('');
             const classes = [...doc.body.classList].filter(c => !['is-mobile', 'is-phone'].includes(c)).join(' ') + ' phb-export';
             stage.querySelectorAll('script,iframe,object,embed,form,audio,video').forEach(e => e.remove());
-            stage.querySelectorAll('.an-diagram-edit').forEach(e => e.remove());
+            stage.querySelectorAll('.an-diagram-actions,.an-diagram-edit').forEach(e => e.remove());
             stage.querySelectorAll('*').forEach(e => [...e.attributes].forEach(a => { if (a.name.toLowerCase().startsWith('on') || (['href', 'src'].includes(a.name) && /^javascript:/i.test(a.value)))
                 e.removeAttribute(a.name); }));
             const csp = "default-src 'none'; img-src data: blob:; style-src 'unsafe-inline' data:; font-src data:; script-src 'none'; base-uri 'none'; form-action 'none'";

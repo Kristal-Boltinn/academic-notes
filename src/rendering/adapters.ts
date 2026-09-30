@@ -63,7 +63,7 @@ function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
     setAttribute(box, 'data-an-type', r.kind);
     setClass(box, 'an-captionless', r.kind === 'subfigure' && !r.title?.trim() && !r.number);
     setAttribute(box, 'role', r.kind === 'table' ? 'group' : 'figure');
-    const inner = box.querySelector(':scope > .callout-title > .callout-title-inner');
+    const inner = box.querySelector(':scope > :is(.callout-title,.an-diagram-caption) > .callout-title-inner');
     if (!inner)
         return;
     let label = inner.querySelector(':scope > .an-caption-label');
@@ -149,12 +149,19 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
         const key = Engine.mediaCanon(box.dataset.callout);
         if (!key)
             continue;
-        const r = pick(box, note.media.filter(r => r.key === key));
+        const r = pick(box, note.media.filter(r => r.key === key && !r.diagram));
         if (r)
             mediaRecord(box, r);
     }
     used.clear();
     let mathChanged = false;
+    for (const diagram of allNodes(el, '.an-diagram-block')) {
+        const record = pick(diagram, note.media.filter(r => r.diagram));
+        const caption = diagram.querySelector<HTMLElement>('.an-diagram-caption');
+        if (caption && caption.hidden !== !record) caption.hidden = !record;
+        if (record) mediaRecord(diagram, record);
+    }
+    used.clear();
     for (const mjx of allNodes(el, 'mjx-container[display="true"]')) {
         const r = pick(mjx, note.equations);
         if (r)
@@ -272,6 +279,8 @@ function createLiveExtension(plugin: AcademicNotes) {
                 catch {
                     return null;
                 }
+                const diagram = node.matches('.an-diagram-block') && note.media.find(r => r.diagram && r.line <= line && r.endLine >= line);
+                if (diagram) return { lineStart: diagram.line, lineEnd: diagram.endLine };
                 const eq = note.equations.find(r => r.line <= line && r.endLine >= line);
                 if (eq && !node.matches('.callout'))
                     return { lineStart: eq.line, lineEnd: eq.endLine };

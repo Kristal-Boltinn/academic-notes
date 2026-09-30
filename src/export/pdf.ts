@@ -1,9 +1,11 @@
 import { t } from '../i18n';
 import { Platform } from 'obsidian';
 import { prepareMediaForPrint } from './pagination';
+import { createFloatLayout, normalizeFloatOptions } from './floats';
 import type { BrowserWindow as ElectronWindow, BrowserWindowConstructorOptions } from 'electron';
 import { finishPdf, measurePdf, type ExportMeta } from './pdf-postprocess';
 type WindowConstructor = new (options: BrowserWindowConstructorOptions) => ElectronWindow;
+const floatFallbackMessage = (reason: string) => reason === 'round-limit' ? t('超过最大调整次数，保留留白。') : ['final-validation','calibration-limit'].includes(reason) ? t('目录校准后图片边界改变，保留留白。') : t('图片测量信息不足，保留留白。');
 // Only this small, fixed shell uses a data URL. The full snapshot stays in a Blob,
 // avoiding Chromium's URL length limit and any filesystem access by the plugin.
 const PRINT_CSP = "default-src 'none'; img-src data: blob:; style-src 'unsafe-inline' data:; font-src data:; script-src 'none'; base-uri 'none'; form-action 'none'";
@@ -32,7 +34,7 @@ export function pdfAvailability() {
     }
 }
 /** Only called with an internally generated snapshot. No document scripts or network are enabled. */
-export async function exportPdf(html: string, log: (line: string) => void = () => { }, signal?: AbortSignal, Window: WindowConstructor = nativeWindow()) {
+export async function exportPdf(html: string, log: (line: string) => void = () => { }, signal?: AbortSignal, Window: WindowConstructor = nativeWindow(), figureOptions: { mode?: string; maxRounds?: number } = {}) {
     if (signal?.aborted)
         throw new Error(t("导出已取消。"));
     // Enforce the policy before any snapshot resources are parsed. Blob
@@ -95,42 +97,70 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
             margins: { top: 18 / 25.4, right: 18 / 25.4, bottom: 20 / 25.4, left: 18 / 25.4 },
             scale: 1
         };
-        let previous = '', finalBytes: Uint8Array | undefined;
+        const floatOptions = normalizeFloatOptions(figureOptions.mode, figureOptions.maxRounds);
+        let floatReport = { mode: floatOptions.mode, attempts: 0, shrunk: 0, moved: 0, skipped: 0, fallback: '' };
+        if (floatOptions.mode !== 'off') {
+            await wc.executeJavaScript(`globalThis.__academicFloat = (${createFloatLayout.toString()})(${JSON.stringify(floatOptions)}); void 0`);
+            for (let round = 0; round <= floatOptions.maxRounds + 2; round++) {
+                if (signal?.aborted) throw new Error(t('导出已取消。'));
+                const trial = await wc.printToPDF(options), positions = (await measurePdf(trial)).positions;
+                const step = await wc.executeJavaScript(`globalThis.__academicFloat.step(${JSON.stringify(positions)})`) as ReturnType<ReturnType<typeof createFloatLayout>['step']>;
+                floatReport = step.report;
+                if (!step.changed) break;
+                if (round === floatOptions.maxRounds + 2) {
+                    const reset = await wc.executeJavaScript("globalThis.__academicFloat.rollback('round-limit')") as ReturnType<ReturnType<typeof createFloatLayout>['rollback']>;
+                    floatReport = reset.report; break;
+                }
+                log(t('图片排版实验：第 {0} 次调整', floatReport.attempts));
+            }
+            if (floatReport.fallback) log(t('图片排版实验已回退：') + floatFallbackMessage(floatReport.fallback));
+        }
+        let finalBytes: Uint8Array | undefined;
         let measured: Awaited<ReturnType<typeof measurePdf>> | undefined;
         let iterations = 0;
-        for (iterations = 1; iterations <= 6; iterations++) {
-            if (signal?.aborted)
-                throw new Error(t("导出已取消。"));
-            log(t('打印并校准目录：第 {0} 轮', iterations));
-            finalBytes = await wc.printToPDF(options);
-            measured = await measurePdf(finalBytes);
-            for (const entry of meta.entries)
-                if (!measured.positions[entry.id])
-                    throw new Error(t("无法定位 PDF 标题：") + entry.title);
-            const signature = JSON.stringify([measured.pages, meta.entries.map(e => measured!.positions[e.id].page)]);
-            if (signature === previous)
-                break;
-            const positions = JSON.stringify(measured.positions);
-            await wc.executeJavaScript(`((positions) => {
+        for (let pass = 0; pass < 2; pass++) {
+            let previous = '';
+            for (iterations = 1; iterations <= 6; iterations++) {
+                if (signal?.aborted)
+                    throw new Error(t("导出已取消。"));
+                log(t('打印并校准目录：第 {0} 轮', iterations));
+                finalBytes = await wc.printToPDF(options);
+                measured = await measurePdf(finalBytes);
+                for (const entry of meta.entries)
+                    if (!measured.positions[entry.id])
+                        throw new Error(t("无法定位 PDF 标题：") + entry.title);
+                const signature = JSON.stringify([measured.pages, meta.entries.map(e => measured!.positions[e.id].page)]);
+                if (signature === previous)
+                    break;
+                const positions = JSON.stringify(measured.positions);
+                await wc.executeJavaScript(`((positions) => {
         document.querySelectorAll('[data-phb-page]').forEach(el => {
           const position = positions[el.dataset.phbPage];
           if (!position) throw new Error('Missing printed destination');
           el.textContent = String(position.page + 1);
         });
       })(${positions})`);
-            previous = signature;
+                previous = signature;
+            }
+            const calibrationFailed = iterations > 6 || !finalBytes || !measured;
+            if (pass === 0 && floatOptions.mode !== 'off' && (calibrationFailed || !(await wc.executeJavaScript(`globalThis.__academicFloat.validate(${JSON.stringify(measured!.positions)})`) as boolean))) {
+                const reason = calibrationFailed ? 'calibration-limit' : 'final-validation';
+                const reset = await wc.executeJavaScript(`globalThis.__academicFloat.rollback(${JSON.stringify(reason)})`) as ReturnType<ReturnType<typeof createFloatLayout>['rollback']>;
+                floatReport = reset.report;
+                log(t('图片排版实验已回退：') + floatFallbackMessage(floatReport.fallback)); continue;
+            }
+            if (calibrationFailed) throw new Error(t("6 轮后目录页码仍未稳定，请调整目录标题或字体。"));
+            break;
         }
-        if (iterations > 6 || !finalBytes || !measured)
-            throw new Error(t("6 轮后目录页码仍未稳定，请调整目录标题或字体。"));
         // Remove probe annotations from the measured PDF itself, avoiding a divergent final reprint.
-        const finished = await finishPdf(finalBytes, meta, measured.positions);
+        const finished = await finishPdf(finalBytes!, meta, measured!.positions);
         const overflow = await wc.executeJavaScript(`(${findOverflow.toString()})()`) as ReturnType<typeof findOverflow>;
         return {
             bytes: finished.bytes,
             report: {
                 ...finished.stats, iterations, engine: 'Electron printToPDF', warnings: meta.warnings || [],
-                horizontalOverflow: overflow, mediaPagination,
-                entries: meta.entries.map(e => ({ ...e, ...measured.positions[e.id], printedPage: measured.positions[e.id].page + 1 }))
+                horizontalOverflow: overflow, mediaPagination, figureLayout: floatReport,
+                entries: meta.entries.map(e => ({ ...e, ...measured!.positions[e.id], printedPage: measured!.positions[e.id].page + 1 }))
             }
         };
     }

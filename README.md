@@ -17,6 +17,7 @@ The mathematical environments are visually inspired by [ElegantBook](https://git
 - Draw commutative diagrams with a local grid editor (Beta), or use the optional TikZJax integration.
 - Add clickable tables of contents, PDF bookmarks, and measured PDF page numbers.
 - Export a single note or a multi-note book to PDF or HTML without modifying the source notes.
+- Optionally reduce PDF page gaps with selectable 80% shrinking and safe paragraph movement (experimental).
 - Process notes locally, without telemetry, an account, or a separately installed export engine.
 
 ## Installation
@@ -269,10 +270,12 @@ For abbreviation expansion, the optional [LaTeX Suite snippets](examples/latex-s
 
 1. Run **Academic Notes: Insert or edit commutative diagram (Beta)** from the command palette. Choose a 2×2 or 3×3 grid.
 2. Click a point to enable/select it, then enter its **Node formula**, such as `M \otimes_R N`. Disable a point with **Enable selected node**. Labels use Obsidian's LaTeX math renderer; `$...$` is optional.
-3. Choose **Connect arrows**, then click the source and target. Select an arrow to enter a label, choose a solid/dashed line, or move the label above/below or left/right. **Undo** restores recent changes, including nodes removed by shrinking the grid.
-4. Click **Save diagram**. The result is stored in an `academic-diagram` JSON code block. Use the **Edit diagram** button in the rendered note, or place the cursor inside the code block and run the command again.
+3. Choose **Connect arrows**, then click the source and target. Tap an arrow in the preview or its list button to select it, enter a label, choose a solid/dashed line, or move the label above/below or left/right. **Delete selected arrow** removes that arrow. **Undo** restores recent changes, including nodes removed by shrinking the grid.
+4. Optionally enter a **Caption**, then click **Save diagram**. The result is stored in an `academic-diagram` JSON code block. Use **Edit diagram** to reopen it, or **Delete diagram** to remove it directly from reading view or Live Preview, without opening source mode.
 
-The first Beta supports straight arrows, one arrow per ordered pair, 2×2/3×3 grids, and single-line labels up to 200 characters. The diagram renders locally in reading view and Live Preview and is preserved in HTML/PDF exports. Put its code block inside a `figure` callout when you want a numbered caption and cross-reference. A complete editable example is in [examples/commutative-diagram.md](examples/commutative-diagram.md).
+The Beta supports straight arrows, one arrow per ordered pair, 2×2/3×3 grids, and single-line labels up to 200 characters. Formulas and arrows share SVG coordinates, including in narrow mobile views. Diagrams render locally in reading view and Live Preview and are preserved in HTML/PDF exports.
+
+Standalone diagrams share the **Figure** counter with ordinary pictures, in source order. A caption is optional. New diagrams receive a unique `^fig-diagram-N` block ID; reference them with `[[#^fig-diagram-1]]` or a cross-file link. For older diagrams, add an ID after the code fence manually or with the add-block-ID command. A diagram already inside a `figure` or `subfigure` callout uses its enclosing caption and is not counted twice. Deleting a standalone diagram also removes its adjacent owned block ID. A complete editable example is in [examples/commutative-diagram.md](examples/commutative-diagram.md).
 
 ## TikZ with the optional TikZJax plugin
 
@@ -354,7 +357,22 @@ Outputs default to `_exports/` inside the vault. Only vault-relative output dire
 
 PDF output uses A4 pages. Figures, subfigure groups and captions stay together when they fit on one page. A group that does not fit in the remaining space moves to the next page. Taller drawings are proportionally reduced to fit the usable page height; individual images are protected too. Very long textual legends can span pages once reducing the pictures is insufficient. The pagination report includes `mediaPagination` counts for protected groups, scaled groups and remaining oversized groups.
 
-This is document-order pagination: later paragraphs do not move ahead of a figure to fill the empty space as LaTeX floats can.
+### Experimental figure layout
+
+On desktop, open **Settings → Academic Notes → Figure layout priority (experimental)**. The default is **Keep whitespace (off)**. Choose a priority:
+
+| Priority | Behavior |
+|---|---|
+| Shrink to 80% → move → keep gap | First reduce picture dimensions to 80%. Keep it in place if the complete figure fits; otherwise try filling the gap with following text. |
+| Move → shrink to 80% → keep gap | First try advancing following text, then try shrinking. |
+| Shrink to 80% only | Reduce picture dimensions if that fills the gap; otherwise keep source order. |
+| Move only | Try advancing following text; otherwise keep source order. |
+
+Movement advances at most three consecutive ordinary paragraphs below a standalone `figure`/`fig` callout, leaving the complete picture and caption on the next page. It stops at headings, mathematical environments, lists, tables and other pictures. Figures inside environments are not moved. The experiment measures actual PDF boundaries and rejects changes that split a figure or advanced paragraph; captions retain their font size. Source numbering and notes stay unchanged.
+
+Set **Maximum figure adjustment attempts** to 1, 3, 6 (default) or 10. This is a total limit for the export. If another adjustment is needed after the limit, all experimental adjustments are undone and the normal page gaps remain. Changes are checked again after TOC calibration; invalid boundaries or unstable calibration also restore the normal layout. If normal TOC calibration itself fails, export still reports an error. The pagination report's `figureLayout` records attempts, shrinking, movement, skips and fallback reasons.
+
+This is a bounded experiment for explicit figure callouts. Standalone diagrams, unwrapped images, tables and text-heavy figures do not float automatically; the normal page protection remains active. HTML snapshots retain source order. A synthetic sample is in [examples/figure-floating.md](examples/figure-floating.md).
 
 ## Privacy and permissions
 
@@ -364,7 +382,7 @@ This is document-order pagination: later paragraphs do not move ahead of a figur
 - To preserve appearance, snapshots may read locally loaded CSS, fonts, and images, including local files outside the vault referenced by a theme. They are embedded in the local snapshot. Disabling theme capture reduces theme-resource access.
 - Final exports and reports are written only to the configured directory inside the vault. Reports may contain paths, note titles, and warnings; review them before public sharing. Do not publish your local `data.json` settings file.
 - Save remote images to the vault first. Export does not download remote images or CSS. Obsidian's and other plugins' network behavior is outside this plugin's control.
-- Indexing and export do not rewrite notes. The add-ID, reference, environment and diagram commands edit the current note when invoked; saving a diagram from its rendered edit button updates that diagram in the same note. Diagram data stays in the note's code block. TikZJax is an independently installed optional plugin; consult its documentation for its own permissions and behavior.
+- Indexing and export do not rewrite notes. The add-ID, reference, environment and diagram commands edit the current note when invoked; rendered diagram edit/delete buttons update that diagram in the same note. Diagram data stays in the note's code block. TikZJax is an independently installed optional plugin; consult its documentation for its own permissions and behavior.
 
 ## Troubleshooting
 
