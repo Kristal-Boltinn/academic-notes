@@ -9,13 +9,13 @@ const options = {
   plugins: [{ name: 'snapshot-css', setup(build) {
     build.onLoad({ filter: /\.css$/ }, async ({ path }) => ({ contents: await compileStyle(path), loader: 'text' }));
   } }], logLevel: 'info', legalComments: 'eof',
-  banner: { js: '/* Academic Notes 2.7.1 | MIT | generated from src/main.ts */' }
+  banner: { js: `/* Academic Notes ${JSON.parse(await readFile('manifest.json', 'utf8')).version} | MIT | generated from src/main.ts */` }
 };
 const licenseFiles = (await readdir('licenses')).sort();
 options.footer = { js: '/*! Bundled dependency licenses\n' +
   (await Promise.all(licenseFiles.map(async file => '\n' + file + '\n' + await readFile('licenses/' + file, 'utf8')))).join('\n') + '\n*/' };
 async function buildStyles() {
-  const files = ['src/styles/callouts.css', 'snippets/academic-layout.css', 'src/styles/ui.css'];
+  const files = ['src/styles/callouts.css', 'snippets/academic-layout.css', 'src/styles/ui.css', 'src/styles/diagrams.css'];
   await writeFile('styles.css', (await Promise.all(files.map(compileStyle))).join('\n'));
 }
 await buildStyles();

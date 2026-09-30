@@ -1,5 +1,15 @@
 export * from './obsidian-mock';
 import { StateField } from '@codemirror/state';
+import { mathjax } from 'mathjax-full/js/mathjax.js';
+import { TeX } from 'mathjax-full/js/input/tex.js';
+import { SVG } from 'mathjax-full/js/output/svg.js';
+import { browserAdaptor } from 'mathjax-full/js/adaptors/browserAdaptor.js';
+import { RegisterHTMLHandler } from 'mathjax-full/js/handlers/html.js';
+import { AllPackages } from 'mathjax-full/js/input/tex/AllPackages.js';
+RegisterHTMLHandler(browserAdaptor());
+const mathDocument = mathjax.document('', { InputJax: new TeX({ packages: AllPackages }), OutputJax: new SVG({ fontCache: 'local' }) });
+export const renderMath = (source: string, display: boolean) => mathDocument.convert(source, { display, em: 16, ex: 8, containerWidth: 700 }) as HTMLElement;
+export const finishRenderMath = async () => {};
 export const editorInfoField = StateField.define({ create: () => ({ file: { path: 'live.md' } }), update: value => value });
 export const editorLivePreviewField = StateField.define({ create: () => true, update: value => value });
 export class PluginSettingTab {

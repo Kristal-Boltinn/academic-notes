@@ -14,6 +14,7 @@ function helpers() {
     if (options.cls) el.className = options.cls;
     if (options.text) el.textContent = options.text;
     if (options.type) el.setAttribute('type', options.type);
+    if ('value' in options) (el as HTMLInputElement).value = options.value;
     for (const [key, value] of Object.entries(options.attr || {})) el.setAttribute(key, String(value));
     return el;
   };
@@ -52,7 +53,8 @@ export async function runUiRegressions() {
     await settle();
     check(tab.containerEl.firstElementChild === firstRow, 'appearance must not recreate other settings');
     check(Math.abs(scroll.scrollTop - top) < 2, `${id}: settings scroll position changed`);
-    check(document.activeElement === control(id), `${id}: control focus lost`);
+    if (el instanceof HTMLSelectElement) check(document.activeElement !== control(id), `${id}: native picker must not reopen through refocus`);
+    else check(document.activeElement === control(id), `${id}: control focus lost`);
     if (['laurel', 'compass', 'orbit'].includes(id)) check(control(id).getAttribute('aria-pressed') === 'true', 'repeated gallery update must affect the visible section');
   }
   scroll.remove();

@@ -83,6 +83,10 @@ body.phb-export .phb-toc { font-size:10.5pt; }
   /* Keep a display formula (including a matrix/cases pair) on one page. */
   body.phb-export :is(.math-block,.phb-math[data-display="true"],mjx-container[display="true"]) { break-inside:avoid !important; }
   body.phb-export tr { break-inside:avoid; }
+  body.phb-export .callout.an-print-figure { display:block !important; }
+  body.phb-export :is(.an-print-figure,.an-print-image,img) { break-inside:avoid; }
+  body.phb-export .an-print-figure > .callout-title { break-before:avoid; }
+  body.phb-export .an-print-figure.an-print-oversized { break-inside:auto; }
 }
 
 /* MathJax accessibility MathML must not be painted beside the SVG. */
@@ -95,5 +99,5 @@ body.phb-export .phb-callout-wrap {
   break-inside:auto; box-sizing:border-box;
 }
 body.phb-export .phb-callout-wrap > .callout[data-callout] { margin:0 !important; }
-@page { background: var(--phb-page-background, white); }
+@page { size:A4; margin:18mm 18mm 20mm; background: var(--phb-page-background, white); }
 .phb-glyph-cache { position: absolute; width: 0; height: 0; overflow: hidden; }

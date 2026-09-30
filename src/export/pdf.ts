@@ -1,5 +1,6 @@
 import { t } from '../i18n';
 import { Platform } from 'obsidian';
+import { prepareMediaForPrint } from './pagination';
 import type { BrowserWindow as ElectronWindow, BrowserWindowConstructorOptions } from 'electron';
 import { finishPdf, measurePdf, type ExportMeta } from './pdf-postprocess';
 type WindowConstructor = new (options: BrowserWindowConstructorOptions) => ElectronWindow;
@@ -84,6 +85,7 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
             throw new Error(t("快照缺少已解析的标题与目录信息。"));
         const printMessages = { image: t('图片无法加载：'), math: t('公式渲染错误。'), font: t('快照字体加载失败。') };
         await wc.executeJavaScript(`(${preparePrint.toString()})(${JSON.stringify(printMessages)})`);
+        const mediaPagination = await wc.executeJavaScript(`(${prepareMediaForPrint.toString()})()`) as ReturnType<typeof prepareMediaForPrint>;
         const dark = Boolean(await wc.executeJavaScript(`document.body.classList.contains('theme-dark')`));
         const options = {
             pageSize: 'A4' as const, printBackground: true, preferCSSPageSize: true,
@@ -127,7 +129,7 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
             bytes: finished.bytes,
             report: {
                 ...finished.stats, iterations, engine: 'Electron printToPDF', warnings: meta.warnings || [],
-                horizontalOverflow: overflow,
+                horizontalOverflow: overflow, mediaPagination,
                 entries: meta.entries.map(e => ({ ...e, ...measured.positions[e.id], printedPage: measured.positions[e.id].page + 1 }))
             }
         };

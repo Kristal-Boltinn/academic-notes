@@ -1,3 +1,12 @@
+# Community review follow-up: 2.8.0
+
+- Appearance dropdown refreshes preserve scroll but intentionally do not restore select focus, which could reopen native option menus.
+- Proof references keep Obsidian's original link elements. Empty headers are distinguished from inline named headers through a scoped class.
+- Diagram data is validated JSON stored in a note. Nodes, arrows and label limits are enforced; edits use the active editor or Obsidian's vault.process API with stale-content checks. Rendering creates SVG geometry and uses Obsidian's native MathJax, without interpreting labels as HTML.
+- TikZ compilation remains in the separately installed optional TikZJax plugin. Academic Notes only waits for rendered SVG and namespaces IDs before snapshotting. No TikZ compiler or dependency installer is bundled.
+- Print-only media dimensions are calculated inside the existing isolated Chromium window. One scoped CSS priority declaration ensures protected figures use fragmentable block layout despite captured theme rules. No filesystem or network capabilities were added.
+- MathJax 3 is a development-only browser fixture dependency; it verifies formula labels using a real renderer and is absent from main.js. The xmldom test dependency is pinned through an override to 0.9.12.
+
 # Community review follow-up: 2.7.1
 
 - Restrict appearance settings redraws to their own section and preserve scroll/focus.

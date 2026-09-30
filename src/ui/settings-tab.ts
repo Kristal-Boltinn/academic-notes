@@ -33,11 +33,14 @@ class AcademicSettings extends PluginSettingTab {
             if (node.scrollTop) positions.push([node, node.scrollTop]);
         const focused = container.ownerDocument.activeElement as HTMLElement | null;
         const control = focused?.dataset.anControl;
+        // Refocusing a replaced native select can reopen its picker on mobile.
+        const restoreFocus = focused?.tagName !== 'SELECT';
+        if (!restoreFocus) focused?.blur();
         const staging = container.ownerDocument.win.createDiv();
         this.renderAppearance(staging);
         // Replace only this section, in one operation, without emptying the settings page.
         container.replaceChildren(...staging.childNodes);
-        if (control) container.querySelector<HTMLElement>(`[data-an-control="${control}"]`)?.focus({ preventScroll: true });
+        if (control && restoreFocus) container.querySelector<HTMLElement>(`[data-an-control="${control}"]`)?.focus({ preventScroll: true });
         for (const [node, top] of positions) node.scrollTop = top;
     }
     renderAppearance(container: HTMLElement) {

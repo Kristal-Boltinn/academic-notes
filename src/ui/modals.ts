@@ -119,7 +119,7 @@ class EnvironmentModal extends Modal {
         let kind: EnvironmentKind = 'subfigures', count = 2, columns: FigureLayout['columns'] = 'auto', height = '';
         let group: HTMLDivElement;
         new Setting(this.contentEl).setName(t('环境类型')).addDropdown(d => d.addOptions({
-            thm: t('定理'), def: t('定义'), proof: t('证明'), remark: t('注记'), figure: t('单图'), subfigures: t('子图组'), table: t('表格')
+            thm: t('定理'), def: t('定义'), proof: t('证明'), remark: t('注记'), figure: t('单图'), subfigures: t('子图组'), table: t('表格'), tikz: 'TikZ (TikZJax)'
         }).setValue(kind).onChange(v => { kind = v as EnvironmentKind; group.hidden = kind !== 'subfigures'; }));
         group = this.contentEl.createDiv();
         new Setting(group).setName(t('子图数量')).addDropdown(d => d.addOptions(Object.fromEntries(Array.from({ length: 11 }, (_, i) => [String(i + 2), String(i + 2)]))).setValue('2').onChange(v => { count = Number(v); }));

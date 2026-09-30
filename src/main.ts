@@ -15,6 +15,9 @@ import { appearanceVariables, appearanceValues } from './rendering/custom-appear
 import { ProgressModal, ReferencePicker, ReferenceSuggest, BookPicker, EnvironmentModal } from './ui/modals';
 import { AcademicSettings } from './ui/settings-tab';
 import { exportPdf, pdfAvailability } from './export/pdf';
+import { waitForTikz } from './export/tikz';
+import { openDiagramEditor, diagramProcessor } from './ui/diagram-modal';
+import diagramCss from './styles/diagrams.css';
 import calloutCss from './styles/callouts.css';
 import layoutCss from '../snippets/academic-layout.css';
 import documentCss from './styles/document.css';
@@ -85,6 +88,8 @@ export default class AcademicNotes extends Plugin {
         this.addCommand({ id: 'insert-reference', name: t("插入定理、公式或图表引用"), editorCallback: (editor, view) => new ReferencePicker(this, editor, view.file).open() });
         this.addCommand({ id: 'label-block', name: t("为光标所在公式、定理或图表添加块 ID"), editorCallback: (editor, view) => this.labelBlock(editor, view.file) });
         this.addCommand({ id: 'insert-environment', name: t('插入学术环境'), editorCallback: editor => new EnvironmentModal(this.app, editor).open() });
+        this.addCommand({ id: 'edit-diagram', name: t('插入或编辑交换图（Beta）'), editorCallback: editor => { try { openDiagramEditor(this.app, editor); } catch (error) { this.fail(t('编辑交换图'), error); } } });
+        this.registerMarkdownCodeBlockProcessor('academic-diagram', (source, el, ctx) => diagramProcessor(this.app, source, el, ctx));
         this.addSettingTab(new AcademicSettings(this.app, this));
         this.registerMarkdownPostProcessor((el, ctx) => this.postprocess(el, ctx), 110);
         const tocProcessor = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -486,7 +491,7 @@ export default class AcademicNotes extends Plugin {
             const q = Engine.quote(raw), b = q.body.match(/^\s*\^([\w-]+)\s*$/);
             if (b)
                 return q.prefix + '<span class="phb-anchor" data-phb-block="' + b[1] + '"></span>';
-            return raw;
+            return raw.replace(/^([ \t]*(?:>[ \t]*)+\[!(?:proof|pf)(?:\|[^\]]*)?\][+-]?)(?=\[\[)/i, '$1 ');
         }).join('\n');
     }
     async snapshot({ files, options }: ExportSelection, log: ProgressModal) {
@@ -537,6 +542,7 @@ export default class AcademicNotes extends Plugin {
                 stage.appendChild(section);
                 await MarkdownRenderer.render(this.app, this.exportSource(note, graph), section, f.path, component);
                 await Obs.finishRenderMath();
+                await waitForTikz(section, 60000, () => this.active);
                 // Map declaration anchors to their actual rendered boxes/equations.
                 const boxes = [...section.querySelectorAll<HTMLElement>('.callout[data-callout]')], math = [...section.querySelectorAll<HTMLElement>('mjx-container[display="true"]')];
                 const consumed = new Set();
@@ -545,7 +551,7 @@ export default class AcademicNotes extends Plugin {
                     if (box) {
                         consumed.add(box);
                         if (rec.kind === 'theorem')
-                            titleRecord(box, rec);
+                            titleRecord(box, rec, graph);
                         else
                             mediaRecord(box, rec);
                         if (rec.id)
@@ -602,11 +608,12 @@ export default class AcademicNotes extends Plugin {
                     copied.add(e.id);
                 }
             } });
-            const baseCss = calloutCss + '\n' + layoutCss, printCss = documentCss;
+            const baseCss = calloutCss + '\n' + layoutCss + '\n' + diagramCss, printCss = documentCss;
             let css = this.settings.captureTheme ? await this.collectCss(doc, meta.warnings) : baseCss;
             const bodyStyle = doc.defaultView!.getComputedStyle(doc.body), variables = [...bodyStyle].filter(k => k.startsWith('--')).map(k => `${k}:${bodyStyle.getPropertyValue(k)};`).join('');
             const classes = [...doc.body.classList].filter(c => !['is-mobile', 'is-phone'].includes(c)).join(' ') + ' phb-export';
             stage.querySelectorAll('script,iframe,object,embed,form,audio,video').forEach(e => e.remove());
+            stage.querySelectorAll('.an-diagram-edit').forEach(e => e.remove());
             stage.querySelectorAll('*').forEach(e => [...e.attributes].forEach(a => { if (a.name.toLowerCase().startsWith('on') || (['href', 'src'].includes(a.name) && /^javascript:/i.test(a.value)))
                 e.removeAttribute(a.name); }));
             const csp = "default-src 'none'; img-src data: blob:; style-src 'unsafe-inline' data:; font-src data:; script-src 'none'; base-uri 'none'; form-action 'none'";

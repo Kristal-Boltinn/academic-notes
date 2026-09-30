@@ -14,4 +14,6 @@ Complete license texts for bundled dependencies are in `licenses/` and preserved
 
 Obsidian provides its own API and math renderer; neither Obsidian nor MathJax is redistributed here. Electron's host runtime is provided by Obsidian. The separate Electron npm dependency is used only for development tests and is not bundled into the plugin. Electron, esbuild, TypeScript and the Obsidian type definitions retain their own licenses in their npm packages.
 
+Browser drawing regressions use mathjax-full 3.2.2 (Apache-2.0), with its license retained in the npm package. This development dependency supplies real SVG formula layout for tests and is excluded from the installed plugin. The optional TikZ integration delegates rendering to the user's installed TikZJax plugin; no TikZJax code is bundled.
+
 Examples and test drawings in this repository are synthetic and distributed under this project's MIT license. User notes, local settings, fonts and exported documents remain outside the software license.

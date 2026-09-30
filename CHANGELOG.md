@@ -1,3 +1,12 @@
+# 2.8.0
+
+- Close appearance dropdowns after selection without losing the settings scroll position.
+- Resolve Proof header references to theorem/lemma/claim type and number, including compact `[!proof][[...]]` syntax. Empty Proof headers occupy their own line; an empty quoted line explicitly separates named headers from the body.
+- Add a local commutative diagram editor (Beta): clickable 2×2/3×3 grids, native MathJax node and arrow labels, straight solid/dashed arrows, label placement and undo. Save diagrams as editable `academic-diagram` code blocks in notes.
+- Add an optional TikZJax template and export integration. Wait for static SVG, isolate glyph IDs between chapters and report missing or unfinished rendering before export.
+- Keep figures, subfigure groups and captions together when they fit a page. Scale oversized visuals proportionally for A4 printing; source order is retained without automatic float reordering.
+- Expand bilingual usage guides, synthetic examples and browser/PDF regression coverage.
+
 # 2.7.1
 
 - Keep the settings page at its current scroll position and retain control focus when choosing motifs, switching environments, enabling colors or resetting appearance.

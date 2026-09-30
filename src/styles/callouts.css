@@ -401,6 +401,8 @@ body .callout[data-callout]:is(
   }
   &:is([data-callout="proof"],[data-callout="pf"]) {
     & > .callout-title { font-style: italic; }
+    &.an-proof-own-line > .callout-title { float: none; --an-title-margin: 0 0 .35em; }
+    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before { content: " "; }
     /* Attach one QED to the final paragraph. Other endings (math, lists,
      * nested callouts) receive a separate final line; never mark every child. */
     & > .callout-content > p:last-child::after {

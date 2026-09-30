@@ -26,6 +26,7 @@ export interface SourceRecord {
     subletter?: string;
     referenced?: boolean;
     layout?: FigureLayout;
+    proofOwnLine?: boolean;
 }
 export interface SourceReference {
     file: string;
@@ -165,7 +166,7 @@ function parse(path: string, source: string, cache: {
         const q = quote(proseLines[line]);
         if (!q.depth)
             continue;
-        const m = q.body.match(/^\[!([\w-]+)(?:\|([^\]]*))?\]([+-])?(?:[ \t]+(.*))?\r?$/);
+        const m = q.body.match(/^\[!([\w-]+)(?:\|([^\]]*))?\]([+-])?[ \t]*(.*?)\r?$/);
         if (!m || !(canon(m[1]) || mediaCanon(m[1])))
             continue;
         let endLine = line;
@@ -184,7 +185,8 @@ function parse(path: string, source: string, cache: {
         const rec: SourceRecord = { kind: canon(m[1]) ? 'theorem' : key, key, rawType: m[1], path, line, endLine, from: starts[line],
             to: starts[endLine] + lines[endLine].length, depth: q.depth, title: (m[4] || '').trim(),
             manual: meta && !['auto', '*', '-'].includes(meta) ? meta : null,
-            suppress: meta === '' || meta === '*' || meta === '-', number: '', id: null, ids: [], layout: figure?.layout };
+            suppress: meta === '' || meta === '*' || meta === '-', number: '', id: null, ids: [], layout: figure?.layout,
+            proofOwnLine: key === 'proof' && (!(m[4] || '').trim() || !quote(lines[line + 1] || '').body.trim()) };
         (rec.kind === 'theorem' ? theorems : media).push(rec);
         callouts.push(rec);
         records.push(rec);

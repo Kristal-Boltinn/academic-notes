@@ -12,6 +12,7 @@ import { pdfAvailability } from '../src/export/pdf';
 import { environmentTemplate } from '../src/ui/environment';
 import { figureMetadata } from '../src/rendering/figure-layout';
 import { appearanceValues, parseAppearance, titleInk, MOTIFS } from '../src/rendering/custom-appearance';
+import { parseDiagram, diagramFence, diagramBlocks, resizeDiagram, removeNode } from '../src/diagrams/model';
 
 test('plugin lifecycle registers new commands, drops removed settings and restores appearance', async () => {
   const classes = new Set(['theme-light']);
@@ -30,7 +31,7 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
   try {
     setTestLanguage('en');
     await plugin.onload();
-    assert.equal(plugin.commands.length, 10);
+    assert.equal(plugin.commands.length, 11);
     assert.equal(plugin.commands.find((c: any) => c.id === 'export-current-pdf').name, 'Export current note to PDF');
     assert.ok(!plugin.commands.some((c: any) => c.id === 'setup-pdf'));
     for (const key of ['legacy', 'legacyCaptions', 'followPhycat', 'pythonPath']) assert.ok(!(key in plugin.settings));
@@ -44,6 +45,28 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
     assert.equal(inline.has('--an-symbol-thm'), false);
     assert.ok(!classes.has('phb-neutral-body') && !classes.has('an-active'));
   } finally { globalThis.window = previous.window; globalThis.document = previous.document; globalThis.MutationObserver = previous.observer; }
+});
+
+test('proof references parse without a space and preserve own-line intent and chapter numbering', () => {
+  const a = Engine.parse('a.md', '> [!claim] A claim\n> Statement.\n\n^claim-a');
+  const b = Engine.parse('b.md', '> [!proof][[a#^claim-a]]\n> Argument.\n\n> [!proof]\n> New-line argument.');
+  const graph = Engine.graph([a, b], {}, undefined, new Map([['a.md', { chapter: 1, mode: 'chapter' }], ['b.md', { chapter: 2, mode: 'chapter' }]]));
+  assert.equal(b.theorems.length, 2); assert.equal(b.theorems[0].title, '[[a#^claim-a]]');
+  assert.equal(b.theorems[0].proofOwnLine, false); assert.equal(b.theorems[1].proofOwnLine, true);
+  assert.equal(b.refs[0].target, a.theorems[0]); assert.equal(graph.resolve('a#^claim-a', 'b.md')?.number, '1.1');
+  const plugin: any = new AcademicNotes(); plugin.settings = { ...Engine.DEFAULTS };
+  assert.match(plugin.exportSource(b, graph), /> \[!proof\] \[\[a#\^claim-a\|clm 1\.1\]\]/);
+});
+
+test('diagram data round-trips safely, finds quoted blocks and prunes invalid endpoints on resize', () => {
+  const data = parseDiagram(JSON.stringify({ version: 1, grid: 3, nodes: [{ id: 'a', row: 0, col: 0, label: 'M \\otimes_R N' }, { id: 'b', row: 2, col: 2, label: 'P' }], arrows: [{ id: 'f', from: 'a', to: 'b', label: '\\exists! f', style: 'dashed', side: 'above' }] }));
+  const fence = diagramFence(data, '> '), note = 'Intro\n\n' + fence + '\n\nConclusion';
+  const [block] = diagramBlocks(note); assert.equal(block.prefix, '> '); assert.equal(note.slice(block.from, block.to), fence); assert.deepEqual(parseDiagram(block.source), data);
+  assert.equal(diagramBlocks('````markdown\n' + diagramFence(data) + '\n````').length, 0);
+  resizeDiagram(data, 2); assert.equal(data.nodes.length, 1); assert.equal(data.arrows.length, 0); removeNode(data, 'a'); assert.equal(data.nodes.length, 0);
+  assert.throws(() => parseDiagram('{"version":2,"grid":2,"nodes":[],"arrows":[]}'));
+  assert.throws(() => parseDiagram('{"version":1,"grid":2,"nodes":[{"id":"a","row":9,"col":0,"label":"A"}],"arrows":[]}'));
+  assert.throws(() => parseDiagram('{"version":1,"grid":2,"nodes":[],"arrows":[{"id":"f","from":"missing","to":"a","label":"f","style":"solid","side":"above"}]}'));
 });
 
 test('mobile registers numbering and HTML commands without desktop PDF', async () => {
@@ -61,7 +84,7 @@ test('mobile registers numbering and HTML commands without desktop PDF', async (
   const plugin: any = new AcademicNotes(app, { id: 'academic-notes', name: 'Academic Notes', version: '2.7.0' } as any);
   try {
     await plugin.onload();
-    assert.equal(plugin.commands.length, 7);
+    assert.equal(plugin.commands.length, 8);
     assert.ok(plugin.commands.every((command: any) => !command.id.endsWith('-pdf')));
     for (const id of ['export-current', 'export-book', 'insert-reference', 'label-block', 'insert-environment', 'refresh'])
       assert.ok(plugin.commands.some((command: any) => command.id === id), id);

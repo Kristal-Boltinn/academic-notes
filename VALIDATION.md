@@ -1,3 +1,11 @@
+# 2.8.0 Proof, diagrams and pagination
+
+- Fifteen Node regressions pass, including compact Proof references, own-line headers, cross-chapter numbering, diagram JSON validation, quoted fences and endpoint pruning. TypeScript and ESLint pass with the existing isolated print-window DOM-helper warning.
+- Browser tests cover dropdown focus suppression while preserving scroll, actual CodeMirror title/caret/scroll behavior, clickable diagram editing, undo and saving. Math labels are checked with a real development-only MathJax SVG renderer, including the tensor-product example.
+- TikZ integration tests simulate asynchronous SVG completion, missing-plugin and timeout errors, and glyph-reference isolation. The actual optional TikZJax compiler has not been exercised locally.
+- Native Electron PDF checks include an oversized picture and caption boundary probes: both must land on the same page, with one scaled group and no remaining oversized groups. Default/Minimal output has 12 pages/17 internal links; Phycat has 13 pages/25 internal links. All 39 palette cases pass. No invalid links or horizontal overflow were reported. PDF diagram and scaled-picture pages were rendered and visually inspected.
+- The built plugin loads in a simulated mobile host without Node or Electron imports. Actual Obsidian and physical iPad menu behavior remain separate acceptance checks.
+
 # 2.7.1 settings and Live Preview stability
 
 - Browser regressions exercise repeated motif choices, color toggles, environment switching and reset. They require the settings scroll position and focused control to survive, and unrelated settings DOM to remain unchanged.

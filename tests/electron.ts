@@ -35,12 +35,22 @@ async function run() {
   const win = new BrowserWindow({ show: false, width: 1000, height: 1300, webPreferences: { sandbox: true, nodeIntegration: false, contextIsolation: true, backgroundThrottling: false } });
   try {
     const wc = win.webContents;
+    wc.on('console-message', (details) => { if (details.level === 'error') console.error('Renderer:', details.message); });
     console.log('Building browser UI regression fixture');
-    const uiClient = buildSync({ stdin: { contents: "import { runUiRegressions } from './tests/browser-regression'; globalThis.runUiRegressions = runUiRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', alias: { obsidian: resolve('tests/browser-host.ts') } }).outputFiles[0].text;
+    const uiClient = buildSync({ stdin: { contents: "import { runUiRegressions } from './tests/browser-regression'; import { runFeatureRegressions } from './tests/feature-browser'; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', alias: { obsidian: resolve('tests/browser-host.ts') } }).outputFiles[0].text;
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('')));
     console.log('Running browser UI regression fixture');
     await wc.executeJavaScript(uiClient);
     console.log(await wc.executeJavaScript('runUiRegressions()'));
+    const features = await wc.executeJavaScript('runFeatureRegressions()') as { message: string; svg: string; proofMarkup: string };
+    console.log(features.message);
+    console.log('Capturing diagram and Proof examples');
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered"><h2>Commutative diagrams · Beta</h2><div class="an-diagram-figure">' + features.svg + '</div></main>')));
+    await wc.executeJavaScript('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+    writeFileSync('screenshots/diagram.png', (await wc.capturePage({ x: 20, y: 20, width: 960, height: 630 })).toPNG());
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered">' + features.proofMarkup + '</main>')));
+    writeFileSync('screenshots/proof-reference.png', (await wc.capturePage({ x: 20, y: 20, width: 960, height: 250 })).toPNG());
+    console.log('Checking palettes');
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-preview-view markdown-rendered">' + content + '</main>')));
     const palettes = { light: ['forest', 'sakura', 'mint', 'sky', 'mauve', 'golden', 'cherry', 'prussian', 'theme'], dark: ['radiation', 'vampire', 'abyss', 'theme'] };
     let cases = 0;
@@ -205,7 +215,8 @@ async function run() {
       '<p>END OF LONG PROOF. The last step establishes the required continuity.</p>');
     const book = `<main id="phb-document" class="markdown-preview-view markdown-rendered"><section class="phb-chapter" data-path="a.md" data-title="Chapter A"><h1>Chapter A</h1><h2>Compactness</h2>${content}${longProof}<h6>1.2.3 Ordinary H6 heading</h6>${paragraphs}<a data-href="b.md#Destination" href="b.md#Destination">Go to chapter B</a></section><section class="phb-chapter" data-path="b.md" data-title="Chapter B"><h1>Chapter B</h1><h2>Destination</h2>${paragraphs}</section></main>`;
     const fourFigures = groupMarkup(4).replace(/^<main[^>]*>|<\/main>$/g, '').replace('class="callout an-media"', 'class="callout an-media an-columns-4 an-uniform-height" style="--an-subfigure-height:140px;--an-max-image-ratio:2.6666666666666665"');
-    const illustratedBook = book.replace('<h2>Compactness</h2>', '<h2>Compactness</h2><div data-phb-block="thm-a">Theorem A target</div><a class="internal-link" data-href="b.md#^thm-b">Forward theorem reference</a>').replace('<h2>Destination</h2>', '<h2>Destination</h2><div data-phb-block="thm-b">Theorem B target</div><a class="internal-link" data-href="a.md#^thm-a">Backward theorem reference</a>' + figureMarkup.replace(/^<main[^>]*>|<\/main>$/g, '') + fourFigures + tableMarkup + captionlessMarkup);
+    const pageBoundaryFigure = '<div id="boundary-figure" class="callout an-media" data-callout="figure"><div class="callout-title"><div class="callout-title-inner">Tall picture, with caption kept below.</div><div id="picture-bottom"></div></div><div class="callout-content"><div id="picture-top"></div><img width="600" height="1800" style="height:1800px!important;max-height:none!important" src="data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="1800"><rect width="600" height="1800" fill="#286b76"/></svg>') + '"></div></div>';
+    const illustratedBook = book.replace('<h2>Compactness</h2>', '<h2>Compactness</h2><div data-phb-block="thm-a">Theorem A target</div><a class="internal-link" data-href="b.md#^thm-b">Forward theorem reference</a>').replace('<h2>Destination</h2>', '<h2>Destination</h2><div data-phb-block="thm-b">Theorem B target</div><a class="internal-link" data-href="a.md#^thm-a">Backward theorem reference</a>' + figureMarkup.replace(/^<main[^>]*>|<\/main>$/g, '') + fourFigures + tableMarkup + captionlessMarkup + '<div class="an-diagram-figure">' + features.svg + '</div>' + pageBoundaryFigure);
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(illustratedBook, print)));
     // Minimal Obsidian DOM helpers for the snapshot builder; the real print
     // window below has no helpers, Node access, or application runtime.
@@ -222,6 +233,9 @@ async function run() {
       const path=document.createElementNS(glyph.namespaceURI,'path');path.id='toc-test-glyph';glyph.appendChild(path);
       const use=document.createElementNS(glyph.namespaceURI,'use');use.setAttribute('href','#toc-test-glyph');glyph.appendChild(use);heading.appendChild(glyph);
       const meta=AcademicTestDoc.prepare(document.getElementById('phb-document'),{book:true,title:'Sample Book',tocDepth:6,legacyCaptions:true});
+      const pictureEntries=[{id:'phb-c2-i-picture-top',title:'Picture upper boundary',level:6,path:'b.md'},{id:'phb-c2-i-picture-bottom',title:'Picture caption boundary',level:6,path:'b.md'}];
+      pictureEntries.forEach(entry=>{document.getElementById(entry.id).style.position='relative';document.getElementById(entry.id).style.height='1px'});
+      AcademicTestDoc.addProbes(document.getElementById('phb-document'),pictureEntries);meta.entries.push(...pictureEntries);
       for(const link of document.querySelectorAll('a[data-href*="#^thm-"]')){const target=document.getElementById(link.getAttribute('href').slice(1));if(!target||target.closest('.phb-chapter')===link.closest('.phb-chapter'))throw new Error('Cross-chapter theorem reference lost its target');}
       const toc=document.querySelector('.phb-toc');
       if(toc.querySelector('em')?.textContent!==' <formula>')throw new Error('TOC lost inline formatting');
@@ -300,6 +314,8 @@ async function run() {
     assert.ok(result.report.pages >= 3);
     assert.ok(result.report.validInternalLinks >= 5, 'TOC and cross-chapter links must be internal PDF links');
     assert.ok(result.report.entries.some(e => e.title.includes('Ordinary H6')));
+    assert.equal(result.report.entries.find(e => e.id === 'phb-c2-i-picture-top')?.printedPage, result.report.entries.find(e => e.id === 'phb-c2-i-picture-bottom')?.printedPage, 'Tall picture and caption must be on the same PDF page');
+    assert.ok(result.report.mediaPagination.scaled >= 1 && result.report.mediaPagination.oversized === 0, 'PDF must fit oversized figures without cutting them');
     const pdf = await PDFDocument.load(result.bytes);
     assert.ok(pdf.catalog.get(PDFName.of('Outlines')));
     console.log(JSON.stringify({ paletteCases: cases, pdf: result.report }));

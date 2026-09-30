@@ -14,6 +14,7 @@ The mathematical environments are visually inspired by [ElegantBook](https://git
 - Reference blocks across notes, with reference suggestions and an option to number only referenced equations.
 - Choose light and dark color palettes, style nested callouts, and use three-line tables.
 - Write borderless proofs with an automatic QED square and remarks with a palette-matched title.
+- Draw commutative diagrams with a local grid editor (Beta), or use the optional TikZJax integration.
 - Add clickable tables of contents, PDF bookmarks, and measured PDF page numbers.
 - Export a single note or a multi-note book to PDF or HTML without modifying the source notes.
 - Process notes locally, without telemetry, an account, or a separately installed export engine.
@@ -86,7 +87,7 @@ Use `> [!thm]- Title` for an initially collapsed callout, or `> [!thm]+ Title` f
 
 ## Proofs and remarks
 
-Use a `proof` callout for an unnumbered proof. Its italic **Proof** label sits beside the first paragraph; a hollow square **□** appears at the end automatically. You do not need to type the square.
+Use a `proof` callout for an unnumbered proof. If the opening line has no title, **Proof** occupies its own line and the argument starts below. A hollow square **□** appears at the end automatically. A custom title or reference can sit beside the first paragraph; add an empty quoted line after the header to start the argument below it.
 
 ```markdown
 > [!proof]
@@ -96,7 +97,16 @@ Use a `proof` callout for an unnumbered proof. Its italic **Proof** label sits b
 > Thus the composition $f \circ g$ is continuous.
 ```
 
-![Proof with an inline label and an end-of-proof square](screenshots/proof.png)
+To prove a previously stated theorem, lemma or claim, put its block reference directly after the marker:
+
+```markdown
+> [!proof][[Chapter one#^claim-a]]
+> Here is the argument.
+```
+
+This displays **Proof of clm 1.1**, with a clickable reference. `> [!proof] [[#^thm-a]]` works too. The reference follows numbering settings, aliases and book chapter renumbering. Use the block ID of the mathematical environment as the target.
+
+![Proof of a referenced claim and a proof on its own line](screenshots/proof-reference.png)
 
 A `remark` callout has an inline title in a brighter shade of the selected palette's main hue, with ordinary text underneath or beside it. It has no frame, shaded background, or QED square.
 
@@ -146,6 +156,7 @@ Open the command palette (`Ctrl+P` on Windows) and search for **Academic Notes**
 | Add a unique block ID at the cursor | Add a block ID to the current equation, theorem or figure |
 | Select a target and insert its reference | Insert theorem, equation or figure reference |
 | Rebuild the index and refresh references | Rebuild index and refresh references |
+| Insert or reopen a commutative diagram | Insert or edit commutative diagram (Beta) |
 | Export the current note as PDF | Export current note to PDF |
 | Export the current note as HTML | Export current note to HTML snapshot |
 | Select notes and export a book | Select notes and export a PDF book |
@@ -243,7 +254,7 @@ Place group options on the **outer figure**, for example:
 
 - `cols=auto`: two images use up to two columns, four use up to four, and other counts use up to three. Four columns switch directly to two, then one; four-image groups never wrap as 3+1. Rows retain equal cell widths; a final partial row is centered.
 - `cols=1`, `2`, `3` or `4`: cap the column count. Narrow figures still reduce columns; a four-column cap also skips three columns. The figure's own width controls wrapping, including split panes and PDF pages.
-- `height=180` or `height=180px`: use the same target height of 180 pixels for every subfigure. Images stay proportional and fully visible. If the widest image cannot fit its column, the entire group uses the same reduced height. This explicitly overrides individual `![[image.png|300]]` widths inside this group. It is a shared image height, not a crop or a guarantee of equal visible artwork height. Accepted range: 16–1200 pixels; very tall groups may exceed a printed page.
+- `height=180` or `height=180px`: use the same target height of 180 pixels for every subfigure. Images stay proportional and fully visible. If the widest image cannot fit its column, the entire group uses the same reduced height. This explicitly overrides individual `![[image.png|300]]` widths inside this group. It is a shared image height, not a crop or a guarantee of equal visible artwork height. Accepted range: 16–1200 pixels; PDF export proportionally reduces oversized groups to fit the page, subject to the picture-pagination limits below.
 - Omit `height` to preserve individual image-width settings. These options apply to subfigures inside this group, not ordinary images. Invalid layout values are ignored. Combine with existing numbering metadata, e.g. `|A.1 cols=2 height=180` or `|* cols=2`.
 
 ![Four images on one row](screenshots/subfigures-wide.png)
@@ -251,6 +262,36 @@ Place group options on the **outer figure**, for example:
 ![The same group on two rows](screenshots/subfigures-compact.png)
 
 For abbreviation expansion, the optional [LaTeX Suite snippets](examples/latex-suite-snippets.js) provide `subfig2`, `subfig3`, `subfig4`, `subfig6`, `athm`, `aproof` and `aremark`. Merge the entries into your existing snippets array, type a trigger on a blank top-level line and press Tab; further Tab presses move between fields. See [LaTeX Suite's instructions](https://github.com/artisticat1/obsidian-latex-suite/blob/main/DOCS.md). Snippets do not create IDs; use Academic Notes' add-block-ID command when a reference is needed. The built-in insertion command needs no other plugin.
+
+## Commutative diagrams (Beta)
+
+![Tensor product universal-property diagram](screenshots/diagram.png)
+
+1. Run **Academic Notes: Insert or edit commutative diagram (Beta)** from the command palette. Choose a 2×2 or 3×3 grid.
+2. Click a point to enable/select it, then enter its **Node formula**, such as `M \otimes_R N`. Disable a point with **Enable selected node**. Labels use Obsidian's LaTeX math renderer; `$...$` is optional.
+3. Choose **Connect arrows**, then click the source and target. Select an arrow to enter a label, choose a solid/dashed line, or move the label above/below or left/right. **Undo** restores recent changes, including nodes removed by shrinking the grid.
+4. Click **Save diagram**. The result is stored in an `academic-diagram` JSON code block. Use the **Edit diagram** button in the rendered note, or place the cursor inside the code block and run the command again.
+
+The first Beta supports straight arrows, one arrow per ordered pair, 2×2/3×3 grids, and single-line labels up to 200 characters. The diagram renders locally in reading view and Live Preview and is preserved in HTML/PDF exports. Put its code block inside a `figure` callout when you want a numbered caption and cross-reference. A complete editable example is in [examples/commutative-diagram.md](examples/commutative-diagram.md).
+
+## TikZ with the optional TikZJax plugin
+
+Install and enable [TikZJax](https://github.com/artisticat1/obsidian-tikzjax) from Obsidian's Community plugins. Use **Insert academic environment → TikZ (TikZJax)** for a starter block, or write:
+
+````markdown
+```tikz
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}
+  \node (A) at (0,0) {$A$};
+  \node (B) at (3,0) {$B$};
+  \draw[->] (A) -- (B) node[midway,above] {$f$};
+\end{tikzpicture}
+\end{document}
+```
+````
+
+TikZJax also offers `tikz-cd` for handwritten commutative-diagram source; follow its documentation for supported packages. Academic Notes waits up to 60 seconds for its SVG, preserves glyph references across multiple diagrams/chapters, and includes the completed drawing in HTML/PDF. If TikZJax is missing or rendering does not finish, export stops with an explanatory error. Put a `tikz` block inside a `figure` callout to add a numbered caption.
 
 ## Appearance
 
@@ -309,6 +350,12 @@ Outputs default to `_exports/` inside the vault. Only vault-relative output dire
 
 ![Book export](screenshots/book-export.png)
 
+### Picture pagination
+
+PDF output uses A4 pages. Figures, subfigure groups and captions stay together when they fit on one page. A group that does not fit in the remaining space moves to the next page. Taller drawings are proportionally reduced to fit the usable page height; individual images are protected too. Very long textual legends can span pages once reducing the pictures is insufficient. The pagination report includes `mediaPagination` counts for protected groups, scaled groups and remaining oversized groups.
+
+This is document-order pagination: later paragraphs do not move ahead of a figure to fill the empty space as LaTeX floats can.
+
 ## Privacy and permissions
 
 - Markdown is indexed locally to resolve cross-file references, with configurable exclusions. No account, telemetry, or developer server is involved; note contents are not sent to the developer.
@@ -317,7 +364,7 @@ Outputs default to `_exports/` inside the vault. Only vault-relative output dire
 - To preserve appearance, snapshots may read locally loaded CSS, fonts, and images, including local files outside the vault referenced by a theme. They are embedded in the local snapshot. Disabling theme capture reduces theme-resource access.
 - Final exports and reports are written only to the configured directory inside the vault. Reports may contain paths, note titles, and warnings; review them before public sharing. Do not publish your local `data.json` settings file.
 - Save remote images to the vault first. Export does not download remote images or CSS. Obsidian's and other plugins' network behavior is outside this plugin's control.
-- Indexing and export do not rewrite notes. The add-ID and insert-reference commands edit the current note when invoked.
+- Indexing and export do not rewrite notes. The add-ID, reference, environment and diagram commands edit the current note when invoked; saving a diagram from its rendered edit button updates that diagram in the same note. Diagram data stays in the note's code block. TikZJax is an independently installed optional plugin; consult its documentation for its own permissions and behavior.
 
 ## Troubleshooting
 

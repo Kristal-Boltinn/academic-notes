@@ -47,7 +47,7 @@ assert.equal(typeof AcademicNotes, 'function');
 const app = { metadataCache: { on() {} }, vault: { on() {} }, workspace: { on() {}, onLayoutReady() {} } };
 const plugin = new AcademicNotes(app, { id: 'academic-notes', name: 'Academic Notes', version: '2.7.0' });
 await plugin.onload();
-assert.equal(plugin.commands.length, 7);
+assert.equal(plugin.commands.length, 8);
 assert.ok(plugin.commands.every(command => !command.id.endsWith('-pdf')));
 assert.ok(plugin.commands.some(command => command.id === 'insert-reference'));
 plugin.onunload();

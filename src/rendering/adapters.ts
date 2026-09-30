@@ -18,7 +18,7 @@ function setAttribute(node: HTMLElement, name: string, value: string) { if (node
 function setClass(node: Element, name: string, enabled = true) { if (node.classList.contains(name) !== enabled) node.classList.toggle(name, enabled); }
 /* Read-view and Live Preview adapters. No theme-name or MathLinks dependency. */
 function allNodes(el: HTMLElement, selector: string): HTMLElement[] { return [...(el.matches?.(selector) ? [el] : []), ...el.querySelectorAll<HTMLElement>(selector)]; }
-function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
+function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined, graph?: NoteGraph | null) {
     if (!r || editableLiveNode(box))
         return;
     const inner = box.querySelector(':scope > .callout-title > .callout-title-inner');
@@ -27,6 +27,10 @@ function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
     setClass(box, 'an-math-callout');
     setAttribute(box, 'data-an-type', r.key);
     setAttribute(box, 'data-an-line', String(r.line));
+    setClass(box, 'an-proof-own-line', r.key === 'proof' && !!r.proofOwnLine);
+    const proofLink = r.key === 'proof' ? r.title?.match(/^\[\[([^\]]+)\]\]$/) : null;
+    const proofTarget = proofLink && graph?.resolve(proofLink[1].split('|')[0], r.path);
+    setClass(box, 'an-proof-reference', !!proofTarget && proofTarget.kind === 'theorem');
     let label = inner.querySelector(':scope > .phb-type-label');
     if (!label) {
         const original = box.ownerDocument.win.createSpan();
@@ -41,9 +45,14 @@ function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
         label.className = 'phb-type-label';
         inner.replaceChildren(label, original);
     }
-    const text = Engine.TYPES[r.key][0] + (r.number ? ' ' + r.number : '');
+    const text = Engine.TYPES[r.key][0] + (box.classList.contains('an-proof-reference') ? ' of' : '') + (r.number ? ' ' + r.number : '');
     if (label.textContent !== text)
         label.textContent = text;
+    if (proofTarget && proofTarget.kind === 'theorem' && (!graph?.settings.respectAliases || !proofLink[1].includes('|'))) {
+        const link = inner.querySelector('a.internal-link,a[data-href]');
+        const reference = Engine.refText(proofTarget, graph!.settings);
+        if (link && link.textContent !== reference) link.textContent = reference;
+    }
 }
 /** Captions keep Obsidian's native callout tree and block links; only decorate it. */
 function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
@@ -133,7 +142,7 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
             continue;
         const r = pick(box, note.theorems.filter(r => r.key === key));
         if (r)
-            titleRecord(box, r);
+            titleRecord(box, r, graph);
     }
     used.clear();
     for (const box of allNodes(el, '.callout[data-callout]')) {

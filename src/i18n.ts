@@ -1,6 +1,19 @@
 // Application language is set from Obsidian's public getLanguage() API on load.
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
+  "TikZ 未渲染：请安装并启用可选的 TikZJax 插件，再重新导出。": "TikZ has not rendered. Install and enable the optional TikZJax plugin, then export again.",
+  "TikZ 绘图未在 60 秒内完成；请先在阅读模式确认 TikZ 源码能正常渲染。": "TikZ rendering did not finish within 60 seconds. Check that the source renders in reading view before exporting.",
+  "点击网格启用或选择节点；在连线模式依次点起点和终点。公式使用 LaTeX，可省略两侧的 $。": "Click a grid point to activate or select a node. In arrow mode, click the source then the target. Labels use LaTeX; surrounding $ signs are optional.",
+  "网格": "Grid", "操作": "Mode", "选择节点": "Select nodes", "连接箭头": "Connect arrows", "撤销": "Undo",
+  "启用当前节点": "Enable selected node", "节点公式": "Node formula", "箭头标注": "Arrow label",
+  "箭头线型": "Arrow style", "实线": "Solid", "虚线": "Dashed", "标注位置": "Label position",
+  "左侧／上方": "Left / above", "右侧／下方": "Right / below", "删除当前箭头": "Delete selected arrow",
+  "保存交换图": "Save diagram", "已选择起点，请点击终点。": "Source selected. Click the target.", "预览": "Preview",
+  "交换图编辑器（Beta）": "Commutative diagram editor (Beta)",
+  "插入或编辑交换图（Beta）": "Insert or edit commutative diagram (Beta)", "编辑交换图": "Edit diagram",
+  "笔记已变化，请重新打开交换图编辑器。": "The note changed. Reopen the diagram editor before saving.",
+  "无法唯一定位交换图，请把光标放入代码块后运行编辑命令。": "Cannot uniquely locate the diagram. Place the cursor inside its code block and run the edit command.",
+  "交换图数据无效：": "Invalid diagram data: ",
   "PDF 导出仅在 Obsidian 桌面版可用。": "PDF export is available only in Obsidian desktop.",
   "移动端可使用编号、引用、样式和 HTML 快照；PDF 导出仅在桌面版可用。": "Numbering, references, styling and HTML snapshots are available on mobile. PDF export requires Obsidian desktop.",
   "环境自定义": "Environment appearance",
