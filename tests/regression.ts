@@ -1,4 +1,5 @@
 import test from 'node:test';
+import './kp-solver';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import Engine from '../src/indexing/engine';
@@ -117,6 +118,8 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
     assert.equal(plugin.commands.find((c: any) => c.id === 'export-current-pdf').name, 'Export current note to PDF');
     assert.ok(!plugin.commands.some((c: any) => c.id === 'setup-pdf'));
     for (const key of ['legacy', 'legacyCaptions', 'followPhycat', 'pythonPath']) assert.ok(!(key in plugin.settings));
+    assert.equal(plugin.settings.kpReading, false);
+    assert.equal(plugin.settings.kpPdf, false);
     assert.equal(body.dataset.anPalette, 'mint');
     assert.ok(classes.has('phb-neutral-body'));
     assert.equal(inline.get('--an-color-thm'), '#abcdef');
@@ -181,7 +184,7 @@ test('mobile registers numbering and HTML commands without desktop PDF', async (
 
 test('language follows Obsidian with English fallback; settings values and placeholders stay stable', () => {
   const plugin: any = { settings: { ...Engine.DEFAULTS, tocDepth: 3, lightPalette: 'forest', darkPalette: 'radiation' }, saveSettings: async () => {} };
-  const names: Record<string, string> = { en: 'Numbering and references', 'zh-CN': '编号与引用', 'zh-TW': '编号与引用', de: 'Numbering and references' };
+  const names: Record<string, string> = { en: 'Paragraph typography (Beta)', 'zh-CN': '段落排版（Beta）', 'zh-TW': '段落排版（Beta）', de: 'Paragraph typography (Beta)' };
   let baseline: string[][] | undefined;
   for (const [locale, expected] of Object.entries(names)) {
     setLanguage(locale);

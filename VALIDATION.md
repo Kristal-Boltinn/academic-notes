@@ -1,3 +1,11 @@
+# 2.11.0 Knuth–Plass paragraph typography (Beta)
+
+- Twenty-five Node regressions pass. New tests prove lower whole-paragraph demerits than a feasible greedy fixture and cover glue/penalty widths, forced/forbidden breaks, first-line width, shrinking, short final lines, invalid measurements and bounded dense inputs. Existing numbering, references, diagrams, Proof, settings and PDF metadata tests remain covered; both new switches default to false.
+- Real Chromium checks cover Latin/CJK grapheme layout, common punctuation constraints, nonbreaking joins/emoji, original link/math identity and listeners, exact node restoration, unchanged selected/copied text, responsive widths, deferred reflow during selections, font changes and zero idle mutation feedback. Editable DOM, unsupported markup, explicit breaks, indentation and oversized paragraphs remain native.
+- Actual PDF line-position probes verify widow and orphan boundaries: 24 + 2 lines and 28 + 11 lines in the controlled Windows fixtures. All lines appear in order, every line fits, inline references remain valid, and measurement probes are absent from finished PDFs. The new inline line spans preserve native paragraph widow/orphan behavior. Exported paragraph and boundary pages were rendered and visually inspected.
+- Default/Minimal illustrated books have 12 pages and 19 valid internal links; Phycat has 13 pages and 35 links. No invalid links or horizontal overflow are reported. All 39 palette cases pass across the three themes. PDF cancellation/failure cleanup, memory transport, blocked Node/file/network access, media fitting, safe figure movement, 80% shrinking and rollback remain covered.
+- TypeScript, the simulated mobile release-bundle host and release checks pass. ESLint has no errors; its two native DOM-helper recommendations concern functions shared with the isolated print window. No runtime dependency or permission is added. Physical iPad/WebKit and the full Obsidian host remain separate acceptance checks.
+
 # 2.10.0 Diagram LaTeX and triangular commutativity
 
 - Twenty Node regressions cover TeX delimiters, marker topology and directed edges, non-collinearity, duplicate rejection, canonical round trips and pruning after node/arrow/grid removal. Existing numbering, references, Proof, settings and PDF metadata checks remain covered.

@@ -1,0 +1,25 @@
+/* Owned presentation spans preserve paragraph line boxes and original text. */
+.an-kp-paragraph > .an-kp-line {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+  vertical-align: top;
+  white-space: nowrap;
+  text-align: start;
+  font: inherit;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.an-kp-line > .an-kp-space {
+  display: inline-block;
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+  white-space: pre;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+/* Temporary intrinsic-width measurement, restored before the layout is painted. */
+.an-active p.an-kp-measure, body.phb-export p.an-kp-measure { white-space: nowrap !important; }

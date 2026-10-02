@@ -1,4 +1,4 @@
-/* Academic Notes 2.10.0 | MIT | generated from src/main.ts */
+/* Academic Notes 2.11.0 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -16733,7 +16733,7 @@ var require_svgPath = __commonJS({
       ret[ret.length] = { cmd, args };
       return ret;
     };
-    var apply = function(commands) {
+    var apply2 = function(commands) {
       cx = cy = px = py = sx = sy = 0;
       var cmds = [];
       for (var i = 0; i < commands.length; i++) {
@@ -16992,7 +16992,7 @@ var require_svgPath = __commonJS({
       return result;
     };
     exports2.svgPathToOperators = function(path) {
-      return apply(parse2(path));
+      return apply2(parse2(path));
     };
   }
 });
@@ -18102,32 +18102,32 @@ var require_appearances = __commonJS({
         height: height - (borderWidth + padding) * 2
       };
       if (textField.isMultiline()) {
-        var layout = layout_1.layoutMultilineText(text, {
+        var layout2 = layout_1.layoutMultilineText(text, {
           alignment: textField.getAlignment(),
           fontSize: widgetFontSize !== null && widgetFontSize !== void 0 ? widgetFontSize : fieldFontSize,
           font,
           bounds
         });
-        textLines = layout.lines;
-        fontSize = layout.fontSize;
+        textLines = layout2.lines;
+        fontSize = layout2.fontSize;
       } else if (textField.isCombed()) {
-        var layout = layout_1.layoutCombedText(text, {
+        var layout2 = layout_1.layoutCombedText(text, {
           fontSize: widgetFontSize !== null && widgetFontSize !== void 0 ? widgetFontSize : fieldFontSize,
           font,
           bounds,
           cellCount: (_c = textField.getMaxLength()) !== null && _c !== void 0 ? _c : 0
         });
-        textLines = layout.cells;
-        fontSize = layout.fontSize;
+        textLines = layout2.cells;
+        fontSize = layout2.fontSize;
       } else {
-        var layout = layout_1.layoutSinglelineText(text, {
+        var layout2 = layout_1.layoutSinglelineText(text, {
           alignment: textField.getAlignment(),
           fontSize: widgetFontSize !== null && widgetFontSize !== void 0 ? widgetFontSize : fieldFontSize,
           font,
           bounds
         });
-        textLines = [layout.line];
-        fontSize = layout.fontSize;
+        textLines = [layout2.line];
+        fontSize = layout2.fontSize;
       }
       var textColor = (_d = widgetColor !== null && widgetColor !== void 0 ? widgetColor : fieldColor) !== null && _d !== void 0 ? _d : black;
       if (widgetColor || widgetFontSize !== void 0) {
@@ -23483,16 +23483,16 @@ var require_MathItem = __commonJS({
           scale
         };
       };
-      AbstractMathItem2.prototype.state = function(state, restore) {
+      AbstractMathItem2.prototype.state = function(state, restore2) {
         if (state === void 0) {
           state = null;
         }
-        if (restore === void 0) {
-          restore = false;
+        if (restore2 === void 0) {
+          restore2 = false;
         }
         if (state != null) {
           if (state < exports2.STATE.INSERTED && this._state >= exports2.STATE.INSERTED) {
-            this.removeFromDocument(restore);
+            this.removeFromDocument(restore2);
           }
           if (state < exports2.STATE.TYPESET && this._state >= exports2.STATE.TYPESET) {
             this.outputData = {};
@@ -23504,11 +23504,11 @@ var require_MathItem = __commonJS({
         }
         return this._state;
       };
-      AbstractMathItem2.prototype.reset = function(restore) {
-        if (restore === void 0) {
-          restore = false;
+      AbstractMathItem2.prototype.reset = function(restore2) {
+        if (restore2 === void 0) {
+          restore2 = false;
         }
-        this.state(exports2.STATE.UNPROCESSED, restore);
+        this.state(exports2.STATE.UNPROCESSED, restore2);
       };
       return AbstractMathItem2;
     })();
@@ -30556,15 +30556,15 @@ var require_MathDocument = __commonJS({
         }
         return this;
       };
-      AbstractMathDocument2.prototype.state = function(state, restore) {
+      AbstractMathDocument2.prototype.state = function(state, restore2) {
         var e_10, _a;
-        if (restore === void 0) {
-          restore = false;
+        if (restore2 === void 0) {
+          restore2 = false;
         }
         try {
           for (var _b = __values2(this.math), _c = _b.next(); !_c.done; _c = _b.next()) {
             var math = _c.value;
-            math.state(state, restore);
+            math.state(state, restore2);
           }
         } catch (e_10_1) {
           e_10 = { error: e_10_1 };
@@ -30831,15 +30831,15 @@ var require_HTMLMathItem = __commonJS({
       HTMLMathItem2.prototype.updateStyleSheet = function(document2) {
         document2.addStyleSheet();
       };
-      HTMLMathItem2.prototype.removeFromDocument = function(restore) {
-        if (restore === void 0) {
-          restore = false;
+      HTMLMathItem2.prototype.removeFromDocument = function(restore2) {
+        if (restore2 === void 0) {
+          restore2 = false;
         }
         if (this.state() >= MathItem_js_1.STATE.TYPESET) {
           var adaptor = this.adaptor;
           var node = this.start.node;
           var math = adaptor.text("");
-          if (restore) {
+          if (restore2) {
             var text = this.start.delim + this.math + this.end.delim;
             if (this.inputJax.processStrings) {
               math = adaptor.text(text);
@@ -31266,17 +31266,17 @@ var require_HTMLDocument = __commonJS({
         }
         return null;
       };
-      HTMLDocument2.prototype.removeFromDocument = function(restore) {
+      HTMLDocument2.prototype.removeFromDocument = function(restore2) {
         var e_7, _a;
-        if (restore === void 0) {
-          restore = false;
+        if (restore2 === void 0) {
+          restore2 = false;
         }
         if (this.processed.isSet("updateDocument")) {
           try {
             for (var _b = __values2(this.math), _c = _b.next(); !_c.done; _c = _b.next()) {
               var math = _c.value;
               if (math.state() >= MathItem_js_1.STATE.INSERTED) {
-                math.state(MathItem_js_1.STATE.TYPESET, restore);
+                math.state(MathItem_js_1.STATE.TYPESET, restore2);
               }
             }
           } catch (e_7_1) {
@@ -57024,6 +57024,13 @@ module.exports = __toCommonJS(main_exports);
 
 // src/i18n.ts
 var ENGLISH = {
+  "\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09": "Paragraph typography (Beta)",
+  "\u9605\u8BFB\u89C6\u56FE\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C": "Use Knuth\u2013Plass line breaking in Reading view",
+  "\u6574\u6BB5\u4F18\u5316\u666E\u901A\u6B63\u6587\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002": "Optimize line breaks and spacing across ordinary paragraphs; reflow after width changes. Off by default. Live Preview and source editing are unaffected.",
+  "PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C": "Use Knuth\u2013Plass line breaking in PDF",
+  "\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u666E\u901A\u6B63\u6587\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002": "Reflow ordinary paragraphs at the final print width. HTML snapshots keep browser layout.",
+  "\u4E2D\u6587\u4E0E\u82F1\u6587\u57FA\u7840\u6BB5\u843D\u53EF\u7528\uFF1B\u94FE\u63A5\u548C\u884C\u5185\u516C\u5F0F\u4FDD\u6301\u5B8C\u6574\u3002\u4E0D\u652F\u6301\u7684\u6BB5\u843D\u6216\u8FC7\u957F\u5185\u5BB9\u81EA\u52A8\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\u3002Proof\u3001Remark\u3001\u5217\u8868\u3001\u56FE\u7247\u3001\u9996\u884C\u7F29\u8FDB\u548C\u590D\u6742\u6392\u7248\u6682\u4E0D\u5904\u7406\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002": "Supports basic Chinese and English paragraphs; links and inline math remain intact. Unsupported or oversized paragraphs use browser layout. Proof, Remark, lists, images, first-line indentation and complex layouts are excluded. No automatic hyphenation yet.",
+  "\u6BB5\u843D\u6392\u7248\uFF1A{0} \u6BB5\u5B8C\u6210\uFF0C{1} \u6BB5\u56DE\u9000\u3002": "Paragraph typography: {0} laid out, {1} fell back.",
   "\u56FE\u6CE8\uFF08\u53EF\u7559\u7A7A\uFF09": "Caption (optional)",
   "\u5220\u9664\u4EA4\u6362\u56FE": "Delete diagram",
   "\u56FE\u7247\u6392\u7248\u4F18\u5148\u7EA7\uFF08\u5B9E\u9A8C\uFF09": "Figure layout priority (experimental)",
@@ -57390,33 +57397,33 @@ function updateFigureImageRatio(box) {
   if (box.style.getPropertyValue("--an-max-image-ratio") !== ratio) box.style.setProperty("--an-max-image-ratio", ratio);
 }
 function figureMetadata(metadata) {
-  const layout = { columns: "auto" };
+  const layout2 = { columns: "auto" };
   const numbering = metadata.split(/\s+/).filter((token) => {
     if (token.startsWith("cols=")) {
       const value = token.slice(5);
-      if (/^[1-4]$/.test(value)) layout.columns = Number(value);
+      if (/^[1-4]$/.test(value)) layout2.columns = Number(value);
       return false;
     }
     if (token.startsWith("height=")) {
       const value = token.slice(7);
       if (/^\d+(?:px)?$/.test(value)) {
         const height = parseInt(value, 10);
-        if (height >= 16 && height <= 1200) layout.height = height;
+        if (height >= 16 && height <= 1200) layout2.height = height;
       }
       return false;
     }
     return true;
   }).join(" ");
-  return { numbering: numbering || (metadata.trim() ? "auto" : ""), layout };
+  return { numbering: numbering || (metadata.trim() ? "auto" : ""), layout: layout2 };
 }
-function applyFigureLayout(box, count, layout = { columns: "auto" }) {
-  const columns = layout.columns === "auto" ? count === 4 ? 4 : Math.min(3, Math.max(1, count)) : layout.columns;
+function applyFigureLayout(box, count, layout2 = { columns: "auto" }) {
+  const columns = layout2.columns === "auto" ? count === 4 ? 4 : Math.min(3, Math.max(1, count)) : layout2.columns;
   for (let n = 1; n <= 4; n++) if (box.classList.contains("an-columns-" + n) !== (n === columns)) box.classList.toggle("an-columns-" + n, n === columns);
-  if (box.classList.contains("an-uniform-height") !== !!layout.height) box.classList.toggle("an-uniform-height", !!layout.height);
-  if (layout.height) {
-    if (box.style.getPropertyValue("--an-subfigure-height") !== layout.height + "px") box.style.setProperty("--an-subfigure-height", layout.height + "px");
+  if (box.classList.contains("an-uniform-height") !== !!layout2.height) box.classList.toggle("an-uniform-height", !!layout2.height);
+  if (layout2.height) {
+    if (box.style.getPropertyValue("--an-subfigure-height") !== layout2.height + "px") box.style.setProperty("--an-subfigure-height", layout2.height + "px");
   } else if (box.style.getPropertyValue("--an-subfigure-height")) box.style.removeProperty("--an-subfigure-height");
-  if (!layout.height) return;
+  if (!layout2.height) return;
   updateFigureImageRatio(box);
   for (const img of groupImages(box)) if (!pendingImages.has(img)) {
     pendingImages.add(img);
@@ -58199,6 +58206,8 @@ var DEFAULTS2 = {
   customAppearance: "{}",
   captureTheme: true,
   openPdf: true,
+  kpReading: false,
+  kpPdf: false,
   pdfFloatMode: "off",
   pdfFloatMaxRounds: 6,
   exportNumbering: "chapter-section",
@@ -58971,6 +58980,10 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     } });
     const description = (desc) => definitions.push({ name: "", desc, render: () => {
     } });
+    heading(t("\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09"));
+    toggle("kpReading", t("\u9605\u8BFB\u89C6\u56FE\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u6574\u6BB5\u4F18\u5316\u666E\u901A\u6B63\u6587\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002"));
+    if (import_obsidian2.Platform.isDesktopApp) toggle("kpPdf", t("PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u666E\u901A\u6B63\u6587\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002"));
+    description(t("\u4E2D\u6587\u4E0E\u82F1\u6587\u57FA\u7840\u6BB5\u843D\u53EF\u7528\uFF1B\u94FE\u63A5\u548C\u884C\u5185\u516C\u5F0F\u4FDD\u6301\u5B8C\u6574\u3002\u4E0D\u652F\u6301\u7684\u6BB5\u843D\u6216\u8FC7\u957F\u5185\u5BB9\u81EA\u52A8\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\u3002Proof\u3001Remark\u3001\u5217\u8868\u3001\u56FE\u7247\u3001\u9996\u884C\u7F29\u8FDB\u548C\u590D\u6742\u6392\u7248\u6682\u4E0D\u5904\u7406\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002"));
     heading(t("\u7F16\u53F7\u4E0E\u5F15\u7528"));
     toggle("numbered", t("\u5B9A\u7406\u7C7B\u73AF\u5883\u81EA\u52A8\u7F16\u53F7"), t("Proof\u3001Remark\u3001Solution \u9ED8\u8BA4\u4E0D\u8BA1\u6570\u3002"));
     select("equationMode", t("\u516C\u5F0F\u81EA\u52A8\u7F16\u53F7"), { referenced: t("\u4EC5\u88AB\u5F15\u7528\u7684\u516C\u5F0F\uFF08\u5168\u5E93\u5224\u65AD\uFF09"), all: t("\u6240\u6709\u72EC\u7ACB\u516C\u5F0F\u5757"), none: t("\u5173\u95ED\u81EA\u52A8\u7F16\u53F7") }, t("\u4FDD\u7559\u663E\u5F0F \\tag\uFF1B\u53EA\u6709\u8FDB\u5165\u81EA\u52A8\u7F16\u53F7\u7684\u516C\u5F0F\u624D\u589E\u52A0\u8BA1\u6570\u5668\u3002"));
@@ -59109,7 +59122,7 @@ function createFloatLayout(options) {
     if (!previous || !picture || !samePage(c.figure, positions)) return false;
     return trial.kind === "shrink" ? picture.page === previous.page : picture.page === previous.page + 1 && trial.moved.every((p) => samePage(p, positions) && positions[p.start].page === previous.page);
   };
-  const restore = (trial) => {
+  const restore2 = (trial) => {
     const node = trial.candidate.figure.node;
     if (trial.next) trial.next.before(node);
     else node.parentElement.appendChild(node);
@@ -59139,7 +59152,7 @@ function createFloatLayout(options) {
         if (trial.kind === "shrink") report.shrunk++;
         else report.moved++;
       } else {
-        restore(trial);
+        restore2(trial);
         positions = trial.before;
         dirty = true;
       }
@@ -59191,6 +59204,10 @@ function createFloatLayout(options) {
   };
   return { step, rollback, validate: (positions) => accepted.every((trial) => valid(trial, positions)), report };
 }
+
+// academic-typography:client
+var client_default = `var AcademicParagraphLayout=(()=>{var B=Object.defineProperty;var Y=Object.getOwnPropertyDescriptor;var Z=Object.getOwnPropertyNames;var ee=Object.prototype.hasOwnProperty;var te=(e,t)=>{for(var n in t)B(e,n,{get:t[n],enumerable:!0})},ne=(e,t,n,s)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of Z(t))!ee.call(e,a)&&a!==n&&B(e,a,{get:()=>t[a],enumerable:!(s=Y(t,a))||s.enumerable});return e};var re=e=>ne(B({},"__esModule",{value:!0}),e);var ge={};te(ge,{createParagraphLayoutController:()=>me,hasParagraphSelection:()=>F,layoutParagraphs:()=>he,restoreParagraphs:()=>le});function j(e,t){if(!Array.isArray(e)||!e.length||e.length>1200)return null;let n=typeof t=="number"?[t,t]:t;if(!Array.isArray(n)||n.length<1||n.length>2||[...n].some(r=>!Number.isFinite(r)||r<=0))return null;let s=n[0],a=n[1]??s,o=Math.max(s,a),u=[0],d=[0],l=[0],c=[0],b=[0],h=-1;for(let r=0;r<e.length;r++){let i=e[r];if(!i||!Number.isFinite(i.width)||i.width<0)return null;if(i.type==="box"){if(i.width>o+1e-7)return null;h=r}else if(i.type==="glue"){if(!Number.isFinite(i.stretch)||!Number.isFinite(i.shrink)||i.stretch<0||i.shrink<0||i.shrink>i.width)return null}else if(i.type==="penalty"){if(!Number.isFinite(i.cost)||i.flagged!==void 0&&typeof i.flagged!="boolean")return null}else return null;if(u.push(u[r]+(i.type==="penalty"?0:i.width)),d.push(d[r]+(i.type==="glue"?i.stretch:0)),l.push(l[r]+(i.type==="glue"?i.shrink:0)),c.push(c[r]+(i.type==="box"?1:0)),b.push(h+1),![u[r+1],d[r+1],l[r+1]].every(Number.isFinite))return null}if(h<0)return null;let p=r=>{for(;r<e.length&&e[r].type==="glue";)r++;return r},g=p(0),f=[{to:g,next:g,naturalEnd:g,cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1}];for(let r=g;r<e.length;r++){let i=e[r];if(i.type==="glue"&&r<h&&e[r-1]?.type==="box")f.push({to:r,next:p(r+1),naturalEnd:b[r],cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1});else if(i.type==="penalty"&&i.cost<1e4&&(r<h||i.cost<=-1e4)){let A=r>h;if(f.push({to:r+1,next:p(r+1),naturalEnd:b[r],cost:i.cost,extraWidth:i.width,flagged:i.flagged===!0,forced:i.cost<=-1e4,final:A}),A)break}if(f.length>650)return null}if(f.at(-1).final||f.push({to:e.length,next:e.length,naturalEnd:h+1,cost:0,extraWidth:0,flagged:!1,forced:!0,final:!0}),f.length>650)return null;let m=[[void 0,{score:0,fitness:1,flagged:!1,lineCount:0},void 0,void 0]],x=0,L=0;for(let r=1;r<f.length;r++){let i=f[r],A=new Array(4);for(let D=r-1;D>=x;D--){if(++L>2e5)return null;let C=f[D].next,T=i.naturalEnd;if(C>=T||c[T]===c[C])continue;let I=u[T]-u[C]+i.extraWidth,K=l[T]-l[C];if(I-K>o+1e-7)break;let X=d[T]-d[C];for(let w of m[D]){if(!w)continue;if(++L>2e5)return null;let H=w.lineCount===0?s:a,O=H-I,y=0;if(O<-1e-7){if(K<=0)continue;y=O/K}else if(!i.final&&O>1e-7){if(X<=0)continue;y=O/X}if(!Number.isFinite(y)||y<-1-1e-7||y>2.5+1e-7)continue;y=Math.max(-1,Math.min(2.5,y));let P=y<-.5?0:y<=.5?1:y<=1?2:3,N=(10+100*Math.abs(y)**3)**2;i.cost>=0?N+=i.cost**2:i.forced||(N-=i.cost**2),w.lineCount&&Math.abs(w.fitness-P)>1&&(N+=1e4),w.flagged&&i.flagged&&(N+=1e4),i.final&&w.lineCount&&I<H*.18&&(N+=1800*(1-I/(H*.18)));let _=w.score+N;Number.isFinite(_)&&(!A[P]||_<A[P].score)&&(A[P]={score:_,fitness:P,flagged:i.flagged,lineCount:w.lineCount+1,line:{from:C,to:i.to,ratio:y,final:i.final},previous:w})}}if(m.push(A),i.forced){if(!A.some(Boolean))return null;x=r}}let E=m.at(-1).filter(r=>!!r);if(!E.length)return null;let k=E.reduce((r,i)=>r.score<=i.score?r:i),S=[];for(let r=k;r?.line;r=r.previous)S.push(r.line);return S.reverse(),{lines:S,demerits:k.score}}var R=new WeakMap,ie=120,se=4e3,$=900,V=12e3,W='.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"],table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media,.callout:is([data-callout="proof"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"])',ae=/^[\\p{Script=Han}\\p{Script=Hiragana}\\p{Script=Katakana}\\p{Script=Hangul}]/u,q=/^[([{\uFF08\uFF3B\uFF5B\u3008\u300A\u300C\u300E\u3010\u3014\u3016\u3018\u301A\u2018\u201C]$/u,J=/^[)\\]}\uFF09\uFF3D\uFF5D\u3009\u300B\u300D\u300F\u3011\u3015\u3017\u3019\u301B\u3001\u3002\uFF0C\uFF0E\uFF01\uFF1F\uFF1A\uFF1B,.!?:;\u2019\u201D\u2026\u3041\u3043\u3045\u3047\u3049\u3063\u3083\u3085\u3087\u308E\u30A1\u30A3\u30A5\u30A7\u30A9\u30C3\u30E3\u30E5\u30E7\u30EE\u30F5\u30F6]$/u,G=/[\\u00a0\\u202f\\u2060\\ufeff]/u;function v(e){return[...e.matches("p")?[e]:[],...e.querySelectorAll("p")]}function F(e){let t=e.ownerDocument.getSelection();if(!t||t.isCollapsed)return!1;for(let n=0;n<t.rangeCount;n++)try{if(t.getRangeAt(n).intersectsNode(e))return!0}catch{}return!1}function oe(e,t){return e.childNodes.length===t.lines.length&&t.lines.every((n,s)=>e.childNodes[s]===n)}function M(e,t){let n=R.get(e);if(n){if(t&&n.owner!==t)return;oe(e,n)&&e.replaceChildren(...n.nodes),n.marker===null?e.removeAttribute("data-an-kp"):e.setAttribute("data-an-kp",n.marker),n.hadClass||e.classList.remove("an-kp-paragraph"),n.classAttribute===null&&!e.classList.length&&e.removeAttribute("class"),R.delete(e)}else if(!t&&e.dataset.anKp==="1"){let s=[...e.children];if(!s.length||!s.every(o=>o.matches("span.an-kp-line")))return;let a=[];for(let o of s)for(let u of[...o.childNodes])u.nodeType===1&&u.matches("span.an-kp-space")?a.push(...u.childNodes):a.push(u);e.replaceChildren(...a),e.removeAttribute("data-an-kp"),e.classList.remove("an-kp-paragraph"),e.classList.length||e.removeAttribute("class")}}function le(e){for(let t of v(e))M(t)}function ce(e){if(e.closest(W)||e.isContentEditable||e.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block'))return!1;let t=e.ownerDocument.defaultView;if(!t)return!1;let n=t.getComputedStyle(e);if(n.direction!=="ltr"||n.writingMode!=="horizontal-tb"||n.whiteSpace!=="normal"||Math.abs(parseFloat(n.textIndent)||0)>.01||!["start","left","justify"].includes(n.textAlign))return!1;for(let s of["::before","::after"]){let a=t.getComputedStyle(e,s).content;if(a&&!["none","normal",'""',"''"].includes(a))return!1}for(let s of e.children){if(!/^(A|EM|STRONG|B|I|S|DEL|MARK|U|SUB|SUP|CODE|SMALL|SPAN|MJX-CONTAINER|SVG)$/.test(s.tagName.toUpperCase()))return!1;let a=t.getComputedStyle(s);if(a.cssFloat!=="none"||!["inline","inline-block","inline-flex"].includes(a.display)||a.position==="absolute"||a.position==="fixed")return!1}return!0}function ue(e){let t=Intl.Segmenter;if(!t)return null;let n=[...new t(void 0,{granularity:"grapheme"}).segment(e.data)],s=[];for(let a of n){let o=a.segment,u=/^[\\t\\r\\n ]+$/u.test(o)?"space":ae.test(o)?"cjk":q.test(o)||J.test(o)?"punct":"word",d=s.at(-1);d&&(u==="word"||u==="space")&&d.kind===u?(d.text+=o,d.end=a.index+o.length):s.push({node:e,start:a.index,end:a.index+o.length,text:o,kind:u})}return s}function U(e,t){if(!e||!t)return!0;let n=Array.from(e.text).at(-1)||"",s=Array.from(t.text)[0]||"";return!q.test(n)&&!J.test(s)&&!G.test(n)&&!G.test(s)}function de(e){let t=e.ownerDocument.defaultView.getComputedStyle(e);return e.getBoundingClientRect().width-(parseFloat(t.paddingLeft)||0)-(parseFloat(t.paddingRight)||0)-(parseFloat(t.borderLeftWidth)||0)-(parseFloat(t.borderRightWidth)||0)}function fe(e,t){let n=e.ownerDocument.defaultView.getComputedStyle(e),s=parseFloat(n.fontSize)||16,a=e.getAttribute("class"),o=e.ownerDocument.createRange(),u=[];e.classList.add("an-kp-measure");try{if(e.ownerDocument.defaultView.getComputedStyle(e).whiteSpace!=="nowrap")return null;for(let d=0;d<t.length;d++){let l=t[d],c=t[d-1],b=t[d+1];c&&c.kind!=="space"&&l.kind!=="space"&&(c.kind==="cjk"||l.kind==="cjk")&&U(c,l)&&u.push({item:{type:"glue",width:0,stretch:s*.12,shrink:0}}),l.start!==void 0?(o.setStart(l.node,l.start),o.setEnd(l.node,l.end)):o.selectNode(l.node);let h=o.getBoundingClientRect().width;if(l.kind==="inline"){let g=e.ownerDocument.defaultView.getComputedStyle(l.node);h+=(parseFloat(g.marginLeft)||0)+(parseFloat(g.marginRight)||0)}if(!Number.isFinite(h)||h<0)return null;let p=l.kind==="space"&&U(c,b)?{type:"glue",width:h,stretch:Math.max(h*.65,s*.12),shrink:h*.4}:{type:"box",width:h};if(u.push({item:p,unit:l}),u.length>$)return null}return u}finally{a===null?e.removeAttribute("class"):e.setAttribute("class",a)}}function z(e,t){let n=e.createElement("span");return n.className=t,n}function pe(e,t,n,s){let a=j(t.map(c=>c.item),n);if(!a)return"fallback";if(a.lines.length<2)return"skip";let o=[...e.childNodes],u=e.textContent,d={nodes:o,lines:[],owner:s,marker:e.getAttribute("data-an-kp"),hadClass:e.classList.contains("an-kp-paragraph"),classAttribute:e.getAttribute("class")},l=0;for(let c=0;c<a.lines.length;c++){let b=a.lines[c],h=a.lines[c+1]?.from??t.length,p=z(e.ownerDocument,"an-kp-line"),g=b.to-1;for(;g>=b.from&&t[g].item.type!=="box";)g--;for(;l<h;l++){let f=t[l],m=f.unit;if(f.item.type==="glue"||m?.kind==="space"){let x=z(e.ownerDocument,"an-kp-space");m&&x.appendChild(e.ownerDocument.createTextNode(m.text));let L=l>=b.from&&l<=g,E=f.item,k=L?E.type==="glue"?E.width+b.ratio*(b.ratio<0?E.shrink:E.stretch):E.width:0;x.style.width=Math.max(0,k)+"px",p.appendChild(x)}else m&&p.appendChild(m.start===void 0?m.node:e.ownerDocument.createTextNode(m.text))}d.lines.push(p)}return e.replaceChildren(...d.lines),e.dataset.anKp="1",e.classList.add("an-kp-paragraph"),R.set(e,d),e.textContent!==u||d.lines.some(c=>c.scrollWidth>n+2)?(M(e,s),"fallback"):"processed"}function Q(e,t){let n={processed:0,skipped:0,fallback:0};if(e.closest(W)||e.isContentEditable||F(e))return{processed:0,skipped:v(e).length,fallback:0};let s=0,a=0;for(let o of v(e)){let u=R.get(o);if(t&&u?.owner&&u.owner!==t){n.skipped++;continue}M(o,t);let d=o.textContent||"";if(!ce(o)||!d.trim()||d.length>se||a>=ie||s>=V){n.skipped++;continue}let l=de(o);if(!Number.isFinite(l)||l<80){n.skipped++;continue}let c=[],b=!1;for(let f of o.childNodes)if(f.nodeType===3){let m=ue(f);if(!m){b=!0;break}c.push(...m)}else if(f.nodeType===1)c.push({node:f,text:f.textContent||"",kind:"inline"});else{b=!0;break}if(b||c.length>$){n.skipped++;continue}let h=c.length+c.filter((f,m)=>m>0&&c[m-1].kind!=="space"&&f.kind!=="space"&&(c[m-1].kind==="cjk"||f.kind==="cjk")&&U(c[m-1],f)).length;if(s+h>V){n.skipped++;continue}s+=h,a++;let p=fe(o,c);if(!p){n.fallback++;continue}let g=pe(o,p,l,t);g==="processed"?n.processed++:g==="fallback"?n.fallback++:n.skipped++}return n}function he(e){return Q(e)}function me(e,t={}){let n={},s=e.ownerDocument,a=s.defaultView;if(!a||e.closest(W)||e.isContentEditable)return{refresh(){},dispose(){}};let o=!1,u=!1,d,l=e.getBoundingClientRect().width,c=()=>typeof t.enabled=="function"?t.enabled():t.enabled!==!1,b=()=>g.observe(e,{childList:!0,characterData:!0,subtree:!0,attributes:!0,attributeFilter:["class","style","contenteditable","hidden","src","width","height"]}),h=()=>{if(d=void 0,!o){if(F(e)){u=!0;return}u=!1,g.disconnect();try{if(c())Q(e,n);else for(let k of v(e))M(k,n);l=e.getBoundingClientRect().width}catch(k){for(let S of v(e))M(S,n);t.onError?.(k)}finally{o||b()}}},p=()=>{!o&&d===void 0&&(d=a.setTimeout(h,70))},g=new MutationObserver(p),f=new ResizeObserver(()=>{let k=e.getBoundingClientRect().width;Math.abs(k-l)>.5&&p()}),m=new MutationObserver(p),x=new MutationObserver(p),L=k=>{let S=k.target;S&&(S.tagName==="LINK"||e.contains(S))&&p()},E=()=>{u&&!F(e)&&p()};return b(),f.observe(e),m.observe(s.body,{attributes:!0,attributeFilter:["class","style"]}),x.observe(s.head,{childList:!0,characterData:!0,subtree:!0}),s.fonts.addEventListener("loadingdone",p),s.addEventListener("load",L,!0),s.addEventListener("selectionchange",E),s.fonts.ready.then(p),p(),{refresh:p,dispose(){if(!o){o=!0,a.clearTimeout(d),g.disconnect(),f.disconnect(),m.disconnect(),x.disconnect(),s.fonts.removeEventListener("loadingdone",p),s.removeEventListener("load",L,!0),s.removeEventListener("selectionchange",E);for(let k of v(e))M(k,n)}}}}return re(ge);})();
+`;
 
 // src/export/pdf-postprocess.ts
 var import_pdf_lib = __toESM(require_cjs());
@@ -59403,6 +59420,13 @@ async function exportPdf(html, log = () => {
     const printMessages = { image: t("\u56FE\u7247\u65E0\u6CD5\u52A0\u8F7D\uFF1A"), math: t("\u516C\u5F0F\u6E32\u67D3\u9519\u8BEF\u3002"), font: t("\u5FEB\u7167\u5B57\u4F53\u52A0\u8F7D\u5931\u8D25\u3002") };
     await wc.executeJavaScript(`(${preparePrint.toString()})(${JSON.stringify(printMessages)})`);
     const mediaPagination = await wc.executeJavaScript(`(${prepareMediaForPrint.toString()})()`);
+    let paragraphLayout;
+    if (figureOptions.kp) {
+      await wc.executeJavaScript(client_default);
+      paragraphLayout = await wc.executeJavaScript("AcademicParagraphLayout.layoutParagraphs(document.getElementById('phb-document'))");
+      await wc.executeJavaScript(`(${refreshCalloutPrintSizes.toString()})()`);
+      log(t("\u6BB5\u843D\u6392\u7248\uFF1A{0} \u6BB5\u5B8C\u6210\uFF0C{1} \u6BB5\u56DE\u9000\u3002", paragraphLayout.processed, paragraphLayout.fallback));
+    }
     const dark = Boolean(await wc.executeJavaScript(`document.body.classList.contains('theme-dark')`));
     const options = {
       pageSize: "A4",
@@ -59483,6 +59507,7 @@ async function exportPdf(html, log = () => {
         horizontalOverflow: overflow,
         mediaPagination,
         figureLayout: floatReport,
+        paragraphLayout,
         entries: meta.entries.map((e) => ({ ...e, ...measured.positions[e.id], printedPage: measured.positions[e.id].page + 1 }))
       }
     };
@@ -59540,6 +59565,13 @@ function findOverflow() {
     const r = el.getBoundingClientRect();
     return r.width && (r.right > main.right + 2 || r.left < main.left - 2);
   }).map((el) => ({ tag: el.tagName, text: el.textContent?.trim().slice(0, 90) }));
+}
+function refreshCalloutPrintSizes() {
+  document.querySelectorAll(".phb-callout-wrap > .callout").forEach((box) => {
+    const height = box.getBoundingClientRect().height;
+    box.parentElement.dataset.phbKeep = box.dataset.phbKeep = String(height < 390);
+    box.dataset.phbLong = String(height > 870);
+  });
 }
 
 // src/export/tikz.ts
@@ -60105,8 +60137,427 @@ async function diagramProcessor(app, source, el, ctx) {
   }
 }
 
+// src/typography/solver.ts
+var KP_FORCED = -1e4;
+var KP_FORBIDDEN = 1e4;
+var MAX_ITEMS = 1200;
+var MAX_CANDIDATES = 650;
+var MAX_OPERATIONS = 2e5;
+var EPSILON = 1e-7;
+function solveParagraph(items, width) {
+  if (!Array.isArray(items) || !items.length || items.length > MAX_ITEMS) return null;
+  const widths = typeof width === "number" ? [width, width] : width;
+  if (!Array.isArray(widths) || widths.length < 1 || widths.length > 2 || [...widths].some((value) => !Number.isFinite(value) || value <= 0)) return null;
+  const firstWidth = widths[0], followingWidth = widths[1] ?? firstWidth;
+  const widest = Math.max(firstWidth, followingWidth);
+  const sums = [0], stretches = [0], shrinks = [0], boxes = [0], ends = [0];
+  let lastBox = -1;
+  for (let index = 0; index < items.length; index++) {
+    const item = items[index];
+    if (!item || !Number.isFinite(item.width) || item.width < 0) return null;
+    if (item.type === "box") {
+      if (item.width > widest + EPSILON) return null;
+      lastBox = index;
+    } else if (item.type === "glue") {
+      if (!Number.isFinite(item.stretch) || !Number.isFinite(item.shrink) || item.stretch < 0 || item.shrink < 0 || item.shrink > item.width) return null;
+    } else if (item.type === "penalty") {
+      if (!Number.isFinite(item.cost) || item.flagged !== void 0 && typeof item.flagged !== "boolean") return null;
+    } else return null;
+    sums.push(sums[index] + (item.type === "penalty" ? 0 : item.width));
+    stretches.push(stretches[index] + (item.type === "glue" ? item.stretch : 0));
+    shrinks.push(shrinks[index] + (item.type === "glue" ? item.shrink : 0));
+    boxes.push(boxes[index] + (item.type === "box" ? 1 : 0));
+    ends.push(lastBox + 1);
+    if (![sums[index + 1], stretches[index + 1], shrinks[index + 1]].every(Number.isFinite)) return null;
+  }
+  if (lastBox < 0) return null;
+  const nextContent = (index) => {
+    while (index < items.length && items[index].type === "glue") index++;
+    return index;
+  };
+  const first = nextContent(0);
+  const points = [{ to: first, next: first, naturalEnd: first, cost: 0, extraWidth: 0, flagged: false, forced: false, final: false }];
+  for (let index = first; index < items.length; index++) {
+    const item = items[index];
+    if (item.type === "glue" && index < lastBox && items[index - 1]?.type === "box") {
+      points.push({ to: index, next: nextContent(index + 1), naturalEnd: ends[index], cost: 0, extraWidth: 0, flagged: false, forced: false, final: false });
+    } else if (item.type === "penalty" && item.cost < KP_FORBIDDEN && (index < lastBox || item.cost <= KP_FORCED)) {
+      const final = index > lastBox;
+      points.push({ to: index + 1, next: nextContent(index + 1), naturalEnd: ends[index], cost: item.cost, extraWidth: item.width, flagged: item.flagged === true, forced: item.cost <= KP_FORCED, final });
+      if (final) break;
+    }
+    if (points.length > MAX_CANDIDATES) return null;
+  }
+  if (!points.at(-1).final) points.push({ to: items.length, next: items.length, naturalEnd: lastBox + 1, cost: 0, extraWidth: 0, flagged: false, forced: true, final: true });
+  if (points.length > MAX_CANDIDATES) return null;
+  const states = [[void 0, { score: 0, fitness: 1, flagged: false, lineCount: 0 }, void 0, void 0]];
+  let mandatory = 0, operations = 0;
+  for (let end = 1; end < points.length; end++) {
+    const point = points[end];
+    const best = new Array(4);
+    for (let start = end - 1; start >= mandatory; start--) {
+      if (++operations > MAX_OPERATIONS) return null;
+      const from = points[start].next, naturalEnd = point.naturalEnd;
+      if (from >= naturalEnd || boxes[naturalEnd] === boxes[from]) continue;
+      const natural = sums[naturalEnd] - sums[from] + point.extraWidth;
+      const shrink = shrinks[naturalEnd] - shrinks[from];
+      if (natural - shrink > widest + EPSILON) break;
+      const stretch = stretches[naturalEnd] - stretches[from];
+      for (const previous of states[start]) {
+        if (!previous) continue;
+        if (++operations > MAX_OPERATIONS) return null;
+        const target = previous.lineCount === 0 ? firstWidth : followingWidth;
+        const difference = target - natural;
+        let ratio = 0;
+        if (difference < -EPSILON) {
+          if (shrink <= 0) continue;
+          ratio = difference / shrink;
+        } else if (!point.final && difference > EPSILON) {
+          if (stretch <= 0) continue;
+          ratio = difference / stretch;
+        }
+        if (!Number.isFinite(ratio) || ratio < -1 - EPSILON || ratio > 2.5 + EPSILON) continue;
+        ratio = Math.max(-1, Math.min(2.5, ratio));
+        const fitness = ratio < -0.5 ? 0 : ratio <= 0.5 ? 1 : ratio <= 1 ? 2 : 3;
+        const badness = 100 * Math.abs(ratio) ** 3;
+        let demerits = (10 + badness) ** 2;
+        if (point.cost >= 0) demerits += point.cost ** 2;
+        else if (!point.forced) demerits -= point.cost ** 2;
+        if (previous.lineCount && Math.abs(previous.fitness - fitness) > 1) demerits += 1e4;
+        if (previous.flagged && point.flagged) demerits += 1e4;
+        if (point.final && previous.lineCount && natural < target * 0.18) {
+          demerits += 1800 * (1 - natural / (target * 0.18));
+        }
+        const score = previous.score + demerits;
+        if (!Number.isFinite(score)) continue;
+        if (!best[fitness] || score < best[fitness].score) {
+          best[fitness] = {
+            score,
+            fitness,
+            flagged: point.flagged,
+            lineCount: previous.lineCount + 1,
+            line: { from, to: point.to, ratio, final: point.final },
+            previous
+          };
+        }
+      }
+    }
+    states.push(best);
+    if (point.forced) {
+      if (!best.some(Boolean)) return null;
+      mandatory = end;
+    }
+  }
+  const finalStates = states.at(-1).filter((state) => !!state);
+  if (!finalStates.length) return null;
+  const winner = finalStates.reduce((a, b) => a.score <= b.score ? a : b);
+  const lines = [];
+  for (let node = winner; node?.line; node = node.previous) lines.push(node.line);
+  lines.reverse();
+  return { lines, demerits: winner.score };
+}
+
+// src/typography/dom.ts
+var saved = /* @__PURE__ */ new WeakMap();
+var MAX_PARAGRAPHS = 120;
+var MAX_CHARACTERS = 4e3;
+var MAX_ITEMS2 = 900;
+var MAX_TOTAL_ITEMS = 12e3;
+var EXCLUDED = '.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"],table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media,.callout:is([data-callout="proof"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"])';
+var CJK = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
+var OPENING = /^[([{（［｛〈《「『【〔〖〘〚‘“]$/u;
+var CLOSING = /^[)\]}）］｝〉》」』】〕〗〙〛、。，．！？：；,.!?:;’”…ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヵヶ]$/u;
+var NONBREAKING = /[\u00a0\u202f\u2060\ufeff]/u;
+function paragraphs(root) {
+  return [...root.matches("p") ? [root] : [], ...root.querySelectorAll("p")];
+}
+function hasParagraphSelection(root) {
+  const selection = root.ownerDocument.getSelection();
+  if (!selection || selection.isCollapsed) return false;
+  for (let index = 0; index < selection.rangeCount; index++) {
+    try {
+      if (selection.getRangeAt(index).intersectsNode(root)) return true;
+    } catch {
+    }
+  }
+  return false;
+}
+function isOwned(p, state) {
+  return p.childNodes.length === state.lines.length && state.lines.every((line, index) => p.childNodes[index] === line);
+}
+function restore(p, owner) {
+  const state = saved.get(p);
+  if (state) {
+    if (owner && state.owner !== owner) return;
+    if (isOwned(p, state)) p.replaceChildren(...state.nodes);
+    if (state.marker === null) p.removeAttribute("data-an-kp");
+    else p.setAttribute("data-an-kp", state.marker);
+    if (!state.hadClass) p.classList.remove("an-kp-paragraph");
+    if (state.classAttribute === null && !p.classList.length) p.removeAttribute("class");
+    saved.delete(p);
+  } else if (!owner && p.dataset.anKp === "1") {
+    const lines = [...p.children];
+    if (!lines.length || !lines.every((line) => line.matches("span.an-kp-line"))) return;
+    const content = [];
+    for (const line of lines) for (const node of [...line.childNodes]) {
+      if (node.nodeType === 1 && node.matches("span.an-kp-space")) content.push(...node.childNodes);
+      else content.push(node);
+    }
+    p.replaceChildren(...content);
+    p.removeAttribute("data-an-kp");
+    p.classList.remove("an-kp-paragraph");
+    if (!p.classList.length) p.removeAttribute("class");
+  }
+}
+function restoreParagraphs(root) {
+  for (const p of paragraphs(root)) restore(p);
+}
+function eligible(p) {
+  if (p.closest(EXCLUDED) || p.isContentEditable || p.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block')) return false;
+  const win = p.ownerDocument.defaultView;
+  if (!win) return false;
+  const style = win.getComputedStyle(p);
+  if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || style.whiteSpace !== "normal" || Math.abs(parseFloat(style.textIndent) || 0) > 0.01 || !["start", "left", "justify"].includes(style.textAlign)) return false;
+  for (const pseudo of ["::before", "::after"]) {
+    const value = win.getComputedStyle(p, pseudo).content;
+    if (value && !["none", "normal", '""', "''"].includes(value)) return false;
+  }
+  for (const element of p.children) {
+    if (!/^(A|EM|STRONG|B|I|S|DEL|MARK|U|SUB|SUP|CODE|SMALL|SPAN|MJX-CONTAINER|SVG)$/.test(element.tagName.toUpperCase())) return false;
+    const inline = win.getComputedStyle(element);
+    if (inline.cssFloat !== "none" || !["inline", "inline-block", "inline-flex"].includes(inline.display) || inline.position === "absolute" || inline.position === "fixed") return false;
+  }
+  return true;
+}
+function textUnits(node) {
+  const Segmenter = Intl.Segmenter;
+  if (!Segmenter) return null;
+  const parts = [...new Segmenter(void 0, { granularity: "grapheme" }).segment(node.data)];
+  const units = [];
+  for (const part of parts) {
+    const text = part.segment, kind = /^[\t\r\n ]+$/u.test(text) ? "space" : CJK.test(text) ? "cjk" : OPENING.test(text) || CLOSING.test(text) ? "punct" : "word";
+    const previous = units.at(-1);
+    if (previous && (kind === "word" || kind === "space") && previous.kind === kind) {
+      previous.text += text;
+      previous.end = part.index + text.length;
+    } else units.push({ node, start: part.index, end: part.index + text.length, text, kind });
+  }
+  return units;
+}
+function legalBoundary(left, right) {
+  if (!left || !right) return true;
+  const tail = Array.from(left.text).at(-1) || "", head = Array.from(right.text)[0] || "";
+  return !OPENING.test(tail) && !CLOSING.test(head) && !NONBREAKING.test(tail) && !NONBREAKING.test(head);
+}
+function contentWidth(p) {
+  const style = p.ownerDocument.defaultView.getComputedStyle(p);
+  return p.getBoundingClientRect().width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0) - (parseFloat(style.borderLeftWidth) || 0) - (parseFloat(style.borderRightWidth) || 0);
+}
+function measure(p, units) {
+  const style = p.ownerDocument.defaultView.getComputedStyle(p), em = parseFloat(style.fontSize) || 16;
+  const before = p.getAttribute("class");
+  const range = p.ownerDocument.createRange(), tokens = [];
+  p.classList.add("an-kp-measure");
+  try {
+    if (p.ownerDocument.defaultView.getComputedStyle(p).whiteSpace !== "nowrap") return null;
+    for (let index = 0; index < units.length; index++) {
+      const unit = units[index], previous = units[index - 1], next = units[index + 1];
+      if (previous && previous.kind !== "space" && unit.kind !== "space" && (previous.kind === "cjk" || unit.kind === "cjk") && legalBoundary(previous, unit)) tokens.push({ item: { type: "glue", width: 0, stretch: em * 0.12, shrink: 0 } });
+      if (unit.start !== void 0) {
+        range.setStart(unit.node, unit.start);
+        range.setEnd(unit.node, unit.end);
+      } else range.selectNode(unit.node);
+      let width = range.getBoundingClientRect().width;
+      if (unit.kind === "inline") {
+        const inline = p.ownerDocument.defaultView.getComputedStyle(unit.node);
+        width += (parseFloat(inline.marginLeft) || 0) + (parseFloat(inline.marginRight) || 0);
+      }
+      if (!Number.isFinite(width) || width < 0) return null;
+      const item = unit.kind === "space" && legalBoundary(previous, next) ? { type: "glue", width, stretch: Math.max(width * 0.65, em * 0.12), shrink: width * 0.4 } : { type: "box", width };
+      tokens.push({ item, unit });
+      if (tokens.length > MAX_ITEMS2) return null;
+    }
+    return tokens;
+  } finally {
+    if (before === null) p.removeAttribute("class");
+    else p.setAttribute("class", before);
+  }
+}
+function makeSpan(doc, cls) {
+  const span = doc.createElement("span");
+  span.className = cls;
+  return span;
+}
+function apply(p, tokens, width, owner) {
+  const solution = solveParagraph(tokens.map((token) => token.item), width);
+  if (!solution) return "fallback";
+  if (solution.lines.length < 2) return "skip";
+  const original = [...p.childNodes], text = p.textContent;
+  const state = { nodes: original, lines: [], owner, marker: p.getAttribute("data-an-kp"), hadClass: p.classList.contains("an-kp-paragraph"), classAttribute: p.getAttribute("class") };
+  let cursor = 0;
+  for (let index = 0; index < solution.lines.length; index++) {
+    const line = solution.lines[index], end = solution.lines[index + 1]?.from ?? tokens.length;
+    const node = makeSpan(p.ownerDocument, "an-kp-line");
+    let lastBox = line.to - 1;
+    while (lastBox >= line.from && tokens[lastBox].item.type !== "box") lastBox--;
+    for (; cursor < end; cursor++) {
+      const token = tokens[cursor], unit = token.unit;
+      if (token.item.type === "glue" || unit?.kind === "space") {
+        const gap = makeSpan(p.ownerDocument, "an-kp-space");
+        if (unit) gap.appendChild(p.ownerDocument.createTextNode(unit.text));
+        const visible = cursor >= line.from && cursor <= lastBox;
+        const item = token.item;
+        const value = !visible ? 0 : item.type === "glue" ? item.width + line.ratio * (line.ratio < 0 ? item.shrink : item.stretch) : item.width;
+        gap.style.width = Math.max(0, value) + "px";
+        node.appendChild(gap);
+      } else if (unit) node.appendChild(unit.start === void 0 ? unit.node : p.ownerDocument.createTextNode(unit.text));
+    }
+    state.lines.push(node);
+  }
+  p.replaceChildren(...state.lines);
+  p.dataset.anKp = "1";
+  p.classList.add("an-kp-paragraph");
+  saved.set(p, state);
+  if (p.textContent !== text || state.lines.some((line) => line.scrollWidth > width + 2)) {
+    restore(p, owner);
+    return "fallback";
+  }
+  return "processed";
+}
+function layout(root, owner) {
+  const report = { processed: 0, skipped: 0, fallback: 0 };
+  if (root.closest(EXCLUDED) || root.isContentEditable || hasParagraphSelection(root)) return { processed: 0, skipped: paragraphs(root).length, fallback: 0 };
+  let total = 0, attempted = 0;
+  for (const p of paragraphs(root)) {
+    const existing = saved.get(p);
+    if (owner && existing?.owner && existing.owner !== owner) {
+      report.skipped++;
+      continue;
+    }
+    restore(p, owner);
+    const text = p.textContent || "";
+    if (!eligible(p) || !text.trim() || text.length > MAX_CHARACTERS || attempted >= MAX_PARAGRAPHS || total >= MAX_TOTAL_ITEMS) {
+      report.skipped++;
+      continue;
+    }
+    const width = contentWidth(p);
+    if (!Number.isFinite(width) || width < 80) {
+      report.skipped++;
+      continue;
+    }
+    const units = [];
+    let unsupported = false;
+    for (const node of p.childNodes) {
+      if (node.nodeType === 3) {
+        const parts = textUnits(node);
+        if (!parts) {
+          unsupported = true;
+          break;
+        }
+        units.push(...parts);
+      } else if (node.nodeType === 1) units.push({ node, text: node.textContent || "", kind: "inline" });
+      else {
+        unsupported = true;
+        break;
+      }
+    }
+    if (unsupported || units.length > MAX_ITEMS2) {
+      report.skipped++;
+      continue;
+    }
+    const estimated = units.length + units.filter((unit, index) => index > 0 && units[index - 1].kind !== "space" && unit.kind !== "space" && (units[index - 1].kind === "cjk" || unit.kind === "cjk") && legalBoundary(units[index - 1], unit)).length;
+    if (total + estimated > MAX_TOTAL_ITEMS) {
+      report.skipped++;
+      continue;
+    }
+    total += estimated;
+    attempted++;
+    const tokens = measure(p, units);
+    if (!tokens) {
+      report.fallback++;
+      continue;
+    }
+    const result = apply(p, tokens, width, owner);
+    if (result === "processed") report.processed++;
+    else if (result === "fallback") report.fallback++;
+    else report.skipped++;
+  }
+  return report;
+}
+function createParagraphLayoutController(root, options = {}) {
+  const owner = {}, doc = root.ownerDocument, win = doc.defaultView;
+  if (!win || root.closest(EXCLUDED) || root.isContentEditable) return { refresh() {
+  }, dispose() {
+  } };
+  let disposed = false, deferredSelection = false, timer, lastWidth = root.getBoundingClientRect().width;
+  const enabled = () => typeof options.enabled === "function" ? options.enabled() : options.enabled !== false;
+  const observe = () => changes.observe(root, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ["class", "style", "contenteditable", "hidden", "src", "width", "height"] });
+  const run = () => {
+    timer = void 0;
+    if (disposed) return;
+    if (hasParagraphSelection(root)) {
+      deferredSelection = true;
+      return;
+    }
+    deferredSelection = false;
+    changes.disconnect();
+    try {
+      if (enabled()) layout(root, owner);
+      else for (const p of paragraphs(root)) restore(p, owner);
+      lastWidth = root.getBoundingClientRect().width;
+    } catch (error) {
+      for (const p of paragraphs(root)) restore(p, owner);
+      options.onError?.(error);
+    } finally {
+      if (!disposed) observe();
+    }
+  };
+  const refresh = () => {
+    if (!disposed && timer === void 0) timer = win.setTimeout(run, 70);
+  };
+  const changes = new MutationObserver(refresh);
+  const resize = new ResizeObserver(() => {
+    const width = root.getBoundingClientRect().width;
+    if (Math.abs(width - lastWidth) > 0.5) refresh();
+  });
+  const theme = new MutationObserver(refresh);
+  const css = new MutationObserver(refresh);
+  const resource = (event) => {
+    const target = event.target;
+    if (target && (target.tagName === "LINK" || root.contains(target))) refresh();
+  };
+  const selection = () => {
+    if (deferredSelection && !hasParagraphSelection(root)) refresh();
+  };
+  observe();
+  resize.observe(root);
+  theme.observe(doc.body, { attributes: true, attributeFilter: ["class", "style"] });
+  css.observe(doc.head, { childList: true, characterData: true, subtree: true });
+  doc.fonts.addEventListener("loadingdone", refresh);
+  doc.addEventListener("load", resource, true);
+  doc.addEventListener("selectionchange", selection);
+  void doc.fonts.ready.then(refresh);
+  refresh();
+  return { refresh, dispose() {
+    if (disposed) return;
+    disposed = true;
+    win.clearTimeout(timer);
+    changes.disconnect();
+    resize.disconnect();
+    theme.disconnect();
+    css.disconnect();
+    doc.fonts.removeEventListener("loadingdone", refresh);
+    doc.removeEventListener("load", resource, true);
+    doc.removeEventListener("selectionchange", selection);
+    for (const p of paragraphs(root)) restore(p, owner);
+  } };
+}
+
 // src/styles/diagrams.css
 var diagrams_default = '.an-diagram-modal {\n  width: min(850px, 96vw);\n}\n.an-diagram-toolbar,\n.an-diagram-fields,\n.an-diagram-arrow-list {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 12px;\n  margin: 12px 0;\n}\n.an-diagram-editor label {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.an-diagram-editor input[type=text] {\n  min-width: 140px;\n  max-width: 100%;\n}\n.an-diagram-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 10px;\n  max-width: 420px;\n  margin: 16px auto;\n}\n.an-diagram-grid[data-grid="3"] {\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n}\n.an-diagram-grid button {\n  min-height: 48px;\n  height: auto;\n  overflow-wrap: anywhere;\n}\n.an-diagram-grid button[aria-pressed=true] {\n  background: var(--background-modifier-hover);\n}\n.an-diagram-grid button:is(.is-selected, .is-start) {\n  outline: 2px solid var(--interactive-accent);\n  outline-offset: 2px;\n}\n.an-diagram-arrow-list button[aria-pressed=true] {\n  border-color: var(--interactive-accent);\n}\n.an-diagram-figure {\n  display: block;\n  width: 100%;\n  margin: 1em auto;\n  text-align: center;\n  break-inside: avoid;\n}\n.an-diagram-svg {\n  display: block;\n  width: 100%;\n  max-width: 700px;\n  height: auto;\n  margin: auto;\n  color: var(--text-normal,currentColor);\n}\n.an-diagram-math-stage {\n  position: fixed;\n  left: -10000px;\n  top: 0;\n  font-size: 20px;\n  opacity: 0;\n  pointer-events: none;\n  white-space: nowrap;\n}\n.an-diagram-math-stage mjx-container {\n  font-size: 20px;\n}\n.an-diagram-interactive-arrow {\n  cursor: pointer;\n}\n.an-diagram-interactive-arrow.is-selected {\n  color: var(--interactive-accent);\n}\n.an-diagram-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin: 8px 0;\n}\n.an-diagram-caption {\n  display: flex;\n  justify-content: center;\n  font-size: .9em;\n  margin-top: .5em;\n}\n.an-diagram-caption[hidden] {\n  display: none;\n}\n.an-diagram-status {\n  color: var(--text-muted);\n  margin: 8px 0;\n}\n.block-language-tikz svg {\n  max-width: 100%;\n  height: auto;\n}\n@media print {\n  .an-diagram-actions,\n  .an-diagram-edit {\n    display: none;\n  }\n  .an-diagram-block,\n  .an-diagram-figure,\n  .block-language-tikz {\n    break-inside: avoid;\n  }\n}\n';
+
+// src/styles/typography.css
+var typography_default = ".an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n";
 
 // src/styles/callouts.css
 var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def: #a63c67;\n  --phb-thm: #6952a0;\n  --phb-lem: #8a4e8d;\n  --phb-prop: #406e68;\n  --phb-cor: #536c9a;\n  --phb-claim: #996040;\n  --phb-example: #8f6c25;\n  --phb-proof: #697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def: #227c77;\n  --phb-thm: #326694;\n  --phb-lem: #65709d;\n  --phb-prop: #457d5b;\n  --phb-cor: #6b7552;\n  --phb-claim: #4c7192;\n  --phb-example: #916b35;\n  --phb-proof: #647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def: #256f83;\n  --phb-thm: #2f609c;\n  --phb-lem: #665d98;\n  --phb-prop: #3d7a70;\n  --phb-cor: #536d86;\n  --phb-claim: #7f668d;\n  --phb-example: #956b35;\n  --phb-proof: #5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def: #247651;\n  --phb-thm: #286b76;\n  --phb-lem: #71628c;\n  --phb-prop: #62752e;\n  --phb-cor: #42786b;\n  --phb-claim: #44698c;\n  --phb-example: #946b2f;\n  --phb-proof: #687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def: #776085;\n  --phb-thm: #674386;\n  --phb-lem: #925d86;\n  --phb-prop: #5d7767;\n  --phb-cor: #646998;\n  --phb-claim: #896440;\n  --phb-example: #936c3f;\n  --phb-proof: #72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def: #88712e;\n  --phb-thm: #9c582d;\n  --phb-lem: #826489;\n  --phb-prop: #617542;\n  --phb-cor: #946640;\n  --phb-claim: #587a7b;\n  --phb-example: #a75c3c;\n  --phb-proof: #77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def: #9c3a55;\n  --phb-thm: #7f3f65;\n  --phb-lem: #845786;\n  --phb-prop: #3e756b;\n  --phb-cor: #626987;\n  --phb-claim: #9c5e36;\n  --phb-example: #906c32;\n  --phb-proof: #69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def: #2a6c76;\n  --phb-thm: #28558a;\n  --phb-lem: #6c608c;\n  --phb-prop: #477966;\n  --phb-cor: #526d94;\n  --phb-claim: #887052;\n  --phb-example: #926938;\n  --phb-proof: #5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def: #82d6ac;\n  --phb-thm: #bca1e2;\n  --phb-lem: #db9bc4;\n  --phb-prop: #afd294;\n  --phb-cor: #83c7d1;\n  --phb-claim: #e5b78f;\n  --phb-example: #dfc67d;\n  --phb-proof: #a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def: #73c9bc;\n  --phb-thm: #82b6df;\n  --phb-lem: #b4a1e0;\n  --phb-prop: #9bcba7;\n  --phb-cor: #78ccd2;\n  --phb-claim: #d0ac8e;\n  --phb-example: #d6c07c;\n  --phb-proof: #a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def: #86ca98;\n  --phb-thm: #83bbce;\n  --phb-lem: #b7a7ca;\n  --phb-prop: #b8c984;\n  --phb-cor: #8dcbb4;\n  --phb-claim: #9baed0;\n  --phb-example: #dec178;\n  --phb-proof: #a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\n';
@@ -60147,6 +60598,8 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
     this.rerun = false;
     this.editorViews = /* @__PURE__ */ new Set();
     this.readers = /* @__PURE__ */ new Set();
+    this.readerUnloads = /* @__PURE__ */ new Set();
+    this.paragraphLayouts = /* @__PURE__ */ new Set();
     this.parsed = /* @__PURE__ */ new Map();
     this.dirty = /* @__PURE__ */ new Map();
     this.pdfJobs = /* @__PURE__ */ new Set();
@@ -60162,6 +60615,8 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
     this.appearanceBefore = { palette: document.body.getAttribute("data-an-palette"), classes: Object.fromEntries(["an-active", "phb-neutral-body", "phb-no-motif"].map((c) => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map((k) => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
     this.editorViews = /* @__PURE__ */ new Set();
     this.readers = /* @__PURE__ */ new Set();
+    this.readerUnloads = /* @__PURE__ */ new Set();
+    this.paragraphLayouts = /* @__PURE__ */ new Set();
     this.parsed = /* @__PURE__ */ new Map();
     this.dirty = /* @__PURE__ */ new Map();
     this.pdfJobs = /* @__PURE__ */ new Set();
@@ -60250,7 +60705,11 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
   onunload() {
     this.active = false;
     window.clearTimeout(this.indexTimer);
+    for (const unload of this.readerUnloads) unload();
+    this.readerUnloads.clear();
     this.readers.clear();
+    for (const layout2 of this.paragraphLayouts) layout2.dispose();
+    this.paragraphLayouts.clear();
     for (const job of this.pdfJobs)
       job.abort();
     this.themeObserver?.disconnect();
@@ -60282,6 +60741,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
   async saveSettings() {
     await this.saveData(this.settings);
     this.applyAppearance();
+    for (const layout2 of this.paragraphLayouts) layout2.refresh();
     this.scheduleIndex();
   }
   applyAppearance() {
@@ -60381,20 +60841,42 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
   postprocess(el, ctx) {
     if (el.closest(".phb-export-stage"))
       return;
+    let layout2;
+    let selectionDeferred = false;
     const refresh = () => {
-      const n = this.graph?.notes.get(ctx.sourcePath);
-      if (!n)
+      if (layout2 && hasParagraphSelection(el)) {
+        selectionDeferred = true;
         return;
-      renderFragment(el, n, this.graph, (node) => ctx.getSectionInfo(node) || ctx.getSectionInfo(el));
+      }
+      selectionDeferred = false;
+      if (layout2 && !this.settings.kpReading) {
+        layout2.dispose();
+        this.paragraphLayouts.delete(layout2);
+        layout2 = void 0;
+      }
+      if (!layout2 && this.active && this.settings.kpReading) {
+        layout2 = createParagraphLayoutController(el, { enabled: () => this.active && this.settings.kpReading, onError: (error) => this.recordError(t("\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09"), error) });
+        this.paragraphLayouts.add(layout2);
+      }
+      restoreParagraphs(el);
+      const n = this.graph?.notes.get(ctx.sourcePath);
+      if (n) renderFragment(el, n, this.graph, (node) => ctx.getSectionInfo(node) || ctx.getSectionInfo(el));
+      layout2?.refresh();
     };
     class Reader extends import_obsidian6.MarkdownRenderChild {
       constructor(el2, owner) {
         super(el2);
         this.owner = owner;
+        this.unloadReader = () => this.unload();
       }
       onload() {
+        this.owner.readerUnloads.add(this.unloadReader);
         this.owner.readers.add(refresh);
         refresh();
+        this.resumeSelection = () => {
+          if (selectionDeferred && !hasParagraphSelection(el)) refresh();
+        };
+        el.ownerDocument.addEventListener("selectionchange", this.resumeSelection);
         this.follow = (event) => {
           if (event.defaultPrevented || "button" in event && event.button !== 0 || "key" in event && event.key !== "Enter")
             return;
@@ -60413,7 +60895,13 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
         el.addEventListener("keydown", this.follow, true);
       }
       onunload() {
+        this.owner.readerUnloads.delete(this.unloadReader);
         this.owner.readers.delete(refresh);
+        if (layout2) {
+          layout2.dispose();
+          this.owner.paragraphLayouts.delete(layout2);
+        }
+        el.ownerDocument.removeEventListener("selectionchange", this.resumeSelection);
         el.removeEventListener("click", this.follow, true);
         el.removeEventListener("keydown", this.follow, true);
       }
@@ -60571,7 +61059,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
         this.pdfJobs.add(controller);
         try {
           const html = await this.app.vault.adapter.read(snapshot);
-          const result = await exportPdf(html, (line) => log.line(line), controller.signal, void 0, { mode: this.settings.pdfFloatMode, maxRounds: this.settings.pdfFloatMaxRounds });
+          const result = await exportPdf(html, (line) => log.line(line), controller.signal, void 0, { mode: this.settings.pdfFloatMode, maxRounds: this.settings.pdfFloatMaxRounds, kp: this.settings.kpPdf });
           if (!this.active)
             throw new Error(t("\u63D2\u4EF6\u5DF2\u505C\u7528\u3002"));
           await this.app.vault.adapter.writeBinary(out, new Uint8Array(result.bytes).buffer);
@@ -60771,7 +61259,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
           }
         }
       });
-      const baseCss = callouts_default + "\n" + academic_layout_default + "\n" + diagrams_default, printCss = document_default2;
+      const baseCss = callouts_default + "\n" + academic_layout_default + "\n" + diagrams_default + "\n" + typography_default, printCss = document_default2;
       let css = this.settings.captureTheme ? await this.collectCss(doc, meta.warnings) : baseCss;
       const bodyStyle = doc.defaultView.getComputedStyle(doc.body), variables = [...bodyStyle].filter((k) => k.startsWith("--")).map((k) => `${k}:${bodyStyle.getPropertyValue(k)};`).join("");
       const classes = [...doc.body.classList].filter((c) => !["is-mobile", "is-phone"].includes(c)).join(" ") + " phb-export";

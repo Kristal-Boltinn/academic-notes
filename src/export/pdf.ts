@@ -2,6 +2,8 @@ import { t } from '../i18n';
 import { Platform } from 'obsidian';
 import { prepareMediaForPrint } from './pagination';
 import { createFloatLayout, normalizeFloatOptions } from './floats';
+import typographySource from 'academic-typography-client';
+import type { layoutParagraphs } from '../typography/dom';
 import type { BrowserWindow as ElectronWindow, BrowserWindowConstructorOptions } from 'electron';
 import { finishPdf, measurePdf, type ExportMeta } from './pdf-postprocess';
 type WindowConstructor = new (options: BrowserWindowConstructorOptions) => ElectronWindow;
@@ -34,7 +36,7 @@ export function pdfAvailability() {
     }
 }
 /** Only called with an internally generated snapshot. No document scripts or network are enabled. */
-export async function exportPdf(html: string, log: (line: string) => void = () => { }, signal?: AbortSignal, Window: WindowConstructor = nativeWindow(), figureOptions: { mode?: string; maxRounds?: number } = {}) {
+export async function exportPdf(html: string, log: (line: string) => void = () => { }, signal?: AbortSignal, Window: WindowConstructor = nativeWindow(), figureOptions: { mode?: string; maxRounds?: number; kp?: boolean } = {}) {
     if (signal?.aborted)
         throw new Error(t("导出已取消。"));
     // Enforce the policy before any snapshot resources are parsed. Blob
@@ -88,6 +90,14 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
         const printMessages = { image: t('图片无法加载：'), math: t('公式渲染错误。'), font: t('快照字体加载失败。') };
         await wc.executeJavaScript(`(${preparePrint.toString()})(${JSON.stringify(printMessages)})`);
         const mediaPagination = await wc.executeJavaScript(`(${prepareMediaForPrint.toString()})()`) as ReturnType<typeof prepareMediaForPrint>;
+        let paragraphLayout: ReturnType<typeof layoutParagraphs> | undefined;
+        if (figureOptions.kp) {
+            // Only bundled plugin code runs here; snapshot scripts remain blocked.
+            await wc.executeJavaScript(typographySource);
+            paragraphLayout = await wc.executeJavaScript("AcademicParagraphLayout.layoutParagraphs(document.getElementById('phb-document'))") as ReturnType<typeof layoutParagraphs>;
+            await wc.executeJavaScript(`(${refreshCalloutPrintSizes.toString()})()`);
+            log(t('段落排版：{0} 段完成，{1} 段回退。', paragraphLayout.processed, paragraphLayout.fallback));
+        }
         const dark = Boolean(await wc.executeJavaScript(`document.body.classList.contains('theme-dark')`));
         const options = {
             pageSize: 'A4' as const, printBackground: true, preferCSSPageSize: true,
@@ -159,7 +169,7 @@ export async function exportPdf(html: string, log: (line: string) => void = () =
             bytes: finished.bytes,
             report: {
                 ...finished.stats, iterations, engine: 'Electron printToPDF', warnings: meta.warnings || [],
-                horizontalOverflow: overflow, mediaPagination, figureLayout: floatReport,
+                horizontalOverflow: overflow, mediaPagination, figureLayout: floatReport, paragraphLayout,
                 entries: meta.entries.map(e => ({ ...e, ...measured!.positions[e.id], printedPage: measured!.positions[e.id].page + 1 }))
             }
         };
@@ -224,4 +234,12 @@ function findOverflow() {
         const r = el.getBoundingClientRect();
         return r.width && (r.right > main.right + 2 || r.left < main.left - 2);
     }).map(el => ({ tag: el.tagName, text: el.textContent?.trim().slice(0, 90) }));
+}
+// Recheck keep-together thresholds after optional paragraph reflow changes height.
+function refreshCalloutPrintSizes() {
+    document.querySelectorAll<HTMLElement>('.phb-callout-wrap > .callout').forEach(box => {
+        const height = box.getBoundingClientRect().height;
+        box.parentElement!.dataset.phbKeep = box.dataset.phbKeep = String(height < 390);
+        box.dataset.phbLong = String(height > 870);
+    });
 }

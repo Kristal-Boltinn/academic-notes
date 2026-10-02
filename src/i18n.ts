@@ -1,6 +1,13 @@
 // Application language is set from Obsidian's public getLanguage() API on load.
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
+  "段落排版（Beta）": "Paragraph typography (Beta)",
+  "阅读视图使用 Knuth–Plass 断行": "Use Knuth–Plass line breaking in Reading view",
+  "整段优化普通正文的断行和间距；窗口宽度变化后重新排版。默认关闭，实时预览与源码不受影响。": "Optimize line breaks and spacing across ordinary paragraphs; reflow after width changes. Off by default. Live Preview and source editing are unaffected.",
+  "PDF 使用 Knuth–Plass 断行": "Use Knuth–Plass line breaking in PDF",
+  "在最终打印宽度下重新排版普通正文；HTML 快照保留浏览器排版。": "Reflow ordinary paragraphs at the final print width. HTML snapshots keep browser layout.",
+  "中文与英文基础段落可用；链接和行内公式保持完整。不支持的段落或过长内容自动使用浏览器排版。Proof、Remark、列表、图片、首行缩进和复杂排版暂不处理；暂不自动断词。": "Supports basic Chinese and English paragraphs; links and inline math remain intact. Unsupported or oversized paragraphs use browser layout. Proof, Remark, lists, images, first-line indentation and complex layouts are excluded. No automatic hyphenation yet.",
+  "段落排版：{0} 段完成，{1} 段回退。": "Paragraph typography: {0} laid out, {1} fell back.",
   "图注（可留空）": "Caption (optional)", "删除交换图": "Delete diagram",
   "图片排版优先级（实验）": "Figure layout priority (experimental)",
   "直接留白（关闭）": "Keep whitespace (off)",

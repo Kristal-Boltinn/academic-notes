@@ -1,12 +1,13 @@
 import esbuild from 'esbuild';
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { compileStyle } from './scripts/styles.mjs';
+import { typographyClient } from './scripts/typography-client.mjs';
 
 const options = {
   entryPoints: ['src/main.ts'], bundle: true, outfile: 'main.js',
   format: 'cjs', platform: 'node', target: 'es2022',
   external: ['obsidian', 'electron', '@electron/remote', '@codemirror/*', '@lezer/*'],
-  plugins: [{ name: 'snapshot-css', setup(build) {
+  plugins: [typographyClient, { name: 'snapshot-css', setup(build) {
     build.onLoad({ filter: /\.css$/ }, async ({ path }) => ({ contents: await compileStyle(path), loader: 'text' }));
   } }], logLevel: 'info', legalComments: 'eof',
   banner: { js: `/* Academic Notes ${JSON.parse(await readFile('manifest.json', 'utf8')).version} | MIT | generated from src/main.ts */` }
@@ -15,7 +16,7 @@ const licenseFiles = (await readdir('licenses')).sort();
 options.footer = { js: '/*! Bundled dependency licenses\n' +
   (await Promise.all(licenseFiles.map(async file => '\n' + file + '\n' + await readFile('licenses/' + file, 'utf8')))).join('\n') + '\n*/' };
 async function buildStyles() {
-  const files = ['src/styles/callouts.css', 'snippets/academic-layout.css', 'src/styles/ui.css', 'src/styles/diagrams.css'];
+  const files = ['src/styles/callouts.css', 'snippets/academic-layout.css', 'src/styles/ui.css', 'src/styles/diagrams.css', 'src/styles/typography.css'];
   await writeFile('styles.css', (await Promise.all(files.map(compileStyle))).join('\n'));
 }
 await buildStyles();

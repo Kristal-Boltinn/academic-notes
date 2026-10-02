@@ -17,7 +17,9 @@ import { AcademicSettings } from './ui/settings-tab';
 import { exportPdf, pdfAvailability } from './export/pdf';
 import { waitForTikz } from './export/tikz';
 import { openDiagramEditor, diagramProcessor } from './ui/diagram-modal';
+import { createParagraphLayoutController, hasParagraphSelection, restoreParagraphs } from './typography/dom';
 import diagramCss from './styles/diagrams.css';
+import typographyCss from './styles/typography.css';
 import calloutCss from './styles/callouts.css';
 import layoutCss from '../snippets/academic-layout.css';
 import documentCss from './styles/document.css';
@@ -45,6 +47,8 @@ export default class AcademicNotes extends Plugin {
     appearanceBefore: { palette: string | null; classes: Record<string, boolean>; variables: Record<string, [string, string]> };
     editorViews = new Set<EditorView>();
     readers = new Set<() => void>();
+    readerUnloads = new Set<() => void>();
+    paragraphLayouts = new Set<ReturnType<typeof createParagraphLayoutController>>();
     parsed = new Map<string, ParsedNote>();
     dirty = new Map<string, true>();
     pdfJobs = new Set<AbortController>();
@@ -63,6 +67,8 @@ export default class AcademicNotes extends Plugin {
         this.appearanceBefore = { palette: document.body.getAttribute('data-an-palette'), classes: Object.fromEntries(['an-active', 'phb-neutral-body', 'phb-no-motif'].map(c => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map(k => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
         this.editorViews = new Set();
         this.readers = new Set();
+        this.readerUnloads = new Set();
+        this.paragraphLayouts = new Set();
         this.parsed = new Map();
         this.dirty = new Map();
         this.pdfJobs = new Set();
@@ -141,7 +147,11 @@ export default class AcademicNotes extends Plugin {
     onunload() {
         this.active = false;
         window.clearTimeout(this.indexTimer);
+        for (const unload of this.readerUnloads) unload();
+        this.readerUnloads.clear();
         this.readers.clear();
+        for (const layout of this.paragraphLayouts) layout.dispose();
+        this.paragraphLayouts.clear();
         for (const job of this.pdfJobs)
             job.abort();
         this.themeObserver?.disconnect();
@@ -163,7 +173,7 @@ export default class AcademicNotes extends Plugin {
     recordError(where: string, error: unknown) { const entry = { time: new Date().toISOString(), where, message: String(error instanceof Error ? error.message : error), stack: error instanceof Error ? error.stack || '' : '' }; this.errors.push(entry); if (this.errors.length > 40)
         this.errors.shift(); console.error('[Academic Notes]', where, error); }
     fail(where: string, error: unknown) { this.recordError(where, error); new Notice(t('{0}失败：{1}\n可运行“检查插件状态与导出环境”。', where, error instanceof Error ? error.message : String(error)), 13000); }
-    async saveSettings() { await this.saveData(this.settings); this.applyAppearance(); this.scheduleIndex(); }
+    async saveSettings() { await this.saveData(this.settings); this.applyAppearance(); for (const layout of this.paragraphLayouts) layout.refresh(); this.scheduleIndex(); }
     applyAppearance() {
         if (!this.active)
             return;
@@ -251,14 +261,32 @@ export default class AcademicNotes extends Plugin {
     postprocess(el: HTMLElement, ctx: MarkdownPostProcessorContext) {
         if (el.closest('.phb-export-stage'))
             return;
-        const refresh = () => { const n = this.graph?.notes.get(ctx.sourcePath); if (!n)
-            return; renderFragment(el, n, this.graph, node => ctx.getSectionInfo(node) || ctx.getSectionInfo(el)); };
+        let layout: ReturnType<typeof createParagraphLayoutController> | undefined;
+        let selectionDeferred = false;
+        const refresh = () => {
+            if (layout && hasParagraphSelection(el)) { selectionDeferred = true; return; }
+            selectionDeferred = false;
+            if (layout && !this.settings.kpReading) { layout.dispose(); this.paragraphLayouts.delete(layout); layout = undefined; }
+            if (!layout && this.active && this.settings.kpReading) {
+                layout = createParagraphLayoutController(el, { enabled: () => this.active && this.settings.kpReading, onError: error => this.recordError(t('段落排版（Beta）'), error) });
+                this.paragraphLayouts.add(layout);
+            }
+            restoreParagraphs(el);
+            const n = this.graph?.notes.get(ctx.sourcePath);
+            if (n) renderFragment(el, n, this.graph, node => ctx.getSectionInfo(node) || ctx.getSectionInfo(el));
+            layout?.refresh();
+        };
         class Reader extends MarkdownRenderChild {
             constructor(el: HTMLElement, private owner: AcademicNotes) { super(el); }
             follow: (event: MouseEvent | KeyboardEvent) => void;
+            resumeSelection: () => void;
+            unloadReader = () => this.unload();
             onload() {
+                this.owner.readerUnloads.add(this.unloadReader);
                 this.owner.readers.add(refresh);
                 refresh();
+                this.resumeSelection = () => { if (selectionDeferred && !hasParagraphSelection(el)) refresh(); };
+                el.ownerDocument.addEventListener('selectionchange', this.resumeSelection);
                 this.follow = event => {
                     if (event.defaultPrevented || ('button' in event && event.button !== 0) || ('key' in event && event.key !== 'Enter'))
                         return;
@@ -276,7 +304,7 @@ export default class AcademicNotes extends Plugin {
                 el.addEventListener('click', this.follow, true);
                 el.addEventListener('keydown', this.follow, true);
             }
-            onunload() { this.owner.readers.delete(refresh); el.removeEventListener('click', this.follow, true); el.removeEventListener('keydown', this.follow, true); }
+            onunload() { this.owner.readerUnloads.delete(this.unloadReader); this.owner.readers.delete(refresh); if (layout) { layout.dispose(); this.owner.paragraphLayouts.delete(layout); } el.ownerDocument.removeEventListener('selectionchange', this.resumeSelection); el.removeEventListener('click', this.follow, true); el.removeEventListener('keydown', this.follow, true); }
         }
         ctx.addChild(new Reader(el, this));
         for (const p of allNodes(el, 'p'))
@@ -415,7 +443,7 @@ export default class AcademicNotes extends Plugin {
                 this.pdfJobs.add(controller);
                 try {
                     const html = await this.app.vault.adapter.read(snapshot);
-                    const result = await exportPdf(html, line => log.line(line), controller.signal, undefined, { mode: this.settings.pdfFloatMode, maxRounds: this.settings.pdfFloatMaxRounds });
+                    const result = await exportPdf(html, line => log.line(line), controller.signal, undefined, { mode: this.settings.pdfFloatMode, maxRounds: this.settings.pdfFloatMaxRounds, kp: this.settings.kpPdf });
                     if (!this.active)
                         throw new Error(t("插件已停用。"));
                     await this.app.vault.adapter.writeBinary(out, new Uint8Array(result.bytes).buffer);
@@ -615,7 +643,7 @@ export default class AcademicNotes extends Plugin {
                     copied.add(e.id);
                 }
             } });
-            const baseCss = calloutCss + '\n' + layoutCss + '\n' + diagramCss, printCss = documentCss;
+            const baseCss = calloutCss + '\n' + layoutCss + '\n' + diagramCss + '\n' + typographyCss, printCss = documentCss;
             let css = this.settings.captureTheme ? await this.collectCss(doc, meta.warnings) : baseCss;
             const bodyStyle = doc.defaultView!.getComputedStyle(doc.body), variables = [...bodyStyle].filter(k => k.startsWith('--')).map(k => `${k}:${bodyStyle.getPropertyValue(k)};`).join('');
             const classes = [...doc.body.classList].filter(c => !['is-mobile', 'is-phone'].includes(c)).join(' ') + ' phb-export';

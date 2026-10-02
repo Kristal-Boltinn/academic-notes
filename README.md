@@ -17,6 +17,7 @@ The mathematical environments are visually inspired by [ElegantBook](https://git
 - Draw commutative diagrams with a local grid editor (Beta), or use the optional TikZJax integration.
 - Add clickable tables of contents, PDF bookmarks, and measured PDF page numbers.
 - Export a single note or a multi-note book to PDF or HTML without modifying the source notes.
+- Optionally use Knuth–Plass paragraph line breaking in Reading view and desktop PDF exports (Beta).
 - Optionally reduce PDF page gaps with selectable 80% shrinking and safe paragraph movement (experimental).
 - Process notes locally, without telemetry, an account, or a separately installed export engine.
 
@@ -312,6 +313,21 @@ Under **Settings → Academic Notes → Environment customization**, select an e
 Each framed environment also has independent light/dark motif colors and a motif selector: keep the original drawing, hide it, or choose one of nine fine-line vector designs. Click a gallery tile to select it; the callout preview shows the current mode. **Reset this environment** clears only the selected environment's overrides. The global hide-decoration option takes precedence and never hides the proof's QED square. Custom appearance is preserved in PDF exports, including exports with theme capture disabled.
 
 ![Nine original corner motifs, enlarged and at actual size](screenshots/motifs.png)
+
+## Paragraph typography (Beta)
+
+![Browser justification and optional Knuth–Plass paragraph layout](screenshots/typography.png)
+
+Open **Settings → Academic Notes → Paragraph typography (Beta)**. Both switches are off by default and work independently:
+
+| Setting | Use |
+|---|---|
+| Use Knuth–Plass line breaking in Reading view | Optimize ordinary prose in Reading view on desktop or mobile. Recalculate when the available width or fonts change. |
+| Use Knuth–Plass line breaking in PDF | Optimize paragraphs at their final printed width when exporting a note or book to PDF on desktop. |
+
+Knuth–Plass considers line breaks across a whole paragraph and adjusts spacing to reduce uneven lines. It supports basic Latin text and CJK characters with common Chinese punctuation rules. Inline links and formulas remain intact; they are treated as units that cannot be split across lines. Enable the Reading view switch, open a note in **Reading view**, and compare its paragraphs at different window widths. No Markdown syntax changes are needed, and the source note is preserved. Live Preview and Source mode keep their normal editing layout; HTML snapshots keep responsive browser layout.
+
+This Beta does not add automatic word hyphenation. Lists, tables, headings, captions, image paragraphs, explicit line breaks, Proof/Remark paragraphs with floating titles or end markers, first-line indents, and right-to-left or vertical text use normal browser layout. Complex markup, paragraphs that cannot fit, and content beyond the processing limit also fall back to normal layout; long notes may therefore be only partly optimized. The result depends on the text, font and width, so it will not improve every paragraph.
 
 ## Table of contents
 

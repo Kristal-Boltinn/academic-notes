@@ -10,6 +10,7 @@ import { PDFDocument, PDFName } from 'pdf-lib';
 import { setLanguage } from '../src/i18n';
 import { MOTIFS, motifMask, appearanceValues } from '../src/rendering/custom-appearance';
 import { runFloatRegressions } from './float-electron';
+import { runKpPdfRegressions } from './kp-pdf';
 
 // The plugin runs in Obsidian's renderer; the standalone Electron test invokes it in the main process.
 (globalThis as typeof globalThis & { window: Window }).window = globalThis as typeof globalThis & Window;
@@ -37,18 +38,26 @@ async function run() {
   try {
     const wc = win.webContents;
     wc.on('console-message', (details) => { if (details.level === 'error') console.error('Renderer:', details.message); });
+    if (process.env.ACADEMIC_TEST_KP_ONLY === '1') {
+      const kpClient = buildSync({ stdin: { contents: "import core from './src/export/document'; globalThis.AcademicTestDoc=core;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', target: 'es2022' }).outputFiles[0].text;
+      await runKpPdfRegressions(win, html, print, kpClient); return;
+    }
     if (process.env.ACADEMIC_TEST_FLOAT_ONLY === '1') {
       const floatClient = buildSync({ stdin: { contents: "import core from './src/export/document'; globalThis.AcademicTestDoc=core;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', target: 'es2022' }).outputFiles[0].text;
       await runFloatRegressions(win, html, print, floatClient); return;
     }
     console.log('Building browser UI regression fixture');
-    const uiClient = buildSync({ stdin: { contents: "import { runUiRegressions } from './tests/browser-regression'; import { runFeatureRegressions } from './tests/feature-browser'; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', alias: { obsidian: resolve('tests/browser-host.ts') } }).outputFiles[0].text;
+    const uiClient = buildSync({ stdin: { contents: "import { runUiRegressions } from './tests/browser-regression'; import { runFeatureRegressions } from './tests/feature-browser'; import { runKpBrowserRegressions } from './tests/kp-browser'; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions; globalThis.runKpBrowserRegressions = runKpBrowserRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', alias: { obsidian: resolve('tests/browser-host.ts') } }).outputFiles[0].text;
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('')));
     console.log('Running browser UI regression fixture');
     await wc.executeJavaScript(uiClient);
     console.log(await wc.executeJavaScript('runUiRegressions()'));
+    const typography = await wc.executeJavaScript('runKpBrowserRegressions()') as { message: string; markup: string };
+    console.log(typography.message);
     const features = await wc.executeJavaScript('runFeatureRegressions()') as { message: string; svg: string; diagramMarkup: string; proofMarkup: string };
     console.log(features.message);
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(typography.markup)));
+    writeFileSync('screenshots/typography.png', (await wc.capturePage({ x: 20, y: 20, width: 960, height: 400 })).toPNG());
     console.log('Capturing diagram and Proof examples');
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered"><h2>Commutative diagrams · Beta</h2>' + features.diagramMarkup + '</main>')));
     await wc.executeJavaScript('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
@@ -218,7 +227,8 @@ async function run() {
     const longProof = box('proof', 'A longer argument', '<p>We now check an argument that continues across page boundaries.</p>' +
       Array.from({ length: 32 }, (_, i) => `<p>Step ${i + 1}. Choose an open neighborhood and apply continuity to each inverse image. This synthetic argument exercises paragraph flow across printed pages without repeating the proof title.</p>`).join('') +
       '<p>END OF LONG PROOF. The last step establishes the required continuity.</p>');
-    const book = `<main id="phb-document" class="markdown-preview-view markdown-rendered"><section class="phb-chapter" data-path="a.md" data-title="Chapter A"><h1>Chapter A</h1><h2>Compactness</h2>${content}${longProof}<h6>1.2.3 Ordinary H6 heading</h6>${paragraphs}<a data-href="b.md#Destination" href="b.md#Destination">Go to chapter B</a></section><section class="phb-chapter" data-path="b.md" data-title="Chapter B"><h1>Chapter B</h1><h2>Destination</h2>${paragraphs}</section></main>`;
+    const kpProse = '<p id="kp-export-prose" style="text-indent:0">An entire paragraph offers several possible line breaks. Choosing them together helps keep word spacing consistent while retaining <em>inline emphasis</em> and the <a class="internal-link" data-href="b.md#^thm-b">forward theorem reference</a>. 中文段落也保留原始文字和标点，避免将右括号、逗号或句号放在行首。 The source remains unchanged, and unsupported paragraphs retain the browser layout.</p>';
+    const book = `<main id="phb-document" class="markdown-preview-view markdown-rendered"><section class="phb-chapter" data-path="a.md" data-title="Chapter A"><h1>Chapter A</h1><h2>Compactness</h2>${kpProse}${content}${longProof}<h6>1.2.3 Ordinary H6 heading</h6>${paragraphs}<a data-href="b.md#Destination" href="b.md#Destination">Go to chapter B</a></section><section class="phb-chapter" data-path="b.md" data-title="Chapter B"><h1>Chapter B</h1><h2>Destination</h2>${paragraphs}</section></main>`;
     const fourFigures = groupMarkup(4).replace(/^<main[^>]*>|<\/main>$/g, '').replace('class="callout an-media"', 'class="callout an-media an-columns-4 an-uniform-height" style="--an-subfigure-height:140px;--an-max-image-ratio:2.6666666666666665"');
     const pageBoundaryFigure = '<div id="boundary-figure" class="callout an-media" data-callout="figure"><div class="callout-title"><div class="callout-title-inner">Tall picture, with caption kept below.</div><div id="picture-bottom"></div></div><div class="callout-content"><div id="picture-top"></div><img width="600" height="1800" style="height:1800px!important;max-height:none!important" src="data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="1800"><rect width="600" height="1800" fill="#286b76"/></svg>') + '"></div></div>';
     const illustratedBook = book.replace('<h2>Compactness</h2>', '<h2>Compactness</h2><div data-phb-block="thm-a">Theorem A target</div><a class="internal-link" data-href="b.md#^diagram">Cross-chapter diagram reference</a><a class="internal-link" data-href="b.md#^thm-b">Forward theorem reference</a>').replace('<h2>Destination</h2>', '<h2>Destination</h2><div data-phb-block="thm-b">Theorem B target</div><a class="internal-link" data-href="a.md#^thm-a">Backward theorem reference</a>' + figureMarkup.replace(/^<main[^>]*>|<\/main>$/g, '') + fourFigures + tableMarkup + captionlessMarkup + features.diagramMarkup + pageBoundaryFigure);
@@ -299,7 +309,8 @@ async function run() {
       // policy even if a future snapshot generator forgets its meta tag.
       const guardedSnapshot = snapshot.replace(/<meta http-equiv="Content-Security-Policy"[^>]*>/, '')
         .replace('</body>', '<script>document.body.dataset.executed="script"</script><img hidden id="security-probe" src="data:image/png;base64,broken" onerror="document.body.dataset.executed=\'event\'"></body>');
-      result = await exportPdf(guardedSnapshot + '<!--' + 'large snapshot 中文 '.repeat(400000) + '-->', console.log, undefined, GuardedPrintWindow);
+      result = await exportPdf(guardedSnapshot + '<!--' + 'large snapshot 中文 '.repeat(400000) + '-->', console.log, undefined, GuardedPrintWindow, { kp: true });
+      assert.ok(result.report.paragraphLayout && result.report.paragraphLayout.processed > 0, 'PDF should run the bundled paragraph solver at final print width');
       const controller = new AbortController();
       await assert.rejects(exportPdf(snapshot, () => controller.abort(), controller.signal, GuardedPrintWindow), /Export cancelled/);
       const brokenImage = snapshot.replace('</body>', '<img src="data:image/png;base64,broken" alt="invalid fixture"></body>');
@@ -324,6 +335,7 @@ async function run() {
     const pdf = await PDFDocument.load(result.bytes);
     assert.ok(pdf.catalog.get(PDFName.of('Outlines')));
     console.log(JSON.stringify({ paletteCases: cases, pdf: result.report }));
+    await runKpPdfRegressions(win, html, print, client);
     await runFloatRegressions(win, html, print, client);
   } finally { win.destroy(); }
 }

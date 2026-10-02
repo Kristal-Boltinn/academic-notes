@@ -1,3 +1,10 @@
+# 2.11.0
+
+- Add optional independent Knuth–Plass paragraph line breaking in Reading view and desktop PDF export. Both switches are off by default; Live Preview, source editing and HTML snapshots retain native layout.
+- Optimize measured Latin/CJK paragraph breaks and flexible gaps, preserve inline links and math, and reflow after width/font changes. Unsupported and oversized paragraphs fall back to browser layout under strict work limits.
+- Restore original render nodes on disable/unload, protect editable DOM and selections, and retain print isolation and figure-layout safeguards.
+- Document usage and limitations in English and Chinese; add global-optimization, DOM identity, responsive-layout and actual-PDF regressions. No runtime dependency or permission is added.
+
 # 2.10.0
 
 - Fix raw diagram LaTeX labels when the host math renderer returns CommonHTML or fails: use a private bundled TeX/AMS-to-SVG fallback, retaining the shared SVG coordinates and local glyph references. Accept bare TeX, dollar delimiters and LaTeX inline/display delimiters.

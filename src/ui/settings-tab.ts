@@ -90,6 +90,10 @@ class AcademicSettings extends PluginSettingTab {
         const select = (key: StringKey | 'tocDepth' | 'pdfFloatMaxRounds', name: string, options: Record<string, string>, desc = '') => definitions.push({ name, desc, render: row => { row.addDropdown(d => d.addOptions(options).setValue(String(s[key])).onChange(async v => { if (key === 'tocDepth' || key === 'pdfFloatMaxRounds') s[key] = Number(v); else s[key] = v; await p.saveSettings(); })); } });
         const heading = (name: string) => definitions.push({ name, render: row => { row.setHeading(); } });
         const description = (desc: string) => definitions.push({ name: '', desc, render: () => {} });
+        heading(t('段落排版（Beta）'));
+        toggle('kpReading', t('阅读视图使用 Knuth–Plass 断行'), t('整段优化普通正文的断行和间距；窗口宽度变化后重新排版。默认关闭，实时预览与源码不受影响。'));
+        if (Platform.isDesktopApp) toggle('kpPdf', t('PDF 使用 Knuth–Plass 断行'), t('在最终打印宽度下重新排版普通正文；HTML 快照保留浏览器排版。'));
+        description(t('中文与英文基础段落可用；链接和行内公式保持完整。不支持的段落或过长内容自动使用浏览器排版。Proof、Remark、列表、图片、首行缩进和复杂排版暂不处理；暂不自动断词。'));
         heading(t("编号与引用"));
         toggle('numbered', t("定理类环境自动编号"), t("Proof、Remark、Solution 默认不计数。"));
         select('equationMode', t("公式自动编号"), { referenced: t("仅被引用的公式（全库判断）"), all: t("所有独立公式块"), none: t("关闭自动编号") }, t("保留显式 \\tag；只有进入自动编号的公式才增加计数器。"));

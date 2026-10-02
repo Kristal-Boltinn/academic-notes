@@ -1,3 +1,11 @@
+# Community review follow-up: 2.11.0
+
+- Optional independent Knuth–Plass optimization uses measured paragraph boxes, flexible gaps and break penalties. No dependency, installer, network access or Node filesystem capability is added.
+- Reading controllers are created only when enabled. They exclude editors, preserve original inline elements/listeners, defer mutation while text is selected, disconnect during their own writes, and restore native nodes on disable/unload. Item, candidate and operation limits keep unsupported or oversized content native.
+- The same local implementation is bundled as fixed JavaScript for the sandboxed print window. Snapshot scripts, network requests and Node access remain blocked. Fonts/media settle before print-width optimization, callout keep thresholds are remeasured afterward, and figure rollback retains the optimized copy.
+- One scoped CSS priority declaration temporarily measures unwrapped intrinsic widths; its class is restored before painting. Generated full-width inline spans preserve normal paragraph line boxes and native widow/orphan controls. Native createElement calls in the isolated renderer cannot use Obsidian's DOM helpers, accounting for the two remaining lint recommendations.
+- The default switches are off, HTML stays responsive, and both READMEs disclose exclusions and the absence of automatic hyphenation. Physical iPad verification remains separate from Chromium regression coverage.
+
 # Community review follow-up: 2.10.0
 
 - Diagram labels retain native SVG output when available. CommonHTML or unavailable host output uses a private, bundled MathJax 3.2.2 TeX/AMS-to-SVG renderer and local font glyphs. It does not register a global renderer, download resources, install dependencies or load Node filesystem APIs. Its Apache-2.0 license is retained in licenses/mathjax-full-LICENSE and main.js.
