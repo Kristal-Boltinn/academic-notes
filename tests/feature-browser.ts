@@ -1,9 +1,10 @@
 import Engine from '../src/indexing/engine';
 import { titleRecord, renderFragment } from '../src/rendering/adapters';
 import { TFile } from 'obsidian';
+import { setMathOutput } from './browser-host';
 import { diagramProcessor } from '../src/ui/diagram-modal';
 import { DiagramEditor } from '../src/diagrams/editor';
-import { diagramFence, parseDiagram, type DiagramData } from '../src/diagrams/model';
+import { diagramBlocks, diagramFence, parseDiagram, type DiagramData } from '../src/diagrams/model';
 import { renderDiagram } from '../src/diagrams/render';
 import { waitForTikz } from '../src/export/tikz';
 import { prepareMediaForPrint } from '../src/export/pagination';
@@ -11,7 +12,8 @@ const check = (condition: unknown, message: string) => { if (!condition) throw n
 const settle = () => new Promise(resolve => setTimeout(resolve, 120));
 export const tensorDiagram: DiagramData = { version: 1, grid: 2,
   nodes: [{ id: 'n-0-0', row: 0, col: 0, label: 'M \\times N' }, { id: 'n-0-1', row: 0, col: 1, label: 'M \\otimes_R N' }, { id: 'n-1-1', row: 1, col: 1, label: 'P' }],
-  arrows: [{ id: 'a-1', from: 'n-0-0', to: 'n-0-1', label: '\\tau', style: 'solid', side: 'above' }, { id: 'a-2', from: 'n-0-0', to: 'n-1-1', label: 'b', style: 'solid', side: 'below' }, { id: 'a-3', from: 'n-0-1', to: 'n-1-1', label: '\\exists! \\widetilde{b}', style: 'dashed', side: 'below' }] };
+  arrows: [{ id: 'a-1', from: 'n-0-0', to: 'n-0-1', label: '\\tau', style: 'solid', side: 'above' }, { id: 'a-2', from: 'n-0-0', to: 'n-1-1', label: 'b', style: 'solid', side: 'below' }, { id: 'a-3', from: 'n-0-1', to: 'n-1-1', label: '\\exists! \\widetilde{b}', style: 'dashed', side: 'below' }],
+  commutations: [{ id: 'c-1', from: 'n-0-0', via: 'n-0-1', to: 'n-1-1' }] };
 export async function runFeatureRegressions() {
   const host = document.body.createDiv({ cls: 'markdown-rendered' });
   const notes = [Engine.parse('a.md', '> [!claim] A claim\n> Statement.\n\n^claim-a'), Engine.parse('b.md', '> [!proof][[a#^claim-a]]\n> Argument.\n\n> [!proof]\n> New-line argument.')];
@@ -44,13 +46,39 @@ export async function runFeatureRegressions() {
   check(editor.selectedArrow === editor.data.arrows[0].id, 'Tapping the preview must select an editable arrow');
   click('[data-an-action="remove-arrow"]'); check(editor.data.arrows.length === 0, 'Selected preview arrow must be removable');
   editorHost.remove();
+  const markerHost = host.createDiv(), markerEditor = new DiagramEditor(markerHost, { ...tensorDiagram, commutations: [] });
+  markerEditor.mode = 'commutations';
+  for (const id of ['n-0-0', 'n-0-1', 'n-1-1']) markerHost.querySelector<HTMLButtonElement>(`[data-an-node="${id}"]`)!.click();
+  check(markerEditor.data.commutations?.length === 1, 'Three point selection must add a commutativity marker'); await settle();
+  markerHost.querySelector('svg g[data-an-commutation]')!.dispatchEvent(new MouseEvent('click', { bubbles: true })); await settle();
+  check(markerEditor.selectedCommutation === 'c-1', 'Touch selection must select commutativity markers');
+  markerHost.querySelector<HTMLButtonElement>('[data-an-action="remove-commutation"]')!.click();
+  check(markerEditor.data.commutations?.length === 0, 'Selected markers must be removable without source mode');
+  markerHost.querySelector<HTMLButtonElement>('[data-an-action="undo"]')!.click();
+  check(markerEditor.data.commutations?.length === 1, 'Undo must restore commutativity markers');
+  markerEditor.list.querySelector<HTMLButtonElement>('button')!.click();
+  check(markerEditor.selectedArrow === 'a-1' && !markerEditor.selectedCommutation, 'Arrow list selection must clear the marker selection');
+  markerHost.querySelector<HTMLButtonElement>('[data-an-action="remove-arrow"]')!.click();
+  check(markerEditor.data.commutations?.length === 0, 'Deleting a path must remove its commutativity marker');
+  markerHost.remove();
+  // Exercise the actual CommonHTML output and native-failure paths, not just SVG.
+  const fallbackHost = host.createDiv();
+  for (const mode of ['chtml', 'failure'] as const) {
+    setMathOutput(mode);
+    for (const formula of ['\\alpha', '$\\alpha$', '\\(\\frac{x_1}{y^2}\\)', '\\mathbb{R}', '\\exists! \\widetilde{b}']) {
+      const data = { ...tensorDiagram, arrows: tensorDiagram.arrows.map(a => ({ ...a, label: formula })) };
+      const fallback = await renderDiagram(fallbackHost, data);
+      check(fallback.querySelectorAll('[data-an-renderer="local"]').length === 6 && !!fallback.querySelector('.an-diagram-math path') && !fallback.querySelector('[data-mml-node="merror"], foreignObject, mjx-container'), 'CommonHTML or unavailable native renderer must yield local SVG formulas, never raw commands');
+    }
+  }
+  setMathOutput('svg'); fallbackHost.remove();
   const fixture = host.createDiv({ cls: 'an-diagram-figure' }); const svg = await renderDiagram(fixture, tensorDiagram);
   check(svg.querySelectorAll('svg.an-diagram-math').length === 6 && !svg.querySelector('foreignObject') && !svg.querySelector('[data-mml-node="merror"]'), 'Node and arrow labels must share pure SVG coordinates with arrows');
   const selectable = host.createDiv(); let picked = '';
   await renderDiagram(selectable, tensorDiagram, id => { picked = id; });
   selectable.querySelector('g[data-an-arrow="a-1"]')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   check(picked === 'a-1' && !!selectable.querySelector('path[pointer-events="stroke"]'), 'Touch-sized arrow targets must select arrows'); selectable.remove();
-  check(svg.querySelectorAll('path[marker-end]').length === 3 && svg.querySelector('[stroke-dasharray]'), 'Arrow geometry and dashed style must survive rendering');
+  check(svg.querySelectorAll('path[marker-end]').length === 4 && svg.querySelector('[stroke-dasharray]') && svg.querySelector('[data-an-commutation] path')!.getAttribute('d')!.includes(' A '), 'Arrows, dashed style and the curved commutativity marker must survive rendering');
   for (const width of [300, 700]) {
     fixture.style.width = width + 'px';
     const bounds = svg.getBoundingClientRect(), scale = bounds.width / 460;
@@ -70,7 +98,9 @@ export async function runFeatureRegressions() {
   const app: any = { workspace: { getActiveViewOfType: () => null }, vault: { getAbstractFileByPath: () => file, read: async () => content, process: async (_file: unknown, update: (text: string) => string) => { content = update(content); changes.push(content); } } };
   const rendered = host.createDiv();
   const ctx: any = { sourcePath: 'diagram.md', getSectionInfo: () => ({ lineStart: 2, lineEnd: 99 }) };
-  await diagramProcessor(app, JSON.stringify({ ...tensorDiagram, caption: 'Shared numbering' }, null, 2), rendered, ctx);
+  setMathOutput('chtml');
+  await diagramProcessor(app, diagramBlocks(diagramSource)[0].source, rendered, ctx);
+  setMathOutput('svg');
   const diagramNote = Engine.parse('diagram.md', content), diagramGraph = Engine.graph([diagramNote]);
   renderFragment(rendered, diagramNote, diagramGraph, () => ctx.getSectionInfo());
   check(rendered.querySelector('.an-caption-label')?.textContent === 'Figure 1' && !rendered.querySelector<HTMLElement>('.an-diagram-caption')!.hidden, 'Standalone diagram must display the shared figure counter');

@@ -1,3 +1,10 @@
+# 2.10.0
+
+- Fix raw diagram LaTeX labels when the host math renderer returns CommonHTML or fails: use a private bundled TeX/AMS-to-SVG fallback, retaining the shared SVG coordinates and local glyph references. Accept bare TeX, dollar delimiters and LaTeX inline/display delimiters.
+- Add triangular commutativity markers: connect the two-step path and direct arrow, then select source, intermediate node and target. Render a short quarter-circle arrow inside the triangle, with touch selection, deletion, undo and export support.
+- Validate marker topology and remove dependent markers when nodes, arrows or grid positions are removed. Keep existing version-1 diagram data compatible.
+- Update both usage guides, the tensor-product illustration and dependency notices. No network, installer or filesystem capabilities are added.
+
 # 2.9.0
 
 - Add experimental desktop PDF figure layout priorities: shrink visuals to 80%, advance a safe prefix of following paragraphs, or retain page gaps. Bound total attempts and restore normal layout on exhausted attempts or failed final validation/calibration. Source notes and numbering remain unchanged.

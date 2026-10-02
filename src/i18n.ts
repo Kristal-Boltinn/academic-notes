@@ -228,7 +228,15 @@ export const ENGLISH = {
   "未纳入书籍或无法定位的链接：{0} -> {1}": "Link target is missing from the book or cannot be located: {0} -> {1}",
   "讲义": "Lecture notes",
   "数学笔记 · 合订本": "Mathematical notes · Collected chapters",
-  "数学笔记": "Mathematical notes"
+  "数学笔记": "Mathematical notes",
+  "标记交换": "Mark commutativity",
+  "删除当前交换符": "Delete selected commutativity marker",
+  "请先启用节点并连接三条箭头。": "Enable the nodes and connect the three arrows first.",
+  "需要非共线的三个节点，以及起点→中间点、中间点→终点和起点→终点三条箭头。": "Select three non-collinear nodes with arrows from → via, via → to, and from → to.",
+  "最多添加 12 个交换符。": "A diagram supports at most 12 commutativity markers.",
+  "依次点击起点、中间点、终点来标记交换。": "Click the source, intermediate node, then target to mark commutativity.",
+  "已选择起点，请点击中间点。": "Source selected; click the intermediate node.",
+  "已选择中间点，请点击终点。": "Intermediate node selected; click the target."
 } as const;
 export type Message = keyof typeof ENGLISH;
 let current: 'en' | 'zh' = 'en';

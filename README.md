@@ -269,11 +269,12 @@ For abbreviation expansion, the optional [LaTeX Suite snippets](examples/latex-s
 ![Tensor product universal-property diagram](screenshots/diagram.png)
 
 1. Run **Academic Notes: Insert or edit commutative diagram (Beta)** from the command palette. Choose a 2×2 or 3×3 grid.
-2. Click a point to enable/select it, then enter its **Node formula**, such as `M \otimes_R N`. Disable a point with **Enable selected node**. Labels use Obsidian's LaTeX math renderer; `$...$` is optional.
+2. Click a point to enable/select it, then enter its **Node formula**, such as `M \otimes_R N`. Disable a point with **Enable selected node**. Labels accept bare TeX such as `\alpha`, `$\alpha$`, or `\(\alpha\)`. Obsidian's SVG math is retained when available; a bundled local TeX/AMS-to-SVG renderer handles hosts that return CommonHTML instead. No extra plugin or network connection is needed.
 3. Choose **Connect arrows**, then click the source and target. Tap an arrow in the preview or its list button to select it, enter a label, choose a solid/dashed line, or move the label above/below or left/right. **Delete selected arrow** removes that arrow. **Undo** restores recent changes, including nodes removed by shrinking the grid.
-4. Optionally enter a **Caption**, then click **Save diagram**. The result is stored in an `academic-diagram` JSON code block. Use **Edit diagram** to reopen it, or **Delete diagram** to remove it directly from reading view or Live Preview, without opening source mode.
+4. To show that a triangular diagram commutes, connect **A → B**, **B → C** and **A → C**, then choose **Mark commutativity** and click **A**, **B**, **C** in that order. A short quarter-circle arrow appears inside the triangle. Tap the curve or its list button to select it; **Delete selected commutativity marker** removes it. Removing a required node or arrow also removes its marker. **Undo** restores recent changes.
+5. Optionally enter a **Caption**, then click **Save diagram**. The result is stored in an `academic-diagram` JSON code block. Use **Edit diagram** to reopen it, or **Delete diagram** to remove it directly from reading view or Live Preview, without opening source mode.
 
-The Beta supports straight arrows, one arrow per ordered pair, 2×2/3×3 grids, and single-line labels up to 200 characters. Formulas and arrows share SVG coordinates, including in narrow mobile views. Diagrams render locally in reading view and Live Preview and are preserved in HTML/PDF exports.
+The Beta supports straight arrows, one arrow per ordered pair, 2×2/3×3 grids, single-line labels up to 200 characters, and up to 12 triangular commutativity markers. The three nodes must be non-collinear and the three directed arrows must exist. Markers express your intended equality; the editor does not prove it. Curves are placed automatically inside the triangle; manual placement and more general path markers are not yet supported. Formulas and arrows share SVG coordinates, including in narrow mobile views. Diagrams render locally in reading view and Live Preview and are preserved in HTML/PDF exports.
 
 Standalone diagrams share the **Figure** counter with ordinary pictures, in source order. A caption is optional. New diagrams receive a unique `^fig-diagram-N` block ID; reference them with `[[#^fig-diagram-1]]` or a cross-file link. For older diagrams, add an ID after the code fence manually or with the add-block-ID command. A diagram already inside a `figure` or `subfigure` callout uses its enclosing caption and is not counted twice. Deleting a standalone diagram also removes its adjacent owned block ID. A complete editable example is in [examples/commutative-diagram.md](examples/commutative-diagram.md).
 
@@ -415,7 +416,7 @@ npm run test:electron
 npm run check:release
 ```
 
-`npm ci` installs development dependencies, including the Electron test runtime; the installed plugin never runs it. `npm run dev` watches source files. TypeScript lives in `src/`; esbuild bundles pdf-lib and fallback CSS. Distribution requires only `main.js`, `manifest.json`, and `styles.css`.
+`npm ci` installs development dependencies, including the Electron test runtime; the installed plugin never runs it. `npm run dev` watches source files. TypeScript lives in `src/`; esbuild bundles pdf-lib, the local MathJax SVG fallback and export CSS. Distribution requires only `main.js`, `manifest.json`, and `styles.css`.
 
 Styles are maintained in `src/styles/callouts.css` (environments and TOC), `src/styles/ui.css` (plugin controls), `src/styles/document.css` (export layout), and `snippets/academic-layout.css` (figures and tables). The build flattens CSS nesting and uses the same compiled callout styles in the release and export snapshots.
 

@@ -1,3 +1,9 @@
+# Community review follow-up: 2.10.0
+
+- Diagram labels retain native SVG output when available. CommonHTML or unavailable host output uses a private, bundled MathJax 3.2.2 TeX/AMS-to-SVG renderer and local font glyphs. It does not register a global renderer, download resources, install dependencies or load Node filesystem APIs. Its Apache-2.0 license is retained in licenses/mathjax-full-LICENSE and main.js.
+- Commutativity markers are bounded validated JSON. Their directed edges and non-collinear nodes must exist. Node, arrow and grid removal prune dependent markers. Curves and formulas remain pure SVG, with touch-sized selection and keyboard access.
+- Source edits and print isolation use the existing APIs; no new permissions or CSS priority rules are introduced. Chromium/CommonHTML regressions do not replace physical iPad acceptance testing.
+
 # Community review follow-up: 2.9.0
 
 - Experimental floating is disabled by default and affects only the isolated PDF copy. Actual printed boundary probes validate every accepted change and the final calibrated layout. A bounded attempt limit restores the full pre-experiment document rather than retaining uncertain changes.

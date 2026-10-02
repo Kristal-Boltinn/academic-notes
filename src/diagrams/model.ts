@@ -1,6 +1,7 @@
 export interface DiagramNode { id: string; row: number; col: number; label: string }
 export interface DiagramArrow { id: string; from: string; to: string; label: string; style: 'solid' | 'dashed'; side: 'above' | 'below' }
-export interface DiagramData { version: 1; grid: 2 | 3; nodes: DiagramNode[]; arrows: DiagramArrow[]; caption?: string }
+export interface DiagramCommutation { id: string; from: string; via: string; to: string }
+export interface DiagramData { version: 1; grid: 2 | 3; nodes: DiagramNode[]; arrows: DiagramArrow[]; caption?: string; commutations?: DiagramCommutation[] }
 export const emptyDiagram = (): DiagramData => ({ version: 1, grid: 2, nodes: [], arrows: [] });
 const label = (value: unknown): string => {
     if (typeof value !== 'string' || value.length > 200 || /[\r\n]/.test(value)) throw new Error('Invalid diagram label (maximum 200 characters, one line).');
@@ -26,7 +27,27 @@ export function parseDiagram(source: string): DiagramData {
         return { id: id(a.id), from: a.from, to: a.to, label: label(a.label), style: a.style, side: a.side };
     });
     if (new Set(arrows.map(a => a.id)).size !== arrows.length) throw new Error('Duplicate diagram arrow.');
-    return { version: 1, grid: value.grid as 2 | 3, nodes, arrows, ...(value.caption === undefined ? {} : { caption: label(value.caption) }) };
+    const data: DiagramData = { version: 1, grid: value.grid as 2 | 3, nodes, arrows, ...(value.caption === undefined ? {} : { caption: label(value.caption) }) };
+    if (value.commutations !== undefined) {
+        if (!Array.isArray(value.commutations) || value.commutations.length > 12) throw new Error('Invalid commutativity markers (maximum 12).');
+        data.commutations = value.commutations.map(c => {
+            if (!c || !isCommutingTriangle(data, c.from, c.via, c.to)) throw new Error('A commutativity marker requires three non-collinear nodes and arrows from → via → to and from → to.');
+            return { id: id(c.id), from: c.from, via: c.via, to: c.to };
+        });
+        if (new Set(data.commutations.map(c => c.id)).size !== data.commutations.length || new Set(data.commutations.map(c => `${c.from},${c.via},${c.to}`)).size !== data.commutations.length) throw new Error('Duplicate commutativity marker.');
+    }
+    return data;
+}
+export function isCommutingTriangle(data: DiagramData, from: string, via: string, to: string) {
+    const a = data.nodes.find(n => n.id === from), b = data.nodes.find(n => n.id === via), c = data.nodes.find(n => n.id === to);
+    return !!(a && b && c && (b.col - a.col) * (c.row - a.row) !== (b.row - a.row) * (c.col - a.col)
+        && [[from, via], [via, to], [from, to]].every(([start, end]) => data.arrows.some(e => e.from === start && e.to === end)));
+}
+function pruneCommutations(data: DiagramData) {
+    if (data.commutations) data.commutations = data.commutations.filter(c => isCommutingTriangle(data, c.from, c.via, c.to));
+}
+export function removeArrow(data: DiagramData, arrowId: string) {
+    data.arrows = data.arrows.filter(a => a.id !== arrowId); pruneCommutations(data);
 }
 export function diagramFence(data: DiagramData, prefix = '') {
     const valid = parseDiagram(JSON.stringify(data));
@@ -35,9 +56,11 @@ export function diagramFence(data: DiagramData, prefix = '') {
 export function resizeDiagram(data: DiagramData, grid: 2 | 3) {
     data.grid = grid; data.nodes = data.nodes.filter(n => n.row < grid && n.col < grid);
     const ids = new Set(data.nodes.map(n => n.id)); data.arrows = data.arrows.filter(a => ids.has(a.from) && ids.has(a.to));
+    pruneCommutations(data);
 }
 export function removeNode(data: DiagramData, nodeId: string) {
     data.nodes = data.nodes.filter(n => n.id !== nodeId); data.arrows = data.arrows.filter(a => a.from !== nodeId && a.to !== nodeId);
+    pruneCommutations(data);
 }
 export interface DiagramBlock { from: number; to: number; line: number; prefix: string; source: string }
 export function diagramBlocks(source: string): DiagramBlock[] {

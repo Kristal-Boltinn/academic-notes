@@ -12,10 +12,36 @@ import { pdfAvailability } from '../src/export/pdf';
 import { environmentTemplate } from '../src/ui/environment';
 import { figureMetadata } from '../src/rendering/figure-layout';
 import { appearanceValues, parseAppearance, titleInk, MOTIFS } from '../src/rendering/custom-appearance';
-import { parseDiagram, diagramFence, diagramBlocks, resizeDiagram, removeNode } from '../src/diagrams/model';
+import { parseDiagram, diagramFence, diagramBlocks, resizeDiagram, removeNode, removeArrow, isCommutingTriangle, type DiagramData } from '../src/diagrams/model';
+import { commutationArc } from '../src/diagrams/geometry';
+import { mathSource } from '../src/diagrams/math';
 import { normalizeFloatOptions } from '../src/export/floats';
 import { DEFAULTS as PluginDefaults } from '../src/settings';
 import { diagramDeletionRange } from '../src/ui/diagram-modal';
+
+test('commutativity markers validate their paths, survive round trips and prune after edits', () => {
+  const initial: DiagramData = { version: 1, grid: 3, nodes: [{id:'a',row:0,col:0,label:'A'}, {id:'b',row:0,col:2,label:'B'}, {id:'c',row:2,col:2,label:'C'}], arrows: [['a','b'],['b','c'],['a','c']].map(([from,to],i) => ({id:'e-'+i,from,to,label:'',style:'solid',side:'above'})), commutations: [{id:'c-1',from:'a',via:'b',to:'c'}] };
+  const copy = () => parseDiagram(JSON.stringify(initial));
+  assert.deepEqual(parseDiagram(diagramBlocks(diagramFence(initial))[0].source), initial);
+  assert.equal(isCommutingTriangle(initial,'a','b','c'),true); assert.equal(isCommutingTriangle(initial,'c','b','a'),false);
+  assert.throws(() => parseDiagram(JSON.stringify({...initial, arrows: initial.arrows.slice(1)})));
+  assert.throws(() => parseDiagram(JSON.stringify({...initial, commutations: [...initial.commutations!, ...initial.commutations!]})));
+  const collinear = copy(); collinear.nodes[2].row = 0; collinear.nodes[2].col = 1;
+  assert.throws(() => parseDiagram(JSON.stringify(collinear)));
+  for (const edit of [(d:DiagramData)=>removeArrow(d,'e-0'), (d:DiagramData)=>removeNode(d,'b'), (d:DiagramData)=>resizeDiagram(d,2)]) {
+    const data = copy(); edit(data); assert.equal(data.commutations?.length,0); assert.doesNotThrow(()=>parseDiagram(JSON.stringify(data)));
+  }
+  assert.equal(parseDiagram('{"version":1,"grid":2,"nodes":[],"arrows":[]}').commutations,undefined);
+  for (const mirrored of [false,true]) {
+    const data = copy(); if(mirrored) data.nodes.forEach(n=>{n.col=2-n.col;});
+    const arc = commutationArc(data,data.commutations![0]);
+    assert.match(arc.path,/ A /); assert.ok(arc.radius>0 && arc.radius+8<arc.inradius,'Curve and arrowhead must remain inside the triangle');
+    assert.ok(Number.isFinite(arc.x) && Number.isFinite(arc.y));
+  }
+});
+test('diagram math accepts bare TeX and dollar or LaTeX delimiters', () => {
+  for (const input of ['\\alpha', '$\\alpha$', '$$\\alpha$$', '\\(\\alpha\\)', '\\[\\alpha\\]']) assert.equal(mathSource(input),'\\alpha');
+});
 
 test('diagrams share figure counters and references without double-counting wrappers', () => {
   const data = parseDiagram('{"version":1,"grid":2,"caption":"Tensor diagram","nodes":[],"arrows":[]}');

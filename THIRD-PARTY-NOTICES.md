@@ -2,6 +2,7 @@
 
 ## Bundled runtime dependencies
 
+- mathjax-full 3.2.2 — Apache-2.0, MathJax Consortium. A private TeX/AMS input and SVG output fallback, including its TeX glyph data, is bundled for commutative diagrams. https://github.com/mathjax/MathJax-src
 - pdf-lib 1.17.1 — MIT, copyright Andrew Dillon. https://github.com/Hopding/pdf-lib
 - @pdf-lib/standard-fonts 1.0.0 — MIT. https://github.com/Hopding/standard-fonts
 - @pdf-lib/upng 1.0.1 — MIT, based on UPNG.js by Photopea. https://github.com/Hopding/upng
@@ -12,8 +13,8 @@ Complete license texts for bundled dependencies are in `licenses/` and preserved
 
 ## Host and development tools
 
-Obsidian provides its own API and math renderer; neither Obsidian nor MathJax is redistributed here. Electron's host runtime is provided by Obsidian. The separate Electron npm dependency is used only for development tests and is not bundled into the plugin. Electron, esbuild, TypeScript and the Obsidian type definitions retain their own licenses in their npm packages.
+Obsidian provides its own API and native math renderer; Obsidian is not redistributed here. The independent bundled MathJax fallback listed above does not change the host renderer. Electron's host runtime is provided by Obsidian. The separate Electron npm dependency is used only for development tests and is not bundled into the plugin. Electron, esbuild, TypeScript and the Obsidian type definitions retain their own licenses in their npm packages.
 
-Browser drawing regressions use mathjax-full 3.2.2 (Apache-2.0), with its license retained in the npm package. This development dependency supplies real SVG formula layout for tests and is excluded from the installed plugin. The optional TikZ integration delegates rendering to the user's installed TikZJax plugin; no TikZJax code is bundled.
+Browser regressions also use MathJax 3.2.2 to exercise both SVG and CommonHTML host output. The bundled fallback uses the base, AMS, newcommand and configmacros packages; test-only packages and the CommonHTML renderer are excluded from the installed plugin. The optional TikZ integration delegates rendering to the user's installed TikZJax plugin; no TikZJax code is bundled.
 
 Examples and test drawings in this repository are synthetic and distributed under this project's MIT license. User notes, local settings, fonts and exported documents remain outside the software license.
