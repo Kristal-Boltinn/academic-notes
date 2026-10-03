@@ -17,7 +17,7 @@ The mathematical environments are visually inspired by [ElegantBook](https://git
 - Draw commutative diagrams with a local grid editor (Beta), or use the optional TikZJax integration.
 - Add clickable tables of contents, PDF bookmarks, and measured PDF page numbers.
 - Export a single note or a multi-note book to PDF or HTML without modifying the source notes.
-- Optionally use Knuth–Plass paragraph line breaking in Reading view and desktop PDF exports (Beta).
+- Optionally use Knuth–Plass paragraph line breaking in Reading view, inactive Live Preview prose, and desktop PDF exports (Beta).
 - Optionally reduce PDF page gaps with selectable 80% shrinking and safe paragraph movement (experimental).
 - Process notes locally, without telemetry, an account, or a separately installed export engine.
 
@@ -318,16 +318,19 @@ Each framed environment also has independent light/dark motif colors and a motif
 
 ![Browser justification and optional Knuth–Plass paragraph layout](screenshots/typography.png)
 
-Open **Settings → Academic Notes → Paragraph typography (Beta)**. Both switches are off by default and work independently:
+Open **Settings → Academic Notes → Paragraph typography (Beta)**. All three switches are off by default and work independently:
 
 | Setting | Use |
 |---|---|
 | Use Knuth–Plass line breaking in Reading view | Optimize ordinary prose in Reading view on desktop or mobile. Recalculate when the available width or fonts change. |
+| Use Knuth–Plass line breaking in Live Preview | Optimize inactive, standalone plain-text paragraphs. Entering with the caret or a selection immediately restores native editing; leaving reoptimizes the paragraph. |
 | Use Knuth–Plass line breaking in PDF | Optimize paragraphs at their final printed width when exporting a note or book to PDF on desktop. |
 
-Knuth–Plass considers line breaks across a whole paragraph and adjusts spacing to reduce uneven lines. It supports basic Latin text and CJK characters with common Chinese punctuation rules. Inline links and formulas remain intact; they are treated as units that cannot be split across lines. Enable the Reading view switch, open a note in **Reading view**, and compare its paragraphs at different window widths. No Markdown syntax changes are needed, and the source note is preserved. Live Preview and Source mode keep their normal editing layout; HTML snapshots keep responsive browser layout.
+Knuth–Plass considers line breaks across a whole paragraph and adjusts spacing to reduce uneven lines. It supports basic Latin text and CJK characters with common Chinese punctuation rules. Inline links and formulas remain intact; they are treated as units that cannot be split across lines. Enable the Reading view switch, open a note in **Reading view**, and compare its paragraphs at different window widths. No Markdown syntax changes are needed, and the source note is preserved. Source mode keeps its normal editing layout; HTML snapshots keep responsive browser layout.
 
 This Beta does not add automatic word hyphenation. Lists, tables, headings, captions, image paragraphs, explicit line breaks, Proof/Remark paragraphs with floating titles or end markers, first-line indents, and right-to-left or vertical text use normal browser layout. Complex markup, paragraphs that cannot fit, and content beyond the processing limit also fall back to normal layout; long notes may therefore be only partly optimized. The result depends on the text, font and width, so it will not improve every paragraph.
+
+The **Live Preview** switch is a narrower first beta: it handles paragraphs written as one source line, surrounded by blank lines (or file boundaries), without inline Markdown formatting. Math, links, emphasis, lists, callouts, code, multiline-source paragraphs and unsupported typography keep native layout. All selected paragraphs and IME composition use native editing. Only visible prose is optimized, with bounded work; very large notes retain native layout. It never inserts source line breaks or changes note text. Reading/PDF retain their broader inline-content support.
 
 ## Table of contents
 

@@ -10,6 +10,7 @@ import Engine from './indexing/engine';
 import DocCore from './export/document';
 import { DEFAULTS, type AcademicSettingsData } from './settings';
 import { titleRecord, mediaRecord, renderFragment, createLiveExtension, allNodes } from './rendering/adapters';
+import { createLiveParagraphExtension } from './typography/live';
 import { updateFigureImageRatio } from './rendering/figure-layout';
 import { appearanceVariables, appearanceValues } from './rendering/custom-appearance';
 import { ProgressModal, ReferencePicker, ReferenceSuggest, BookPicker, EnvironmentModal } from './ui/modals';
@@ -115,7 +116,7 @@ export default class AcademicNotes extends Plugin {
             this.recordError(t("academic-toc 已被占用；保留 [toc] 和编号功能"), e);
         }
         try {
-            this.registerEditorExtension(createLiveExtension(this));
+            this.registerEditorExtension([createLiveExtension(this), createLiveParagraphExtension(this)]);
             this.liveExtension = true;
         }
         catch (e) {

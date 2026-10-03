@@ -92,6 +92,7 @@ class AcademicSettings extends PluginSettingTab {
         const description = (desc: string) => definitions.push({ name: '', desc, render: () => {} });
         heading(t('段落排版（Beta）'));
         toggle('kpReading', t('阅读视图使用 Knuth–Plass 断行'), t('整段优化普通正文的断行和间距；窗口宽度变化后重新排版。默认关闭，实时预览与源码不受影响。'));
+        toggle('kpLivePreview', t('实时预览使用 Knuth–Plass 断行'), t('优化未编辑的普通正文；光标或选区进入时恢复原生排版。第一版只处理源码中单行、无行内格式的独立段落；公式、链接、列表和环境保持原生。默认关闭。'));
         if (Platform.isDesktopApp) toggle('kpPdf', t('PDF 使用 Knuth–Plass 断行'), t('在最终打印宽度下重新排版普通正文；HTML 快照保留浏览器排版。'));
         description(t('中文与英文基础段落可用；链接和行内公式保持完整。不支持的段落或过长内容自动使用浏览器排版。Proof、Remark、列表、图片、首行缩进和复杂排版暂不处理；暂不自动断词。'));
         heading(t("编号与引用"));

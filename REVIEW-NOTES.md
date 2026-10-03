@@ -1,3 +1,10 @@
+# Community review follow-up: 2.12.0
+
+- An opt-in Live Preview typography extension uses official CodeMirror state-field decorations. It does not move editable DOM nodes, rewrite notes, or invoke filesystem/network APIs.
+- Active and intersected paragraphs restore native layout synchronously; IME composition restores native layout globally. Measurement updates are deferred until editor updates finish and rejected after source changes.
+- Processing is limited to visible plain paragraphs, with bounded document, paragraph and aggregate character budgets. Unsupported inline syntax, multiline-source paragraphs, HTML blocks and typography retain native layout.
+- Width, theme and font observers are disposed with the editor. Reading/PDF controllers continue excluding editable DOM. No new dependencies, permissions or CSS priority declarations are introduced.
+
 # Community review follow-up: 2.11.0
 
 - Optional independent Knuth–Plass optimization uses measured paragraph boxes, flexible gaps and break penalties. No dependency, installer, network access or Node filesystem capability is added.

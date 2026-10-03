@@ -1172,3 +1172,13 @@ body :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-s
 body.phb-export p.an-kp-measure {
   white-space: nowrap !important;
 }
+.an-kp-live-line {
+  white-space: nowrap;
+}
+.an-kp-live-gap {
+  display: inline-block;
+  white-space: pre;
+  font-size: 0;
+  line-height: 0;
+  height: 0;
+}

@@ -1,3 +1,11 @@
+# 2.12.0 Progressive Live Preview typography
+
+- Real CodeMirror/Chromium checks cover inactive Latin/CJK paragraph decoration, source-offset hit testing, immediate native restoration on caret entry and cross-paragraph selections, edits preserving surrounding source, IME composition, reoptimization after leaving, width changes, actual nonzero scrolling and disabled cleanup. Inline math/link paragraphs remain native.
+- Twenty-five Node regressions, TypeScript, simulated mobile bundle loading and three-file release checks pass. ESLint has zero errors and retains the two isolated-print DOM-helper recommendations. Existing reading/PDF tests remain covered.
+- Live Preview layout uses direct CodeMirror state-field decorations and deferred, stale-source-checked measurement effects. No editable text nodes are reparented, no Markdown content is changed, and no dependency or permission is added.
+- Default, Phycat and Minimal full browser/PDF regressions pass. All 39 palette cases remain covered. Default/Minimal books have 12 pages and 19 valid internal links; Phycat has 13 pages and 35 links, with no invalid links or horizontal overflow. Actual widow/orphan probes, picture fitting, safe figure movement and rollback remain valid.
+- The beta handles visible single-source-line plain paragraphs only; complex markup, multiline-source text and oversized notes remain native. Physical iPad/WebKit and the full Obsidian host remain separate acceptance checks.
+
 # 2.11.0 Knuth–Plass paragraph typography (Beta)
 
 - Twenty-five Node regressions pass. New tests prove lower whole-paragraph demerits than a feasible greedy fixture and cover glue/penalty widths, forced/forbidden breaks, first-line width, shrinking, short final lines, invalid measurements and bounded dense inputs. Existing numbering, references, diagrams, Proof, settings and PDF metadata tests remain covered; both new switches default to false.

@@ -1,4 +1,4 @@
-/* Academic Notes 2.11.0 | MIT | generated from src/main.ts */
+/* Academic Notes 2.12.0 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -57025,6 +57025,8 @@ module.exports = __toCommonJS(main_exports);
 // src/i18n.ts
 var ENGLISH = {
   "\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09": "Paragraph typography (Beta)",
+  "\u5B9E\u65F6\u9884\u89C8\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C": "Use Knuth\u2013Plass line breaking in Live Preview",
+  "\u4F18\u5316\u672A\u7F16\u8F91\u7684\u666E\u901A\u6B63\u6587\uFF1B\u5149\u6807\u6216\u9009\u533A\u8FDB\u5165\u65F6\u6062\u590D\u539F\u751F\u6392\u7248\u3002\u7B2C\u4E00\u7248\u53EA\u5904\u7406\u6E90\u7801\u4E2D\u5355\u884C\u3001\u65E0\u884C\u5185\u683C\u5F0F\u7684\u72EC\u7ACB\u6BB5\u843D\uFF1B\u516C\u5F0F\u3001\u94FE\u63A5\u3001\u5217\u8868\u548C\u73AF\u5883\u4FDD\u6301\u539F\u751F\u3002\u9ED8\u8BA4\u5173\u95ED\u3002": "Optimize inactive prose; restore native layout when the caret or selection enters. This first beta handles standalone, single-source-line plain paragraphs. Formulas, links, lists and environments retain native layout. Off by default.",
   "\u9605\u8BFB\u89C6\u56FE\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C": "Use Knuth\u2013Plass line breaking in Reading view",
   "\u6574\u6BB5\u4F18\u5316\u666E\u901A\u6B63\u6587\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002": "Optimize line breaks and spacing across ordinary paragraphs; reflow after width changes. Off by default. Live Preview and source editing are unaffected.",
   "PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C": "Use Knuth\u2013Plass line breaking in PDF",
@@ -57305,7 +57307,7 @@ function t(key2, ...values) {
 
 // src/main.ts
 var Obs2 = __toESM(require("obsidian"));
-var import_obsidian6 = require("obsidian");
+var import_obsidian7 = require("obsidian");
 
 // src/diagrams/model.ts
 var emptyDiagram = () => ({ version: 1, grid: 2, nodes: [], arrows: [] });
@@ -57657,10 +57659,10 @@ function parse(path, source, cache = {}) {
     const standalone = /^\^[\w-]+\s*$/.test(q.body.trim());
     let rec;
     if (standalone) {
-      const candidates = records.filter((r) => r.endLine < ln && r.depth <= q.depth && lines.slice(r.endLine + 1, ln).every((x) => !quote(x).body.trim()));
-      candidates.push(...callouts.filter((r) => r.depth === q.depth + 1 && r.endLine < ln && lines.slice(r.endLine + 1, ln).every((x) => !quote(x).body.trim())));
-      candidates.sort((a, b) => b.endLine - a.endLine || a.depth - b.depth || (a.kind === "theorem" ? -1 : 1));
-      rec = candidates[0];
+      const candidates2 = records.filter((r) => r.endLine < ln && r.depth <= q.depth && lines.slice(r.endLine + 1, ln).every((x) => !quote(x).body.trim()));
+      candidates2.push(...callouts.filter((r) => r.depth === q.depth + 1 && r.endLine < ln && lines.slice(r.endLine + 1, ln).every((x) => !quote(x).body.trim())));
+      candidates2.sort((a, b) => b.endLine - a.endLine || a.depth - b.depth || (a.kind === "theorem" ? -1 : 1));
+      rec = candidates2[0];
       if (!rec)
         rec = callouts.filter((r) => r.line < ln && r.endLine >= ln && r.depth === q.depth).sort((a, b) => b.line - a.line)[0];
     } else
@@ -58127,8 +58129,8 @@ function prepare(root, options = {}) {
         continue;
       const here = norm(ch.dataset.path || ""), hash = raw.indexOf("#");
       const file = hash < 0 ? raw : raw.slice(0, hash), sub = hash < 0 ? "" : raw.slice(hash + 1);
-      const candidates = a.dataset.phbCanonical === "true" ? [norm(file)] : file ? [norm(file), norm(here.split("/").slice(0, -1).join("/") + "/" + file)] : [here];
-      let target = candidates.find((p) => maps.has(p));
+      const candidates2 = a.dataset.phbCanonical === "true" ? [norm(file)] : file ? [norm(file), norm(here.split("/").slice(0, -1).join("/") + "/" + file)] : [here];
+      let target = candidates2.find((p) => maps.has(p));
       if (!target && file && a.dataset.phbCanonical !== "true") {
         const base = norm(file).split("/").pop(), choices = [...maps.keys()].filter((p) => p.split("/").pop() === base);
         if (choices.length === 1)
@@ -58207,6 +58209,7 @@ var DEFAULTS2 = {
   captureTheme: true,
   openPdf: true,
   kpReading: false,
+  kpLivePreview: false,
   kpPdf: false,
   pdfFloatMode: "off",
   pdfFloatMaxRounds: 6,
@@ -58220,8 +58223,8 @@ var Obs = __toESM(require("obsidian"));
 var import_view = require("@codemirror/view");
 var import_state = require("@codemirror/state");
 function editableLiveNode(node) {
-  const active = node.ownerDocument.activeElement;
-  return !!node.closest(".cm-content") && (node.isContentEditable || !!node.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]') || !!(active?.matches("input,textarea") && node.contains(active)));
+  const active2 = node.ownerDocument.activeElement;
+  return !!node.closest(".cm-content") && (node.isContentEditable || !!node.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]') || !!(active2?.matches("input,textarea") && node.contains(active2)));
 }
 function setAttribute(node, name, value) {
   if (node.getAttribute(name) !== value) node.setAttribute(name, value);
@@ -58342,8 +58345,8 @@ function renderFragment(el, note, graph2, infoFor) {
     const info = infoFor(node);
     if (!info || !Number.isInteger(info.lineStart))
       return null;
-    const candidates = records.filter((r) => !used.has(r) && r.line >= info.lineStart && r.line <= info.lineEnd);
-    const rec = candidates[0];
+    const candidates2 = records.filter((r) => !used.has(r) && r.line >= info.lineStart && r.line <= info.lineEnd);
+    const rec = candidates2[0];
     if (rec)
       used.add(rec);
     return rec;
@@ -58537,6 +58540,332 @@ function createLiveExtension(plugin) {
   }, { decorations: (v) => v.decorations });
 }
 
+// src/typography/live.ts
+var import_state2 = require("@codemirror/state");
+var import_view2 = require("@codemirror/view");
+var import_obsidian = require("obsidian");
+
+// src/typography/solver.ts
+var KP_FORCED = -1e4;
+var KP_FORBIDDEN = 1e4;
+var MAX_ITEMS = 1200;
+var MAX_CANDIDATES = 650;
+var MAX_OPERATIONS = 2e5;
+var EPSILON = 1e-7;
+function solveParagraph(items, width) {
+  if (!Array.isArray(items) || !items.length || items.length > MAX_ITEMS) return null;
+  const widths = typeof width === "number" ? [width, width] : width;
+  if (!Array.isArray(widths) || widths.length < 1 || widths.length > 2 || [...widths].some((value) => !Number.isFinite(value) || value <= 0)) return null;
+  const firstWidth = widths[0], followingWidth = widths[1] ?? firstWidth;
+  const widest = Math.max(firstWidth, followingWidth);
+  const sums = [0], stretches = [0], shrinks = [0], boxes = [0], ends = [0];
+  let lastBox = -1;
+  for (let index = 0; index < items.length; index++) {
+    const item = items[index];
+    if (!item || !Number.isFinite(item.width) || item.width < 0) return null;
+    if (item.type === "box") {
+      if (item.width > widest + EPSILON) return null;
+      lastBox = index;
+    } else if (item.type === "glue") {
+      if (!Number.isFinite(item.stretch) || !Number.isFinite(item.shrink) || item.stretch < 0 || item.shrink < 0 || item.shrink > item.width) return null;
+    } else if (item.type === "penalty") {
+      if (!Number.isFinite(item.cost) || item.flagged !== void 0 && typeof item.flagged !== "boolean") return null;
+    } else return null;
+    sums.push(sums[index] + (item.type === "penalty" ? 0 : item.width));
+    stretches.push(stretches[index] + (item.type === "glue" ? item.stretch : 0));
+    shrinks.push(shrinks[index] + (item.type === "glue" ? item.shrink : 0));
+    boxes.push(boxes[index] + (item.type === "box" ? 1 : 0));
+    ends.push(lastBox + 1);
+    if (![sums[index + 1], stretches[index + 1], shrinks[index + 1]].every(Number.isFinite)) return null;
+  }
+  if (lastBox < 0) return null;
+  const nextContent = (index) => {
+    while (index < items.length && items[index].type === "glue") index++;
+    return index;
+  };
+  const first = nextContent(0);
+  const points = [{ to: first, next: first, naturalEnd: first, cost: 0, extraWidth: 0, flagged: false, forced: false, final: false }];
+  for (let index = first; index < items.length; index++) {
+    const item = items[index];
+    if (item.type === "glue" && index < lastBox && items[index - 1]?.type === "box") {
+      points.push({ to: index, next: nextContent(index + 1), naturalEnd: ends[index], cost: 0, extraWidth: 0, flagged: false, forced: false, final: false });
+    } else if (item.type === "penalty" && item.cost < KP_FORBIDDEN && (index < lastBox || item.cost <= KP_FORCED)) {
+      const final = index > lastBox;
+      points.push({ to: index + 1, next: nextContent(index + 1), naturalEnd: ends[index], cost: item.cost, extraWidth: item.width, flagged: item.flagged === true, forced: item.cost <= KP_FORCED, final });
+      if (final) break;
+    }
+    if (points.length > MAX_CANDIDATES) return null;
+  }
+  if (!points.at(-1).final) points.push({ to: items.length, next: items.length, naturalEnd: lastBox + 1, cost: 0, extraWidth: 0, flagged: false, forced: true, final: true });
+  if (points.length > MAX_CANDIDATES) return null;
+  const states = [[void 0, { score: 0, fitness: 1, flagged: false, lineCount: 0 }, void 0, void 0]];
+  let mandatory = 0, operations = 0;
+  for (let end = 1; end < points.length; end++) {
+    const point = points[end];
+    const best = new Array(4);
+    for (let start = end - 1; start >= mandatory; start--) {
+      if (++operations > MAX_OPERATIONS) return null;
+      const from = points[start].next, naturalEnd = point.naturalEnd;
+      if (from >= naturalEnd || boxes[naturalEnd] === boxes[from]) continue;
+      const natural = sums[naturalEnd] - sums[from] + point.extraWidth;
+      const shrink = shrinks[naturalEnd] - shrinks[from];
+      if (natural - shrink > widest + EPSILON) break;
+      const stretch = stretches[naturalEnd] - stretches[from];
+      for (const previous of states[start]) {
+        if (!previous) continue;
+        if (++operations > MAX_OPERATIONS) return null;
+        const target = previous.lineCount === 0 ? firstWidth : followingWidth;
+        const difference = target - natural;
+        let ratio = 0;
+        if (difference < -EPSILON) {
+          if (shrink <= 0) continue;
+          ratio = difference / shrink;
+        } else if (!point.final && difference > EPSILON) {
+          if (stretch <= 0) continue;
+          ratio = difference / stretch;
+        }
+        if (!Number.isFinite(ratio) || ratio < -1 - EPSILON || ratio > 2.5 + EPSILON) continue;
+        ratio = Math.max(-1, Math.min(2.5, ratio));
+        const fitness = ratio < -0.5 ? 0 : ratio <= 0.5 ? 1 : ratio <= 1 ? 2 : 3;
+        const badness = 100 * Math.abs(ratio) ** 3;
+        let demerits = (10 + badness) ** 2;
+        if (point.cost >= 0) demerits += point.cost ** 2;
+        else if (!point.forced) demerits -= point.cost ** 2;
+        if (previous.lineCount && Math.abs(previous.fitness - fitness) > 1) demerits += 1e4;
+        if (previous.flagged && point.flagged) demerits += 1e4;
+        if (point.final && previous.lineCount && natural < target * 0.18) {
+          demerits += 1800 * (1 - natural / (target * 0.18));
+        }
+        const score = previous.score + demerits;
+        if (!Number.isFinite(score)) continue;
+        if (!best[fitness] || score < best[fitness].score) {
+          best[fitness] = {
+            score,
+            fitness,
+            flagged: point.flagged,
+            lineCount: previous.lineCount + 1,
+            line: { from, to: point.to, ratio, final: point.final },
+            previous
+          };
+        }
+      }
+    }
+    states.push(best);
+    if (point.forced) {
+      if (!best.some(Boolean)) return null;
+      mandatory = end;
+    }
+  }
+  const finalStates = states.at(-1).filter((state) => !!state);
+  if (!finalStates.length) return null;
+  const winner = finalStates.reduce((a, b) => a.score <= b.score ? a : b);
+  const lines = [];
+  for (let node = winner; node?.line; node = node.previous) lines.push(node.line);
+  lines.reverse();
+  return { lines, demerits: winner.score };
+}
+
+// src/typography/live.ts
+var measured = import_state2.StateEffect.define();
+var composing = import_state2.StateEffect.define();
+var cjk = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
+var opening = /[([{（［｛〈《「『【‘“]$/u;
+var closing = /^[)\]}）］｝〉》」』】、。，！？：；,.!?:;’”]/u;
+var Gap = class extends import_view2.WidgetType {
+  constructor(width) {
+    super();
+    this.width = width;
+  }
+  eq(other) {
+    return this.width === other.width;
+  }
+  toDOM(view) {
+    const el = view.dom.ownerDocument.win.createSpan({ cls: "an-kp-live-gap" });
+    el.style.width = this.width + "px";
+    return el;
+  }
+};
+var Break = class extends import_view2.WidgetType {
+  eq() {
+    return true;
+  }
+  get lineBreaks() {
+    return 1;
+  }
+  toDOM(view) {
+    return view.dom.ownerDocument.win.createEl("br", { cls: "an-kp-live-break" });
+  }
+};
+function candidates(state) {
+  const result = [];
+  if (state.doc.length > 3e5) return result;
+  let fence = "", htmlEnd = null, frontmatter = state.doc.line(1).text.trim() === "---";
+  for (let n = 1; n <= state.doc.lines; n++) {
+    const line = state.doc.line(n), text = line.text;
+    if (frontmatter) {
+      if (n > 1 && /^(---|\.\.\.)\s*$/.test(text)) frontmatter = false;
+      continue;
+    }
+    if (htmlEnd) {
+      if (htmlEnd.test(text)) htmlEnd = null;
+      continue;
+    }
+    if (!fence && /^\s*<!--/.test(text)) {
+      if (!text.includes("-->")) htmlEnd = /-->/;
+      continue;
+    }
+    const html = !fence && /^\s*<(script|style|pre|textarea|div|table|section|details)\b/i.exec(text);
+    if (html) {
+      const end = new RegExp(`</${html[1]}\\s*>`, "i");
+      if (!end.test(text)) htmlEnd = end;
+      continue;
+    }
+    const marker = /^\s{0,3}(`{3,}|~{3,})/.exec(text);
+    if (marker) {
+      if (!fence) fence = marker[1];
+      else if (marker[1][0] === fence[0] && marker[1].length >= fence.length) fence = "";
+      continue;
+    }
+    if (fence || text.length < 80 || text.length > 3e3 || /^\s/.test(text) || /[#>*_`[\]$\\|<>&\u00a0\u202f\u2060\ufeff\t\p{Script=Arabic}\p{Script=Hebrew}\u202a-\u202e\u2066-\u2069]/u.test(text) || /^(?:[-+]\s|\d+[.)]\s|[-=]{3,}\s*$)/.test(text) || /\s{2}$/.test(text)) continue;
+    if (n > 1 && state.doc.line(n - 1).text.trim() || n < state.doc.lines && state.doc.line(n + 1).text.trim()) continue;
+    result.push({ from: line.from, to: line.to, text });
+  }
+  return result;
+}
+function active(state, plan) {
+  return state.selection.ranges.some((range) => range.from <= plan.to && range.to >= plan.from);
+}
+function planParagraph(text, offset, width, context, em) {
+  if (!Intl.Segmenter) return null;
+  const parts = [];
+  for (const part of new Intl.Segmenter(void 0, { granularity: "grapheme" }).segment(text)) {
+    const kind = part.segment === " " ? "space" : cjk.test(part.segment) ? "cjk" : "word";
+    const previous = parts.at(-1);
+    if (previous?.kind === kind && kind !== "cjk" && !opening.test(part.segment) && !closing.test(part.segment)) {
+      previous.text += part.segment;
+      previous.to = part.index + part.segment.length;
+    } else parts.push({ text: part.segment, from: part.index, to: part.index + part.segment.length, kind });
+  }
+  const tokens = [];
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i], previous = parts[i - 1], next = parts[i + 1];
+    if (previous && previous.kind !== "space" && part.kind !== "space" && (previous.kind === "cjk" || part.kind === "cjk") && !opening.test(previous.text) && !closing.test(part.text))
+      tokens.push({ from: part.from, to: part.from, item: { type: "glue", width: 0, stretch: em * 0.12, shrink: 0 } });
+    const natural = context.measureText(part.text).width;
+    tokens.push({ from: part.from, to: part.to, item: part.kind === "space" && !opening.test(previous?.text || "") && !closing.test(next?.text || "") ? { type: "glue", width: natural, stretch: Math.max(natural * 0.65, em * 0.12), shrink: natural * 0.4 } : { type: "box", width: natural } });
+  }
+  if (tokens.length > 900) return null;
+  const solution = solveParagraph(tokens.map((token) => token.item), width - 1);
+  if (!solution || solution.lines.length < 2) return null;
+  const decorations = [];
+  let cursor = 0;
+  for (let i = 0; i < solution.lines.length; i++) {
+    const line = solution.lines[i], end = solution.lines[i + 1]?.from ?? tokens.length;
+    const startPos = tokens[cursor].from, endPos = tokens[end - 1].to;
+    if (endPos > startPos) decorations.push(import_view2.Decoration.mark({ class: "an-kp-live-line" }).range(offset + startPos, offset + endPos));
+    let last = line.to - 1;
+    while (last >= line.from && tokens[last].item.type !== "box") last--;
+    for (; cursor < end; cursor++) {
+      const token = tokens[cursor], item = token.item;
+      if (item.type !== "glue") continue;
+      const gap = cursor < line.from || cursor > last ? 0 : Math.max(0, item.width + line.ratio * (line.ratio < 0 ? item.shrink : item.stretch));
+      if (token.from === token.to) {
+        if (gap) decorations.push(import_view2.Decoration.widget({ widget: new Gap(gap), side: -1 }).range(offset + token.from));
+      } else decorations.push(import_view2.Decoration.mark({ class: "an-kp-live-gap", attributes: { style: `width:${gap}px` } }).range(offset + token.from, offset + token.to));
+    }
+    if (i < solution.lines.length - 1) decorations.push(import_view2.Decoration.widget({ widget: new Break(), side: -1 }).range(offset + endPos));
+  }
+  return { from: offset, to: offset + text.length, decorations };
+}
+function createLiveParagraphExtension(plugin) {
+  const enabled = (state) => plugin.settings.kpLivePreview && !!state.field(import_obsidian.editorLivePreviewField, false);
+  const field = import_state2.StateField.define({
+    create: () => ({ plans: [], composing: false, decorations: import_view2.Decoration.none }),
+    update(value, tr) {
+      let plans = tr.docChanged ? [] : value.plans, isComposing = value.composing;
+      for (const effect of tr.effects) {
+        if (effect.is(measured)) plans = effect.value;
+        if (effect.is(composing)) isComposing = effect.value;
+      }
+      const ranges = enabled(tr.state) && !isComposing ? plans.filter((plan) => !active(tr.state, plan)).flatMap((plan) => plan.decorations) : [];
+      return { plans, composing: isComposing, decorations: import_view2.Decoration.set(ranges, true) };
+    },
+    provide: (field2) => import_view2.EditorView.decorations.from(field2, (value) => value.decorations)
+  });
+  const worker = import_view2.ViewPlugin.fromClass(class {
+    constructor(view) {
+      this.view = view;
+      this.destroyed = false;
+      this.start = () => {
+        this.view.dispatch({ effects: composing.of(true) });
+      };
+      this.end = () => {
+        this.view.dispatch({ effects: composing.of(false) });
+        this.schedule();
+      };
+      this.fonts = () => this.schedule();
+      this.observer = new ResizeObserver(() => this.schedule());
+      this.observer.observe(view.contentDOM);
+      this.theme = new MutationObserver(() => this.schedule());
+      const doc = view.dom.ownerDocument;
+      this.theme.observe(doc.body, { attributes: true, attributeFilter: ["class", "style"] });
+      this.theme.observe(doc.head, { childList: true, subtree: true, characterData: true, attributes: true });
+      view.contentDOM.addEventListener("compositionstart", this.start);
+      view.contentDOM.addEventListener("compositionend", this.end);
+      view.dom.ownerDocument.fonts?.addEventListener("loadingdone", this.fonts);
+      this.schedule();
+    }
+    update(update) {
+      if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some((tr) => tr.effects.some((effect) => effect.is(plugin.refreshEffect)))) this.schedule();
+    }
+    schedule() {
+      window.clearTimeout(this.timer);
+      this.timer = window.setTimeout(() => {
+        if (this.destroyed) return;
+        this.view.requestMeasure({ key: this, read: (view) => ({ doc: view.state.doc, plans: this.measure(view) }), write: (result) => {
+          queueMicrotask(() => {
+            if (!this.destroyed && this.view.state.doc === result.doc) this.view.dispatch({ effects: measured.of(result.plans) });
+          });
+        } });
+      }, 90);
+    }
+    measure(view) {
+      if (!enabled(view.state) || view.composing || view.state.field(field).composing) return [];
+      const context = view.dom.ownerDocument.win.createEl("canvas").getContext("2d");
+      if (!context) return [];
+      const plans = [];
+      let characters = 0;
+      for (const paragraph of candidates(view.state)) {
+        if (active(view.state, paragraph) || !view.visibleRanges.some((range) => range.from <= paragraph.to && range.to >= paragraph.from)) continue;
+        characters += paragraph.text.length;
+        if (characters > 12e3) break;
+        const dom = view.domAtPos(paragraph.from + 1).node;
+        const element = (dom.nodeType === 1 ? dom : dom.parentElement)?.closest(".cm-line");
+        if (!element) continue;
+        const style = view.dom.ownerDocument.defaultView.getComputedStyle(element);
+        if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || parseFloat(style.textIndent) || parseFloat(style.letterSpacing) || parseFloat(style.wordSpacing) || style.fontVariantCaps !== "normal" || style.textAlign === "center" || style.textAlign === "right") continue;
+        context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        const width = element.getBoundingClientRect().width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
+        if (width < 100) continue;
+        const plan = planParagraph(paragraph.text, paragraph.from, width, context, parseFloat(style.fontSize) || 16);
+        if (plan) plans.push(plan);
+        if (plans.length >= 40) break;
+      }
+      return plans;
+    }
+    destroy() {
+      this.destroyed = true;
+      window.clearTimeout(this.timer);
+      this.observer.disconnect();
+      this.theme.disconnect();
+      this.view.contentDOM.removeEventListener("compositionstart", this.start);
+      this.view.contentDOM.removeEventListener("compositionend", this.end);
+      this.view.dom.ownerDocument.fonts?.removeEventListener("loadingdone", this.fonts);
+    }
+  });
+  return [field, worker];
+}
+
 // src/rendering/custom-appearance.ts
 var drawing = (paths) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="black" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
 var MOTIFS = {
@@ -58637,8 +58966,8 @@ ${children}
 }
 
 // src/ui/modals.ts
-var import_obsidian = require("obsidian");
-var ProgressModal = class extends import_obsidian.Modal {
+var import_obsidian2 = require("obsidian");
+var ProgressModal = class extends import_obsidian2.Modal {
   constructor(app, title) {
     super(app);
     this.caption = title;
@@ -58659,7 +58988,7 @@ var ProgressModal = class extends import_obsidian.Modal {
       this.titleEl.setText(this.caption + t(" \xB7 \u7ED3\u675F"));
   }
 };
-var ReferencePicker = class extends import_obsidian.FuzzySuggestModal {
+var ReferencePicker = class extends import_obsidian2.FuzzySuggestModal {
   constructor(plugin, editor, file) {
     super(plugin.app);
     this.plugin = plugin;
@@ -58680,7 +59009,7 @@ var ReferencePicker = class extends import_obsidian.FuzzySuggestModal {
     this.plugin.scheduleIndex();
   }
 };
-var ReferenceSuggest = class extends import_obsidian.EditorSuggest {
+var ReferenceSuggest = class extends import_obsidian2.EditorSuggest {
   constructor(plugin) {
     super(plugin.app);
     this.kind = "";
@@ -58713,7 +59042,7 @@ var ReferenceSuggest = class extends import_obsidian.EditorSuggest {
     this.plugin.scheduleIndex();
   }
 };
-var BookPicker = class extends import_obsidian.Modal {
+var BookPicker = class extends import_obsidian2.Modal {
   constructor(plugin) {
     super(plugin.app);
     this.plugin = plugin;
@@ -58730,9 +59059,9 @@ var BookPicker = class extends import_obsidian.Modal {
     this.fileList = this.contentEl.createDiv({ cls: "an-book-files" });
     this.orderList = this.contentEl.createDiv({ cls: "an-book-order" });
     filter.addEventListener("input", () => this.renderFiles());
-    new import_obsidian.Setting(this.contentEl).addButton((b) => b.setButtonText(t("\u53D6\u6D88")).onClick(() => this.close())).addButton((b) => b.setButtonText(t("\u5BFC\u51FA PDF")).setCta().onClick(() => {
+    new import_obsidian2.Setting(this.contentEl).addButton((b) => b.setButtonText(t("\u53D6\u6D88")).onClick(() => this.close())).addButton((b) => b.setButtonText(t("\u5BFC\u51FA PDF")).setCta().onClick(() => {
       if (!this.selected.length) {
-        new import_obsidian.Notice(t("\u8BF7\u81F3\u5C11\u9009\u4E00\u7BC7\u7B14\u8BB0\u3002"));
+        new import_obsidian2.Notice(t("\u8BF7\u81F3\u5C11\u9009\u4E00\u7BC7\u7B14\u8BB0\u3002"));
         return;
       }
       const files = this.selected.map((f) => ({ file: f, title: f.basename })), options = { book: true, title: this.titleInput.value.trim() || t("\u6570\u5B66\u8BB2\u4E49"), subtitle: "", tocDepth: this.plugin.settings.tocDepth };
@@ -58790,7 +59119,7 @@ var BookPicker = class extends import_obsidian.Modal {
     });
   }
 };
-var EnvironmentModal = class extends import_obsidian.Modal {
+var EnvironmentModal = class extends import_obsidian2.Modal {
   constructor(app, editor) {
     super(app);
     this.editor = editor;
@@ -58800,7 +59129,7 @@ var EnvironmentModal = class extends import_obsidian.Modal {
     this.contentEl.createEl("p", { text: t("\u5728\u5F53\u524D\u884C\u524D\u63D2\u5165\u5B8C\u6574\u73AF\u5883\uFF0C\u4FDD\u7559\u539F\u6587\uFF1B\u63D2\u5165\u540E\u76F4\u63A5\u586B\u5199\u9009\u4E2D\u7684\u6807\u9898\u3002") });
     let kind = "subfigures", count = 2, columns = "auto", height = "";
     let group;
-    new import_obsidian.Setting(this.contentEl).setName(t("\u73AF\u5883\u7C7B\u578B")).addDropdown((d) => d.addOptions({
+    new import_obsidian2.Setting(this.contentEl).setName(t("\u73AF\u5883\u7C7B\u578B")).addDropdown((d) => d.addOptions({
       thm: t("\u5B9A\u7406"),
       def: t("\u5B9A\u4E49"),
       proof: t("\u8BC1\u660E"),
@@ -58814,18 +59143,18 @@ var EnvironmentModal = class extends import_obsidian.Modal {
       group.hidden = kind !== "subfigures";
     }));
     group = this.contentEl.createDiv();
-    new import_obsidian.Setting(group).setName(t("\u5B50\u56FE\u6570\u91CF")).addDropdown((d) => d.addOptions(Object.fromEntries(Array.from({ length: 11 }, (_, i) => [String(i + 2), String(i + 2)]))).setValue("2").onChange((v) => {
+    new import_obsidian2.Setting(group).setName(t("\u5B50\u56FE\u6570\u91CF")).addDropdown((d) => d.addOptions(Object.fromEntries(Array.from({ length: 11 }, (_, i) => [String(i + 2), String(i + 2)]))).setValue("2").onChange((v) => {
       count = Number(v);
     }));
-    new import_obsidian.Setting(group).setName(t("\u6700\u5927\u5217\u6570")).setDesc(t("\u81EA\u52A8\uFF1A\u56DB\u5E45\u6700\u591A\u56DB\u5217\uFF0C\u5176\u4F59\u6700\u591A\u4E09\u5217\uFF1B\u7A84\u7A97\u683C\u4F1A\u51CF\u5C11\u5217\u6570\uFF0C\u56DB\u5217\u76F4\u63A5\u53D8\u4E24\u5217\u3002")).addDropdown((d) => d.addOptions({ auto: t("\u81EA\u52A8"), "1": "1", "2": "2", "3": "3", "4": "4" }).setValue("auto").onChange((v) => {
+    new import_obsidian2.Setting(group).setName(t("\u6700\u5927\u5217\u6570")).setDesc(t("\u81EA\u52A8\uFF1A\u56DB\u5E45\u6700\u591A\u56DB\u5217\uFF0C\u5176\u4F59\u6700\u591A\u4E09\u5217\uFF1B\u7A84\u7A97\u683C\u4F1A\u51CF\u5C11\u5217\u6570\uFF0C\u56DB\u5217\u76F4\u63A5\u53D8\u4E24\u5217\u3002")).addDropdown((d) => d.addOptions({ auto: t("\u81EA\u52A8"), "1": "1", "2": "2", "3": "3", "4": "4" }).setValue("auto").onChange((v) => {
       columns = v === "auto" ? v : Number(v);
     }));
-    new import_obsidian.Setting(group).setName(t("\u7EDF\u4E00\u56FE\u7247\u9AD8\u5EA6\uFF08\u50CF\u7D20\uFF09")).setDesc(t("\u7559\u7A7A\u4FDD\u7559\u5404\u56FE\u7247\u5BBD\u5EA6\uFF1B\u8BBE\u7F6E\u540E\u6574\u7EC4\u7B49\u9AD8\uFF0C\u4E0D\u62C9\u4F38\u3001\u4E0D\u88C1\u526A\uFF0C\u7A7A\u95F4\u4E0D\u8DB3\u65F6\u6574\u7EC4\u7EDF\u4E00\u7F29\u5C0F\u3002")).addText((c) => c.setPlaceholder("180").onChange((v) => {
+    new import_obsidian2.Setting(group).setName(t("\u7EDF\u4E00\u56FE\u7247\u9AD8\u5EA6\uFF08\u50CF\u7D20\uFF09")).setDesc(t("\u7559\u7A7A\u4FDD\u7559\u5404\u56FE\u7247\u5BBD\u5EA6\uFF1B\u8BBE\u7F6E\u540E\u6574\u7EC4\u7B49\u9AD8\uFF0C\u4E0D\u62C9\u4F38\u3001\u4E0D\u88C1\u526A\uFF0C\u7A7A\u95F4\u4E0D\u8DB3\u65F6\u6574\u7EC4\u7EDF\u4E00\u7F29\u5C0F\u3002")).addText((c) => c.setPlaceholder("180").onChange((v) => {
       height = v.trim();
     }));
-    new import_obsidian.Setting(this.contentEl).addButton((b) => b.setButtonText(t("\u53D6\u6D88")).onClick(() => this.close())).addButton((b) => b.setButtonText(t("\u63D2\u5165")).setCta().onClick(() => {
+    new import_obsidian2.Setting(this.contentEl).addButton((b) => b.setButtonText(t("\u53D6\u6D88")).onClick(() => this.close())).addButton((b) => b.setButtonText(t("\u63D2\u5165")).setCta().onClick(() => {
       if (kind === "subfigures" && height && (!/^\d+$/.test(height) || Number(height) < 16 || Number(height) > 1200)) {
-        new import_obsidian.Notice(t("\u9AD8\u5EA6\u987B\u4E3A 16\u20131200 \u7684\u6574\u6570\uFF0C\u6216\u7559\u7A7A\u3002"));
+        new import_obsidian2.Notice(t("\u9AD8\u5EA6\u987B\u4E3A 16\u20131200 \u7684\u6574\u6570\uFF0C\u6216\u7559\u7A7A\u3002"));
         return;
       }
       const result = environmentTemplate(kind, this.editor.getValue(), count, columns, height ? Number(height) : void 0);
@@ -58842,8 +59171,8 @@ var EnvironmentModal = class extends import_obsidian.Modal {
 };
 
 // src/ui/settings-tab.ts
-var import_obsidian2 = require("obsidian");
-var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
+var import_obsidian3 = require("obsidian");
+var AcademicSettings = class extends import_obsidian3.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.appearanceType = "thm";
@@ -58855,7 +59184,7 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
   refreshSettings() {
     this.containerEl.empty();
     for (const definition of this.getSettingDefinitions()) {
-      const setting = new import_obsidian2.Setting(this.containerEl).setName(definition.name).setDesc(definition.desc || "");
+      const setting = new import_obsidian3.Setting(this.containerEl).setName(definition.name).setDesc(definition.desc || "");
       definition.render(setting);
     }
   }
@@ -58887,8 +59216,8 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     const redraw = () => {
       if (root.parentElement) this.refreshAppearance(root.parentElement);
     };
-    new import_obsidian2.Setting(root).setName(t("\u73AF\u5883\u81EA\u5B9A\u4E49")).setHeading();
-    new import_obsidian2.Setting(root).setName(t("\u9009\u62E9\u73AF\u5883")).setDesc(t("\u6BCF\u7C7B\u73AF\u5883\u72EC\u7ACB\u8BBE\u7F6E\uFF1B\u5173\u95ED\u989C\u8272\u5F00\u5173\u5373\u6062\u590D\u5F53\u524D\u8272\u677F\u3002")).addDropdown((d) => {
+    new import_obsidian3.Setting(root).setName(t("\u73AF\u5883\u81EA\u5B9A\u4E49")).setHeading();
+    new import_obsidian3.Setting(root).setName(t("\u9009\u62E9\u73AF\u5883")).setDesc(t("\u6BCF\u7C7B\u73AF\u5883\u72EC\u7ACB\u8BBE\u7F6E\uFF1B\u5173\u95ED\u989C\u8272\u5F00\u5173\u5373\u6062\u590D\u5F53\u524D\u8272\u677F\u3002")).addDropdown((d) => {
       d.selectEl.dataset.anControl = "environment";
       d.addOptions(Object.fromEntries(Object.entries(engine_default.TYPES).map(([key2, names2]) => [key2, names2[0]]))).setValue(this.appearanceType).onChange((value) => {
         this.appearanceType = value;
@@ -58903,7 +59232,7 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     const plain2 = ["proof", "remark"].includes(this.appearanceType);
     if (!plain2) colors.push(["motifLight", t("\u6D45\u8272\u6A21\u5F0F\u89D2\u6807\u989C\u8272"), "#286b76"], ["motifDark", t("\u6DF1\u8272\u6A21\u5F0F\u89D2\u6807\u989C\u8272"), "#8dc8d0"]);
     for (const [field, name, fallback] of colors) {
-      const row = new import_obsidian2.Setting(root).setName(name).setDesc(entry[field] || t("\u8DDF\u968F\u9ED8\u8BA4\u914D\u8272"));
+      const row = new import_obsidian3.Setting(root).setName(name).setDesc(entry[field] || t("\u8DDF\u968F\u9ED8\u8BA4\u914D\u8272"));
       row.addToggle((c) => {
         c.toggleEl.dataset.anControl = field;
         c.setValue(!!entry[field]).onChange(async (enabled) => {
@@ -58918,7 +59247,7 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     }
     const names = { laurel: t("\u6708\u6842"), compass: t("\u7F57\u76D8"), rosette: t("\u82B1\u7AE0"), orbit: t("\u8F68\u9053"), lattice: t("\u6676\u683C"), knot: t("\u7F16\u7ED3"), arch: t("\u62F1\u5ECA"), quill: t("\u7FBD\u7B14"), folio: t("\u4E66\u9875") };
     if (!plain2) {
-      new import_obsidian2.Setting(root).setName(t("\u89D2\u6807\u56FE\u6848")).addDropdown((d) => {
+      new import_obsidian3.Setting(root).setName(t("\u89D2\u6807\u56FE\u6848")).addDropdown((d) => {
         d.selectEl.dataset.anControl = "motif";
         d.addOptions({ default: t("\u539F\u6709\u56FE\u6848"), none: t("\u65E0\u89D2\u6807"), ...names }).setValue(entry.motif || "default").onChange(async (value) => {
           await this.changeAppearance("motif", value === "default" ? "" : value);
@@ -58941,7 +59270,7 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     const callout = preview.createDiv({ cls: "callout", attr: { "data-callout": this.appearanceType } });
     callout.createDiv({ cls: "callout-title" }).createDiv({ cls: "callout-title-inner", text: engine_default.TYPES[this.appearanceType][0] });
     callout.createDiv({ cls: "callout-content" }).createEl("p", { text: t("\u8FD9\u662F\u5F53\u524D\u6A21\u5F0F\u4E0B\u7684\u5916\u89C2\u9884\u89C8\u3002") });
-    new import_obsidian2.Setting(root).setName(t("\u6062\u590D\u6B64\u73AF\u5883\u9ED8\u8BA4\u5916\u89C2")).addButton((b) => {
+    new import_obsidian3.Setting(root).setName(t("\u6062\u590D\u6B64\u73AF\u5883\u9ED8\u8BA4\u5916\u89C2")).addButton((b) => {
       b.buttonEl.dataset.anControl = "reset";
       b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
         const all = parseAppearance(this.plugin.settings.customAppearance);
@@ -58982,7 +59311,8 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     } });
     heading(t("\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09"));
     toggle("kpReading", t("\u9605\u8BFB\u89C6\u56FE\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u6574\u6BB5\u4F18\u5316\u666E\u901A\u6B63\u6587\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002"));
-    if (import_obsidian2.Platform.isDesktopApp) toggle("kpPdf", t("PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u666E\u901A\u6B63\u6587\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002"));
+    toggle("kpLivePreview", t("\u5B9E\u65F6\u9884\u89C8\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u4F18\u5316\u672A\u7F16\u8F91\u7684\u666E\u901A\u6B63\u6587\uFF1B\u5149\u6807\u6216\u9009\u533A\u8FDB\u5165\u65F6\u6062\u590D\u539F\u751F\u6392\u7248\u3002\u7B2C\u4E00\u7248\u53EA\u5904\u7406\u6E90\u7801\u4E2D\u5355\u884C\u3001\u65E0\u884C\u5185\u683C\u5F0F\u7684\u72EC\u7ACB\u6BB5\u843D\uFF1B\u516C\u5F0F\u3001\u94FE\u63A5\u3001\u5217\u8868\u548C\u73AF\u5883\u4FDD\u6301\u539F\u751F\u3002\u9ED8\u8BA4\u5173\u95ED\u3002"));
+    if (import_obsidian3.Platform.isDesktopApp) toggle("kpPdf", t("PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u666E\u901A\u6B63\u6587\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002"));
     description(t("\u4E2D\u6587\u4E0E\u82F1\u6587\u57FA\u7840\u6BB5\u843D\u53EF\u7528\uFF1B\u94FE\u63A5\u548C\u884C\u5185\u516C\u5F0F\u4FDD\u6301\u5B8C\u6574\u3002\u4E0D\u652F\u6301\u7684\u6BB5\u843D\u6216\u8FC7\u957F\u5185\u5BB9\u81EA\u52A8\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\u3002Proof\u3001Remark\u3001\u5217\u8868\u3001\u56FE\u7247\u3001\u9996\u884C\u7F29\u8FDB\u548C\u590D\u6742\u6392\u7248\u6682\u4E0D\u5904\u7406\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002"));
     heading(t("\u7F16\u53F7\u4E0E\u5F15\u7528"));
     toggle("numbered", t("\u5B9A\u7406\u7C7B\u73AF\u5883\u81EA\u52A8\u7F16\u53F7"), t("Proof\u3001Remark\u3001Solution \u9ED8\u8BA4\u4E0D\u8BA1\u6570\u3002"));
@@ -59006,16 +59336,16 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
     toggle("neutralBody", t("\u6846\u5185\u6B63\u6587\u4F7F\u7528\u666E\u901A\u6B63\u6587\u8272"), t("\u5F00\u542F\uFF1A\u6B63\u6587\u4E0E\u7B14\u8BB0\u666E\u901A\u6587\u5B57\u540C\u8272\uFF1B\u5173\u95ED\uFF1A\u6B63\u6587\u6DF7\u5165 36% \u7684\u5F53\u524D\u6846\u8272\u3002\u53EA\u6539\u53D8\u6B63\u6587\uFF0C\u4E0D\u6539\u53D8\u6807\u9898\u3001\u8FB9\u6846\u548C\u5E95\u8272\u3002"));
     toggle("hideMotif", t("\u9690\u85CF\u53F3\u4E0B\u89D2\u5C0F\u56FE\u6848"));
     heading(t("\u76EE\u5F55\u4E0E PDF"));
-    description(import_obsidian2.Platform.isDesktopApp ? t("PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002") : t("\u79FB\u52A8\u7AEF\u53EF\u4F7F\u7528\u7F16\u53F7\u3001\u5F15\u7528\u3001\u6837\u5F0F\u548C HTML \u5FEB\u7167\uFF1BPDF \u5BFC\u51FA\u4EC5\u5728\u684C\u9762\u7248\u53EF\u7528\u3002"));
+    description(import_obsidian3.Platform.isDesktopApp ? t("PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002") : t("\u79FB\u52A8\u7AEF\u53EF\u4F7F\u7528\u7F16\u53F7\u3001\u5F15\u7528\u3001\u6837\u5F0F\u548C HTML \u5FEB\u7167\uFF1BPDF \u5BFC\u51FA\u4EC5\u5728\u684C\u9762\u7248\u53EF\u7528\u3002"));
     select("tocDepth", t("\u76EE\u5F55\u5C42\u7EA7"), { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6" });
     select("exportNumbering", t("\u5408\u8BA2\u672C\u7F16\u53F7"), { "chapter-section": t("\u7AE0.\u8282.\u5E8F\u53F7\uFF08\u5982 2.3.1\uFF09"), chapter: t("\u7AE0.\u5E8F\u53F7\uFF08\u5982 2.1\uFF0C\u7AE0\u5185\u8FDE\u7EED\uFF09"), note: t("\u4FDD\u7559\u5E93\u5185\u663E\u793A\u7F16\u53F7\uFF08\u53EF\u80FD\u8DE8\u7AE0\u91CD\u53F7\uFF09") }, t("\u524D\u4E24\u79CD\u6309\u5165\u9009\u7AE0\u8282\u91CD\u65B0\u7F16\u53F7\u548C\u89E3\u6790\u5F15\u7528\uFF1B\u4FDD\u7559\u6A21\u5F0F\u6CBF\u7528\u5168\u5E93\u7F16\u53F7\u3002\u539F\u7B14\u8BB0\u4E0D\u6539\u5199\u3002"));
     text("exportFolder", t("\u5BFC\u51FA\u76EE\u5F55"), t("\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u9ED8\u8BA4 _exports\u3002"));
     toggle("captureTheme", t("PDF \u6355\u83B7\u5F53\u524D\u4E3B\u9898\u4E0E\u7247\u6BB5\u6837\u5F0F"), t("\u5173\u95ED\u65F6\u4F7F\u7528\u63D2\u4EF6\u81EA\u5DF1\u7684\u6570\u5B66\u6846\u4E0E\u57FA\u7840\u6392\u7248\u3002"));
-    if (import_obsidian2.Platform.isDesktopApp) {
+    if (import_obsidian3.Platform.isDesktopApp) {
       select("pdfFloatMode", t("\u56FE\u7247\u6392\u7248\u4F18\u5148\u7EA7\uFF08\u5B9E\u9A8C\uFF09"), { off: t("\u76F4\u63A5\u7559\u767D\uFF08\u5173\u95ED\uFF09"), "shrink-move": t("\u7F29\u81F3 80% \u2192 \u6D6E\u52A8 \u2192 \u7559\u767D"), "move-shrink": t("\u6D6E\u52A8 \u2192 \u7F29\u81F3 80% \u2192 \u7559\u767D"), shrink: t("\u4EC5\u7F29\u81F3 80%\uFF0C\u5426\u5219\u7559\u767D"), move: t("\u4EC5\u6D6E\u52A8\uFF0C\u5426\u5219\u7559\u767D") }, t("\u53EA\u8C03\u6574 PDF \u526F\u672C\u4E2D\u7684\u72EC\u7ACB figure\u3002\u6D6E\u52A8\u6700\u591A\u63D0\u524D\u4E09\u6BB5\u666E\u901A\u6B63\u6587\uFF0C\u4E0D\u8DE8\u6807\u9898\u3001\u5217\u8868\u6216\u6570\u5B66\u73AF\u5883\uFF0C\u4E0D\u628A\u56FE\u7247\u79FB\u5165\u73AF\u5883\u3002\u8C03\u6574\u540E\u4EE5\u5B9E\u9645 PDF \u9A8C\u8BC1\uFF1B\u65E0\u6CD5\u5B89\u5168\u6392\u7248\u5219\u7559\u767D\u3002"));
       select("pdfFloatMaxRounds", t("\u6700\u5927\u56FE\u7247\u8C03\u6574\u6B21\u6570"), { "1": "1", "3": "3", "6": "6", "10": "10" }, t("\u6574\u6B21\u5BFC\u51FA\u6700\u591A\u5C1D\u8BD5\u8FD9\u4E9B\u6B21\u6570\uFF1B\u9700\u8981\u66F4\u591A\u5C1D\u8BD5\u65F6\u64A4\u9500\u5168\u90E8\u5B9E\u9A8C\u8C03\u6574\u5E76\u4FDD\u7559\u7559\u767D\u3002\u76EE\u5F55\u6821\u51C6\u6B21\u6570\u5355\u72EC\u8BA1\u7B97\u3002"));
     }
-    if (import_obsidian2.Platform.isDesktopApp) toggle("openPdf", t("\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF"));
+    if (import_obsidian3.Platform.isDesktopApp) toggle("openPdf", t("\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF"));
     definitions.push({ name: "", render: (setting) => {
       setting.settingEl.addClass("an-custom-appearance-row");
       this.renderAppearance(setting.settingEl);
@@ -59025,7 +59355,7 @@ var AcademicSettings = class extends import_obsidian2.PluginSettingTab {
 };
 
 // src/export/pdf.ts
-var import_obsidian3 = require("obsidian");
+var import_obsidian4 = require("obsidian");
 
 // src/export/pagination.ts
 function prepareMediaForPrint() {
@@ -59088,7 +59418,7 @@ function createFloatLayout(options) {
   const actions = options.mode === "shrink-move" ? ["shrink", "move"] : options.mode === "move-shrink" ? ["move", "shrink"] : options.mode === "off" ? [] : [options.mode];
   let inactive = !template || !actions.length;
   if (!template && actions.length) report.fallback = "missing-probes";
-  const blocks = /* @__PURE__ */ new Map(), accepted = [], candidates = [];
+  const blocks = /* @__PURE__ */ new Map(), accepted = [], candidates2 = [];
   let pending = null, serial = 0;
   const plain2 = (node) => !!node?.matches("p") && !!node.textContent?.trim() && !node.querySelector('img,.math-block,mjx-container[display="true"],.callout,table,pre,iframe');
   const block = (node) => {
@@ -59114,7 +59444,7 @@ function createFloatLayout(options) {
     const following = [];
     for (let next = figure.nextElementSibling; plain2(next) && following.length < 3; next = next.nextElementSibling) following.push(next);
     figure.classList.add("an-float-figure");
-    candidates.push({ figure: block(figure), previous: block(previous), following: following.map(block), done: false, action: 0 });
+    candidates2.push({ figure: block(figure), previous: block(previous), following: following.map(block), done: false, action: 0 });
   }
   const samePage = (item, positions) => positions[item.start] && positions[item.end] && positions[item.start].page === positions[item.end].page;
   const valid = (trial, positions) => {
@@ -59157,7 +59487,7 @@ function createFloatLayout(options) {
         dirty = true;
       }
     }
-    for (const c of candidates) {
+    for (const c of candidates2) {
       if (c.done) continue;
       const previous = positions[c.previous.end], picture = positions[c.figure.start];
       if (!previous || !picture || !positions[c.figure.end]) return rollback("missing-measurements");
@@ -59345,7 +59675,7 @@ var PRINT_SHELL = "data:text/html;charset=utf-8," + encodeURIComponent(
   '<!doctype html><meta charset="utf-8">' + PRINT_POLICY
 );
 function nativeWindow() {
-  if (!import_obsidian3.Platform.isDesktopApp)
+  if (!import_obsidian4.Platform.isDesktopApp)
     throw new Error(t("PDF \u5BFC\u51FA\u4EC5\u5728 Obsidian \u684C\u9762\u7248\u53EF\u7528\u3002"));
   const electron = require("electron");
   const remote = electron.remote || require("@electron/remote");
@@ -59458,7 +59788,7 @@ async function exportPdf(html, log = () => {
       if (floatReport.fallback) log(t("\u56FE\u7247\u6392\u7248\u5B9E\u9A8C\u5DF2\u56DE\u9000\uFF1A") + floatFallbackMessage(floatReport.fallback));
     }
     let finalBytes;
-    let measured;
+    let measured2;
     let iterations = 0;
     for (let pass = 0; pass < 2; pass++) {
       let previous = "";
@@ -59467,14 +59797,14 @@ async function exportPdf(html, log = () => {
           throw new Error(t("\u5BFC\u51FA\u5DF2\u53D6\u6D88\u3002"));
         log(t("\u6253\u5370\u5E76\u6821\u51C6\u76EE\u5F55\uFF1A\u7B2C {0} \u8F6E", iterations));
         finalBytes = await wc.printToPDF(options);
-        measured = await measurePdf(finalBytes);
+        measured2 = await measurePdf(finalBytes);
         for (const entry of meta.entries)
-          if (!measured.positions[entry.id])
+          if (!measured2.positions[entry.id])
             throw new Error(t("\u65E0\u6CD5\u5B9A\u4F4D PDF \u6807\u9898\uFF1A") + entry.title);
-        const signature = JSON.stringify([measured.pages, meta.entries.map((e) => measured.positions[e.id].page)]);
+        const signature = JSON.stringify([measured2.pages, meta.entries.map((e) => measured2.positions[e.id].page)]);
         if (signature === previous)
           break;
-        const positions = JSON.stringify(measured.positions);
+        const positions = JSON.stringify(measured2.positions);
         await wc.executeJavaScript(`((positions) => {
         document.querySelectorAll('[data-phb-page]').forEach(el => {
           const position = positions[el.dataset.phbPage];
@@ -59484,8 +59814,8 @@ async function exportPdf(html, log = () => {
       })(${positions})`);
         previous = signature;
       }
-      const calibrationFailed = iterations > 6 || !finalBytes || !measured;
-      if (pass === 0 && floatOptions.mode !== "off" && (calibrationFailed || !await wc.executeJavaScript(`globalThis.__academicFloat.validate(${JSON.stringify(measured.positions)})`))) {
+      const calibrationFailed = iterations > 6 || !finalBytes || !measured2;
+      if (pass === 0 && floatOptions.mode !== "off" && (calibrationFailed || !await wc.executeJavaScript(`globalThis.__academicFloat.validate(${JSON.stringify(measured2.positions)})`))) {
         const reason = calibrationFailed ? "calibration-limit" : "final-validation";
         const reset = await wc.executeJavaScript(`globalThis.__academicFloat.rollback(${JSON.stringify(reason)})`);
         floatReport = reset.report;
@@ -59495,7 +59825,7 @@ async function exportPdf(html, log = () => {
       if (calibrationFailed) throw new Error(t("6 \u8F6E\u540E\u76EE\u5F55\u9875\u7801\u4ECD\u672A\u7A33\u5B9A\uFF0C\u8BF7\u8C03\u6574\u76EE\u5F55\u6807\u9898\u6216\u5B57\u4F53\u3002"));
       break;
     }
-    const finished = await finishPdf(finalBytes, meta, measured.positions);
+    const finished = await finishPdf(finalBytes, meta, measured2.positions);
     const overflow = await wc.executeJavaScript(`(${findOverflow.toString()})()`);
     return {
       bytes: finished.bytes,
@@ -59508,7 +59838,7 @@ async function exportPdf(html, log = () => {
         mediaPagination,
         figureLayout: floatReport,
         paragraphLayout,
-        entries: meta.entries.map((e) => ({ ...e, ...measured.positions[e.id], printedPage: measured.positions[e.id].page + 1 }))
+        entries: meta.entries.map((e) => ({ ...e, ...measured2.positions[e.id], printedPage: measured2.positions[e.id].page + 1 }))
       }
     };
   } catch (error) {
@@ -59576,13 +59906,13 @@ function refreshCalloutPrintSizes() {
 
 // src/export/tikz.ts
 var sequence = 0;
-async function waitForTikz(root, timeout = 6e4, active = () => true) {
+async function waitForTikz(root, timeout = 6e4, active2 = () => true) {
   const blocks = [...root.querySelectorAll(".block-language-tikz")];
   if (root.querySelector("pre code.language-tikz") || blocks.some((b) => b.querySelector("pre code"))) throw new Error(t("TikZ \u672A\u6E32\u67D3\uFF1A\u8BF7\u5B89\u88C5\u5E76\u542F\u7528\u53EF\u9009\u7684 TikZJax \u63D2\u4EF6\uFF0C\u518D\u91CD\u65B0\u5BFC\u51FA\u3002"));
   if (!blocks.length) return;
   const deadline = Date.now() + timeout;
   while (blocks.some((b) => !b.querySelector("svg"))) {
-    if (!active()) throw new Error(t("\u63D2\u4EF6\u5DF2\u505C\u7528\u3002"));
+    if (!active2()) throw new Error(t("\u63D2\u4EF6\u5DF2\u505C\u7528\u3002"));
     if (Date.now() >= deadline) throw new Error(t("TikZ \u7ED8\u56FE\u672A\u5728 60 \u79D2\u5185\u5B8C\u6210\uFF1B\u8BF7\u5148\u5728\u9605\u8BFB\u6A21\u5F0F\u786E\u8BA4 TikZ \u6E90\u7801\u80FD\u6B63\u5E38\u6E32\u67D3\u3002"));
     await new Promise((resolve) => window.setTimeout(resolve, 100));
   }
@@ -59603,10 +59933,10 @@ async function waitForTikz(root, timeout = 6e4, active = () => true) {
 }
 
 // src/ui/diagram-modal.ts
-var import_obsidian5 = require("obsidian");
+var import_obsidian6 = require("obsidian");
 
 // src/diagrams/render.ts
-var import_obsidian4 = require("obsidian");
+var import_obsidian5 = require("obsidian");
 
 // src/diagrams/math.ts
 function mathSource(label2) {
@@ -59661,7 +59991,7 @@ async function renderDiagram(container, data, selectArrow, selectedArrow = "", s
     if (!text || formulas.has(text)) continue;
     const holder = stage.createSpan();
     try {
-      holder.appendChild((0, import_obsidian4.renderMath)(mathSource(text), false));
+      holder.appendChild((0, import_obsidian5.renderMath)(mathSource(text), false));
     } catch {
     }
     formulas.set(text, holder);
@@ -59669,7 +59999,7 @@ async function renderDiagram(container, data, selectArrow, selectedArrow = "", s
   container.replaceChildren(svg, stage);
   let nativeFinished = true;
   try {
-    await (0, import_obsidian4.finishRenderMath)();
+    await (0, import_obsidian5.finishRenderMath)();
   } catch {
     nativeFinished = false;
   }
@@ -60037,7 +60367,7 @@ function diagramDeletionRange(content, from, to) {
   if (record && marker && record.ids.includes(marker[1])) to += next[0].length;
   return { from, to };
 }
-var DiagramModal = class extends import_obsidian5.Modal {
+var DiagramModal = class extends import_obsidian6.Modal {
   constructor(app, initial, save) {
     super(app);
     this.initial = initial;
@@ -60087,8 +60417,8 @@ async function diagramProcessor(app, source, el, ctx) {
     const remove = actions.createEl("button", { text: t("\u5220\u9664\u4EA4\u6362\u56FE"), cls: "an-diagram-delete" });
     const locate = async () => {
       const file = app.vault.getAbstractFileByPath(ctx.sourcePath);
-      if (!(file instanceof import_obsidian5.TFile)) return;
-      const view = app.workspace.getActiveViewOfType(import_obsidian5.MarkdownView), editor = view?.file?.path === ctx.sourcePath && view.getMode() === "source" ? view.editor : null;
+      if (!(file instanceof import_obsidian6.TFile)) return;
+      const view = app.workspace.getActiveViewOfType(import_obsidian6.MarkdownView), editor = view?.file?.path === ctx.sourcePath && view.getMode() === "source" ? view.editor : null;
       const content = editor ? editor.getValue() : await app.vault.read(file), info = ctx.getSectionInfo(el);
       const matching = diagramBlocks(content).filter((b) => b.source.trim() === source.trim());
       const block = matching.find((b) => b.line === info?.lineStart) || (matching.length === 1 ? matching[0] : null);
@@ -60096,7 +60426,7 @@ async function diagramProcessor(app, source, el, ctx) {
       return { file, editor, content, block };
     };
     const fail = (error) => {
-      new import_obsidian5.Notice(String(error instanceof Error ? error.message : error));
+      new import_obsidian6.Notice(String(error instanceof Error ? error.message : error));
     };
     button.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -60135,126 +60465,6 @@ async function diagramProcessor(app, source, el, ctx) {
   } catch (error) {
     el.createEl("p", { text: t("\u4EA4\u6362\u56FE\u6570\u636E\u65E0\u6548\uFF1A") + String(error instanceof Error ? error.message : error) });
   }
-}
-
-// src/typography/solver.ts
-var KP_FORCED = -1e4;
-var KP_FORBIDDEN = 1e4;
-var MAX_ITEMS = 1200;
-var MAX_CANDIDATES = 650;
-var MAX_OPERATIONS = 2e5;
-var EPSILON = 1e-7;
-function solveParagraph(items, width) {
-  if (!Array.isArray(items) || !items.length || items.length > MAX_ITEMS) return null;
-  const widths = typeof width === "number" ? [width, width] : width;
-  if (!Array.isArray(widths) || widths.length < 1 || widths.length > 2 || [...widths].some((value) => !Number.isFinite(value) || value <= 0)) return null;
-  const firstWidth = widths[0], followingWidth = widths[1] ?? firstWidth;
-  const widest = Math.max(firstWidth, followingWidth);
-  const sums = [0], stretches = [0], shrinks = [0], boxes = [0], ends = [0];
-  let lastBox = -1;
-  for (let index = 0; index < items.length; index++) {
-    const item = items[index];
-    if (!item || !Number.isFinite(item.width) || item.width < 0) return null;
-    if (item.type === "box") {
-      if (item.width > widest + EPSILON) return null;
-      lastBox = index;
-    } else if (item.type === "glue") {
-      if (!Number.isFinite(item.stretch) || !Number.isFinite(item.shrink) || item.stretch < 0 || item.shrink < 0 || item.shrink > item.width) return null;
-    } else if (item.type === "penalty") {
-      if (!Number.isFinite(item.cost) || item.flagged !== void 0 && typeof item.flagged !== "boolean") return null;
-    } else return null;
-    sums.push(sums[index] + (item.type === "penalty" ? 0 : item.width));
-    stretches.push(stretches[index] + (item.type === "glue" ? item.stretch : 0));
-    shrinks.push(shrinks[index] + (item.type === "glue" ? item.shrink : 0));
-    boxes.push(boxes[index] + (item.type === "box" ? 1 : 0));
-    ends.push(lastBox + 1);
-    if (![sums[index + 1], stretches[index + 1], shrinks[index + 1]].every(Number.isFinite)) return null;
-  }
-  if (lastBox < 0) return null;
-  const nextContent = (index) => {
-    while (index < items.length && items[index].type === "glue") index++;
-    return index;
-  };
-  const first = nextContent(0);
-  const points = [{ to: first, next: first, naturalEnd: first, cost: 0, extraWidth: 0, flagged: false, forced: false, final: false }];
-  for (let index = first; index < items.length; index++) {
-    const item = items[index];
-    if (item.type === "glue" && index < lastBox && items[index - 1]?.type === "box") {
-      points.push({ to: index, next: nextContent(index + 1), naturalEnd: ends[index], cost: 0, extraWidth: 0, flagged: false, forced: false, final: false });
-    } else if (item.type === "penalty" && item.cost < KP_FORBIDDEN && (index < lastBox || item.cost <= KP_FORCED)) {
-      const final = index > lastBox;
-      points.push({ to: index + 1, next: nextContent(index + 1), naturalEnd: ends[index], cost: item.cost, extraWidth: item.width, flagged: item.flagged === true, forced: item.cost <= KP_FORCED, final });
-      if (final) break;
-    }
-    if (points.length > MAX_CANDIDATES) return null;
-  }
-  if (!points.at(-1).final) points.push({ to: items.length, next: items.length, naturalEnd: lastBox + 1, cost: 0, extraWidth: 0, flagged: false, forced: true, final: true });
-  if (points.length > MAX_CANDIDATES) return null;
-  const states = [[void 0, { score: 0, fitness: 1, flagged: false, lineCount: 0 }, void 0, void 0]];
-  let mandatory = 0, operations = 0;
-  for (let end = 1; end < points.length; end++) {
-    const point = points[end];
-    const best = new Array(4);
-    for (let start = end - 1; start >= mandatory; start--) {
-      if (++operations > MAX_OPERATIONS) return null;
-      const from = points[start].next, naturalEnd = point.naturalEnd;
-      if (from >= naturalEnd || boxes[naturalEnd] === boxes[from]) continue;
-      const natural = sums[naturalEnd] - sums[from] + point.extraWidth;
-      const shrink = shrinks[naturalEnd] - shrinks[from];
-      if (natural - shrink > widest + EPSILON) break;
-      const stretch = stretches[naturalEnd] - stretches[from];
-      for (const previous of states[start]) {
-        if (!previous) continue;
-        if (++operations > MAX_OPERATIONS) return null;
-        const target = previous.lineCount === 0 ? firstWidth : followingWidth;
-        const difference = target - natural;
-        let ratio = 0;
-        if (difference < -EPSILON) {
-          if (shrink <= 0) continue;
-          ratio = difference / shrink;
-        } else if (!point.final && difference > EPSILON) {
-          if (stretch <= 0) continue;
-          ratio = difference / stretch;
-        }
-        if (!Number.isFinite(ratio) || ratio < -1 - EPSILON || ratio > 2.5 + EPSILON) continue;
-        ratio = Math.max(-1, Math.min(2.5, ratio));
-        const fitness = ratio < -0.5 ? 0 : ratio <= 0.5 ? 1 : ratio <= 1 ? 2 : 3;
-        const badness = 100 * Math.abs(ratio) ** 3;
-        let demerits = (10 + badness) ** 2;
-        if (point.cost >= 0) demerits += point.cost ** 2;
-        else if (!point.forced) demerits -= point.cost ** 2;
-        if (previous.lineCount && Math.abs(previous.fitness - fitness) > 1) demerits += 1e4;
-        if (previous.flagged && point.flagged) demerits += 1e4;
-        if (point.final && previous.lineCount && natural < target * 0.18) {
-          demerits += 1800 * (1 - natural / (target * 0.18));
-        }
-        const score = previous.score + demerits;
-        if (!Number.isFinite(score)) continue;
-        if (!best[fitness] || score < best[fitness].score) {
-          best[fitness] = {
-            score,
-            fitness,
-            flagged: point.flagged,
-            lineCount: previous.lineCount + 1,
-            line: { from, to: point.to, ratio, final: point.final },
-            previous
-          };
-        }
-      }
-    }
-    states.push(best);
-    if (point.forced) {
-      if (!best.some(Boolean)) return null;
-      mandatory = end;
-    }
-  }
-  const finalStates = states.at(-1).filter((state) => !!state);
-  if (!finalStates.length) return null;
-  const winner = finalStates.reduce((a, b) => a.score <= b.score ? a : b);
-  const lines = [];
-  for (let node = winner; node?.line; node = node.previous) lines.push(node.line);
-  lines.reverse();
-  return { lines, demerits: winner.score };
 }
 
 // src/typography/dom.ts
@@ -60557,7 +60767,7 @@ function createParagraphLayoutController(root, options = {}) {
 var diagrams_default = '.an-diagram-modal {\n  width: min(850px, 96vw);\n}\n.an-diagram-toolbar,\n.an-diagram-fields,\n.an-diagram-arrow-list {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 12px;\n  margin: 12px 0;\n}\n.an-diagram-editor label {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.an-diagram-editor input[type=text] {\n  min-width: 140px;\n  max-width: 100%;\n}\n.an-diagram-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 10px;\n  max-width: 420px;\n  margin: 16px auto;\n}\n.an-diagram-grid[data-grid="3"] {\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n}\n.an-diagram-grid button {\n  min-height: 48px;\n  height: auto;\n  overflow-wrap: anywhere;\n}\n.an-diagram-grid button[aria-pressed=true] {\n  background: var(--background-modifier-hover);\n}\n.an-diagram-grid button:is(.is-selected, .is-start) {\n  outline: 2px solid var(--interactive-accent);\n  outline-offset: 2px;\n}\n.an-diagram-arrow-list button[aria-pressed=true] {\n  border-color: var(--interactive-accent);\n}\n.an-diagram-figure {\n  display: block;\n  width: 100%;\n  margin: 1em auto;\n  text-align: center;\n  break-inside: avoid;\n}\n.an-diagram-svg {\n  display: block;\n  width: 100%;\n  max-width: 700px;\n  height: auto;\n  margin: auto;\n  color: var(--text-normal,currentColor);\n}\n.an-diagram-math-stage {\n  position: fixed;\n  left: -10000px;\n  top: 0;\n  font-size: 20px;\n  opacity: 0;\n  pointer-events: none;\n  white-space: nowrap;\n}\n.an-diagram-math-stage mjx-container {\n  font-size: 20px;\n}\n.an-diagram-interactive-arrow {\n  cursor: pointer;\n}\n.an-diagram-interactive-arrow.is-selected {\n  color: var(--interactive-accent);\n}\n.an-diagram-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin: 8px 0;\n}\n.an-diagram-caption {\n  display: flex;\n  justify-content: center;\n  font-size: .9em;\n  margin-top: .5em;\n}\n.an-diagram-caption[hidden] {\n  display: none;\n}\n.an-diagram-status {\n  color: var(--text-muted);\n  margin: 8px 0;\n}\n.block-language-tikz svg {\n  max-width: 100%;\n  height: auto;\n}\n@media print {\n  .an-diagram-actions,\n  .an-diagram-edit {\n    display: none;\n  }\n  .an-diagram-block,\n  .an-diagram-figure,\n  .block-language-tikz {\n    break-inside: avoid;\n  }\n}\n';
 
 // src/styles/typography.css
-var typography_default = ".an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n";
+var typography_default = ".an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n.an-kp-live-line {\n  white-space: nowrap;\n}\n.an-kp-live-gap {\n  display: inline-block;\n  white-space: pre;\n  font-size: 0;\n  line-height: 0;\n  height: 0;\n}\n";
 
 // src/styles/callouts.css
 var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def: #a63c67;\n  --phb-thm: #6952a0;\n  --phb-lem: #8a4e8d;\n  --phb-prop: #406e68;\n  --phb-cor: #536c9a;\n  --phb-claim: #996040;\n  --phb-example: #8f6c25;\n  --phb-proof: #697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def: #227c77;\n  --phb-thm: #326694;\n  --phb-lem: #65709d;\n  --phb-prop: #457d5b;\n  --phb-cor: #6b7552;\n  --phb-claim: #4c7192;\n  --phb-example: #916b35;\n  --phb-proof: #647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def: #256f83;\n  --phb-thm: #2f609c;\n  --phb-lem: #665d98;\n  --phb-prop: #3d7a70;\n  --phb-cor: #536d86;\n  --phb-claim: #7f668d;\n  --phb-example: #956b35;\n  --phb-proof: #5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def: #247651;\n  --phb-thm: #286b76;\n  --phb-lem: #71628c;\n  --phb-prop: #62752e;\n  --phb-cor: #42786b;\n  --phb-claim: #44698c;\n  --phb-example: #946b2f;\n  --phb-proof: #687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def: #776085;\n  --phb-thm: #674386;\n  --phb-lem: #925d86;\n  --phb-prop: #5d7767;\n  --phb-cor: #646998;\n  --phb-claim: #896440;\n  --phb-example: #936c3f;\n  --phb-proof: #72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def: #88712e;\n  --phb-thm: #9c582d;\n  --phb-lem: #826489;\n  --phb-prop: #617542;\n  --phb-cor: #946640;\n  --phb-claim: #587a7b;\n  --phb-example: #a75c3c;\n  --phb-proof: #77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def: #9c3a55;\n  --phb-thm: #7f3f65;\n  --phb-lem: #845786;\n  --phb-prop: #3e756b;\n  --phb-cor: #626987;\n  --phb-claim: #9c5e36;\n  --phb-example: #906c32;\n  --phb-proof: #69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def: #2a6c76;\n  --phb-thm: #28558a;\n  --phb-lem: #6c608c;\n  --phb-prop: #477966;\n  --phb-cor: #526d94;\n  --phb-claim: #887052;\n  --phb-example: #926938;\n  --phb-proof: #5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def: #82d6ac;\n  --phb-thm: #bca1e2;\n  --phb-lem: #db9bc4;\n  --phb-prop: #afd294;\n  --phb-cor: #83c7d1;\n  --phb-claim: #e5b78f;\n  --phb-example: #dfc67d;\n  --phb-proof: #a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def: #73c9bc;\n  --phb-thm: #82b6df;\n  --phb-lem: #b4a1e0;\n  --phb-prop: #9bcba7;\n  --phb-cor: #78ccd2;\n  --phb-claim: #d0ac8e;\n  --phb-example: #d6c07c;\n  --phb-proof: #a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def: #86ca98;\n  --phb-thm: #83bbce;\n  --phb-lem: #b7a7ca;\n  --phb-prop: #b8c984;\n  --phb-cor: #8dcbb4;\n  --phb-claim: #9baed0;\n  --phb-example: #dec178;\n  --phb-proof: #a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\n';
@@ -60575,7 +60785,7 @@ function safeFolder(value) {
   const raw = (typeof value === "string" ? value : "").trim().replace(/\\/g, "/");
   if (!raw || raw.startsWith("/") || /^[A-Za-z]:/.test(raw) || raw.split("/").some((p) => p === "..") || /[<>:"|?*\x00-\x1f]/.test(raw))
     throw new Error(t("\u5BFC\u51FA\u76EE\u5F55\u987B\u4E3A\u5E93\u5185\u76F8\u5BF9\u8DEF\u5F84\uFF0C\u4E0D\u5141\u8BB8 .. \u6216\u7EDD\u5BF9\u8DEF\u5F84\u3002"));
-  return (0, import_obsidian6.normalizePath)(raw);
+  return (0, import_obsidian7.normalizePath)(raw);
 }
 function dataUrl(blob) {
   return new Promise((resolve, reject) => {
@@ -60585,7 +60795,7 @@ function dataUrl(blob) {
     r.readAsDataURL(blob);
   });
 }
-var AcademicNotes = class extends import_obsidian6.Plugin {
+var AcademicNotes = class extends import_obsidian7.Plugin {
   constructor() {
     super(...arguments);
     this.errors = [];
@@ -60638,7 +60848,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
     this.addCommand({ id: "diagnostics", name: t("\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883"), callback: () => this.diagnostics() });
     this.addCommand({ id: "refresh", name: t("\u91CD\u5EFA\u5B9A\u7406\u516C\u5F0F\u7D22\u5F15\u5E76\u5237\u65B0\u5F15\u7528"), callback: () => {
       this.parsed.clear();
-      this.rebuild().then(() => new import_obsidian6.Notice(t("\u7D22\u5F15\u5DF2\u91CD\u5EFA\u3002"))).catch((e) => this.fail(t("\u91CD\u5EFA\u7D22\u5F15"), e));
+      this.rebuild().then(() => new import_obsidian7.Notice(t("\u7D22\u5F15\u5DF2\u91CD\u5EFA\u3002"))).catch((e) => this.fail(t("\u91CD\u5EFA\u7D22\u5F15"), e));
     } });
     this.addCommand({ id: "insert-reference", name: t("\u63D2\u5165\u5B9A\u7406\u3001\u516C\u5F0F\u6216\u56FE\u8868\u5F15\u7528"), editorCallback: (editor, view) => new ReferencePicker(this, editor, view.file).open() });
     this.addCommand({ id: "label-block", name: t("\u4E3A\u5149\u6807\u6240\u5728\u516C\u5F0F\u3001\u5B9A\u7406\u6216\u56FE\u8868\u6DFB\u52A0\u5757 ID"), editorCallback: (editor, view) => this.labelBlock(editor, view.file) });
@@ -60669,7 +60879,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
       this.recordError(t("academic-toc \u5DF2\u88AB\u5360\u7528\uFF1B\u4FDD\u7559 [toc] \u548C\u7F16\u53F7\u529F\u80FD"), e);
     }
     try {
-      this.registerEditorExtension(createLiveExtension(this));
+      this.registerEditorExtension([createLiveExtension(this), createLiveParagraphExtension(this)]);
       this.liveExtension = true;
     } catch (e) {
       this.liveExtension = false;
@@ -60736,7 +60946,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
   }
   fail(where, error) {
     this.recordError(where, error);
-    new import_obsidian6.Notice(t("{0}\u5931\u8D25\uFF1A{1}\n\u53EF\u8FD0\u884C\u201C\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883\u201D\u3002", where, error instanceof Error ? error.message : String(error)), 13e3);
+    new import_obsidian7.Notice(t("{0}\u5931\u8D25\uFF1A{1}\n\u53EF\u8FD0\u884C\u201C\u68C0\u67E5\u63D2\u4EF6\u72B6\u6001\u4E0E\u5BFC\u51FA\u73AF\u5883\u201D\u3002", where, error instanceof Error ? error.message : String(error)), 13e3);
   }
   async saveSettings() {
     await this.saveData(this.settings);
@@ -60789,7 +60999,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
       const files = this.app.vault.getMarkdownFiles().filter((f) => this.included(f)), notes = [];
       const open = /* @__PURE__ */ new Map();
       for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
-        if (leaf.view instanceof import_obsidian6.MarkdownView && leaf.view.file && leaf.view.getMode() === "source")
+        if (leaf.view instanceof import_obsidian7.MarkdownView && leaf.view.file && leaf.view.getMode() === "source")
           open.set(leaf.view.file.path, leaf.view.editor.getValue());
       }
       for (let i = 0; i < files.length; i++) {
@@ -60863,7 +61073,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
       if (n) renderFragment(el, n, this.graph, (node) => ctx.getSectionInfo(node) || ctx.getSectionInfo(el));
       layout2?.refresh();
     };
-    class Reader extends import_obsidian6.MarkdownRenderChild {
+    class Reader extends import_obsidian7.MarkdownRenderChild {
       constructor(el2, owner) {
         super(el2);
         this.owner = owner;
@@ -60928,13 +61138,13 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
       el.replaceWith(nav);
     else
       el.replaceChildren(nav);
-    const child = new import_obsidian6.MarkdownRenderChild(nav);
+    const child = new import_obsidian7.MarkdownRenderChild(nav);
     ctx.addChild(child);
     const links = [...nav.querySelectorAll("[data-phb-target]")];
     for (let i = 0; i < links.length; i++) {
       const a = links[i];
       a.replaceChildren();
-      await import_obsidian6.MarkdownRenderer.render(this.app, list[i].heading, a, ctx.sourcePath, child);
+      await import_obsidian7.MarkdownRenderer.render(this.app, list[i].heading, a, ctx.sourcePath, child);
       if (a.firstElementChild?.tagName === "P")
         a.replaceChildren(...a.firstElementChild.childNodes);
     }
@@ -60946,11 +61156,11 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
     const note = engine_default.parse(file.path, editor.getValue()), line = editor.getCursor().line;
     const r = note.records.filter((r2) => r2.line <= line && r2.endLine >= line).sort((a, b) => b.line - a.line)[0];
     if (!r) {
-      new import_obsidian6.Notice(t("\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table callout \u5185\u3002"));
+      new import_obsidian7.Notice(t("\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table callout \u5185\u3002"));
       return;
     }
     if (r.id) {
-      new import_obsidian6.Notice(t("\u8BE5\u5757\u5DF2\u6709 ID\uFF1A^") + r.id);
+      new import_obsidian7.Notice(t("\u8BE5\u5757\u5DF2\u6709 ID\uFF1A^") + r.id);
       return;
     }
     let id2;
@@ -60961,18 +61171,18 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
     const insertion = "\n" + prefix + "\n" + prefix + "^" + id2 + "\n";
     editor.replaceRange(insertion, { line: r.endLine, ch: note.lines[r.endLine].length });
     this.scheduleIndex();
-    new import_obsidian6.Notice(t("\u5DF2\u6DFB\u52A0 ^{0}\uFF1B\u53EF\u7528 [[#^{0}]] \u5F15\u7528\u3002", id2));
+    new import_obsidian7.Notice(t("\u5DF2\u6DFB\u52A0 ^{0}\uFF1B\u53EF\u7528 [[#^{0}]] \u5F15\u7528\u3002", id2));
   }
   async openReference(raw, sourcePath, newLeaf = false) {
     const rec = this.graph?.resolve(raw, sourcePath);
     if (!rec)
       return this.app.workspace.openLinkText(raw, sourcePath, newLeaf);
     const file = this.app.vault.getAbstractFileByPath(rec.path);
-    if (!(file instanceof import_obsidian6.TFile))
+    if (!(file instanceof import_obsidian7.TFile))
       throw new Error(t("\u5F15\u7528\u76EE\u6807\u6587\u4EF6\u4E0D\u5B58\u5728\uFF1A") + rec.path);
     const leaf = this.app.workspace.getLeaf(newLeaf ? "tab" : false);
     await leaf.openFile(file, { active: true, eState: { line: rec.line } });
-    if (leaf.view instanceof import_obsidian6.MarkdownView) {
+    if (leaf.view instanceof import_obsidian7.MarkdownView) {
       leaf.view.setEphemeralState({ line: rec.line });
       if (leaf.view.getMode() === "source") {
         const from = { line: rec.line, ch: 0 };
@@ -60989,7 +61199,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
     return this.graph ? [...this.graph.notes.values()].flatMap((n) => n.records.filter((r) => r.id)) : [];
   }
   pluginDir() {
-    return this.manifest.dir || (0, import_obsidian6.normalizePath)(this.app.vault.configDir + "/plugins/" + this.manifest.id);
+    return this.manifest.dir || (0, import_obsidian7.normalizePath)(this.app.vault.configDir + "/plugins/" + this.manifest.id);
   }
   async mkdir(folder) {
     let p = "";
@@ -61001,7 +61211,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
   }
   async resolveSelection(isBook) {
     const file = this.app.workspace.getActiveFile();
-    if (!(file instanceof import_obsidian6.TFile) || file.extension !== "md")
+    if (!(file instanceof import_obsidian7.TFile) || file.extension !== "md")
       throw new Error(t("\u8BF7\u5148\u6253\u5F00\u4E00\u7BC7 Markdown \u7B14\u8BB0\u3002"));
     const fm = this.app.metadataCache.getFileCache(file)?.frontmatter || {};
     const rawBook = isBook ? fm["phb-book"] : null;
@@ -61016,7 +61226,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
         throw new Error(t("\u7AE0\u8282\u8DEF\u5F84\u683C\u5F0F\u4E0D\u6B63\u786E\u3002"));
       const path = raw.replace(/^\[\[|\]\]$/g, "").split("|")[0];
       const f = this.app.vault.getAbstractFileByPath(path) || this.app.metadataCache.getFirstLinkpathDest(path, file.path);
-      if (!(f instanceof import_obsidian6.TFile) || f.extension !== "md")
+      if (!(f instanceof import_obsidian7.TFile) || f.extension !== "md")
         throw new Error(t("\u627E\u4E0D\u5230\u7AE0\u8282\uFF1A") + path);
       if (seen.has(f.path))
         throw new Error(t("\u91CD\u590D\u7AE0\u8282\uFF1A") + f.path);
@@ -61037,11 +61247,11 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
   }
   async exportSelection(selection, pdf = true) {
     if (pdf && !Obs2.Platform.isDesktopApp) {
-      new import_obsidian6.Notice(t("PDF \u5BFC\u51FA\u4EC5\u5728 Obsidian \u684C\u9762\u7248\u53EF\u7528\u3002"));
+      new import_obsidian7.Notice(t("PDF \u5BFC\u51FA\u4EC5\u5728 Obsidian \u684C\u9762\u7248\u53EF\u7528\u3002"));
       return;
     }
     if (this.busy) {
-      new import_obsidian6.Notice(t("\u5DF2\u6709\u5BFC\u51FA\u4EFB\u52A1\u6B63\u5728\u8FD0\u884C\u3002"));
+      new import_obsidian7.Notice(t("\u5DF2\u6709\u5BFC\u51FA\u4EFB\u52A1\u6B63\u5728\u8FD0\u884C\u3002"));
       return;
     }
     this.busy = true;
@@ -61066,11 +61276,11 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
           await this.app.vault.adapter.write(out.replace(/\.pdf$/, ".report.json"), JSON.stringify(result.report, null, 2));
           this.lastPdfExport = { status: "success", time: (/* @__PURE__ */ new Date()).toISOString(), output: out, report: result.report };
           log.line(t("\u5DF2\u5B8C\u6210\uFF1A") + out);
-          new import_obsidian6.Notice(t("PDF \u5DF2\u4FDD\u5B58\uFF1A") + out, 1e4);
+          new import_obsidian7.Notice(t("PDF \u5DF2\u4FDD\u5B58\uFF1A") + out, 1e4);
           if (this.settings.openPdf) {
             for (let i = 0; i < 15; i++) {
               const f = this.app.vault.getAbstractFileByPath(out);
-              if (f instanceof import_obsidian6.TFile) {
+              if (f instanceof import_obsidian7.TFile) {
                 await this.app.workspace.getLeaf("tab").openFile(f);
                 break;
               }
@@ -61081,7 +61291,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
           this.pdfJobs.delete(controller);
         }
       } else
-        new import_obsidian6.Notice(t("HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A") + snapshot);
+        new import_obsidian7.Notice(t("HTML \u5FEB\u7167\u5DF2\u4FDD\u5B58\uFF1A") + snapshot);
       log.done();
     } catch (e) {
       if (pdf) this.lastPdfExport = { status: "failed", time: (/* @__PURE__ */ new Date()).toISOString(), message: String(e instanceof Error ? e.message : e) };
@@ -61159,12 +61369,12 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
       for (const ref of n.refs)
         if (!ref.target)
           warnings.push(t("{0}:{1} \u5F15\u7528\u76EE\u6807\u672A\u7EB3\u5165\u672C\u6B21\u5BFC\u51FA\u6216\u4E0D\u53EF\u89E3\u6790\uFF1A{2}", n.path, ref.line + 1, ref.raw));
-    const doc = this.app.workspace.getActiveViewOfType(import_obsidian6.MarkdownView)?.containerEl.ownerDocument || document;
+    const doc = this.app.workspace.getActiveViewOfType(import_obsidian7.MarkdownView)?.containerEl.ownerDocument || document;
     const stage = doc.win.createEl("main");
     stage.id = "phb-document";
     stage.className = "phb-export-stage markdown-preview-view markdown-rendered";
     doc.body.appendChild(stage);
-    const component = new import_obsidian6.Component();
+    const component = new import_obsidian7.Component();
     component.load();
     try {
       for (let i = 0; i < files.length; i++) {
@@ -61177,7 +61387,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
           if (typeof c === "string" && /^[A-Za-z_][A-Za-z0-9_-]*$/.test(c))
             section.classList.add(c);
         stage.appendChild(section);
-        await import_obsidian6.MarkdownRenderer.render(this.app, this.exportSource(note, graph2), section, f.path, component);
+        await import_obsidian7.MarkdownRenderer.render(this.app, this.exportSource(note, graph2), section, f.path, component);
         await Obs2.finishRenderMath();
         await waitForTikz(section, 6e4, () => this.active);
         const boxes = [...section.querySelectorAll(".callout[data-callout]")], math = [...section.querySelectorAll('mjx-container[display="true"]')];
@@ -61325,7 +61535,7 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
         const src = img.closest(".image-embed")?.getAttribute("src") || img.getAttribute("data-src");
         const path = img.closest(".phb-chapter")?.dataset.path || "";
         const file = src && this.app.metadataCache.getFirstLinkpathDest(src, path);
-        if (!(file instanceof import_obsidian6.TFile))
+        if (!(file instanceof import_obsidian7.TFile))
           throw new Error(t("\u65E0\u6CD5\u5D4C\u5165\u56FE\u7247\uFF1A") + (src || url));
         const bytes = await this.app.vault.readBinary(file);
         const mime = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", svg: "image/svg+xml", webp: "image/webp", gif: "image/gif" }[file.extension];
@@ -61412,17 +61622,17 @@ var AcademicNotes = class extends import_obsidian6.Plugin {
       pdf: pdfAvailability(),
       lastPdfExport: this.lastPdfExport || { status: "not-run-this-session" }
     };
-    const modal = new import_obsidian6.Modal(this.app);
+    const modal = new import_obsidian7.Modal(this.app);
     modal.titleEl.setText(t("Academic Notes \u8BCA\u65AD"));
     const pre = modal.contentEl.createEl("pre", { text: JSON.stringify(result, null, 2) });
     pre.classList.add("an-diagnostics");
-    new import_obsidian6.Setting(modal.contentEl).addButton((b) => b.setButtonText(t("\u4FDD\u5B58\u8BCA\u65AD JSON \u5230\u5BFC\u51FA\u76EE\u5F55")).onClick(async () => {
+    new import_obsidian7.Setting(modal.contentEl).addButton((b) => b.setButtonText(t("\u4FDD\u5B58\u8BCA\u65AD JSON \u5230\u5BFC\u51FA\u76EE\u5F55")).onClick(async () => {
       try {
         const folder = safeFolder(this.settings.exportFolder);
         await this.mkdir(folder);
         const path = folder + "/academic-diagnostics-" + Date.now() + ".json";
         await this.app.vault.adapter.write(path, JSON.stringify(result, null, 2));
-        new import_obsidian6.Notice(t("\u5DF2\u4FDD\u5B58 ") + path);
+        new import_obsidian7.Notice(t("\u5DF2\u4FDD\u5B58 ") + path);
       } catch (e) {
         this.fail(t("\u4FDD\u5B58\u8BCA\u65AD"), e);
       }

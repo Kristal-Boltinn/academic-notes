@@ -1,3 +1,10 @@
+# 2.12.0
+
+- Add an independent, off-by-default Live Preview Knuth–Plass switch for inactive standalone plain paragraphs. Caret entry and intersecting selections restore native layout synchronously; leaving reoptimizes visible prose.
+- Use official CodeMirror decorations while retaining original source text and source-position mapping. Defer measured updates until editor updates finish, discard stale source measurements, and restore native layout throughout IME composition.
+- Bound scanning and layout work; preserve native rendering for inline syntax, environments, lists, multiline-source paragraphs and unsupported typography. Recalculate on widths, fonts and theme changes.
+- Document the scope in both usage guides and add real CodeMirror editing, hit-testing, selection, composition and scroll regressions. No dependency or permission is added.
+
 # 2.11.0
 
 - Add optional independent Knuth–Plass paragraph line breaking in Reading view and desktop PDF export. Both switches are off by default; Live Preview, source editing and HTML snapshots retain native layout.

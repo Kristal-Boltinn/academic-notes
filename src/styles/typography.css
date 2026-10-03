@@ -23,3 +23,5 @@
 }
 /* Temporary intrinsic-width measurement, restored before the layout is painted. */
 .an-active p.an-kp-measure, body.phb-export p.an-kp-measure { white-space: nowrap !important; }
+.an-kp-live-line { white-space: nowrap; }
+.an-kp-live-gap { display: inline-block; white-space: pre; font-size: 0; line-height: 0; height: 0; }

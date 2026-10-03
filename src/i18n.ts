@@ -2,6 +2,8 @@
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
   "段落排版（Beta）": "Paragraph typography (Beta)",
+  "实时预览使用 Knuth–Plass 断行": "Use Knuth–Plass line breaking in Live Preview",
+  "优化未编辑的普通正文；光标或选区进入时恢复原生排版。第一版只处理源码中单行、无行内格式的独立段落；公式、链接、列表和环境保持原生。默认关闭。": "Optimize inactive prose; restore native layout when the caret or selection enters. This first beta handles standalone, single-source-line plain paragraphs. Formulas, links, lists and environments retain native layout. Off by default.",
   "阅读视图使用 Knuth–Plass 断行": "Use Knuth–Plass line breaking in Reading view",
   "整段优化普通正文的断行和间距；窗口宽度变化后重新排版。默认关闭，实时预览与源码不受影响。": "Optimize line breaks and spacing across ordinary paragraphs; reflow after width changes. Off by default. Live Preview and source editing are unaffected.",
   "PDF 使用 Knuth–Plass 断行": "Use Knuth–Plass line breaking in PDF",
