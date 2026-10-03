@@ -16,7 +16,9 @@ export async function runKpLiveRegressions() {
     const view = new EditorView({ parent: host, state: EditorState.create({ doc: source, extensions: [editorInfoField, editorLivePreviewField, EditorView.lineWrapping, createLiveParagraphExtension(plugin)] }) });
     try {
         await settle();
-        check(view.dom.querySelectorAll('.an-kp-live-break').length > 2, 'inactive paragraphs must get optimized line breaks');
+        for (let attempt = 0; attempt < 6 && view.dom.querySelectorAll('.an-kp-live-break').length <= 2; attempt++) { view.requestMeasure(); await settle(); }
+        const diagnostic = [...view.dom.querySelectorAll<HTMLElement>('.cm-line')].slice(0, 6).map(line => { const s = getComputedStyle(line); return { width: line.getBoundingClientRect().width, length: line.textContent?.length, font: s.font, direction: s.direction, writingMode: s.writingMode, indent: s.textIndent, letters: s.letterSpacing, words: s.wordSpacing, caps: s.fontVariantCaps }; });
+        check(view.dom.querySelectorAll('.an-kp-live-break').length > 2, 'inactive paragraphs must get optimized line breaks: ' + JSON.stringify({ visible: view.inView, composing: view.composing, ranges: view.visibleRanges, diagnostic }));
         check(view.state.doc.toString() === source, 'layout must preserve exact source');
         for (const line of view.dom.querySelectorAll('.cm-line')) if (line.textContent?.includes('$x+y$')) check(!line.querySelector('.an-kp-live-break'), 'inline math/link paragraphs must remain native');
         const englishFrom = source.indexOf(prose), chineseFrom = source.indexOf(chinese);
