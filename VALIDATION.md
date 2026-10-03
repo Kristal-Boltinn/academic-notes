@@ -1,5 +1,6 @@
-# 2.12.0 Progressive Live Preview typography
+# 2.12.1 Progressive Live Preview typography
 
+- The Linux GitHub Actions full suite also passes; asynchronous browser tests wait for completed editor measurements instead of assuming a fixed initial delay.
 - Real CodeMirror/Chromium checks cover inactive Latin/CJK paragraph decoration, source-offset hit testing, immediate native restoration on caret entry and cross-paragraph selections, edits preserving surrounding source, IME composition, reoptimization after leaving, width changes, actual nonzero scrolling and disabled cleanup. Inline math/link paragraphs remain native.
 - Twenty-five Node regressions, TypeScript, simulated mobile bundle loading and three-file release checks pass. ESLint has zero errors and retains the two isolated-print DOM-helper recommendations. Existing reading/PDF tests remain covered.
 - Live Preview layout uses direct CodeMirror state-field decorations and deferred, stale-source-checked measurement effects. No editable text nodes are reparented, no Markdown content is changed, and no dependency or permission is added.

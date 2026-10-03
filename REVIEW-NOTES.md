@@ -1,4 +1,4 @@
-# Community review follow-up: 2.12.0
+# Community review follow-up: 2.12.1
 
 - An opt-in Live Preview typography extension uses official CodeMirror state-field decorations. It does not move editable DOM nodes, rewrite notes, or invoke filesystem/network APIs.
 - Active and intersected paragraphs restore native layout synchronously; IME composition restores native layout globally. Measurement updates are deferred until editor updates finish and rejected after source changes.

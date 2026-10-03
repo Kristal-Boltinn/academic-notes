@@ -1,4 +1,4 @@
-# 2.12.0
+# 2.12.1
 
 - Add an independent, off-by-default Live Preview Knuth–Plass switch for inactive standalone plain paragraphs. Caret entry and intersecting selections restore native layout synchronously; leaving reoptimizes visible prose.
 - Use official CodeMirror decorations while retaining original source text and source-position mapping. Defer measured updates until editor updates finish, discard stale source measurements, and restore native layout throughout IME composition.

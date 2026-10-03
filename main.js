@@ -1,4 +1,4 @@
-/* Academic Notes 2.12.0 | MIT | generated from src/main.ts */
+/* Academic Notes 2.12.1 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
