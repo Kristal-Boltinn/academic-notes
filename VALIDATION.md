@@ -1,3 +1,10 @@
+# 2.14.0 Typography and visual indentation
+
+- Browser regressions exercise formula-ending rows at font-dependent widths, original formula margins/node restoration, two-em first-line geometry, active editor justification and unchanged source/caret.
+- Read-only Proof regression retains an inactive editable title, then exercises caret protection, copying, touch deferral and post-edit scrolling.
+- Source-line classification excludes frontmatter, headings, list continuations, code/math blocks, images and block IDs.
+- Chromium regressions do not establish physical iPad/WKWebView scrolling behavior; device acceptance remains outstanding.
+
 # 2.13.3 Device evidence and visible recordings
 
 - An actual iPad report showed optimized non-final callout lines with 15–41px right gaps and inherited 1px tracking. It also showed editor-height changes followed by stalled scroll positions; this is evidence for further investigation, not proof of a specific scroll-freeze cause. Private recordings are not bundled or published.

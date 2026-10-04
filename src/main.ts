@@ -71,7 +71,7 @@ export default class AcademicNotes extends Plugin {
         this.active = true;
         this.busy = false;
         this.indexRunning = false;
-        this.appearanceBefore = { palette: document.body.getAttribute('data-an-palette'), classes: Object.fromEntries(['an-active', 'phb-neutral-body', 'phb-no-motif'].map(c => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map(k => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
+        this.appearanceBefore = { palette: document.body.getAttribute('data-an-palette'), classes: Object.fromEntries(['an-active', 'an-prose-indent', 'phb-neutral-body', 'phb-no-motif'].map(c => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map(k => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
         this.editorViews = new Set();
         this.readers = new Set();
         this.readerUnloads = new Set();
@@ -195,6 +195,7 @@ export default class AcademicNotes extends Plugin {
         const set = (c: string, v: boolean) => { if (b.classList.contains(c) !== v)
             b.classList.toggle(c, v); };
         set('an-active', true);
+        set('an-prose-indent', !!this.settings.paragraphIndent);
         set('phb-neutral-body', !!this.settings.neutralBody);
         set('phb-no-motif', !!this.settings.hideMotif);
         const values = appearanceValues(this.settings.customAppearance, dark);

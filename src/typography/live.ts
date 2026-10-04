@@ -4,6 +4,7 @@ import { editorLivePreviewField } from 'obsidian';
 import type AcademicNotes from '../main';
 import { solveParagraph, type KpItem } from './solver';
 import { editorIdleScheduler } from '../rendering/editor-dom';
+import { proseLines } from './prose';
 
 interface Plan { from: number; to: number; decorations: Range<Decoration>[] }
 interface Token { from: number; to: number; item: KpItem }
@@ -48,7 +49,7 @@ function candidates(state: EditorState) {
 function active(state: EditorState, plan: { from: number; to: number }) {
     return state.selection.ranges.some(range => range.from <= plan.to && range.to >= plan.from);
 }
-function planParagraph(text: string, offset: number, width: number, context: CanvasRenderingContext2D, em: number): Plan | null {
+function planParagraph(text: string, offset: number, width: number, context: CanvasRenderingContext2D, em: number, indent: number): Plan | null {
     if (!Intl.Segmenter) return null;
     const parts: { text: string; from: number; to: number; kind: string }[] = [];
     for (const part of new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text)) {
@@ -66,7 +67,7 @@ function planParagraph(text: string, offset: number, width: number, context: Can
         tokens.push({ from: part.from, to: part.to, item: part.kind === 'space' && !opening.test(previous?.text || '') && !closing.test(next?.text || '') ? { type: 'glue', width: natural, stretch: Math.max(natural * .65, em * .12), shrink: natural * .4 } : { type: 'box', width: natural } });
     }
     if (tokens.length > 900) return null;
-    const solution = solveParagraph(tokens.map(token => token.item), width - 1);
+    const solution = solveParagraph(tokens.map(token => token.item), [width - indent - 1, width - 1]);
     if (!solution || solution.lines.length < 2) return null;
     const decorations: Range<Decoration>[] = [];
     let cursor = 0;
@@ -90,13 +91,16 @@ function planParagraph(text: string, offset: number, width: number, context: Can
 /** All editable nodes remain owned by CodeMirror; layout never changes document text. */
 export function createLiveParagraphExtension(plugin: AcademicNotes) {
     const enabled = (state: EditorState) => plugin.settings.kpLivePreview && !!state.field(editorLivePreviewField, false);
-    const field = StateField.define<{ plans: Plan[]; composing: boolean; decorations: DecorationSet }>({
-        create: () => ({ plans: [], composing: false, decorations: Decoration.none }),
+    const field = StateField.define<{ plans: Plan[]; composing: boolean; decorations: DecorationSet; prose: ReturnType<typeof proseLines> }>({
+        create: state => ({ plans: [], composing: false, decorations: Decoration.none, prose: proseLines(state) }),
         update(value, tr) {
             let plans = tr.docChanged ? [] : value.plans, isComposing = value.composing;
+            const prose = tr.docChanged ? proseLines(tr.state) : value.prose;
             for (const effect of tr.effects) { if (effect.is(measured)) plans = effect.value; if (effect.is(composing)) isComposing = effect.value; }
             const ranges = enabled(tr.state) && !isComposing ? plans.filter(plan => !active(tr.state, plan)).flatMap(plan => plan.decorations) : [];
-            return { plans, composing: isComposing, decorations: Decoration.set(ranges, true) };
+            if ((enabled(tr.state) || plugin.settings.paragraphIndent) && tr.state.field(editorLivePreviewField, false))
+                for (const line of prose) ranges.push(Decoration.line({ class: 'an-prose-line' + (line.start ? ' an-prose-start' : '') }).range(line.from));
+            return { plans, composing: isComposing, decorations: Decoration.set(ranges, true), prose };
         },
         provide: field => EditorView.decorations.from(field, value => value.decorations)
     });
@@ -143,11 +147,12 @@ export function createLiveParagraphExtension(plugin: AcademicNotes) {
                 const element = (dom.nodeType === 1 ? dom as HTMLElement : dom.parentElement)?.closest<HTMLElement>('.cm-line');
                 if (!element) continue;
                 const style = view.dom.ownerDocument.defaultView!.getComputedStyle(element);
-                if (style.direction !== 'ltr' || style.writingMode !== 'horizontal-tb' || parseFloat(style.textIndent) || parseFloat(style.letterSpacing) || parseFloat(style.wordSpacing) || style.fontVariantCaps !== 'normal' || style.textAlign === 'center' || style.textAlign === 'right') continue;
+                const indent = parseFloat(style.textIndent) || 0;
+                if (style.direction !== 'ltr' || style.writingMode !== 'horizontal-tb' || indent < 0 || !style.textIndent.endsWith('px') || parseFloat(style.letterSpacing) || parseFloat(style.wordSpacing) || style.fontVariantCaps !== 'normal' || style.textAlign === 'center' || style.textAlign === 'right') continue;
                 context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
                 const width = element.getBoundingClientRect().width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
                 if (width < 100) continue;
-                const plan = planParagraph(paragraph.text, paragraph.from, width, context, parseFloat(style.fontSize) || 16);
+                const plan = planParagraph(paragraph.text, paragraph.from, width, context, parseFloat(style.fontSize) || 16, indent);
                 if (plan) plans.push(plan);
                 if (plans.length >= 40) break;
             }
@@ -159,5 +164,5 @@ export function createLiveParagraphExtension(plugin: AcademicNotes) {
             this.view.dom.ownerDocument.fonts?.removeEventListener('loadingdone', this.fonts);
         }
     });
-    return [field, worker];
+    return [field, worker, EditorView.editorAttributes.of(view => ({ class: [enabled(view.state) ? 'an-kp-native-justify' : '', plugin.settings.paragraphIndent && view.state.field(editorLivePreviewField, false) ? 'an-prose-indent-enabled' : ''].filter(Boolean).join(' ') }))];
 }

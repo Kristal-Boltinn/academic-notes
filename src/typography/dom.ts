@@ -1,5 +1,6 @@
 import { solveParagraph, type KpItem } from './solver';
 import { traceLayout } from '../diagnostics/layout';
+import { nativeCalloutBodyInteraction } from '../rendering/editor-dom';
 
 export interface ParagraphLayoutReport { processed: number; skipped: number; fallback: number }
 interface SavedParagraph { nodes: Node[]; lines: HTMLElement[]; owner?: object; marker: string | null; hadClass: boolean; hadQed: boolean; classAttribute: string | null; text: string | null }
@@ -12,7 +13,7 @@ const EXCLUDED = 'table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-bloc
 function editableContext(root: HTMLElement, readonlyCallout?: HTMLElement) {
     if (!root.closest(EDITOR)) return root.isContentEditable;
     return !readonlyCallout || !readonlyCallout.contains(root) || !readonlyCallout.closest('[contenteditable="false"]') || readonlyCallout.isContentEditable ||
-        !!readonlyCallout.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea') || root.isContentEditable;
+        !!readonlyCallout.querySelector(':scope > .callout-content :is([contenteditable="true"],[contenteditable="plaintext-only"],input,textarea)') || root.isContentEditable;
 }
 const CJK = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 const OPENING = /^[([{（［｛〈《「『【〔〖〘〚‘“]$/u;
@@ -34,6 +35,7 @@ function unwrapLines(p: HTMLElement) {
     const content: Node[] = [];
     for (const line of [...p.children]) for (const node of [...line.childNodes]) {
         if (node.nodeType === 1 && (node as Element).matches('span.an-kp-space')) content.push(...node.childNodes);
+        else if (node.nodeType === 1 && (node as Element).matches('span.an-kp-math-end')) content.push(...node.childNodes);
         else content.push(node);
     }
     p.replaceChildren(...content);
@@ -68,7 +70,7 @@ function eligible(p: HTMLElement, readonlyCallout?: HTMLElement) {
     if (p.closest(EXCLUDED) || editableContext(p, readonlyCallout) || p.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block')) return false;
     const win = p.ownerDocument.defaultView; if (!win) return false;
     const style = win.getComputedStyle(p);
-    if (style.direction !== 'ltr' || style.writingMode !== 'horizontal-tb' || style.whiteSpace !== 'normal' || Math.abs(parseFloat(style.textIndent) || 0) > .01 || !['start', 'left', 'justify'].includes(style.textAlign)) return false;
+    if (style.direction !== 'ltr' || style.writingMode !== 'horizontal-tb' || style.whiteSpace !== 'normal' || !/^\d+(?:\.\d+)?px$/.test(style.textIndent) || !['start', 'left', 'justify'].includes(style.textAlign)) return false;
     for (const pseudo of ['::before', '::after']) {
         const value = win.getComputedStyle(p, pseudo).content;
         if (value && !['none', 'normal', '""', "''"].includes(value) && !(pseudo === '::after' && proofEnd(p))) return false;
@@ -183,12 +185,14 @@ function alignRenderedLine(line: HTMLElement, gaps: { node: HTMLElement; stretch
     return Math.abs(line.getBoundingClientRect().right - right) < 2;
 }
 function apply(p: HTMLElement, tokens: Token[], width: number, owner?: object) {
-    const widths = availableWidths(p, width), reserve = endReserve(p);
-    if (widths === null) return 'fallback';
+    let widths = availableWidths(p, width);
+    const reserve = endReserve(p), indent = parseFloat(p.ownerDocument.defaultView!.getComputedStyle(p).textIndent) || 0;
+    if (widths === null || indent >= (Array.isArray(widths) ? widths[0] : widths) - 40) return 'fallback';
+    if (indent) widths = [(Array.isArray(widths) ? widths[0] : widths) - indent, width];
     const items = tokens.map(token => token.item);
     const solution = solveParagraph(items, widths, reserve) ||
         (reserve > 0 || Array.isArray(widths) || tokens.some(token => token.unit?.kind === 'inline') ? solveParagraph(items, widths, reserve, (parseFloat(p.ownerDocument.defaultView!.getComputedStyle(p).fontSize) || 16) * 2) : null);
-    if (!solution) return 'fallback';
+    if (!solution) { traceLayout(p, 'kp.fit', { solved: false }); return 'fallback'; }
     if (solution.lines.length < 2) return 'skip';
     const original = [...p.childNodes], text = p.textContent;
     const state: SavedParagraph = { nodes: original, lines: [], owner, marker: p.getAttribute('data-an-kp'), hadClass: p.classList.contains('an-kp-paragraph'), hadQed: p.classList.contains('an-kp-qed'), classAttribute: p.getAttribute('class'), text };
@@ -199,6 +203,7 @@ function apply(p: HTMLElement, tokens: Token[], width: number, owner?: object) {
         const node = makeSpan(p.ownerDocument, 'an-kp-line');
         const gaps: { node: HTMLElement; stretch: number }[] = [];
         if (index === 0 && Array.isArray(widths)) node.style.width = widths[0] + 'px';
+        if (index === 0 && indent) node.style.marginInlineStart = indent + 'px';
         let lastBox = line.to - 1;
         while (lastBox >= line.from && tokens[lastBox].item.type !== 'box') lastBox--;
         for (; cursor < end; cursor++) {
@@ -212,15 +217,22 @@ function apply(p: HTMLElement, tokens: Token[], width: number, owner?: object) {
                 gap.style.width = Math.max(0, value) + 'px';
                 if (visible && item.type === 'glue') gaps.push({ node: gap, stretch: item.stretch });
                 node.appendChild(gap);
-            } else if (unit) node.appendChild(unit.start === undefined ? unit.node : p.ownerDocument.createTextNode(unit.text));
+            } else if (unit) {
+                const rendered = unit.start === undefined ? unit.node : p.ownerDocument.createTextNode(unit.text);
+                if (cursor === lastBox && rendered.nodeType === 1 && (rendered as Element).matches('.math,.phb-math,mjx-container')) {
+                    const end = makeSpan(p.ownerDocument, 'an-kp-math-end'); end.appendChild(rendered); node.appendChild(end);
+                } else node.appendChild(rendered);
+            }
         }
         state.lines.push(node);
         lineGaps.push(gaps);
     }
     p.replaceChildren(...state.lines); p.dataset.anKp = '1'; p.classList.add('an-kp-paragraph'); saved.set(p, state);
     if (reserve) p.classList.add('an-kp-qed');
-    if (p.textContent !== text || state.lines.slice(0, -1).some((line, index) => !alignRenderedLine(line, lineGaps[index])) ||
-        state.lines.some(line => line.scrollWidth > line.getBoundingClientRect().width + 2)) { restore(p, owner); return 'fallback'; }
+    const calibrated = state.lines.slice(0, -1).every((line, index) => alignRenderedLine(line, lineGaps[index]));
+    const overflow = Math.max(0, ...state.lines.map(line => line.scrollWidth - line.getBoundingClientRect().width));
+    traceLayout(p, 'kp.fit', { solved: true, calibrated, overflow, indent });
+    if (p.textContent !== text || !calibrated || overflow > 2) { restore(p, owner); return 'fallback'; }
     return 'processed';
 }
 function layout(root: HTMLElement, owner?: object, readonlyCallout?: HTMLElement): ParagraphLayoutReport {
@@ -258,7 +270,7 @@ function layout(root: HTMLElement, owner?: object, readonlyCallout?: HTMLElement
 export function layoutParagraphs(root: HTMLElement) { return layout(root); }
 /** Only non-editable host callout widgets may use the DOM renderer inside Live Preview. */
 export function layoutReadOnlyCallout(root: HTMLElement) {
-    return root.matches('.callout') ? layout(root, undefined, root) : { processed: 0, skipped: 0, fallback: 0 };
+    return root.matches('.callout') && !nativeCalloutBodyInteraction(root) ? layout(root, undefined, root) : { processed: 0, skipped: 0, fallback: 0 };
 }
 
 export interface ParagraphLayoutController { refresh(): void; dispose(): void }

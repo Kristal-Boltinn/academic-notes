@@ -24,18 +24,20 @@ export async function runKpPdfRegressions(win: BrowserWindow, html: (body: strin
         const body = mode === 'proof' ? '<div class="callout an-proof-own-line" data-callout="proof"><div class="callout-title"><div class="callout-title-inner">Proof</div></div><div class="callout-content">' + paragraph + '</div></div>' : paragraph;
         await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(
             '<main id="phb-document" class="markdown-rendered"><section class="phb-chapter" data-path="pagination.md" data-title="Paragraph pagination"><h1 id="starting-lemma">Paragraph pagination</h1><div data-kp-spacer></div>' + body + '</section></main>',
-            printCss + fixtureCss)));
+            printCss + fixtureCss + (mode === 'widow' ? 'body.an-prose-indent #phb-document [data-kp-fixture]:not(.an-kp-paragraph){text-indent:2em!important}' : ''))));
         const wc = win.webContents;
         await wc.executeJavaScript(`Object.defineProperty(Document.prototype,'win',{get(){return this.defaultView}});window.createEl=tag=>document.createElement(tag);window.createDiv=()=>document.createElement('div');window.createSpan=()=>document.createElement('span');void 0;`);
         await wc.executeJavaScript(client);
         await wc.executeJavaScript(typographySource);
         const fixture = await wc.executeJavaScript(`(async()=>{
             document.body.classList.add('phb-export'); await document.fonts.ready;
+            if(${JSON.stringify(mode)}==='widow') document.body.classList.add('an-prose-indent');
             const root=document.getElementById('phb-document'),p=root.querySelector('[data-kp-fixture]');
             const meta=AcademicTestDoc.prepare(root,{toc:false,book:false,title:'Paragraph pagination'});
             const originalText=p.textContent,link=p.querySelector('a');
             const report=AcademicParagraphLayout.layoutParagraphs(root),lines=[...p.querySelectorAll(':scope > .an-kp-line')];
             if(report.processed!==1||lines.length<4) throw new Error('Pagination fixture did not produce optimized lines: '+JSON.stringify(report));
+            if(${JSON.stringify(mode)}==='widow' && (Math.abs(lines[0].getBoundingClientRect().left-p.getBoundingClientRect().left-44)>1 || Math.abs(lines[1].getBoundingClientRect().left-p.getBoundingClientRect().left)>1)) throw new Error('PDF indentation must affect only the first line');
             if(p.textContent!==originalText||p.querySelector('a')!==link||!link.dataset.phbResolved) throw new Error('Dry layout lost source text or its resolved link');
             const height=lines[0].getBoundingClientRect().height,paragraphHeight=p.getBoundingClientRect().height;
             const headingHeight=root.querySelector('h1').getBoundingClientRect().height;

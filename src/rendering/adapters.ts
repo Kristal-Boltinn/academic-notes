@@ -1,7 +1,7 @@
 import { t } from '../i18n';
 import { applyFigureLayout } from './figure-layout';
 import { hasParagraphSelection, layoutReadOnlyCallout, restoreParagraphs } from '../typography/dom';
-import { nativeEditorInteraction, editorIdleScheduler } from './editor-dom';
+import { nativeEditorInteraction, nativeCalloutBodyInteraction, editorIdleScheduler } from './editor-dom';
 import { traceLayout } from '../diagnostics/layout';
 import * as Obs from 'obsidian';
 import Engine from '../indexing/engine';
@@ -297,7 +297,7 @@ function createLiveExtension(plugin: AcademicNotes) {
                 let attempted = 0;
                 this.deferredSelection = false;
                 for (const box of view.contentDOM.querySelectorAll<HTMLElement>('.callout')) {
-                    if (editableLiveNode(box)) { traceLayout(box, 'live.native-skip'); this.deferredSelection = true; continue; }
+                    if (nativeCalloutBodyInteraction(box)) { traceLayout(box, 'live.native-skip'); this.deferredSelection = true; continue; }
                     if (!box.closest('[contenteditable="false"]')) continue;
                     if (hasParagraphSelection(box)) { this.deferredSelection = true; continue; }
                     // Body layout is confined to the host's read-only widget subtree.
@@ -328,7 +328,7 @@ function createLiveExtension(plugin: AcademicNotes) {
             this.view.contentDOM.removeEventListener('compositionend', this.compositionEnd); this.view.dom.ownerDocument.fonts?.removeEventListener('loadingdone', this.fontsChanged);
             this.view.dom.ownerDocument.removeEventListener('selectionchange', this.selectionChanged);
             for (const box of this.view.contentDOM.querySelectorAll<HTMLElement>('.callout')) {
-                if (!editableLiveNode(box) && box.closest('[contenteditable="false"]')) restoreParagraphs(box);
+                if (!nativeCalloutBodyInteraction(box) && box.closest('[contenteditable="false"]')) restoreParagraphs(box);
             }
             plugin.editorViews.delete(this.view);
         }

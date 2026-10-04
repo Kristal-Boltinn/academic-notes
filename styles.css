@@ -1146,6 +1146,34 @@ body :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-s
   }
 }
 
+.an-kp-paragraph {
+  text-indent: 0 !important;
+}
+.an-kp-math-end {
+  display: inline-block;
+}
+.an-kp-math-end > :is(.math, .phb-math, mjx-container),
+.an-kp-math-end > :is(.math, .phb-math) > mjx-container {
+  margin-inline-end: 0 !important;
+}
+body.an-active.an-prose-indent .markdown-rendered p,
+body.phb-export.an-prose-indent .markdown-rendered p {
+  text-indent: 2em;
+}
+body.an-prose-indent :is(li, table, figcaption, .an-media, .phb-toc, .phb-frontmatter, .an-diagram-block) p {
+  text-indent: 0 !important;
+}
+body.an-prose-indent p:has(> img, > .image-embed, > .math-block) {
+  text-indent: 0 !important;
+}
+.an-kp-native-justify .cm-line.an-prose-line:not(:has(.an-kp-live-break)),
+.an-kp-native-justify .callout-content > p:not(.an-kp-paragraph) {
+  text-align: justify;
+  text-align-last: start;
+}
+.an-prose-indent-enabled .cm-line.an-prose-start {
+  text-indent: 2em;
+}
 .an-kp-paragraph > .an-kp-line {
   display: inline-block;
   box-sizing: border-box;

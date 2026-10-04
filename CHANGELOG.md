@@ -1,3 +1,11 @@
+# 2.14.0
+
+- Add optional visual 2em first-line prose indentation across Reading view, Live Preview and exports; default off and independent of KP.
+- Trim theme end margins in formula-ending optimized rows while retaining original math nodes and exact restoration.
+- Allow inactive read-only callout bodies to optimize when their native titles retain editable attributes. Preserve active title/body selections, IME and touch guards.
+- Keep active or unsupported Live Preview prose browser-justified when its KP option is enabled. Source mode, lists and code retain native styling.
+- Record bounded numeric solver/calibration results in opt-in layout diagnostics. Physical iPad scrolling recovery remains unverified.
+
 # 2.13.3
 
 - Save layout recordings as visible Markdown notes containing JSON, using vault create/modify APIs and readback verification. Add in-app View recording and Open saved report buttons, retain the report for retry after a failed save, and preserve the original active note when starting from the diagnostic dialog.

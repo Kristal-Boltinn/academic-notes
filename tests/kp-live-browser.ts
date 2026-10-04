@@ -31,6 +31,13 @@ export async function runKpLiveRegressions() {
         check(Math.abs(view.posAtCoords({ x: coords!.left, y: (coords!.top + coords!.bottom) / 2 })! - pos) <= 1, 'text hit testing must map to original source offsets');
         view.dispatch({ selection: { anchor: pos } });
         check(breaks() < count, 'caret entry must synchronously restore its paragraph');
+        const activeNode = view.domAtPos(pos).node;
+        const activeLine = (activeNode.nodeType === 1 ? activeNode as HTMLElement : activeNode.parentElement)!.closest('.cm-line') as HTMLElement;
+        check(getComputedStyle(activeLine).textAlign === 'justify', 'Active prose must retain native two-sided alignment');
+        plugin.settings.paragraphIndent = true; view.dispatch({ effects: plugin.refreshEffect.of(100) });
+        check(Math.abs(parseFloat(getComputedStyle(activeLine).textIndent) - 2 * parseFloat(getComputedStyle(activeLine).fontSize)) < 1, 'The optional first-line indent must be two em while editing');
+        check(view.state.doc.toString() === source && view.state.selection.main.anchor === pos, 'Indentation must preserve source and caret');
+        plugin.settings.paragraphIndent = false; view.dispatch({ effects: plugin.refreshEffect.of(101) });
         await settle();
         view.dispatch({ changes: { from: pos, insert: 'edited ' }, selection: { anchor: pos + 7 } });
         await settle();
@@ -56,13 +63,18 @@ export async function runKpLiveRegressions() {
         check(Math.abs(view.scrollDOM.scrollTop - top) < 2, 'idle refresh must preserve scroll position');
         plugin.settings.kpLivePreview = false; view.dispatch({ effects: plugin.refreshEffect.of(4) });
         check(breaks() === 0, 'disabling must synchronously restore native layout');
+        check(!view.dom.classList.contains('an-kp-native-justify') && !view.dom.classList.contains('an-prose-indent-enabled'), 'Disabling typography must remove native styling flags');
+        plugin.settings.paragraphIndent = true; view.dispatch({ effects: plugin.refreshEffect.of(102) }); await settle();
+        check(view.dom.classList.contains('an-prose-indent-enabled') && !!view.dom.querySelector('.an-prose-start') && breaks() === 0, 'Visual indentation must work independently while KP is disabled');
+        plugin.settings.paragraphIndent = false; view.dispatch({ effects: plugin.refreshEffect.of(103) });
         check(view.state.doc.toString() === stableText, 'all layout and selection transactions must preserve source');
     } finally { view.destroy(); host.remove(); }
     const sourceHost = document.body.createDiv();
     const sourceView = new EditorView({ parent: sourceHost, state: EditorState.create({ doc: source, extensions: [EditorView.lineWrapping, createLiveParagraphExtension(plugin)] }) });
     try {
-        plugin.settings.kpLivePreview = true; sourceView.dispatch({ effects: plugin.refreshEffect.of(5) }); await settle();
+        plugin.settings.kpLivePreview = true; plugin.settings.paragraphIndent = true; sourceView.dispatch({ effects: plugin.refreshEffect.of(5) }); await settle();
         check(!sourceView.dom.querySelector('.an-kp-live-break'), 'source mode must remain native even when the setting is enabled');
+        check(!sourceView.dom.classList.contains('an-prose-indent-enabled') && !sourceView.dom.querySelector('.an-prose-line'), 'Indentation must leave source mode untouched');
         check(sourceView.state.doc.toString() === source, 'source mode text must remain unchanged');
     } finally { sourceView.destroy(); sourceHost.remove(); }
     return 'Live Preview KP: source preservation, native editing/selection/IME, hit testing, resizing and scroll stability passed';

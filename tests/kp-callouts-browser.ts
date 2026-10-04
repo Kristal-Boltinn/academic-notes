@@ -3,8 +3,10 @@ import { renderMath, editorInfoField, editorLivePreviewField } from 'obsidian';
 import { EditorState, StateField, StateEffect } from '@codemirror/state';
 import { EditorView, WidgetType, Decoration } from '@codemirror/view';
 import { createLiveExtension } from '../src/rendering/adapters';
+import { createLiveParagraphExtension } from '../src/typography/live';
 import Engine from '../src/indexing/engine';
 import { DEFAULTS } from '../src/settings';
+import { LayoutRecorder } from '../src/diagnostics/layout';
 const check = (value: unknown, message: string) => { if (!value) throw new Error(message); };
 const prose = 'A mathematical proof considers a sequence of related statements. We choose an open neighborhood and apply continuity to the inverse image, preserving the hypotheses at every step. The final conclusion follows from the lemma and the definition. ';
 export async function runCalloutTypographyRegressions() {
@@ -65,8 +67,48 @@ export async function runCalloutTypographyRegressions() {
             restoreParagraphs(box); box.remove();
         }
     } finally { restoreParagraphs(host); host.remove(); document.getSelection()?.removeAllRanges(); }
+    await formulaEnds();
     await liveCallout();
     return { message: 'Callout KP: Proof/Remark/theorem/definition, first-line width, QED, math/link/copy identity, native editing and inert Live Preview refreshes passed', markup: example };
+}
+
+async function formulaEnds() {
+    const host = document.body.createDiv({ cls: 'markdown-rendered' });
+    const box = host.createDiv({ cls: 'callout an-proof-own-line', attr: { 'data-callout': 'proof' } });
+    box.createDiv({ cls: 'callout-title' }).createDiv({ cls: 'callout-title-inner', text: 'Proof' });
+    const p = box.createDiv({ cls: 'callout-content' }).createEl('p');
+    const formulas: HTMLElement[] = [];
+    for (let n = 0; n < 8; n++) {
+        p.append('By the preceding lemma we conclude that ');
+        const math = p.createSpan({ cls: 'math' }); math.style.cssText = 'display:inline-block;margin-right:14px';
+        math.appendChild(renderMath('f^{-1}(U) \\subseteq X', false)); formulas.push(math);
+        if (n < 7) p.append(' ');
+    }
+    host.style.width = '1000px';
+    p.style.width = '440px';
+    const original = [...p.childNodes], before = p.outerHTML;
+    const recorder = new LayoutRecorder(document, () => host, () => ({ pluginVersion: 'test', appVersion: 'test', ios: false, android: false, kpReading: true, kpLivePreview: true, livePreview: true }));
+    try {
+        const endingRows = () => [...p.querySelectorAll<HTMLElement>(':scope > .an-kp-line')].slice(0, -1).filter(line => {
+            const last = [...line.childNodes].reverse().find(node => node.nodeType === 3 && !!node.textContent?.trim() || node.nodeType === 1 && !(node as Element).matches('.an-kp-space'));
+            return last?.nodeType === 1 && (last as Element).matches('.math,.an-kp-math-end');
+        });
+        let formulaRows: HTMLElement[] = [];
+        // Sweep font-dependent widths rather than assuming one platform's glyph metrics.
+        for (let width = 320; width <= 850 && formulaRows.length < 2; width += 10) {
+            restoreParagraphs(box); p.style.width = width + 'px';
+            layoutParagraphs(box); formulaRows = endingRows();
+        }
+        check(formulaRows.length >= 2, 'The fixture must exercise multiple formula-ending non-final rows');
+        for (const line of formulaRows) {
+            const math = line.querySelector<HTMLElement>(':scope > .an-kp-math-end > .math')!;
+            check(Math.abs(line.getBoundingClientRect().right - math.getBoundingClientRect().right) < 2, 'The visible formula must reach the actual non-final right edge');
+        }
+        check(formulas.every(math => p.contains(math) && math.style.marginRight === '14px'), 'Theme margins and original formula nodes must remain restorable');
+        restoreParagraphs(box);
+        p.style.width = '440px';
+        check(p.outerHTML === before && original.every((node, index) => node === p.childNodes[index]), 'Formula ending layout must restore exact nodes and styles');
+    } finally { recorder.stop(); restoreParagraphs(box); host.remove(); }
 }
 
 async function liveCallout() {
@@ -78,13 +120,14 @@ async function liveCallout() {
         toDOM() {
             box = document.createElement('div'); box.className = 'callout markdown-rendered'; box.dataset.callout = 'proof'; box.contentEditable = 'false';
             title = box.createDiv({ cls: 'callout-title' }).createDiv({ cls: 'callout-title-inner', text: 'Proof' });
+            title.contentEditable = 'true';
             p = box.createDiv({ cls: 'callout-content' }).createEl('p', { text }); p.style.whiteSpace = 'normal';
             return box;
         }
     }
     const widgets = StateField.define({ create: () => Decoration.set([Decoration.replace({ widget: new NativeCallout(), block: true }).range(0, source.indexOf('\n\n'))]), update: (value, tr) => value.map(tr.changes), provide: field => EditorView.decorations.from(field) });
     const errors: unknown[] = [], plugin: any = { settings: { ...DEFAULTS, kpLivePreview: true }, graph, editorViews: new Set(), recordError: (...error: unknown[]) => errors.push(error) };
-    const view = new EditorView({ parent: host, state: EditorState.create({ doc: source, selection: { anchor: source.length }, extensions: [editorInfoField, editorLivePreviewField, widgets, createLiveExtension(plugin)] }) });
+    const view = new EditorView({ parent: host, state: EditorState.create({ doc: source, selection: { anchor: source.length }, extensions: [editorInfoField, editorLivePreviewField, widgets, createLiveExtension(plugin), createLiveParagraphExtension(plugin)] }) });
     // Match the host's constrained editor viewport, rather than CM's bare min-content sizing.
     view.contentDOM.style.minWidth = '0'; view.contentDOM.style.width = '100%'; view.contentDOM.style.flex = '1 1 auto';
     const settle = () => new Promise(resolve => setTimeout(resolve, 220));
@@ -109,7 +152,7 @@ async function liveCallout() {
         document.getSelection()!.setPosition(node, 4);
         for (let n = 0; n < 3; n++) { view.dispatch({ effects: plugin.refreshEffect.of(n + 10) }); await settle(); }
         check(title!.firstChild === node && document.getSelection()!.anchorNode === node, 'KP must not replace an editable native title or its caret');
-        title!.blur(); title!.removeAttribute('contenteditable');
+        title!.blur();
         const nativeAfterBlur = p!.outerHTML;
         view.dispatch({ effects: plugin.refreshEffect.of(19) }); await settle();
         check(title!.firstChild === node && p!.outerHTML === nativeAfterBlur, 'The retained native DOM caret must protect the entire callout after blur');

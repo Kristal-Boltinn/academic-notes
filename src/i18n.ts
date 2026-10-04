@@ -1,6 +1,9 @@
 // Application language is set from Obsidian's public getLanguage() API on load.
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
+  "正文首行缩进两个汉字": "Indent the first line of prose by two characters",
+  "阅读、实时预览及导出中的文字段落首行缩进 2em；不写入空格，默认关闭。标题、列表、代码、图注和表格不缩进。": "Indent prose by 2em in Reading view, Live Preview and exports. No spaces are written to notes; off by default. Headings, lists, code, captions and tables are excluded.",
+  "支持 Proof、Remark、定理等环境及首行缩进，保留标题、公式和证明结束方框。实时预览中正在编辑的段落使用原生两端对齐；未编辑的只读环境可使用 KP。列表、图片、显式换行和不支持或过长的内容使用浏览器排版；暂不自动断词。": "Supports Proof, Remark and theorem prose with first-line indentation, preserving titles, math and QED. Actively edited prose uses native justification; inactive read-only callouts can use KP. Lists, images, explicit breaks and unsupported or oversized content use browser layout. No automatic hyphenation yet.",
   "诊断路径被文件夹占用。": "The diagnostic path is occupied by a folder.",
   "诊断文件写入后校验失败。": "Diagnostic file verification failed after writing.",
   "查看记录": "View recording", "打开已保存报告": "Open saved report",

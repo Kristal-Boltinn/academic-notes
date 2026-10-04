@@ -19,6 +19,15 @@ import { mathSource } from '../src/diagrams/math';
 import { normalizeFloatOptions } from '../src/export/floats';
 import { DEFAULTS as PluginDefaults } from '../src/settings';
 import { diagramDeletionRange } from '../src/ui/diagram-modal';
+import { proseLines } from '../src/typography/prose';
+import { EditorState } from '@codemirror/state';
+
+test('visual prose indentation excludes Markdown structures and detects paragraph starts', () => {
+  const source = ['---','title: Fiction','---','# Heading','','First paragraph','continuation','','- list','lazy continuation','','> [!proof]','> Proof body','> second line','','[[note|alias]] prose','','$$','x+y','$$','','```text','code','```','','Setext','---','','^block-id','![image](example.svg)'].join('\n');
+  const state = EditorState.create({doc: source});
+  assert.deepEqual(proseLines(state).map(line => [state.doc.lineAt(line.from).text,line.start]), [['First paragraph',true],['continuation',false],['> Proof body',true],['> second line',false],['[[note|alias]] prose',true]]);
+  assert.equal(PluginDefaults.paragraphIndent,false);
+});
 
 test('commutativity markers validate their paths, survive round trips and prune after edits', () => {
   const initial: DiagramData = { version: 1, grid: 3, nodes: [{id:'a',row:0,col:0,label:'A'}, {id:'b',row:0,col:2,label:'B'}, {id:'c',row:2,col:2,label:'C'}], arrows: [['a','b'],['b','c'],['a','c']].map(([from,to],i) => ({id:'e-'+i,from,to,label:'',style:'solid',side:'above'})), commutations: [{id:'c-1',from:'a',via:'b',to:'c'}] };
@@ -110,7 +119,7 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
   globalThis.MutationObserver = class { observe() {} disconnect() {} } as any;
   const app: any = { metadataCache: { on() {} }, vault: { on() {} }, workspace: { on() {}, onLayoutReady() {} } };
   const plugin: any = new AcademicNotes(app, { id: 'academic-notes', name: 'Academic Notes', version: '2.2.0' } as any);
-  plugin.data = { legacy: true, legacyCaptions: true, followPhycat: true, pythonPath: 'unused', neutralBody: true, lightPalette: 'mint', customAppearance: JSON.stringify({ thm: { light: '#abcdef', dark: '#fedcba', motif: 'laurel' } }) };
+  plugin.data = { paragraphIndent: true, legacy: true, legacyCaptions: true, followPhycat: true, pythonPath: 'unused', neutralBody: true, lightPalette: 'mint', customAppearance: JSON.stringify({ thm: { light: '#abcdef', dark: '#fedcba', motif: 'laurel' } }) };
   try {
     setTestLanguage('en');
     await plugin.onload();
@@ -120,6 +129,8 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
     for (const key of ['legacy', 'legacyCaptions', 'followPhycat', 'pythonPath']) assert.ok(!(key in plugin.settings));
     assert.equal(plugin.settings.kpReading, false);
     assert.equal(plugin.settings.kpPdf, false);
+    assert.equal(plugin.settings.paragraphIndent, true);
+    assert.ok(classes.has('an-prose-indent'));
     assert.equal(body.dataset.anPalette, 'mint');
     assert.ok(classes.has('phb-neutral-body'));
     assert.equal(inline.get('--an-color-thm'), '#abcdef');
@@ -128,7 +139,7 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
     plugin.onunload();
     assert.equal(inline.get('--an-color-thm'), '#123456');
     assert.equal(inline.has('--an-symbol-thm'), false);
-    assert.ok(!classes.has('phb-neutral-body') && !classes.has('an-active'));
+    assert.ok(!classes.has('phb-neutral-body') && !classes.has('an-active') && !classes.has('an-prose-indent'));
   } finally { globalThis.window = previous.window; globalThis.document = previous.document; globalThis.MutationObserver = previous.observer; }
 });
 

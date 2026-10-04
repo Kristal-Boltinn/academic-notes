@@ -1,3 +1,7 @@
+# Community review follow-up: 2.14.0
+
+Visual indentation uses CSS and CodeMirror line decorations, changes no Markdown and introduces no permissions. Formula-end wrappers retain original math nodes and styles, restoring them when layout ends. The existing opt-in, local-only diagnostic report adds numeric fit results without note text or formula source.
+
 # Community review follow-up: 2.13.3
 
 - Layout diagnostic reports are visible vault-local Markdown notes created/updated through the public vault API, with readback verification and in-app viewing. Source notes and settings are not changed. Private device recordings remain outside release/source packages.

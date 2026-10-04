@@ -1,4 +1,4 @@
-/* Academic Notes 2.13.3 | MIT | generated from src/main.ts */
+/* Academic Notes 2.14.0 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -57024,6 +57024,9 @@ module.exports = __toCommonJS(main_exports);
 
 // src/i18n.ts
 var ENGLISH = {
+  "\u6B63\u6587\u9996\u884C\u7F29\u8FDB\u4E24\u4E2A\u6C49\u5B57": "Indent the first line of prose by two characters",
+  "\u9605\u8BFB\u3001\u5B9E\u65F6\u9884\u89C8\u53CA\u5BFC\u51FA\u4E2D\u7684\u6587\u5B57\u6BB5\u843D\u9996\u884C\u7F29\u8FDB 2em\uFF1B\u4E0D\u5199\u5165\u7A7A\u683C\uFF0C\u9ED8\u8BA4\u5173\u95ED\u3002\u6807\u9898\u3001\u5217\u8868\u3001\u4EE3\u7801\u3001\u56FE\u6CE8\u548C\u8868\u683C\u4E0D\u7F29\u8FDB\u3002": "Indent prose by 2em in Reading view, Live Preview and exports. No spaces are written to notes; off by default. Headings, lists, code, captions and tables are excluded.",
+  "\u652F\u6301 Proof\u3001Remark\u3001\u5B9A\u7406\u7B49\u73AF\u5883\u53CA\u9996\u884C\u7F29\u8FDB\uFF0C\u4FDD\u7559\u6807\u9898\u3001\u516C\u5F0F\u548C\u8BC1\u660E\u7ED3\u675F\u65B9\u6846\u3002\u5B9E\u65F6\u9884\u89C8\u4E2D\u6B63\u5728\u7F16\u8F91\u7684\u6BB5\u843D\u4F7F\u7528\u539F\u751F\u4E24\u7AEF\u5BF9\u9F50\uFF1B\u672A\u7F16\u8F91\u7684\u53EA\u8BFB\u73AF\u5883\u53EF\u4F7F\u7528 KP\u3002\u5217\u8868\u3001\u56FE\u7247\u3001\u663E\u5F0F\u6362\u884C\u548C\u4E0D\u652F\u6301\u6216\u8FC7\u957F\u7684\u5185\u5BB9\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002": "Supports Proof, Remark and theorem prose with first-line indentation, preserving titles, math and QED. Actively edited prose uses native justification; inactive read-only callouts can use KP. Lists, images, explicit breaks and unsupported or oversized content use browser layout. No automatic hyphenation yet.",
   "\u8BCA\u65AD\u8DEF\u5F84\u88AB\u6587\u4EF6\u5939\u5360\u7528\u3002": "The diagnostic path is occupied by a folder.",
   "\u8BCA\u65AD\u6587\u4EF6\u5199\u5165\u540E\u6821\u9A8C\u5931\u8D25\u3002": "Diagnostic file verification failed after writing.",
   "\u67E5\u770B\u8BB0\u5F55": "View recording",
@@ -57597,9 +57600,9 @@ function parse(path, source, cache = {}) {
     for (let i = e.from; i < e.to; i++)
       if (chars[i] !== "\n" && chars[i] !== "\r")
         chars[i] = " ";
-  const prose = chars.join(""), proseLines = prose.split("\n");
+  const prose = chars.join(""), proseLines2 = prose.split("\n");
   for (let line = 0; line < lines.length; line++) {
-    const q = quote(proseLines[line]);
+    const q = quote(proseLines2[line]);
     if (!q.depth)
       continue;
     const m = q.body.match(/^\[!([\w-]+)(?:\|([^\]]*))?\]([+-])?[ \t]*(.*?)\r?$/);
@@ -57716,8 +57719,8 @@ function parse(path, source, cache = {}) {
   records.sort((a, b) => a.from - b.from);
   media.sort((a, b) => a.from - b.from);
   const headings = [];
-  for (let i = 0; i < proseLines.length; i++) {
-    const m = proseLines[i].match(/^ {0,3}(#{1,6})[ \t]+(.+?)\s*#*\s*$/);
+  for (let i = 0; i < proseLines2.length; i++) {
+    const m = proseLines2[i].match(/^ {0,3}(#{1,6})[ \t]+(.+?)\s*#*\s*$/);
     if (m)
       headings.push({ line: i, level: m[1].length, title: m[2] });
   }
@@ -58224,6 +58227,7 @@ var DEFAULTS2 = {
   customAppearance: "{}",
   captureTheme: true,
   openPdf: true,
+  paragraphIndent: false,
   kpReading: false,
   kpLivePreview: false,
   kpPdf: false,
@@ -58653,6 +58657,105 @@ var LayoutRecorder = class {
   }
 };
 
+// src/rendering/editor-dom.ts
+function editorFragment(node) {
+  return !!node.closest('.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]') || node.isContentEditable;
+}
+function nativeEditorInteraction(node) {
+  if (!editorFragment(node)) return false;
+  const scope = node.closest(".callout") || node;
+  if (scope.isContentEditable || scope.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]')) return true;
+  const active3 = node.ownerDocument.activeElement;
+  if (active3?.matches("input,textarea,select") && scope.contains(active3)) return true;
+  const selection = node.ownerDocument.getSelection();
+  return !!selection && !!(selection.anchorNode && scope.contains(selection.anchorNode) || selection.focusNode && scope.contains(selection.focusNode));
+}
+function nativeCalloutBodyInteraction(node) {
+  if (!editorFragment(node)) return false;
+  const scope = node.closest(".callout") || node;
+  if (scope.isContentEditable) return true;
+  const title = scope.querySelector(":scope > .callout-title");
+  for (const editable of scope.querySelectorAll('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea,select'))
+    if (!title?.contains(editable)) return true;
+  const active3 = scope.ownerDocument.activeElement;
+  if (active3 && scope.contains(active3) && (active3.matches("input,textarea,select") || active3.isContentEditable)) return true;
+  const selection = scope.ownerDocument.getSelection();
+  return !!selection && !!(selection.anchorNode && scope.contains(selection.anchorNode) || selection.focusNode && scope.contains(selection.focusNode));
+}
+function editorIdleScheduler(root, work, delay = 30) {
+  const doc = root.ownerDocument, win = doc.defaultView;
+  let timer, disposed = false, quietUntil = 0, touches = 0;
+  const pointers = /* @__PURE__ */ new Set();
+  const schedule = (wait = delay) => {
+    if (disposed) return;
+    win.clearTimeout(timer);
+    timer = win.setTimeout(() => {
+      timer = void 0;
+      if (disposed || pointers.size || touches) return;
+      const remaining = quietUntil - Date.now();
+      if (remaining > 0) {
+        schedule(remaining);
+        return;
+      }
+      work();
+    }, wait);
+  };
+  const down = (event) => {
+    if (event.pointerType === "touch" || event.pointerType === "pen") {
+      pointers.add(event.pointerId);
+      win.clearTimeout(timer);
+      timer = void 0;
+    }
+  };
+  const up = (event) => {
+    if (pointers.delete(event.pointerId) && !pointers.size) {
+      quietUntil = Date.now() + 180;
+      schedule(180);
+    }
+  };
+  const scroll = () => {
+    quietUntil = Date.now() + 180;
+    schedule(180);
+  };
+  const touch = (event) => {
+    if (event.type !== "touchstart" && !touches) return;
+    touches = event.touches.length;
+    if (touches) {
+      win.clearTimeout(timer);
+      timer = void 0;
+    } else {
+      quietUntil = Date.now() + 180;
+      schedule(180);
+    }
+  };
+  const blur = () => {
+    pointers.clear();
+    touches = 0;
+    schedule();
+  };
+  root.addEventListener("pointerdown", down, { passive: true, capture: true });
+  doc.addEventListener("pointerup", up, { passive: true, capture: true });
+  doc.addEventListener("pointercancel", up, { passive: true, capture: true });
+  root.addEventListener("scroll", scroll, { passive: true, capture: true });
+  root.addEventListener("touchstart", touch, { passive: true, capture: true });
+  doc.addEventListener("touchend", touch, { passive: true, capture: true });
+  doc.addEventListener("touchcancel", touch, { passive: true, capture: true });
+  win.addEventListener("blur", blur);
+  return { schedule, isIdle: () => !disposed && !pointers.size && !touches && Date.now() >= quietUntil, dispose() {
+    disposed = true;
+    win.clearTimeout(timer);
+    pointers.clear();
+    root.removeEventListener("pointerdown", down, true);
+    doc.removeEventListener("pointerup", up, true);
+    doc.removeEventListener("pointercancel", up, true);
+    root.removeEventListener("scroll", scroll, true);
+    win.removeEventListener("blur", blur);
+    root.removeEventListener("touchstart", touch, true);
+    doc.removeEventListener("touchend", touch, true);
+    doc.removeEventListener("touchcancel", touch, true);
+  } };
+}
+
 // src/typography/dom.ts
 var saved = /* @__PURE__ */ new WeakMap();
 var MAX_PARAGRAPHS = 120;
@@ -58663,7 +58766,7 @@ var EDITOR = '.cm-editor,.cm-content,.markdown-source-view,[contenteditable="tru
 var EXCLUDED = "table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media";
 function editableContext(root, readonlyCallout) {
   if (!root.closest(EDITOR)) return root.isContentEditable;
-  return !readonlyCallout || !readonlyCallout.contains(root) || !readonlyCallout.closest('[contenteditable="false"]') || readonlyCallout.isContentEditable || !!readonlyCallout.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea') || root.isContentEditable;
+  return !readonlyCallout || !readonlyCallout.contains(root) || !readonlyCallout.closest('[contenteditable="false"]') || readonlyCallout.isContentEditable || !!readonlyCallout.querySelector(':scope > .callout-content :is([contenteditable="true"],[contenteditable="plaintext-only"],input,textarea)') || root.isContentEditable;
 }
 var CJK = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 var OPENING = /^[([{（［｛〈《「『【〔〖〘〚‘“]$/u;
@@ -58690,6 +58793,7 @@ function unwrapLines(p) {
   const content = [];
   for (const line of [...p.children]) for (const node of [...line.childNodes]) {
     if (node.nodeType === 1 && node.matches("span.an-kp-space")) content.push(...node.childNodes);
+    else if (node.nodeType === 1 && node.matches("span.an-kp-math-end")) content.push(...node.childNodes);
     else content.push(node);
   }
   p.replaceChildren(...content);
@@ -58726,7 +58830,7 @@ function eligible(p, readonlyCallout) {
   const win = p.ownerDocument.defaultView;
   if (!win) return false;
   const style = win.getComputedStyle(p);
-  if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || style.whiteSpace !== "normal" || Math.abs(parseFloat(style.textIndent) || 0) > 0.01 || !["start", "left", "justify"].includes(style.textAlign)) return false;
+  if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || style.whiteSpace !== "normal" || !/^\d+(?:\.\d+)?px$/.test(style.textIndent) || !["start", "left", "justify"].includes(style.textAlign)) return false;
   for (const pseudo of ["::before", "::after"]) {
     const value = win.getComputedStyle(p, pseudo).content;
     if (value && !["none", "normal", '""', "''"].includes(value) && !(pseudo === "::after" && proofEnd(p))) return false;
@@ -58845,11 +58949,16 @@ function alignRenderedLine(line, gaps) {
   return Math.abs(line.getBoundingClientRect().right - right) < 2;
 }
 function apply(p, tokens, width, owner) {
-  const widths = availableWidths(p, width), reserve = endReserve(p);
-  if (widths === null) return "fallback";
+  let widths = availableWidths(p, width);
+  const reserve = endReserve(p), indent = parseFloat(p.ownerDocument.defaultView.getComputedStyle(p).textIndent) || 0;
+  if (widths === null || indent >= (Array.isArray(widths) ? widths[0] : widths) - 40) return "fallback";
+  if (indent) widths = [(Array.isArray(widths) ? widths[0] : widths) - indent, width];
   const items = tokens.map((token) => token.item);
   const solution = solveParagraph(items, widths, reserve) || (reserve > 0 || Array.isArray(widths) || tokens.some((token) => token.unit?.kind === "inline") ? solveParagraph(items, widths, reserve, (parseFloat(p.ownerDocument.defaultView.getComputedStyle(p).fontSize) || 16) * 2) : null);
-  if (!solution) return "fallback";
+  if (!solution) {
+    traceLayout(p, "kp.fit", { solved: false });
+    return "fallback";
+  }
   if (solution.lines.length < 2) return "skip";
   const original = [...p.childNodes], text = p.textContent;
   const state = { nodes: original, lines: [], owner, marker: p.getAttribute("data-an-kp"), hadClass: p.classList.contains("an-kp-paragraph"), hadQed: p.classList.contains("an-kp-qed"), classAttribute: p.getAttribute("class"), text };
@@ -58860,6 +58969,7 @@ function apply(p, tokens, width, owner) {
     const node = makeSpan(p.ownerDocument, "an-kp-line");
     const gaps = [];
     if (index === 0 && Array.isArray(widths)) node.style.width = widths[0] + "px";
+    if (index === 0 && indent) node.style.marginInlineStart = indent + "px";
     let lastBox = line.to - 1;
     while (lastBox >= line.from && tokens[lastBox].item.type !== "box") lastBox--;
     for (; cursor < end; cursor++) {
@@ -58873,7 +58983,14 @@ function apply(p, tokens, width, owner) {
         gap.style.width = Math.max(0, value) + "px";
         if (visible2 && item.type === "glue") gaps.push({ node: gap, stretch: item.stretch });
         node.appendChild(gap);
-      } else if (unit) node.appendChild(unit.start === void 0 ? unit.node : p.ownerDocument.createTextNode(unit.text));
+      } else if (unit) {
+        const rendered = unit.start === void 0 ? unit.node : p.ownerDocument.createTextNode(unit.text);
+        if (cursor === lastBox && rendered.nodeType === 1 && rendered.matches(".math,.phb-math,mjx-container")) {
+          const end2 = makeSpan(p.ownerDocument, "an-kp-math-end");
+          end2.appendChild(rendered);
+          node.appendChild(end2);
+        } else node.appendChild(rendered);
+      }
     }
     state.lines.push(node);
     lineGaps.push(gaps);
@@ -58883,7 +59000,10 @@ function apply(p, tokens, width, owner) {
   p.classList.add("an-kp-paragraph");
   saved.set(p, state);
   if (reserve) p.classList.add("an-kp-qed");
-  if (p.textContent !== text || state.lines.slice(0, -1).some((line, index) => !alignRenderedLine(line, lineGaps[index])) || state.lines.some((line) => line.scrollWidth > line.getBoundingClientRect().width + 2)) {
+  const calibrated = state.lines.slice(0, -1).every((line, index) => alignRenderedLine(line, lineGaps[index]));
+  const overflow = Math.max(0, ...state.lines.map((line) => line.scrollWidth - line.getBoundingClientRect().width));
+  traceLayout(p, "kp.fit", { solved: true, calibrated, overflow, indent });
+  if (p.textContent !== text || !calibrated || overflow > 2) {
     restore(p, owner);
     return "fallback";
   }
@@ -58951,7 +59071,7 @@ function layout(root, owner, readonlyCallout) {
   return report;
 }
 function layoutReadOnlyCallout(root) {
-  return root.matches(".callout") ? layout(root, void 0, root) : { processed: 0, skipped: 0, fallback: 0 };
+  return root.matches(".callout") && !nativeCalloutBodyInteraction(root) ? layout(root, void 0, root) : { processed: 0, skipped: 0, fallback: 0 };
 }
 function createParagraphLayoutController(root, options = {}) {
   const owner = {}, doc = root.ownerDocument, win = doc.defaultView;
@@ -59019,93 +59139,6 @@ function createParagraphLayoutController(root, options = {}) {
     doc.removeEventListener("load", resource, true);
     doc.removeEventListener("selectionchange", selection);
     if (!editableContext(root)) for (const p of paragraphs(root)) restore(p, owner);
-  } };
-}
-
-// src/rendering/editor-dom.ts
-function editorFragment(node) {
-  return !!node.closest('.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]') || node.isContentEditable;
-}
-function nativeEditorInteraction(node) {
-  if (!editorFragment(node)) return false;
-  const scope = node.closest(".callout") || node;
-  if (scope.isContentEditable || scope.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]')) return true;
-  const active3 = node.ownerDocument.activeElement;
-  if (active3?.matches("input,textarea,select") && scope.contains(active3)) return true;
-  const selection = node.ownerDocument.getSelection();
-  return !!selection && !!(selection.anchorNode && scope.contains(selection.anchorNode) || selection.focusNode && scope.contains(selection.focusNode));
-}
-function editorIdleScheduler(root, work, delay = 30) {
-  const doc = root.ownerDocument, win = doc.defaultView;
-  let timer, disposed = false, quietUntil = 0, touches = 0;
-  const pointers = /* @__PURE__ */ new Set();
-  const schedule = (wait = delay) => {
-    if (disposed) return;
-    win.clearTimeout(timer);
-    timer = win.setTimeout(() => {
-      timer = void 0;
-      if (disposed || pointers.size || touches) return;
-      const remaining = quietUntil - Date.now();
-      if (remaining > 0) {
-        schedule(remaining);
-        return;
-      }
-      work();
-    }, wait);
-  };
-  const down = (event) => {
-    if (event.pointerType === "touch" || event.pointerType === "pen") {
-      pointers.add(event.pointerId);
-      win.clearTimeout(timer);
-      timer = void 0;
-    }
-  };
-  const up = (event) => {
-    if (pointers.delete(event.pointerId) && !pointers.size) {
-      quietUntil = Date.now() + 180;
-      schedule(180);
-    }
-  };
-  const scroll = () => {
-    quietUntil = Date.now() + 180;
-    schedule(180);
-  };
-  const touch = (event) => {
-    if (event.type !== "touchstart" && !touches) return;
-    touches = event.touches.length;
-    if (touches) {
-      win.clearTimeout(timer);
-      timer = void 0;
-    } else {
-      quietUntil = Date.now() + 180;
-      schedule(180);
-    }
-  };
-  const blur = () => {
-    pointers.clear();
-    touches = 0;
-    schedule();
-  };
-  root.addEventListener("pointerdown", down, { passive: true, capture: true });
-  doc.addEventListener("pointerup", up, { passive: true, capture: true });
-  doc.addEventListener("pointercancel", up, { passive: true, capture: true });
-  root.addEventListener("scroll", scroll, { passive: true, capture: true });
-  root.addEventListener("touchstart", touch, { passive: true, capture: true });
-  doc.addEventListener("touchend", touch, { passive: true, capture: true });
-  doc.addEventListener("touchcancel", touch, { passive: true, capture: true });
-  win.addEventListener("blur", blur);
-  return { schedule, isIdle: () => !disposed && !pointers.size && !touches && Date.now() >= quietUntil, dispose() {
-    disposed = true;
-    win.clearTimeout(timer);
-    pointers.clear();
-    root.removeEventListener("pointerdown", down, true);
-    doc.removeEventListener("pointerup", up, true);
-    doc.removeEventListener("pointercancel", up, true);
-    root.removeEventListener("scroll", scroll, true);
-    win.removeEventListener("blur", blur);
-    root.removeEventListener("touchstart", touch, true);
-    doc.removeEventListener("touchend", touch, true);
-    doc.removeEventListener("touchcancel", touch, true);
   } };
 }
 
@@ -59428,7 +59461,7 @@ function createLiveExtension(plugin) {
         let attempted = 0;
         this.deferredSelection = false;
         for (const box of view.contentDOM.querySelectorAll(".callout")) {
-          if (editableLiveNode(box)) {
+          if (nativeCalloutBodyInteraction(box)) {
             traceLayout(box, "live.native-skip");
             this.deferredSelection = true;
             continue;
@@ -59481,7 +59514,7 @@ function createLiveExtension(plugin) {
       this.view.dom.ownerDocument.fonts?.removeEventListener("loadingdone", this.fontsChanged);
       this.view.dom.ownerDocument.removeEventListener("selectionchange", this.selectionChanged);
       for (const box of this.view.contentDOM.querySelectorAll(".callout")) {
-        if (!editableLiveNode(box) && box.closest('[contenteditable="false"]')) restoreParagraphs(box);
+        if (!nativeCalloutBodyInteraction(box) && box.closest('[contenteditable="false"]')) restoreParagraphs(box);
       }
       plugin.editorViews.delete(this.view);
     }
@@ -59492,6 +59525,69 @@ function createLiveExtension(plugin) {
 var import_state2 = require("@codemirror/state");
 var import_view2 = require("@codemirror/view");
 var import_obsidian = require("obsidian");
+
+// src/typography/prose.ts
+function proseLines(state) {
+  const lines = [];
+  if (state.doc.length > 3e5) return lines;
+  let frontmatter = state.doc.line(1).text.trim() === "---", fence = "", math = false, previousDepth = -1, previousProse = false, list = false, htmlEnd = null;
+  for (let n = 1; n <= state.doc.lines; n++) {
+    const line = state.doc.line(n), quote2 = line.text.match(/^(?: {0,3}> ?)+/), depth = quote2?.[0].match(/>/g)?.length || 0;
+    const text = line.text.slice(quote2?.[0].length || 0);
+    if (!text.trim() || depth !== previousDepth) list = false;
+    if (/^\s*(?:[-+*]\s|\d+[.)]\s)/.test(text)) list = true;
+    if (frontmatter) {
+      if (n > 1 && /^(---|\.\.\.)\s*$/.test(text)) frontmatter = false;
+      continue;
+    }
+    if (htmlEnd) {
+      if (htmlEnd.test(text)) htmlEnd = null;
+      previousProse = false;
+      continue;
+    }
+    const marker = /^\s{0,3}(`{3,}|~{3,})/.exec(text);
+    if (marker) {
+      if (!fence) fence = marker[1];
+      else if (marker[1][0] === fence[0] && marker[1].length >= fence.length) fence = "";
+      previousProse = false;
+      continue;
+    }
+    if (fence) continue;
+    if (/^\s*\$\$/.test(text)) {
+      if (!/^\s*\$\$.+\$\$\s*$/.test(text)) math = !math;
+      previousProse = false;
+      continue;
+    }
+    if (math) continue;
+    if (/^\s*<!--/.test(text)) {
+      if (!text.includes("-->")) htmlEnd = /-->/;
+      previousProse = false;
+      continue;
+    }
+    const html = /^\s*<(script|style|pre|textarea|div|table|section|details)\b/i.exec(text);
+    if (html) {
+      const end = new RegExp(`</${html[1]}\\s*>`, "i");
+      if (!end.test(text)) htmlEnd = end;
+      previousProse = false;
+      continue;
+    }
+    if (list || !text.trim() || /^\s|^(?:#{1,6}\s|\[!|\^[\w-]+\s*$|[-+*]\s|\d+[.)]\s|[-=_*]{3,}\s*$|!\[)/.test(text) || /\|/.test(text.replace(/\[\[[^\]]+\]\]/g, ""))) {
+      previousProse = false;
+      previousDepth = depth;
+      continue;
+    }
+    if (n < state.doc.lines && /^\s*(?:=+|-+)\s*$/.test(state.doc.line(n + 1).text)) {
+      previousProse = false;
+      continue;
+    }
+    lines.push({ from: line.from, start: !previousProse || depth !== previousDepth });
+    previousProse = true;
+    previousDepth = depth;
+  }
+  return lines;
+}
+
+// src/typography/live.ts
 var measured = import_state2.StateEffect.define();
 var composing = import_state2.StateEffect.define();
 var cjk = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
@@ -59561,7 +59657,7 @@ function candidates(state) {
 function active2(state, plan) {
   return state.selection.ranges.some((range) => range.from <= plan.to && range.to >= plan.from);
 }
-function planParagraph(text, offset, width, context, em) {
+function planParagraph(text, offset, width, context, em, indent) {
   if (!Intl.Segmenter) return null;
   const parts = [];
   for (const part of new Intl.Segmenter(void 0, { granularity: "grapheme" }).segment(text)) {
@@ -59581,7 +59677,7 @@ function planParagraph(text, offset, width, context, em) {
     tokens.push({ from: part.from, to: part.to, item: part.kind === "space" && !opening.test(previous?.text || "") && !closing.test(next?.text || "") ? { type: "glue", width: natural, stretch: Math.max(natural * 0.65, em * 0.12), shrink: natural * 0.4 } : { type: "box", width: natural } });
   }
   if (tokens.length > 900) return null;
-  const solution = solveParagraph(tokens.map((token) => token.item), width - 1);
+  const solution = solveParagraph(tokens.map((token) => token.item), [width - indent - 1, width - 1]);
   if (!solution || solution.lines.length < 2) return null;
   const decorations = [];
   let cursor = 0;
@@ -59606,15 +59702,18 @@ function planParagraph(text, offset, width, context, em) {
 function createLiveParagraphExtension(plugin) {
   const enabled = (state) => plugin.settings.kpLivePreview && !!state.field(import_obsidian.editorLivePreviewField, false);
   const field = import_state2.StateField.define({
-    create: () => ({ plans: [], composing: false, decorations: import_view2.Decoration.none }),
+    create: (state) => ({ plans: [], composing: false, decorations: import_view2.Decoration.none, prose: proseLines(state) }),
     update(value, tr) {
       let plans = tr.docChanged ? [] : value.plans, isComposing = value.composing;
+      const prose = tr.docChanged ? proseLines(tr.state) : value.prose;
       for (const effect of tr.effects) {
         if (effect.is(measured)) plans = effect.value;
         if (effect.is(composing)) isComposing = effect.value;
       }
       const ranges = enabled(tr.state) && !isComposing ? plans.filter((plan) => !active2(tr.state, plan)).flatMap((plan) => plan.decorations) : [];
-      return { plans, composing: isComposing, decorations: import_view2.Decoration.set(ranges, true) };
+      if ((enabled(tr.state) || plugin.settings.paragraphIndent) && tr.state.field(import_obsidian.editorLivePreviewField, false))
+        for (const line of prose) ranges.push(import_view2.Decoration.line({ class: "an-prose-line" + (line.start ? " an-prose-start" : "") }).range(line.from));
+      return { plans, composing: isComposing, decorations: import_view2.Decoration.set(ranges, true), prose };
     },
     provide: (field2) => import_view2.EditorView.decorations.from(field2, (value) => value.decorations)
   });
@@ -59670,11 +59769,12 @@ function createLiveParagraphExtension(plugin) {
         const element = (dom.nodeType === 1 ? dom : dom.parentElement)?.closest(".cm-line");
         if (!element) continue;
         const style = view.dom.ownerDocument.defaultView.getComputedStyle(element);
-        if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || parseFloat(style.textIndent) || parseFloat(style.letterSpacing) || parseFloat(style.wordSpacing) || style.fontVariantCaps !== "normal" || style.textAlign === "center" || style.textAlign === "right") continue;
+        const indent = parseFloat(style.textIndent) || 0;
+        if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || indent < 0 || !style.textIndent.endsWith("px") || parseFloat(style.letterSpacing) || parseFloat(style.wordSpacing) || style.fontVariantCaps !== "normal" || style.textAlign === "center" || style.textAlign === "right") continue;
         context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
         const width = element.getBoundingClientRect().width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
         if (width < 100) continue;
-        const plan = planParagraph(paragraph2.text, paragraph2.from, width, context, parseFloat(style.fontSize) || 16);
+        const plan = planParagraph(paragraph2.text, paragraph2.from, width, context, parseFloat(style.fontSize) || 16, indent);
         if (plan) plans.push(plan);
         if (plans.length >= 40) break;
       }
@@ -59690,7 +59790,7 @@ function createLiveParagraphExtension(plugin) {
       this.view.dom.ownerDocument.fonts?.removeEventListener("loadingdone", this.fonts);
     }
   });
-  return [field, worker];
+  return [field, worker, import_view2.EditorView.editorAttributes.of((view) => ({ class: [enabled(view.state) ? "an-kp-native-justify" : "", plugin.settings.paragraphIndent && view.state.field(import_obsidian.editorLivePreviewField, false) ? "an-prose-indent-enabled" : ""].filter(Boolean).join(" ") }))];
 }
 
 // src/rendering/custom-appearance.ts
@@ -60137,10 +60237,11 @@ var AcademicSettings = class extends import_obsidian3.PluginSettingTab {
     const description = (desc) => definitions.push({ name: "", desc, render: () => {
     } });
     heading(t("\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09"));
+    toggle("paragraphIndent", t("\u6B63\u6587\u9996\u884C\u7F29\u8FDB\u4E24\u4E2A\u6C49\u5B57"), t("\u9605\u8BFB\u3001\u5B9E\u65F6\u9884\u89C8\u53CA\u5BFC\u51FA\u4E2D\u7684\u6587\u5B57\u6BB5\u843D\u9996\u884C\u7F29\u8FDB 2em\uFF1B\u4E0D\u5199\u5165\u7A7A\u683C\uFF0C\u9ED8\u8BA4\u5173\u95ED\u3002\u6807\u9898\u3001\u5217\u8868\u3001\u4EE3\u7801\u3001\u56FE\u6CE8\u548C\u8868\u683C\u4E0D\u7F29\u8FDB\u3002"));
     toggle("kpReading", t("\u9605\u8BFB\u89C6\u56FE\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u6574\u6BB5\u4F18\u5316\u6B63\u6587\u53CA\u6570\u5B66\u73AF\u5883\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002"));
     toggle("kpLivePreview", t("\u5B9E\u65F6\u9884\u89C8\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u4F18\u5316\u672A\u7F16\u8F91\u7684\u5355\u884C\u666E\u901A\u6BB5\u843D\u548C\u53EA\u8BFB\u6570\u5B66\u73AF\u5883\u6B63\u6587\uFF1B\u73AF\u5883\u5185\u652F\u6301\u516C\u5F0F\u548C\u94FE\u63A5\u3002\u5149\u6807\u6216\u9009\u533A\u8FDB\u5165\u65F6\u6062\u590D\u539F\u751F\u6392\u7248\uFF0C\u7F16\u8F91\u6807\u9898\u65F6\u4FDD\u6301\u539F\u751F\u3002\u9ED8\u8BA4\u5173\u95ED\u3002"));
     if (import_obsidian3.Platform.isDesktopApp) toggle("kpPdf", t("PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u6B63\u6587\u53CA\u6570\u5B66\u73AF\u5883\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002"));
-    description(t("\u652F\u6301 Proof\u3001Remark\u3001\u5B9A\u7406\u7B49\u73AF\u5883\uFF0C\u9884\u7559\u884C\u5185\u6807\u9898\u53CA\u8BC1\u660E\u7ED3\u675F\u65B9\u6846\u7684\u4F4D\u7F6E\uFF1B\u94FE\u63A5\u548C\u884C\u5185\u516C\u5F0F\u4FDD\u6301\u5B8C\u6574\u3002\u5217\u8868\u3001\u56FE\u7247\u3001\u663E\u5F0F\u6362\u884C\u3001\u9996\u884C\u7F29\u8FDB\u548C\u4E0D\u652F\u6301\u6216\u8FC7\u957F\u7684\u5185\u5BB9\u81EA\u52A8\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002"));
+    description(t("\u652F\u6301 Proof\u3001Remark\u3001\u5B9A\u7406\u7B49\u73AF\u5883\u53CA\u9996\u884C\u7F29\u8FDB\uFF0C\u4FDD\u7559\u6807\u9898\u3001\u516C\u5F0F\u548C\u8BC1\u660E\u7ED3\u675F\u65B9\u6846\u3002\u5B9E\u65F6\u9884\u89C8\u4E2D\u6B63\u5728\u7F16\u8F91\u7684\u6BB5\u843D\u4F7F\u7528\u539F\u751F\u4E24\u7AEF\u5BF9\u9F50\uFF1B\u672A\u7F16\u8F91\u7684\u53EA\u8BFB\u73AF\u5883\u53EF\u4F7F\u7528 KP\u3002\u5217\u8868\u3001\u56FE\u7247\u3001\u663E\u5F0F\u6362\u884C\u548C\u4E0D\u652F\u6301\u6216\u8FC7\u957F\u7684\u5185\u5BB9\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002"));
     heading(t("\u7F16\u53F7\u4E0E\u5F15\u7528"));
     toggle("numbered", t("\u5B9A\u7406\u7C7B\u73AF\u5883\u81EA\u52A8\u7F16\u53F7"), t("Proof\u3001Remark\u3001Solution \u9ED8\u8BA4\u4E0D\u8BA1\u6570\u3002"));
     select("equationMode", t("\u516C\u5F0F\u81EA\u52A8\u7F16\u53F7"), { referenced: t("\u4EC5\u88AB\u5F15\u7528\u7684\u516C\u5F0F\uFF08\u5168\u5E93\u5224\u65AD\uFF09"), all: t("\u6240\u6709\u72EC\u7ACB\u516C\u5F0F\u5757"), none: t("\u5173\u95ED\u81EA\u52A8\u7F16\u53F7") }, t("\u4FDD\u7559\u663E\u5F0F \\tag\uFF1B\u53EA\u6709\u8FDB\u5165\u81EA\u52A8\u7F16\u53F7\u7684\u516C\u5F0F\u624D\u589E\u52A0\u8BA1\u6570\u5668\u3002"));
@@ -60363,7 +60464,7 @@ function createFloatLayout(options) {
 }
 
 // academic-typography:client
-var client_default = `var AcademicParagraphLayout=(()=>{var _=Object.defineProperty;var oe=Object.getOwnPropertyDescriptor;var se=Object.getOwnPropertyNames;var ae=Object.prototype.hasOwnProperty;var le=(e,t)=>{for(var i in t)_(e,i,{get:t[i],enumerable:!0})},ce=(e,t,i,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of se(t))!ae.call(e,a)&&a!==i&&_(e,a,{get:()=>t[a],enumerable:!(n=oe(t,a))||n.enumerable});return e};var ue=e=>ce(_({},"__esModule",{value:!0}),e);var Ne={};le(Ne,{createParagraphLayoutController:()=>Ce,hasParagraphSelection:()=>V,layoutParagraphs:()=>xe,layoutReadOnlyCallout:()=>Te,restoreParagraphs:()=>be});function U(e,t,i=0,n=0){if(!Array.isArray(e)||!e.length||e.length>1200)return null;let a=typeof t=="number"?[t,t]:t;if(!Array.isArray(a)||a.length<1||a.length>2||[...a].some(r=>!Number.isFinite(r)||r<=0))return null;let s=a[0],c=a[1]??s,u=Math.max(s,c);if(!Number.isFinite(i)||i<0||i>=u||!Number.isFinite(n)||n<0)return null;let l=[0],m=[0],h=[0],f=[0],p=[0],d=-1;for(let r=0;r<e.length;r++){let o=e[r];if(!o||!Number.isFinite(o.width)||o.width<0)return null;if(o.type==="box"){if(o.width>u+1e-7)return null;d=r}else if(o.type==="glue"){if(!Number.isFinite(o.stretch)||!Number.isFinite(o.shrink)||o.stretch<0||o.shrink<0||o.shrink>o.width)return null}else if(o.type==="penalty"){if(!Number.isFinite(o.cost)||o.flagged!==void 0&&typeof o.flagged!="boolean")return null}else return null;if(l.push(l[r]+(o.type==="penalty"?0:o.width)),m.push(m[r]+(o.type==="glue"?o.stretch:0)),h.push(h[r]+(o.type==="glue"?o.shrink:0)),f.push(f[r]+(o.type==="box"?1:0)),p.push(d+1),![l[r+1],m[r+1],h[r+1]].every(Number.isFinite))return null}if(d<0)return null;let v=r=>{for(;r<e.length&&e[r].type==="glue";)r++;return r},b=v(0),g=[{to:b,next:b,naturalEnd:b,cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1}];for(let r=b;r<e.length;r++){let o=e[r];if(o.type==="glue"&&r<d&&e[r-1]?.type==="box")g.push({to:r,next:v(r+1),naturalEnd:p[r],cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1});else if(o.type==="penalty"&&o.cost<1e4&&(r<d||o.cost<=-1e4)){let M=r>d;if(g.push({to:r+1,next:v(r+1),naturalEnd:p[r],cost:o.cost,extraWidth:o.width,flagged:o.flagged===!0,forced:o.cost<=-1e4,final:M}),M)break}if(g.length>650)return null}if(g.at(-1).final||g.push({to:e.length,next:e.length,naturalEnd:d+1,cost:0,extraWidth:0,flagged:!1,forced:!0,final:!0}),g.length>650)return null;let L=[[void 0,{score:0,fitness:1,flagged:!1,lineCount:0},void 0,void 0]],k=0,y=0;for(let r=1;r<g.length;r++){let o=g[r],M=new Array(4);for(let F=r-1;F>=k;F--){if(++y>2e5)return null;let C=g[F].next,D=o.naturalEnd;if(C>=D||f[D]===f[C])continue;let I=l[D]-l[C]+o.extraWidth,W=h[D]-h[C];if(I-W>u+1e-7)break;let q=m[D]-m[C],re=q+n;for(let S of L[F]){if(!S)continue;if(++y>2e5)return null;let B=(S.lineCount===0?s:c)-(o.final?i:0);if(B<=0)continue;let N=B-I,E=0;if(N<-1e-7){if(W<=0)continue;E=N/W}else if(!o.final&&N>1e-7){if(q<=0)continue;E=N/re}if(!Number.isFinite(E)||E<-1-1e-7||E>2.5+1e-7)continue;E=Math.max(-1,Math.min(2.5,E)),!o.final&&N>1e-7&&n&&(E=N/q);let P=E<-.5?0:E<=.5?1:E<=1?2:3,R=(10+100*Math.abs(E)**3)**2;o.cost>=0?R+=o.cost**2:o.forced||(R-=o.cost**2),S.lineCount&&Math.abs(S.fitness-P)>1&&(R+=1e4),S.flagged&&o.flagged&&(R+=1e4),o.final&&S.lineCount&&I<B*.18&&(R+=1800*(1-I/(B*.18)));let j=S.score+R;Number.isFinite(j)&&(!M[P]||j<M[P].score)&&(M[P]={score:j,fitness:P,flagged:o.flagged,lineCount:S.lineCount+1,line:{from:C,to:o.to,ratio:E,final:o.final},previous:S})}}if(L.push(M),o.forced){if(!M.some(Boolean))return null;k=r}}let w=L.at(-1).filter(r=>!!r);if(!w.length)return null;let x=w.reduce((r,o)=>r.score<=o.score?r:o),T=[];for(let r=x;r?.line;r=r.previous)T.push(r.line);return T.reverse(),{lines:T,demerits:x.score}}var de=new WeakMap;function $(e,t,i={}){de.get(e.ownerDocument)?.trace(e,t,i)}var K=new WeakMap,fe=120,he=4e3,ee=900,Q=12e3,pe='.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]',G="table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media";function O(e,t){return e.closest(pe)&&(!t||!t.contains(e)||!t.closest('[contenteditable="false"]')||t.isContentEditable||!!t.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea'))||e.isContentEditable}var me=/^[\\p{Script=Han}\\p{Script=Hiragana}\\p{Script=Katakana}\\p{Script=Hangul}]/u,te=/^[([{\uFF08\uFF3B\uFF5B\u3008\u300A\u300C\u300E\u3010\u3014\u3016\u3018\u301A\u2018\u201C]$/u,ne=/^[)\\]}\uFF09\uFF3D\uFF5D\u3009\u300B\u300D\u300F\u3011\u3015\u3017\u3019\u301B\u3001\u3002\uFF0C\uFF0E\uFF01\uFF1F\uFF1A\uFF1B,.!?:;\u2019\u201D\u2026\u3041\u3043\u3045\u3047\u3049\u3063\u3083\u3085\u3087\u308E\u30A1\u30A3\u30A5\u30A7\u30A9\u30C3\u30E3\u30E5\u30E7\u30EE\u30F5\u30F6]$/u,Y=/[\\u00a0\\u202f\\u2060\\ufeff]/u;function A(e){return[...e.matches("p")?[e]:[],...e.querySelectorAll("p")]}function V(e){let t=e.ownerDocument.getSelection();if(!t||t.isCollapsed)return!1;for(let i=0;i<t.rangeCount;i++)try{if(t.getRangeAt(i).intersectsNode(e))return!0}catch{}return!1}function ge(e,t){return e.textContent===t.text&&e.childNodes.length===t.lines.length&&t.lines.every((i,n)=>e.childNodes[n]===i)}function Z(e){let t=[];for(let i of[...e.children])for(let n of[...i.childNodes])n.nodeType===1&&n.matches("span.an-kp-space")?t.push(...n.childNodes):t.push(n);e.replaceChildren(...t)}function H(e,t){let i=K.get(e);if(i){if(t&&i.owner!==t)return;ge(e,i)?e.replaceChildren(...i.nodes):e.childNodes.length===i.lines.length&&i.lines.every((n,a)=>e.childNodes[a]===n)&&Z(e),i.marker===null?e.removeAttribute("data-an-kp"):e.setAttribute("data-an-kp",i.marker),i.hadClass||e.classList.remove("an-kp-paragraph"),i.hadQed||e.classList.remove("an-kp-qed"),i.classAttribute===null&&!e.classList.length&&e.removeAttribute("class"),K.delete(e)}else if(!t&&e.dataset.anKp==="1"){let n=[...e.children];if(!n.length||!n.every(a=>a.matches("span.an-kp-line")))return;Z(e),e.removeAttribute("data-an-kp"),e.classList.remove("an-kp-paragraph","an-kp-qed"),e.classList.length||e.removeAttribute("class")}}function be(e){for(let t of A(e))H(t)}function ie(e){return e.matches('.callout:is([data-callout="proof"],[data-callout="pf"]) > .callout-content > p:last-child')&&e.ownerDocument.defaultView.getComputedStyle(e,"::after").content.replace(/["']/g,"")==="\\u25A1"}function ve(e,t){if(e.closest(G)||O(e,t)||e.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block'))return!1;let i=e.ownerDocument.defaultView;if(!i)return!1;let n=i.getComputedStyle(e);if(n.direction!=="ltr"||n.writingMode!=="horizontal-tb"||n.whiteSpace!=="normal"||Math.abs(parseFloat(n.textIndent)||0)>.01||!["start","left","justify"].includes(n.textAlign))return!1;for(let a of["::before","::after"]){let s=i.getComputedStyle(e,a).content;if(s&&!["none","normal",'""',"''"].includes(s)&&!(a==="::after"&&ie(e)))return!1}for(let a of e.children){if(!/^(A|EM|STRONG|B|I|S|DEL|MARK|U|SUB|SUP|CODE|SMALL|SPAN|MJX-CONTAINER|SVG)$/.test(a.tagName.toUpperCase()))return!1;let s=i.getComputedStyle(a);if(s.cssFloat!=="none"||!["inline","inline-block","inline-flex"].includes(s.display)||s.position==="absolute"||s.position==="fixed")return!1}return!0}function ye(e){let t=Intl.Segmenter;if(!t)return null;let i=[...new t(void 0,{granularity:"grapheme"}).segment(e.data)],n=[];for(let a of i){let s=a.segment,c=/^[\\t\\r\\n ]+$/u.test(s)?"space":me.test(s)?"cjk":te.test(s)||ne.test(s)?"punct":"word",u=n.at(-1);u&&(c==="word"||c==="space")&&u.kind===c?(u.text+=s,u.end=a.index+s.length):n.push({node:e,start:a.index,end:a.index+s.length,text:s,kind:c})}return n}function X(e,t){if(!e||!t)return!0;let i=Array.from(e.text).at(-1)||"",n=Array.from(t.text)[0]||"";return!te.test(i)&&!ne.test(n)&&!Y.test(i)&&!Y.test(n)}function we(e){let t=e.ownerDocument.defaultView.getComputedStyle(e);return e.getBoundingClientRect().width-(parseFloat(t.paddingLeft)||0)-(parseFloat(t.paddingRight)||0)-(parseFloat(t.borderLeftWidth)||0)-(parseFloat(t.borderRightWidth)||0)}function Ee(e,t){let i=e.parentElement;if(!i?.matches(".callout-content"))return t;let n=i.parentElement?.querySelector(":scope > .callout-title");if(!n)return t;let a=e.ownerDocument.defaultView,s=a.getComputedStyle(n);if(s.cssFloat==="none")return t;let c=e.getBoundingClientRect(),u=n.getBoundingClientRect();if(u.bottom<=c.top+.5||u.top>=c.bottom)return t;let l=parseFloat(a.getComputedStyle(e).lineHeight);if(s.cssFloat!=="left"||!Number.isFinite(l)||u.top>c.top+1||u.bottom>c.top+l+1)return null;let m=t-Math.max(0,u.right-c.left+(parseFloat(s.marginRight)||0));return m>40?[m,t]:null}function ke(e){if(!ie(e))return 0;let t=z(e.ownerDocument,"an-kp-qed-probe");t.textContent="\\u25A1",e.appendChild(t);try{return t.getBoundingClientRect().width+(parseFloat(e.ownerDocument.defaultView.getComputedStyle(t).marginInlineStart)||0)}finally{t.remove()}}function Le(e,t){let i=e.ownerDocument.defaultView.getComputedStyle(e),n=parseFloat(i.fontSize)||16,a=e.getAttribute("class"),s=e.ownerDocument.createRange(),c=[];e.classList.add("an-kp-measure");try{if(e.ownerDocument.defaultView.getComputedStyle(e).whiteSpace!=="nowrap")return null;for(let u=0;u<t.length;u++){let l=t[u],m=t[u-1],h=t[u+1];m&&m.kind!=="space"&&l.kind!=="space"&&(m.kind==="cjk"||l.kind==="cjk")&&X(m,l)&&c.push({item:{type:"glue",width:0,stretch:n*.12,shrink:0}}),l.start!==void 0?(s.setStart(l.node,l.start),s.setEnd(l.node,l.end)):s.selectNode(l.node);let f=s.getBoundingClientRect().width;if(l.kind==="inline"){let d=e.ownerDocument.defaultView.getComputedStyle(l.node);f=l.node.getBoundingClientRect().width+(parseFloat(d.marginLeft)||0)+(parseFloat(d.marginRight)||0)}if(!Number.isFinite(f)||f<0)return null;let p=l.kind==="space"&&X(m,h)?{type:"glue",width:f,stretch:Math.max(f*.65,n*.12),shrink:f*.4}:{type:"box",width:f};if(c.push({item:p,unit:l}),c.length>ee)return null}return c}finally{a===null?e.removeAttribute("class"):e.setAttribute("class",a)}}function z(e,t){let i=e.createElement("span");return i.className=t,i}function Se(e,t){let i=[...e.childNodes].reverse().find(s=>s.nodeType===3&&!!s.textContent?.trim()||s.nodeType===1&&!s.matches(".an-kp-space"));if(!i)return!1;let n=e.ownerDocument.createRange();n.selectNode(i);for(let s=0;s<3;s++){let c=e.getBoundingClientRect(),u=i.nodeType===1?i.getBoundingClientRect().right:n.getBoundingClientRect().right,l=c.right-u;if(Math.abs(l)<=.5)return!0;if(!Number.isFinite(l)||Math.abs(l)>c.width*.15)return!1;let m=t.filter(f=>l>0?f.stretch>0:parseFloat(f.node.style.width)>0),h=m.reduce((f,p)=>f+(l>0?p.stretch:parseFloat(p.node.style.width)),0);if(!h||l<-h)return!1;for(let f of m){let p=parseFloat(f.node.style.width),d=l>0?f.stretch:p;f.node.style.width=Math.max(0,p+l*d/h)+"px"}}let a=i.nodeType===1?i.getBoundingClientRect().right:n.getBoundingClientRect().right;return Math.abs(e.getBoundingClientRect().right-a)<2}function Me(e,t,i,n){let a=Ee(e,i),s=ke(e);if(a===null)return"fallback";let c=t.map(d=>d.item),u=U(c,a,s)||(s>0||Array.isArray(a)||t.some(d=>d.unit?.kind==="inline")?U(c,a,s,(parseFloat(e.ownerDocument.defaultView.getComputedStyle(e).fontSize)||16)*2):null);if(!u)return"fallback";if(u.lines.length<2)return"skip";let l=[...e.childNodes],m=e.textContent,h={nodes:l,lines:[],owner:n,marker:e.getAttribute("data-an-kp"),hadClass:e.classList.contains("an-kp-paragraph"),hadQed:e.classList.contains("an-kp-qed"),classAttribute:e.getAttribute("class"),text:m},f=0,p=[];for(let d=0;d<u.lines.length;d++){let v=u.lines[d],b=u.lines[d+1]?.from??t.length,g=z(e.ownerDocument,"an-kp-line"),L=[];d===0&&Array.isArray(a)&&(g.style.width=a[0]+"px");let k=v.to-1;for(;k>=v.from&&t[k].item.type!=="box";)k--;for(;f<b;f++){let y=t[f],w=y.unit;if(y.item.type==="glue"||w?.kind==="space"){let x=z(e.ownerDocument,"an-kp-space");w&&x.appendChild(e.ownerDocument.createTextNode(w.text));let T=f>=v.from&&f<=k,r=y.item,o=T?r.type==="glue"?r.width+v.ratio*(v.ratio<0?r.shrink:r.stretch):r.width:0;x.style.width=Math.max(0,o)+"px",T&&r.type==="glue"&&L.push({node:x,stretch:r.stretch}),g.appendChild(x)}else w&&g.appendChild(w.start===void 0?w.node:e.ownerDocument.createTextNode(w.text))}h.lines.push(g),p.push(L)}return e.replaceChildren(...h.lines),e.dataset.anKp="1",e.classList.add("an-kp-paragraph"),K.set(e,h),s&&e.classList.add("an-kp-qed"),e.textContent!==m||h.lines.slice(0,-1).some((d,v)=>!Se(d,p[v]))||h.lines.some(d=>d.scrollWidth>d.getBoundingClientRect().width+2)?(H(e,n),"fallback"):"processed"}function J(e,t,i){let n={processed:0,skipped:0,fallback:0};if(e.closest(G)||O(e,i)||V(e))return{processed:0,skipped:A(e).length,fallback:0};let a=0,s=0;for(let c of A(e)){let u=K.get(c);if(t&&u?.owner&&u.owner!==t){n.skipped++;continue}H(c,t);let l=c.textContent||"";if(!ve(c,i)||!l.trim()||l.length>he||s>=fe||a>=Q){n.skipped++;continue}let m=we(c);if(!Number.isFinite(m)||m<80){n.skipped++;continue}let h=[],f=!1;for(let b of c.childNodes)if(b.nodeType===3){let g=ye(b);if(!g){f=!0;break}h.push(...g)}else if(b.nodeType===1)h.push({node:b,text:b.textContent||"",kind:"inline"});else{f=!0;break}if(f||h.length>ee){n.skipped++;continue}let p=h.length+h.filter((b,g)=>g>0&&h[g-1].kind!=="space"&&b.kind!=="space"&&(h[g-1].kind==="cjk"||b.kind==="cjk")&&X(h[g-1],b)).length;if(a+p>Q){n.skipped++;continue}a+=p,s++;let d=Le(c,h);if(!d){n.fallback++;continue}let v=Me(c,d,m,t);v==="processed"?n.processed++:v==="fallback"?n.fallback++:n.skipped++}return $(e,"kp.layout",n),n}function xe(e){return J(e)}function Te(e){return e.matches(".callout")?J(e,void 0,e):{processed:0,skipped:0,fallback:0}}function Ce(e,t={}){let i={},n=e.ownerDocument,a=n.defaultView;if(!a||e.closest(G)||O(e))return{refresh(){},dispose(){}};let s=!1,c=!1,u,l=e.getBoundingClientRect().width,m=()=>typeof t.enabled=="function"?t.enabled():t.enabled!==!1,h=()=>d.observe(e,{childList:!0,characterData:!0,subtree:!0,attributes:!0,attributeFilter:["class","style","contenteditable","hidden","src","width","height"]}),f=()=>{if(u=void 0,!(s||O(e))){if(V(e)){c=!0;return}c=!1,d.disconnect();try{if(m())J(e,i);else for(let y of A(e))H(y,i);l=e.getBoundingClientRect().width}catch(y){for(let w of A(e))H(w,i);t.onError?.(y)}finally{s||h()}}},p=()=>{!s&&u===void 0&&(u=a.setTimeout(f,70))},d=new MutationObserver(p),v=new ResizeObserver(()=>{let y=e.getBoundingClientRect().width;Math.abs(y-l)>.5&&p()}),b=new MutationObserver(p),g=new MutationObserver(p),L=y=>{let w=y.target;w&&(w.tagName==="LINK"||e.contains(w))&&p()},k=()=>{c&&!V(e)&&p()};return h(),v.observe(e),b.observe(n.body,{attributes:!0,attributeFilter:["class","style"]}),g.observe(n.head,{childList:!0,characterData:!0,subtree:!0}),n.fonts.addEventListener("loadingdone",p),n.addEventListener("load",L,!0),n.addEventListener("selectionchange",k),n.fonts.ready.then(p),p(),{refresh:p,dispose(){if(!s&&(s=!0,a.clearTimeout(u),d.disconnect(),v.disconnect(),b.disconnect(),g.disconnect(),n.fonts.removeEventListener("loadingdone",p),n.removeEventListener("load",L,!0),n.removeEventListener("selectionchange",k),!O(e)))for(let y of A(e))H(y,i)}}}return ue(Ne);})();
+var client_default = `var AcademicParagraphLayout=(()=>{var z=Object.defineProperty;var se=Object.getOwnPropertyDescriptor;var ae=Object.getOwnPropertyNames;var le=Object.prototype.hasOwnProperty;var ce=(e,t)=>{for(var i in t)z(e,i,{get:t[i],enumerable:!0})},ue=(e,t,i,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let r of ae(t))!le.call(e,r)&&r!==i&&z(e,r,{get:()=>t[r],enumerable:!(n=se(t,r))||n.enumerable});return e};var de=e=>ue(z({},"__esModule",{value:!0}),e);var Ae={};ce(Ae,{createParagraphLayoutController:()=>Re,hasParagraphSelection:()=>W,layoutParagraphs:()=>Ce,layoutReadOnlyCallout:()=>Ne,restoreParagraphs:()=>ye});function X(e,t,i=0,n=0){if(!Array.isArray(e)||!e.length||e.length>1200)return null;let r=typeof t=="number"?[t,t]:t;if(!Array.isArray(r)||r.length<1||r.length>2||[...r].some(s=>!Number.isFinite(s)||s<=0))return null;let a=r[0],c=r[1]??a,d=Math.max(a,c);if(!Number.isFinite(i)||i<0||i>=d||!Number.isFinite(n)||n<0)return null;let l=[0],m=[0],h=[0],f=[0],p=[0],g=-1;for(let s=0;s<e.length;s++){let o=e[s];if(!o||!Number.isFinite(o.width)||o.width<0)return null;if(o.type==="box"){if(o.width>d+1e-7)return null;g=s}else if(o.type==="glue"){if(!Number.isFinite(o.stretch)||!Number.isFinite(o.shrink)||o.stretch<0||o.shrink<0||o.shrink>o.width)return null}else if(o.type==="penalty"){if(!Number.isFinite(o.cost)||o.flagged!==void 0&&typeof o.flagged!="boolean")return null}else return null;if(l.push(l[s]+(o.type==="penalty"?0:o.width)),m.push(m[s]+(o.type==="glue"?o.stretch:0)),h.push(h[s]+(o.type==="glue"?o.shrink:0)),f.push(f[s]+(o.type==="box"?1:0)),p.push(g+1),![l[s+1],m[s+1],h[s+1]].every(Number.isFinite))return null}if(g<0)return null;let L=s=>{for(;s<e.length&&e[s].type==="glue";)s++;return s},b=L(0),u=[{to:b,next:b,naturalEnd:b,cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1}];for(let s=b;s<e.length;s++){let o=e[s];if(o.type==="glue"&&s<g&&e[s-1]?.type==="box")u.push({to:s,next:L(s+1),naturalEnd:p[s],cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1});else if(o.type==="penalty"&&o.cost<1e4&&(s<g||o.cost<=-1e4)){let w=s>g;if(u.push({to:s+1,next:L(s+1),naturalEnd:p[s],cost:o.cost,extraWidth:o.width,flagged:o.flagged===!0,forced:o.cost<=-1e4,final:w}),w)break}if(u.length>650)return null}if(u.at(-1).final||u.push({to:e.length,next:e.length,naturalEnd:g+1,cost:0,extraWidth:0,flagged:!1,forced:!0,final:!0}),u.length>650)return null;let y=[[void 0,{score:0,fitness:1,flagged:!1,lineCount:0},void 0,void 0]],C=0,v=0;for(let s=1;s<u.length;s++){let o=u[s],w=new Array(4);for(let k=s-1;k>=C;k--){if(++v>2e5)return null;let M=u[k].next,I=o.naturalEnd;if(M>=I||f[I]===f[M])continue;let O=l[I]-l[M]+o.extraWidth,j=h[I]-h[M];if(O-j>d+1e-7)break;let _=m[I]-m[M],oe=_+n;for(let x of y[k]){if(!x)continue;if(++v>2e5)return null;let B=(x.lineCount===0?a:c)-(o.final?i:0);if(B<=0)continue;let R=B-O,E=0;if(R<-1e-7){if(j<=0)continue;E=R/j}else if(!o.final&&R>1e-7){if(_<=0)continue;E=R/oe}if(!Number.isFinite(E)||E<-1-1e-7||E>2.5+1e-7)continue;E=Math.max(-1,Math.min(2.5,E)),!o.final&&R>1e-7&&n&&(E=R/_);let P=E<-.5?0:E<=.5?1:E<=1?2:3,A=(10+100*Math.abs(E)**3)**2;o.cost>=0?A+=o.cost**2:o.forced||(A-=o.cost**2),x.lineCount&&Math.abs(x.fitness-P)>1&&(A+=1e4),x.flagged&&o.flagged&&(A+=1e4),o.final&&x.lineCount&&O<B*.18&&(A+=1800*(1-O/(B*.18)));let U=x.score+A;Number.isFinite(U)&&(!w[P]||U<w[P].score)&&(w[P]={score:U,fitness:P,flagged:o.flagged,lineCount:x.lineCount+1,line:{from:M,to:o.to,ratio:E,final:o.final},previous:x})}}if(y.push(w),o.forced){if(!w.some(Boolean))return null;C=s}}let T=y.at(-1).filter(s=>!!s);if(!T.length)return null;let S=T.reduce((s,o)=>s.score<=o.score?s:o),N=[];for(let s=S;s?.line;s=s.previous)N.push(s.line);return N.reverse(),{lines:N,demerits:S.score}}var fe=new WeakMap;function V(e,t,i={}){fe.get(e.ownerDocument)?.trace(e,t,i)}function pe(e){return!!e.closest('.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]')||e.isContentEditable}function Q(e){if(!pe(e))return!1;let t=e.closest(".callout")||e;if(t.isContentEditable)return!0;let i=t.querySelector(":scope > .callout-title");for(let a of t.querySelectorAll('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea,select'))if(!i?.contains(a))return!0;let n=t.ownerDocument.activeElement;if(n&&t.contains(n)&&(n.matches("input,textarea,select")||n.isContentEditable))return!0;let r=t.ownerDocument.getSelection();return!!r&&!!(r.anchorNode&&t.contains(r.anchorNode)||r.focusNode&&t.contains(r.focusNode))}var K=new WeakMap,he=120,me=4e3,te=900,Y=12e3,ge='.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]',J="table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media";function F(e,t){return e.closest(ge)&&(!t||!t.contains(e)||!t.closest('[contenteditable="false"]')||t.isContentEditable||!!t.querySelector(':scope > .callout-content :is([contenteditable="true"],[contenteditable="plaintext-only"],input,textarea)'))||e.isContentEditable}var be=/^[\\p{Script=Han}\\p{Script=Hiragana}\\p{Script=Katakana}\\p{Script=Hangul}]/u,ne=/^[([{\uFF08\uFF3B\uFF5B\u3008\u300A\u300C\u300E\u3010\u3014\u3016\u3018\u301A\u2018\u201C]$/u,ie=/^[)\\]}\uFF09\uFF3D\uFF5D\u3009\u300B\u300D\u300F\u3011\u3015\u3017\u3019\u301B\u3001\u3002\uFF0C\uFF0E\uFF01\uFF1F\uFF1A\uFF1B,.!?:;\u2019\u201D\u2026\u3041\u3043\u3045\u3047\u3049\u3063\u3083\u3085\u3087\u308E\u30A1\u30A3\u30A5\u30A7\u30A9\u30C3\u30E3\u30E5\u30E7\u30EE\u30F5\u30F6]$/u,Z=/[\\u00a0\\u202f\\u2060\\ufeff]/u;function H(e){return[...e.matches("p")?[e]:[],...e.querySelectorAll("p")]}function W(e){let t=e.ownerDocument.getSelection();if(!t||t.isCollapsed)return!1;for(let i=0;i<t.rangeCount;i++)try{if(t.getRangeAt(i).intersectsNode(e))return!0}catch{}return!1}function ve(e,t){return e.textContent===t.text&&e.childNodes.length===t.lines.length&&t.lines.every((i,n)=>e.childNodes[n]===i)}function ee(e){let t=[];for(let i of[...e.children])for(let n of[...i.childNodes])n.nodeType===1&&n.matches("span.an-kp-space")?t.push(...n.childNodes):n.nodeType===1&&n.matches("span.an-kp-math-end")?t.push(...n.childNodes):t.push(n);e.replaceChildren(...t)}function D(e,t){let i=K.get(e);if(i){if(t&&i.owner!==t)return;ve(e,i)?e.replaceChildren(...i.nodes):e.childNodes.length===i.lines.length&&i.lines.every((n,r)=>e.childNodes[r]===n)&&ee(e),i.marker===null?e.removeAttribute("data-an-kp"):e.setAttribute("data-an-kp",i.marker),i.hadClass||e.classList.remove("an-kp-paragraph"),i.hadQed||e.classList.remove("an-kp-qed"),i.classAttribute===null&&!e.classList.length&&e.removeAttribute("class"),K.delete(e)}else if(!t&&e.dataset.anKp==="1"){let n=[...e.children];if(!n.length||!n.every(r=>r.matches("span.an-kp-line")))return;ee(e),e.removeAttribute("data-an-kp"),e.classList.remove("an-kp-paragraph","an-kp-qed"),e.classList.length||e.removeAttribute("class")}}function ye(e){for(let t of H(e))D(t)}function re(e){return e.matches('.callout:is([data-callout="proof"],[data-callout="pf"]) > .callout-content > p:last-child')&&e.ownerDocument.defaultView.getComputedStyle(e,"::after").content.replace(/["']/g,"")==="\\u25A1"}function we(e,t){if(e.closest(J)||F(e,t)||e.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block'))return!1;let i=e.ownerDocument.defaultView;if(!i)return!1;let n=i.getComputedStyle(e);if(n.direction!=="ltr"||n.writingMode!=="horizontal-tb"||n.whiteSpace!=="normal"||!/^\\d+(?:\\.\\d+)?px$/.test(n.textIndent)||!["start","left","justify"].includes(n.textAlign))return!1;for(let r of["::before","::after"]){let a=i.getComputedStyle(e,r).content;if(a&&!["none","normal",'""',"''"].includes(a)&&!(r==="::after"&&re(e)))return!1}for(let r of e.children){if(!/^(A|EM|STRONG|B|I|S|DEL|MARK|U|SUB|SUP|CODE|SMALL|SPAN|MJX-CONTAINER|SVG)$/.test(r.tagName.toUpperCase()))return!1;let a=i.getComputedStyle(r);if(a.cssFloat!=="none"||!["inline","inline-block","inline-flex"].includes(a.display)||a.position==="absolute"||a.position==="fixed")return!1}return!0}function Ee(e){let t=Intl.Segmenter;if(!t)return null;let i=[...new t(void 0,{granularity:"grapheme"}).segment(e.data)],n=[];for(let r of i){let a=r.segment,c=/^[\\t\\r\\n ]+$/u.test(a)?"space":be.test(a)?"cjk":ne.test(a)||ie.test(a)?"punct":"word",d=n.at(-1);d&&(c==="word"||c==="space")&&d.kind===c?(d.text+=a,d.end=r.index+a.length):n.push({node:e,start:r.index,end:r.index+a.length,text:a,kind:c})}return n}function G(e,t){if(!e||!t)return!0;let i=Array.from(e.text).at(-1)||"",n=Array.from(t.text)[0]||"";return!ne.test(i)&&!ie.test(n)&&!Z.test(i)&&!Z.test(n)}function Le(e){let t=e.ownerDocument.defaultView.getComputedStyle(e);return e.getBoundingClientRect().width-(parseFloat(t.paddingLeft)||0)-(parseFloat(t.paddingRight)||0)-(parseFloat(t.borderLeftWidth)||0)-(parseFloat(t.borderRightWidth)||0)}function ke(e,t){let i=e.parentElement;if(!i?.matches(".callout-content"))return t;let n=i.parentElement?.querySelector(":scope > .callout-title");if(!n)return t;let r=e.ownerDocument.defaultView,a=r.getComputedStyle(n);if(a.cssFloat==="none")return t;let c=e.getBoundingClientRect(),d=n.getBoundingClientRect();if(d.bottom<=c.top+.5||d.top>=c.bottom)return t;let l=parseFloat(r.getComputedStyle(e).lineHeight);if(a.cssFloat!=="left"||!Number.isFinite(l)||d.top>c.top+1||d.bottom>c.top+l+1)return null;let m=t-Math.max(0,d.right-c.left+(parseFloat(a.marginRight)||0));return m>40?[m,t]:null}function Te(e){if(!re(e))return 0;let t=q(e.ownerDocument,"an-kp-qed-probe");t.textContent="\\u25A1",e.appendChild(t);try{return t.getBoundingClientRect().width+(parseFloat(e.ownerDocument.defaultView.getComputedStyle(t).marginInlineStart)||0)}finally{t.remove()}}function xe(e,t){let i=e.ownerDocument.defaultView.getComputedStyle(e),n=parseFloat(i.fontSize)||16,r=e.getAttribute("class"),a=e.ownerDocument.createRange(),c=[];e.classList.add("an-kp-measure");try{if(e.ownerDocument.defaultView.getComputedStyle(e).whiteSpace!=="nowrap")return null;for(let d=0;d<t.length;d++){let l=t[d],m=t[d-1],h=t[d+1];m&&m.kind!=="space"&&l.kind!=="space"&&(m.kind==="cjk"||l.kind==="cjk")&&G(m,l)&&c.push({item:{type:"glue",width:0,stretch:n*.12,shrink:0}}),l.start!==void 0?(a.setStart(l.node,l.start),a.setEnd(l.node,l.end)):a.selectNode(l.node);let f=a.getBoundingClientRect().width;if(l.kind==="inline"){let g=e.ownerDocument.defaultView.getComputedStyle(l.node);f=l.node.getBoundingClientRect().width+(parseFloat(g.marginLeft)||0)+(parseFloat(g.marginRight)||0)}if(!Number.isFinite(f)||f<0)return null;let p=l.kind==="space"&&G(m,h)?{type:"glue",width:f,stretch:Math.max(f*.65,n*.12),shrink:f*.4}:{type:"box",width:f};if(c.push({item:p,unit:l}),c.length>te)return null}return c}finally{r===null?e.removeAttribute("class"):e.setAttribute("class",r)}}function q(e,t){let i=e.createElement("span");return i.className=t,i}function Se(e,t){let i=[...e.childNodes].reverse().find(a=>a.nodeType===3&&!!a.textContent?.trim()||a.nodeType===1&&!a.matches(".an-kp-space"));if(!i)return!1;let n=e.ownerDocument.createRange();n.selectNode(i);for(let a=0;a<3;a++){let c=e.getBoundingClientRect(),d=i.nodeType===1?i.getBoundingClientRect().right:n.getBoundingClientRect().right,l=c.right-d;if(Math.abs(l)<=.5)return!0;if(!Number.isFinite(l)||Math.abs(l)>c.width*.15)return!1;let m=t.filter(f=>l>0?f.stretch>0:parseFloat(f.node.style.width)>0),h=m.reduce((f,p)=>f+(l>0?p.stretch:parseFloat(p.node.style.width)),0);if(!h||l<-h)return!1;for(let f of m){let p=parseFloat(f.node.style.width),g=l>0?f.stretch:p;f.node.style.width=Math.max(0,p+l*g/h)+"px"}}let r=i.nodeType===1?i.getBoundingClientRect().right:n.getBoundingClientRect().right;return Math.abs(e.getBoundingClientRect().right-r)<2}function Me(e,t,i,n){let r=ke(e,i),a=Te(e),c=parseFloat(e.ownerDocument.defaultView.getComputedStyle(e).textIndent)||0;if(r===null||c>=(Array.isArray(r)?r[0]:r)-40)return"fallback";c&&(r=[(Array.isArray(r)?r[0]:r)-c,i]);let d=t.map(u=>u.item),l=X(d,r,a)||(a>0||Array.isArray(r)||t.some(u=>u.unit?.kind==="inline")?X(d,r,a,(parseFloat(e.ownerDocument.defaultView.getComputedStyle(e).fontSize)||16)*2):null);if(!l)return V(e,"kp.fit",{solved:!1}),"fallback";if(l.lines.length<2)return"skip";let m=[...e.childNodes],h=e.textContent,f={nodes:m,lines:[],owner:n,marker:e.getAttribute("data-an-kp"),hadClass:e.classList.contains("an-kp-paragraph"),hadQed:e.classList.contains("an-kp-qed"),classAttribute:e.getAttribute("class"),text:h},p=0,g=[];for(let u=0;u<l.lines.length;u++){let y=l.lines[u],C=l.lines[u+1]?.from??t.length,v=q(e.ownerDocument,"an-kp-line"),T=[];u===0&&Array.isArray(r)&&(v.style.width=r[0]+"px"),u===0&&c&&(v.style.marginInlineStart=c+"px");let S=y.to-1;for(;S>=y.from&&t[S].item.type!=="box";)S--;for(;p<C;p++){let N=t[p],s=N.unit;if(N.item.type==="glue"||s?.kind==="space"){let o=q(e.ownerDocument,"an-kp-space");s&&o.appendChild(e.ownerDocument.createTextNode(s.text));let w=p>=y.from&&p<=S,k=N.item,M=w?k.type==="glue"?k.width+y.ratio*(y.ratio<0?k.shrink:k.stretch):k.width:0;o.style.width=Math.max(0,M)+"px",w&&k.type==="glue"&&T.push({node:o,stretch:k.stretch}),v.appendChild(o)}else if(s){let o=s.start===void 0?s.node:e.ownerDocument.createTextNode(s.text);if(p===S&&o.nodeType===1&&o.matches(".math,.phb-math,mjx-container")){let w=q(e.ownerDocument,"an-kp-math-end");w.appendChild(o),v.appendChild(w)}else v.appendChild(o)}}f.lines.push(v),g.push(T)}e.replaceChildren(...f.lines),e.dataset.anKp="1",e.classList.add("an-kp-paragraph"),K.set(e,f),a&&e.classList.add("an-kp-qed");let L=f.lines.slice(0,-1).every((u,y)=>Se(u,g[y])),b=Math.max(0,...f.lines.map(u=>u.scrollWidth-u.getBoundingClientRect().width));return V(e,"kp.fit",{solved:!0,calibrated:L,overflow:b,indent:c}),e.textContent!==h||!L||b>2?(D(e,n),"fallback"):"processed"}function $(e,t,i){let n={processed:0,skipped:0,fallback:0};if(e.closest(J)||F(e,i)||W(e))return{processed:0,skipped:H(e).length,fallback:0};let r=0,a=0;for(let c of H(e)){let d=K.get(c);if(t&&d?.owner&&d.owner!==t){n.skipped++;continue}D(c,t);let l=c.textContent||"";if(!we(c,i)||!l.trim()||l.length>me||a>=he||r>=Y){n.skipped++;continue}let m=Le(c);if(!Number.isFinite(m)||m<80){n.skipped++;continue}let h=[],f=!1;for(let b of c.childNodes)if(b.nodeType===3){let u=Ee(b);if(!u){f=!0;break}h.push(...u)}else if(b.nodeType===1)h.push({node:b,text:b.textContent||"",kind:"inline"});else{f=!0;break}if(f||h.length>te){n.skipped++;continue}let p=h.length+h.filter((b,u)=>u>0&&h[u-1].kind!=="space"&&b.kind!=="space"&&(h[u-1].kind==="cjk"||b.kind==="cjk")&&G(h[u-1],b)).length;if(r+p>Y){n.skipped++;continue}r+=p,a++;let g=xe(c,h);if(!g){n.fallback++;continue}let L=Me(c,g,m,t);L==="processed"?n.processed++:L==="fallback"?n.fallback++:n.skipped++}return V(e,"kp.layout",n),n}function Ce(e){return $(e)}function Ne(e){return e.matches(".callout")&&!Q(e)?$(e,void 0,e):{processed:0,skipped:0,fallback:0}}function Re(e,t={}){let i={},n=e.ownerDocument,r=n.defaultView;if(!r||e.closest(J)||F(e))return{refresh(){},dispose(){}};let a=!1,c=!1,d,l=e.getBoundingClientRect().width,m=()=>typeof t.enabled=="function"?t.enabled():t.enabled!==!1,h=()=>g.observe(e,{childList:!0,characterData:!0,subtree:!0,attributes:!0,attributeFilter:["class","style","contenteditable","hidden","src","width","height"]}),f=()=>{if(d=void 0,!(a||F(e))){if(W(e)){c=!0;return}c=!1,g.disconnect();try{if(m())$(e,i);else for(let v of H(e))D(v,i);l=e.getBoundingClientRect().width}catch(v){for(let T of H(e))D(T,i);t.onError?.(v)}finally{a||h()}}},p=()=>{!a&&d===void 0&&(d=r.setTimeout(f,70))},g=new MutationObserver(p),L=new ResizeObserver(()=>{let v=e.getBoundingClientRect().width;Math.abs(v-l)>.5&&p()}),b=new MutationObserver(p),u=new MutationObserver(p),y=v=>{let T=v.target;T&&(T.tagName==="LINK"||e.contains(T))&&p()},C=()=>{c&&!W(e)&&p()};return h(),L.observe(e),b.observe(n.body,{attributes:!0,attributeFilter:["class","style"]}),u.observe(n.head,{childList:!0,characterData:!0,subtree:!0}),n.fonts.addEventListener("loadingdone",p),n.addEventListener("load",y,!0),n.addEventListener("selectionchange",C),n.fonts.ready.then(p),p(),{refresh:p,dispose(){if(!a&&(a=!0,r.clearTimeout(d),g.disconnect(),L.disconnect(),b.disconnect(),u.disconnect(),n.fonts.removeEventListener("loadingdone",p),n.removeEventListener("load",y,!0),n.removeEventListener("selectionchange",C),!F(e)))for(let v of H(e))D(v,i)}}}return de(Ae);})();
 `;
 
 // src/export/pdf-postprocess.ts
@@ -61298,7 +61399,7 @@ async function diagramProcessor(app, source, el, ctx) {
 var diagrams_default = '.an-diagram-modal {\n  width: min(850px, 96vw);\n}\n.an-diagram-toolbar,\n.an-diagram-fields,\n.an-diagram-arrow-list {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 12px;\n  margin: 12px 0;\n}\n.an-diagram-editor label {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.an-diagram-editor input[type=text] {\n  min-width: 140px;\n  max-width: 100%;\n}\n.an-diagram-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 10px;\n  max-width: 420px;\n  margin: 16px auto;\n}\n.an-diagram-grid[data-grid="3"] {\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n}\n.an-diagram-grid button {\n  min-height: 48px;\n  height: auto;\n  overflow-wrap: anywhere;\n}\n.an-diagram-grid button[aria-pressed=true] {\n  background: var(--background-modifier-hover);\n}\n.an-diagram-grid button:is(.is-selected, .is-start) {\n  outline: 2px solid var(--interactive-accent);\n  outline-offset: 2px;\n}\n.an-diagram-arrow-list button[aria-pressed=true] {\n  border-color: var(--interactive-accent);\n}\n.an-diagram-figure {\n  display: block;\n  width: 100%;\n  margin: 1em auto;\n  text-align: center;\n  break-inside: avoid;\n}\n.an-diagram-svg {\n  display: block;\n  width: 100%;\n  max-width: 700px;\n  height: auto;\n  margin: auto;\n  color: var(--text-normal,currentColor);\n}\n.an-diagram-math-stage {\n  position: fixed;\n  left: -10000px;\n  top: 0;\n  font-size: 20px;\n  opacity: 0;\n  pointer-events: none;\n  white-space: nowrap;\n}\n.an-diagram-math-stage mjx-container {\n  font-size: 20px;\n}\n.an-diagram-interactive-arrow {\n  cursor: pointer;\n}\n.an-diagram-interactive-arrow.is-selected {\n  color: var(--interactive-accent);\n}\n.an-diagram-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin: 8px 0;\n}\n.an-diagram-caption {\n  display: flex;\n  justify-content: center;\n  font-size: .9em;\n  margin-top: .5em;\n}\n.an-diagram-caption[hidden] {\n  display: none;\n}\n.an-diagram-status {\n  color: var(--text-muted);\n  margin: 8px 0;\n}\n.block-language-tikz svg {\n  max-width: 100%;\n  height: auto;\n}\n@media print {\n  .an-diagram-actions,\n  .an-diagram-edit {\n    display: none;\n  }\n  .an-diagram-block,\n  .an-diagram-figure,\n  .block-language-tikz {\n    break-inside: avoid;\n  }\n}\n';
 
 // src/styles/typography.css
-var typography_default = '.an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n.an-kp-live-line {\n  white-space: nowrap;\n}\n.an-kp-live-gap {\n  display: inline-block;\n  white-space: pre;\n  font-size: 0;\n  line-height: 0;\n  height: 0;\n}\n.an-kp-qed > .an-kp-line:last-child::after {\n  content: "\\25a1";\n  float: right;\n  margin-inline-start: .75em;\n  font-style: normal;\n  font-weight: 400;\n  color: inherit;\n}\n.an-kp-qed-probe {\n  font-style: normal;\n  font-weight: 400;\n  margin-inline-start: .75em;\n}\n';
+var typography_default = '.an-kp-paragraph {\n  text-indent: 0 !important;\n}\n.an-kp-math-end {\n  display: inline-block;\n}\n.an-kp-math-end > :is(.math, .phb-math, mjx-container),\n.an-kp-math-end > :is(.math, .phb-math) > mjx-container {\n  margin-inline-end: 0 !important;\n}\nbody.an-active.an-prose-indent .markdown-rendered p,\nbody.phb-export.an-prose-indent .markdown-rendered p {\n  text-indent: 2em;\n}\nbody.an-prose-indent :is(li, table, figcaption, .an-media, .phb-toc, .phb-frontmatter, .an-diagram-block) p {\n  text-indent: 0 !important;\n}\nbody.an-prose-indent p:has(> img, > .image-embed, > .math-block) {\n  text-indent: 0 !important;\n}\n.an-kp-native-justify .cm-line.an-prose-line:not(:has(.an-kp-live-break)),\n.an-kp-native-justify .callout-content > p:not(.an-kp-paragraph) {\n  text-align: justify;\n  text-align-last: start;\n}\n.an-prose-indent-enabled .cm-line.an-prose-start {\n  text-indent: 2em;\n}\n.an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n.an-kp-live-line {\n  white-space: nowrap;\n}\n.an-kp-live-gap {\n  display: inline-block;\n  white-space: pre;\n  font-size: 0;\n  line-height: 0;\n  height: 0;\n}\n.an-kp-qed > .an-kp-line:last-child::after {\n  content: "\\25a1";\n  float: right;\n  margin-inline-start: .75em;\n  font-style: normal;\n  font-weight: 400;\n  color: inherit;\n}\n.an-kp-qed-probe {\n  font-style: normal;\n  font-weight: 400;\n  margin-inline-start: .75em;\n}\n';
 
 // src/styles/callouts.css
 var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def: #a63c67;\n  --phb-thm: #6952a0;\n  --phb-lem: #8a4e8d;\n  --phb-prop: #406e68;\n  --phb-cor: #536c9a;\n  --phb-claim: #996040;\n  --phb-example: #8f6c25;\n  --phb-proof: #697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def: #227c77;\n  --phb-thm: #326694;\n  --phb-lem: #65709d;\n  --phb-prop: #457d5b;\n  --phb-cor: #6b7552;\n  --phb-claim: #4c7192;\n  --phb-example: #916b35;\n  --phb-proof: #647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def: #256f83;\n  --phb-thm: #2f609c;\n  --phb-lem: #665d98;\n  --phb-prop: #3d7a70;\n  --phb-cor: #536d86;\n  --phb-claim: #7f668d;\n  --phb-example: #956b35;\n  --phb-proof: #5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def: #247651;\n  --phb-thm: #286b76;\n  --phb-lem: #71628c;\n  --phb-prop: #62752e;\n  --phb-cor: #42786b;\n  --phb-claim: #44698c;\n  --phb-example: #946b2f;\n  --phb-proof: #687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def: #776085;\n  --phb-thm: #674386;\n  --phb-lem: #925d86;\n  --phb-prop: #5d7767;\n  --phb-cor: #646998;\n  --phb-claim: #896440;\n  --phb-example: #936c3f;\n  --phb-proof: #72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def: #88712e;\n  --phb-thm: #9c582d;\n  --phb-lem: #826489;\n  --phb-prop: #617542;\n  --phb-cor: #946640;\n  --phb-claim: #587a7b;\n  --phb-example: #a75c3c;\n  --phb-proof: #77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def: #9c3a55;\n  --phb-thm: #7f3f65;\n  --phb-lem: #845786;\n  --phb-prop: #3e756b;\n  --phb-cor: #626987;\n  --phb-claim: #9c5e36;\n  --phb-example: #906c32;\n  --phb-proof: #69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def: #2a6c76;\n  --phb-thm: #28558a;\n  --phb-lem: #6c608c;\n  --phb-prop: #477966;\n  --phb-cor: #526d94;\n  --phb-claim: #887052;\n  --phb-example: #926938;\n  --phb-proof: #5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def: #82d6ac;\n  --phb-thm: #bca1e2;\n  --phb-lem: #db9bc4;\n  --phb-prop: #afd294;\n  --phb-cor: #83c7d1;\n  --phb-claim: #e5b78f;\n  --phb-example: #dfc67d;\n  --phb-proof: #a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def: #73c9bc;\n  --phb-thm: #82b6df;\n  --phb-lem: #b4a1e0;\n  --phb-prop: #9bcba7;\n  --phb-cor: #78ccd2;\n  --phb-claim: #d0ac8e;\n  --phb-example: #d6c07c;\n  --phb-proof: #a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def: #86ca98;\n  --phb-thm: #83bbce;\n  --phb-lem: #b7a7ca;\n  --phb-prop: #b8c984;\n  --phb-cor: #8dcbb4;\n  --phb-claim: #9baed0;\n  --phb-example: #dec178;\n  --phb-proof: #a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child:not(.an-kp-qed)::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\n';
@@ -61354,7 +61455,7 @@ var AcademicNotes = class extends import_obsidian7.Plugin {
     this.active = true;
     this.busy = false;
     this.indexRunning = false;
-    this.appearanceBefore = { palette: document.body.getAttribute("data-an-palette"), classes: Object.fromEntries(["an-active", "phb-neutral-body", "phb-no-motif"].map((c) => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map((k) => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
+    this.appearanceBefore = { palette: document.body.getAttribute("data-an-palette"), classes: Object.fromEntries(["an-active", "an-prose-indent", "phb-neutral-body", "phb-no-motif"].map((c) => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map((k) => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
     this.editorViews = /* @__PURE__ */ new Set();
     this.readers = /* @__PURE__ */ new Set();
     this.readerUnloads = /* @__PURE__ */ new Set();
@@ -61509,6 +61610,7 @@ var AcademicNotes = class extends import_obsidian7.Plugin {
         b.classList.toggle(c, v);
     };
     set("an-active", true);
+    set("an-prose-indent", !!this.settings.paragraphIndent);
     set("phb-neutral-body", !!this.settings.neutralBody);
     set("phb-no-motif", !!this.settings.hideMotif);
     const values = appearanceValues(this.settings.customAppearance, dark);

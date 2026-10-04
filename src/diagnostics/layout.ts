@@ -1,5 +1,5 @@
 /** Opt-in local geometry/event recording. No source text, paths, IDs or HTML. */
-type TraceCode = 'reading.editor-skip' | 'reading.render' | 'live.paint' | 'live.native-skip' | 'live.layout' | 'kp.layout';
+type TraceCode = 'reading.editor-skip' | 'reading.render' | 'live.paint' | 'live.native-skip' | 'live.layout' | 'kp.layout' | 'kp.fit';
 const active = new WeakMap<Document, LayoutRecorder>();
 export function traceLayout(root: HTMLElement, code: TraceCode, values: Record<string, number | boolean> = {}) { active.get(root.ownerDocument)?.trace(root, code, values); }
 const round = (n: number) => Number.isFinite(n) ? Math.round(n * 100) / 100 : null;

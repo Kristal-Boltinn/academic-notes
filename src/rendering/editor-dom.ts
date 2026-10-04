@@ -14,6 +14,21 @@ export function nativeEditorInteraction(node: HTMLElement) {
     return !!selection && !!(selection.anchorNode && scope.contains(selection.anchorNode) || selection.focusNode && scope.contains(selection.focusNode));
 }
 
+/** Some native callouts keep an editable title even when its body is read-only.
+ * Body layout may resume once focus and the native caret have left the callout. */
+export function nativeCalloutBodyInteraction(node: HTMLElement) {
+    if (!editorFragment(node)) return false;
+    const scope = node.closest<HTMLElement>('.callout') || node;
+    if (scope.isContentEditable) return true;
+    const title = scope.querySelector(':scope > .callout-title');
+    for (const editable of scope.querySelectorAll('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea,select'))
+        if (!title?.contains(editable)) return true;
+    const active = scope.ownerDocument.activeElement;
+    if (active && scope.contains(active) && (active.matches('input,textarea,select') || (active as HTMLElement).isContentEditable)) return true;
+    const selection = scope.ownerDocument.getSelection();
+    return !!selection && !!(selection.anchorNode && scope.contains(selection.anchorNode) || selection.focusNode && scope.contains(selection.focusNode));
+}
+
 /** Let finger scrolling settle before changing editor widget heights or decorations. */
 export function editorIdleScheduler(root: HTMLElement, work: () => void, delay = 30) {
     const doc = root.ownerDocument, win = doc.defaultView!;

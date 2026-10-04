@@ -91,10 +91,11 @@ class AcademicSettings extends PluginSettingTab {
         const heading = (name: string) => definitions.push({ name, render: row => { row.setHeading(); } });
         const description = (desc: string) => definitions.push({ name: '', desc, render: () => {} });
         heading(t('段落排版（Beta）'));
+        toggle('paragraphIndent', t('正文首行缩进两个汉字'), t('阅读、实时预览及导出中的文字段落首行缩进 2em；不写入空格，默认关闭。标题、列表、代码、图注和表格不缩进。'));
         toggle('kpReading', t('阅读视图使用 Knuth–Plass 断行'), t('整段优化正文及数学环境的断行和间距；窗口宽度变化后重新排版。默认关闭，实时预览与源码不受影响。'));
         toggle('kpLivePreview', t('实时预览使用 Knuth–Plass 断行'), t('优化未编辑的单行普通段落和只读数学环境正文；环境内支持公式和链接。光标或选区进入时恢复原生排版，编辑标题时保持原生。默认关闭。'));
         if (Platform.isDesktopApp) toggle('kpPdf', t('PDF 使用 Knuth–Plass 断行'), t('在最终打印宽度下重新排版正文及数学环境；HTML 快照保留浏览器排版。'));
-        description(t('支持 Proof、Remark、定理等环境，预留行内标题及证明结束方框的位置；链接和行内公式保持完整。列表、图片、显式换行、首行缩进和不支持或过长的内容自动使用浏览器排版；暂不自动断词。'));
+        description(t('支持 Proof、Remark、定理等环境及首行缩进，保留标题、公式和证明结束方框。实时预览中正在编辑的段落使用原生两端对齐；未编辑的只读环境可使用 KP。列表、图片、显式换行和不支持或过长的内容使用浏览器排版；暂不自动断词。'));
         heading(t("编号与引用"));
         toggle('numbered', t("定理类环境自动编号"), t("Proof、Remark、Solution 默认不计数。"));
         select('equationMode', t("公式自动编号"), { referenced: t("仅被引用的公式（全库判断）"), all: t("所有独立公式块"), none: t("关闭自动编号") }, t("保留显式 \\tag；只有进入自动编号的公式才增加计数器。"));
