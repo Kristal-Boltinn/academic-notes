@@ -52,6 +52,11 @@ export async function runKpBrowserRegressions() {
         check(inline.querySelector('a') === link && inline.querySelector('strong') === bold && formula.querySelector('svg') === svg && glyph?.id === glyphId, 'Original link, formatting and math glyph nodes must retain identity');
         link.click(); check(clicks === 1 && link.dataset.href === 'chapter#^theorem' && inline.textContent === inlineText, 'Original link listener, metadata and full text must survive layout');
         restoreParagraphs(inline); check(nodesEqual(inline, inlineNodes), 'Inline elements and text nodes must restore in exact source order');
+        const updated = paragraph(host, english.repeat(2), 350);
+        check(layoutParagraphs(updated).processed === 1, 'Host-update fixture must be optimized');
+        updated.querySelector('.an-kp-line')!.append(' Updated by the host.');
+        const updatedText = updated.textContent; restoreParagraphs(updated);
+        check(updated.textContent === updatedText && !updated.querySelector('.an-kp-line,.an-kp-space'), 'Restoration must preserve host-updated text and remove its owned presentation spans');
 
         const unicode = paragraph(host, 'A\u00a0B\u2060C e\u0301 👩‍🔬 🇨🇳 ' + english.repeat(2), 370);
         const unicodeText = unicode.textContent;
@@ -73,7 +78,8 @@ export async function runKpBrowserRegressions() {
         check(editor.outerHTML === editorBefore && editable.firstChild?.nodeType === Node.TEXT_NODE, 'A controller must remain inert inside an editor'); noEditorLayout.dispose();
         const proof = document.createElement('div'); proof.className = 'callout'; proof.dataset.callout = 'proof'; host.appendChild(proof);
         const proofP = paragraph(proof, english.repeat(2), 350), proofBefore = proofP.outerHTML;
-        check(layoutParagraphs(proof).processed === 0 && proofP.outerHTML === proofBefore, 'Proof paragraphs with floated titles and QED must retain their native layout');
+        check(layoutParagraphs(proof).processed === 1 && linesFit(proofP), 'Proof prose must participate in KP layout');
+        restoreParagraphs(proof); check(proofP.outerHTML === proofBefore, 'Proof prose must restore exactly');
         const indented = paragraph(host, english.repeat(2), 350); indented.style.textIndent = '2em'; const indentBefore = indented.outerHTML;
         check(layoutParagraphs(indented).processed === 0 && indented.outerHTML === indentBefore, 'First-line indentation must stay native until variable-width support is enabled');
         const hardBreak = paragraph(host, english, 350); hardBreak.appendChild(document.createElement('br')); hardBreak.append(english); const breakBefore = hardBreak.outerHTML;

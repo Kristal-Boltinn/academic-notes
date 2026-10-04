@@ -1,3 +1,12 @@
+# 2.13.0 Mathematical callout typography
+
+- Twenty-seven Node regressions pass, including final-marker reservation and bounded emergency ragged lines. TypeScript, the simulated mobile bundle host and three-file release checks pass. ESLint has zero errors and retains the two isolated-print DOM-helper recommendations.
+- Real Chromium fixtures at 340 and 720 pixels cover Proof/pf, Remark/rem, theorem and definition prose, reduced first-line width, own-line headings, exactly one final QED, original math/link identity, native copying and exact restoration. Unsupported tall floating titles keep native layout. Restoration preserves host-updated text instead of restoring stale content.
+- Real CodeMirror checks cover a non-editable Proof widget, inert repeated refreshes, copying during width changes, native restoration on source-selection entry, editable-title caret ownership, reoptimization after leaving, disabling and extension removal. Markdown stays unchanged; no host errors occur. Existing plain-paragraph editing, hit-testing, IME and scroll checks remain covered.
+- Default, Phycat and Minimal browser/PDF regressions pass across all 39 palette cases. Default/Minimal books have 11 pages and 19 valid internal links; Phycat has 13 pages and 35 links. There are no invalid links, horizontal overflows or new print warnings. Existing picture fitting, safe floating, round-limit rollback, cancellation and isolated-print security checks pass.
+- Actual multi-page Proof probes retain all 39 lines (27 + 12), inline formulas and valid references. PDF text extraction finds no QED on earlier pages and one on the final page; rendered boundary pages and the synthetic Proof illustration were visually inspected. Existing widow/orphan fixtures remain 24 + 2 and 28 + 11 lines.
+- Both usage guides and settings describe the expanded scope. No dependency, permission or CSS priority declaration is added. Physical iPad/WebKit and the full Obsidian host remain separate acceptance checks.
+
 # 2.12.1 Progressive Live Preview typography
 
 - The Linux GitHub Actions full suite also passes; asynchronous browser tests wait for completed editor measurements instead of assuming a fixed initial delay.

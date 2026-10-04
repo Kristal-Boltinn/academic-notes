@@ -405,7 +405,7 @@ body .callout[data-callout]:is(
     &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before { content: " "; }
     /* Attach one QED to the final paragraph. Other endings (math, lists,
      * nested callouts) receive a separate final line; never mark every child. */
-    & > .callout-content > p:last-child::after {
+    & > .callout-content > p:last-child:not(.an-kp-qed)::after {
       content: "□";
       float: right;
       margin-inline-start: .75em;

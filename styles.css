@@ -405,7 +405,7 @@ body .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [d
     &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {
       content: " ";
     }
-    & > .callout-content > p:last-child::after {
+    & > .callout-content > p:last-child:not(.an-kp-qed)::after {
       content: "\25a1";
       float: right;
       margin-inline-start: .75em;
@@ -1181,4 +1181,17 @@ body.phb-export p.an-kp-measure {
   font-size: 0;
   line-height: 0;
   height: 0;
+}
+.an-kp-qed > .an-kp-line:last-child::after {
+  content: "\25a1";
+  float: right;
+  margin-inline-start: .75em;
+  font-style: normal;
+  font-weight: 400;
+  color: inherit;
+}
+.an-kp-qed-probe {
+  font-style: normal;
+  font-weight: 400;
+  margin-inline-start: .75em;
 }

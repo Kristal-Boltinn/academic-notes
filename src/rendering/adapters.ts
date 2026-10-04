@@ -1,5 +1,6 @@
 import { t } from '../i18n';
 import { applyFigureLayout } from './figure-layout';
+import { hasParagraphSelection, layoutReadOnlyCallout, restoreParagraphs } from '../typography/dom';
 import * as Obs from 'obsidian';
 import Engine from '../indexing/engine';
 import type AcademicNotes from '../main';
@@ -221,7 +222,11 @@ function createLiveExtension(plugin: AcademicNotes) {
     }
     return ViewPlugin.fromClass(class {
         view: EditorView; disposed: boolean; decorations: DecorationSet; observer: MutationObserver; timer: number | null = null;
+        layouts = new WeakMap<HTMLElement, { key: string; nodes: Node[] }>();
+        deferredSelection = false;
+        selectionChanged = () => { if (this.deferredSelection) this.schedule(); };
         compositionEnd = () => this.schedule();
+        fontsChanged = () => { this.layouts = new WeakMap(); this.schedule(); };
         constructor(view: EditorView) {
             this.view = view;
             this.disposed = false;
@@ -231,8 +236,10 @@ function createLiveExtension(plugin: AcademicNotes) {
             this.observer = new MutationObserver(() => this.schedule());
             this.observer.observe(view.contentDOM, { childList: true, subtree: true });
             view.contentDOM.addEventListener('compositionend', this.compositionEnd);
+            view.dom.ownerDocument.fonts?.addEventListener('loadingdone', this.fontsChanged);
+            view.dom.ownerDocument.addEventListener('selectionchange', this.selectionChanged);
         }
-        update(update: ViewUpdate) { if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some(t => t.effects.some(e => e.is(refresh)))) {
+        update(update: ViewUpdate) { if (update.docChanged || update.selectionSet || update.viewportChanged || update.geometryChanged || update.transactions.some(t => t.effects.some(e => e.is(refresh)))) {
             this.decorations = this.links(update.view); this.schedule(); } }
         links(view: EditorView) {
             const live = view.state.field(Obs.editorLivePreviewField, false), info = view.state.field(Obs.editorInfoField, false);
@@ -266,7 +273,7 @@ function createLiveExtension(plugin: AcademicNotes) {
         } }, 30); }
         paint() {
             const view = this.view, info = view.state.field(Obs.editorInfoField, false);
-            if (this.disposed || view.composing || view.compositionStarted || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file || !plugin.settings.livePreview)
+            if (this.disposed || view.composing || view.compositionStarted || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file)
                 return;
             const note = plugin.graph?.notes.get(info.file.path);
             if (!note || note.source !== view.state.doc.toString())
@@ -288,10 +295,44 @@ function createLiveExtension(plugin: AcademicNotes) {
                 return { lineStart: box?.line ?? line, lineEnd: box?.endLine ?? line };
             };
             this.observer.disconnect();
-            try { renderFragment(view.contentDOM, note, plugin.graph, infoFor); }
+            try {
+                if (plugin.settings.livePreview) renderFragment(view.contentDOM, note, plugin.graph, infoFor);
+                let attempted = 0;
+                this.deferredSelection = false;
+                for (const box of view.contentDOM.querySelectorAll<HTMLElement>('.callout')) {
+                    if (editableLiveNode(box) || !box.closest('[contenteditable="false"]')) continue;
+                    if (hasParagraphSelection(box)) { this.deferredSelection = true; continue; }
+                    // Body layout is confined to the host's read-only widget subtree.
+                    // Never restructure native editable lines or an editable callout title.
+                    if (++attempted > 40) break;
+                    const section = infoFor(box); if (!section) continue;
+                    const from = view.state.doc.line(Math.min(view.state.doc.lines, section.lineStart + 1)).from;
+                    const to = view.state.doc.line(Math.min(view.state.doc.lines, section.lineEnd + 1)).to;
+                    const enabled = plugin.settings.kpLivePreview && !view.state.selection.ranges.some(range => range.from <= to && range.to >= from);
+                    const content = box.querySelector<HTMLElement>(':scope > .callout-content'); if (!content) continue;
+                    const title = box.querySelector<HTMLElement>(':scope > .callout-title'), win = box.ownerDocument.defaultView!;
+                    const style = win.getComputedStyle(content), titleStyle = title && win.getComputedStyle(title);
+                    const key = enabled ? [note.source.slice(from, to), content.getBoundingClientRect().width, style.font, style.lineHeight, style.letterSpacing, style.wordSpacing,
+                        content.textContent, ...[...content.querySelectorAll<HTMLElement>('.math,mjx-container')].map(math => math.getBoundingClientRect().width),
+                        title?.textContent, title?.getBoundingClientRect().width, titleStyle?.cssFloat, titleStyle?.font].join('|') : '';
+                    const previous = this.layouts.get(box);
+                    if (previous?.key === key && previous.nodes.length === content.childNodes.length && previous.nodes.every((node, index) => content.childNodes[index] === node)) continue;
+                    restoreParagraphs(box);
+                    if (enabled) layoutReadOnlyCallout(box);
+                    this.layouts.set(box, { key, nodes: [...content.childNodes] });
+                }
+            }
             finally { if (!this.disposed) this.observer.observe(view.contentDOM, { childList: true, subtree: true }); }
         }
-        destroy() { this.disposed = true; window.clearTimeout(this.timer ?? undefined); this.observer.disconnect(); this.view.contentDOM.removeEventListener('compositionend', this.compositionEnd); plugin.editorViews.delete(this.view); }
+        destroy() {
+            this.disposed = true; window.clearTimeout(this.timer ?? undefined); this.observer.disconnect();
+            this.view.contentDOM.removeEventListener('compositionend', this.compositionEnd); this.view.dom.ownerDocument.fonts?.removeEventListener('loadingdone', this.fontsChanged);
+            this.view.dom.ownerDocument.removeEventListener('selectionchange', this.selectionChanged);
+            for (const box of this.view.contentDOM.querySelectorAll<HTMLElement>('.callout')) {
+                if (!editableLiveNode(box) && box.closest('[contenteditable="false"]')) restoreParagraphs(box);
+            }
+            plugin.editorViews.delete(this.view);
+        }
     }, { decorations: v => v.decorations });
 }
 export { titleRecord, mediaRecord, renderFragment, createLiveExtension, allNodes };

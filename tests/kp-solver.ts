@@ -57,3 +57,23 @@ test('KP rejects invalid measurements and bounds pathological paragraphs', () =>
     const dense = Array.from({ length: 1199 }, (_, index) => index % 2 ? glue(0, 100, 0) : box(0));
     assert.equal(solveParagraph(dense, 20), null);
 });
+
+test('KP reserves end-marker width on the final line without narrowing preceding lines', () => {
+    const items = [box(10), glue(0, 5, 0), box(10), glue(0, 5, 0), box(10), glue(0, 5, 0), box(10)];
+    assert.equal(solveParagraph(items, 40)!.lines.length, 1);
+    const solution = solveParagraph(items, 40, 10)!;
+    assert.ok(solution && solution.lines.length === 2);
+    const last = solution.lines.at(-1)!;
+    let natural = 0;
+    for (let index = last.from; index < last.to; index++) natural += items[index].width;
+    assert.ok(natural <= 30);
+    for (const reserve of [-1, NaN, Infinity, 36]) assert.equal(solveParagraph(items, 36, reserve), null);
+});
+test('KP emergency allowance finds bounded ragged lines when full justification is infeasible', () => {
+    const items = [box(100), glue(5, 2, 0), box(100), glue(5, 2, 0), box(100)];
+    assert.equal(solveParagraph(items, 230), null);
+    const result = solveParagraph(items, 230, 0, 20)!;
+    assert.equal(result.lines.length, 2);
+    assert.ok(result.lines[0].ratio > 0 && result.lines[0].ratio < 2.5);
+    for (const allowance of [-1, NaN, Infinity]) assert.equal(solveParagraph(items, 230, 0, allowance), null);
+});

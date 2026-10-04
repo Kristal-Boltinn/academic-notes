@@ -1,12 +1,18 @@
 import { solveParagraph, type KpItem } from './solver';
 
 export interface ParagraphLayoutReport { processed: number; skipped: number; fallback: number }
-interface SavedParagraph { nodes: Node[]; lines: HTMLElement[]; owner?: object; marker: string | null; hadClass: boolean; classAttribute: string | null }
+interface SavedParagraph { nodes: Node[]; lines: HTMLElement[]; owner?: object; marker: string | null; hadClass: boolean; hadQed: boolean; classAttribute: string | null; text: string | null }
 interface Unit { node: Node; start?: number; end?: number; text: string; kind: 'word' | 'cjk' | 'punct' | 'space' | 'inline' }
 interface Token { item: KpItem; unit?: Unit }
 const saved = new WeakMap<HTMLElement, SavedParagraph>();
 const MAX_PARAGRAPHS = 120, MAX_CHARACTERS = 4000, MAX_ITEMS = 900, MAX_TOTAL_ITEMS = 12000;
-const EXCLUDED = '.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"],table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media,.callout:is([data-callout="proof"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"])';
+const EDITOR = '.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]';
+const EXCLUDED = 'table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media';
+function editableContext(root: HTMLElement, readonlyCallout?: HTMLElement) {
+    if (!root.closest(EDITOR)) return root.isContentEditable;
+    return !readonlyCallout || !readonlyCallout.contains(root) || !readonlyCallout.closest('[contenteditable="false"]') || readonlyCallout.isContentEditable ||
+        !!readonlyCallout.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea') || root.isContentEditable;
+}
 const CJK = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 const OPENING = /^[([{（［｛〈《「『【〔〖〘〚‘“]$/u;
 const CLOSING = /^[)\]}）］｝〉》」』】〕〗〙〛、。，．！？：；,.!?:;’”…ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヵヶ]$/u;
@@ -22,40 +28,49 @@ export function hasParagraphSelection(root: HTMLElement) {
     }
     return false;
 }
-function isOwned(p: HTMLElement, state: SavedParagraph) { return p.childNodes.length === state.lines.length && state.lines.every((line, index) => p.childNodes[index] === line); }
+function isOwned(p: HTMLElement, state: SavedParagraph) { return p.textContent === state.text && p.childNodes.length === state.lines.length && state.lines.every((line, index) => p.childNodes[index] === line); }
+function unwrapLines(p: HTMLElement) {
+    const content: Node[] = [];
+    for (const line of [...p.children]) for (const node of [...line.childNodes]) {
+        if (node.nodeType === 1 && (node as Element).matches('span.an-kp-space')) content.push(...node.childNodes);
+        else content.push(node);
+    }
+    p.replaceChildren(...content);
+}
 function restore(p: HTMLElement, owner?: object) {
     const state = saved.get(p);
     if (state) {
         if (owner && state.owner !== owner) return;
         // A host rerender may already have replaced our lines. Never overwrite its new content.
         if (isOwned(p, state)) p.replaceChildren(...state.nodes);
+        else if (p.childNodes.length === state.lines.length && state.lines.every((line, index) => p.childNodes[index] === line)) unwrapLines(p);
         if (state.marker === null) p.removeAttribute('data-an-kp'); else p.setAttribute('data-an-kp', state.marker);
         if (!state.hadClass) p.classList.remove('an-kp-paragraph');
+        if (!state.hadQed) p.classList.remove('an-kp-qed');
         if (state.classAttribute === null && !p.classList.length) p.removeAttribute('class');
         saved.delete(p);
     } else if (!owner && p.dataset.anKp === '1') {
         // A serialized HTML snapshot has no WeakMap. Unwrap only our exact line/gap markup.
         const lines = [...p.children];
         if (!lines.length || !lines.every(line => line.matches('span.an-kp-line'))) return;
-        const content: Node[] = [];
-        for (const line of lines) for (const node of [...line.childNodes]) {
-            if (node.nodeType === 1 && (node as Element).matches('span.an-kp-space')) content.push(...node.childNodes);
-            else content.push(node);
-        }
-        p.replaceChildren(...content); p.removeAttribute('data-an-kp'); p.classList.remove('an-kp-paragraph'); if (!p.classList.length) p.removeAttribute('class');
+        unwrapLines(p); p.removeAttribute('data-an-kp'); p.classList.remove('an-kp-paragraph', 'an-kp-qed'); if (!p.classList.length) p.removeAttribute('class');
     }
 }
 /** Removes generated presentation nodes, retaining original elements, listeners and text nodes. */
 export function restoreParagraphs(root: HTMLElement) { for (const p of paragraphs(root)) restore(p); }
 
-function eligible(p: HTMLElement) {
-    if (p.closest(EXCLUDED) || p.isContentEditable || p.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block')) return false;
+function proofEnd(p: HTMLElement) {
+    return p.matches('.callout:is([data-callout="proof"],[data-callout="pf"]) > .callout-content > p:last-child') &&
+        p.ownerDocument.defaultView!.getComputedStyle(p, '::after').content.replace(/["']/g, '') === '□';
+}
+function eligible(p: HTMLElement, readonlyCallout?: HTMLElement) {
+    if (p.closest(EXCLUDED) || editableContext(p, readonlyCallout) || p.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block')) return false;
     const win = p.ownerDocument.defaultView; if (!win) return false;
     const style = win.getComputedStyle(p);
     if (style.direction !== 'ltr' || style.writingMode !== 'horizontal-tb' || style.whiteSpace !== 'normal' || Math.abs(parseFloat(style.textIndent) || 0) > .01 || !['start', 'left', 'justify'].includes(style.textAlign)) return false;
     for (const pseudo of ['::before', '::after']) {
         const value = win.getComputedStyle(p, pseudo).content;
-        if (value && !['none', 'normal', '""', "''"].includes(value)) return false;
+        if (value && !['none', 'normal', '""', "''"].includes(value) && !(pseudo === '::after' && proofEnd(p))) return false;
     }
     for (const element of p.children) {
         if (!/^(A|EM|STRONG|B|I|S|DEL|MARK|U|SUB|SUP|CODE|SMALL|SPAN|MJX-CONTAINER|SVG)$/.test(element.tagName.toUpperCase())) return false;
@@ -86,6 +101,27 @@ function legalBoundary(left: Unit | undefined, right: Unit | undefined) {
 function contentWidth(p: HTMLElement) {
     const style = p.ownerDocument.defaultView!.getComputedStyle(p);
     return p.getBoundingClientRect().width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0) - (parseFloat(style.borderLeftWidth) || 0) - (parseFloat(style.borderRightWidth) || 0);
+}
+function availableWidths(p: HTMLElement, width: number): number | number[] | null {
+    const content = p.parentElement;
+    if (!content?.matches('.callout-content')) return width;
+    const title = content.parentElement?.querySelector<HTMLElement>(':scope > .callout-title');
+    if (!title) return width;
+    const win = p.ownerDocument.defaultView!, style = win.getComputedStyle(title);
+    if (style.cssFloat === 'none') return width;
+    const box = p.getBoundingClientRect(), label = title.getBoundingClientRect();
+    if (label.bottom <= box.top + .5 || label.top >= box.bottom) return width;
+    const lineHeight = parseFloat(win.getComputedStyle(p).lineHeight);
+    // A tall/overhanging float needs more than a single reduced line; keep it native.
+    if (style.cssFloat !== 'left' || !Number.isFinite(lineHeight) || label.top > box.top + 1 || label.bottom > box.top + lineHeight + 1) return null;
+    const first = width - Math.max(0, label.right - box.left + (parseFloat(style.marginRight) || 0));
+    return first > 40 ? [first, width] : null;
+}
+function endReserve(p: HTMLElement) {
+    if (!proofEnd(p)) return 0;
+    const probe = makeSpan(p.ownerDocument, 'an-kp-qed-probe'); probe.textContent = '□'; p.appendChild(probe);
+    try { return probe.getBoundingClientRect().width + (parseFloat(p.ownerDocument.defaultView!.getComputedStyle(probe).marginInlineStart) || 0); }
+    finally { probe.remove(); }
 }
 function measure(p: HTMLElement, units: Unit[]): Token[] | null {
     const style = p.ownerDocument.defaultView!.getComputedStyle(p), em = parseFloat(style.fontSize) || 16;
@@ -119,15 +155,20 @@ function makeSpan(doc: Document, cls: string) {
     const span = doc.createElement('span'); span.className = cls; return span;
 }
 function apply(p: HTMLElement, tokens: Token[], width: number, owner?: object) {
-    const solution = solveParagraph(tokens.map(token => token.item), width);
+    const widths = availableWidths(p, width), reserve = endReserve(p);
+    if (widths === null) return 'fallback';
+    const items = tokens.map(token => token.item);
+    const solution = solveParagraph(items, widths, reserve) ||
+        (reserve > 0 || Array.isArray(widths) || tokens.some(token => token.unit?.kind === 'inline') ? solveParagraph(items, widths, reserve, (parseFloat(p.ownerDocument.defaultView!.getComputedStyle(p).fontSize) || 16) * 2) : null);
     if (!solution) return 'fallback';
     if (solution.lines.length < 2) return 'skip';
     const original = [...p.childNodes], text = p.textContent;
-    const state: SavedParagraph = { nodes: original, lines: [], owner, marker: p.getAttribute('data-an-kp'), hadClass: p.classList.contains('an-kp-paragraph'), classAttribute: p.getAttribute('class') };
+    const state: SavedParagraph = { nodes: original, lines: [], owner, marker: p.getAttribute('data-an-kp'), hadClass: p.classList.contains('an-kp-paragraph'), hadQed: p.classList.contains('an-kp-qed'), classAttribute: p.getAttribute('class'), text };
     let cursor = 0;
     for (let index = 0; index < solution.lines.length; index++) {
         const line = solution.lines[index], end = solution.lines[index + 1]?.from ?? tokens.length;
         const node = makeSpan(p.ownerDocument, 'an-kp-line');
+        if (index === 0 && Array.isArray(widths)) node.style.width = widths[0] + 'px';
         let lastBox = line.to - 1;
         while (lastBox >= line.from && tokens[lastBox].item.type !== 'box') lastBox--;
         for (; cursor < end; cursor++) {
@@ -145,19 +186,20 @@ function apply(p: HTMLElement, tokens: Token[], width: number, owner?: object) {
         state.lines.push(node);
     }
     p.replaceChildren(...state.lines); p.dataset.anKp = '1'; p.classList.add('an-kp-paragraph'); saved.set(p, state);
-    if (p.textContent !== text || state.lines.some(line => line.scrollWidth > width + 2)) { restore(p, owner); return 'fallback'; }
+    if (reserve) p.classList.add('an-kp-qed');
+    if (p.textContent !== text || state.lines.some(line => line.scrollWidth > line.getBoundingClientRect().width + 2)) { restore(p, owner); return 'fallback'; }
     return 'processed';
 }
-function layout(root: HTMLElement, owner?: object): ParagraphLayoutReport {
+function layout(root: HTMLElement, owner?: object, readonlyCallout?: HTMLElement): ParagraphLayoutReport {
     const report = { processed: 0, skipped: 0, fallback: 0 };
-    if (root.closest(EXCLUDED) || root.isContentEditable || hasParagraphSelection(root)) return { processed: 0, skipped: paragraphs(root).length, fallback: 0 };
+    if (root.closest(EXCLUDED) || editableContext(root, readonlyCallout) || hasParagraphSelection(root)) return { processed: 0, skipped: paragraphs(root).length, fallback: 0 };
     let total = 0, attempted = 0;
     for (const p of paragraphs(root)) {
         const existing = saved.get(p);
         if (owner && existing?.owner && existing.owner !== owner) { report.skipped++; continue; }
         restore(p, owner);
         const text = p.textContent || '';
-        if (!eligible(p) || !text.trim() || text.length > MAX_CHARACTERS || attempted >= MAX_PARAGRAPHS || total >= MAX_TOTAL_ITEMS) { report.skipped++; continue; }
+        if (!eligible(p, readonlyCallout) || !text.trim() || text.length > MAX_CHARACTERS || attempted >= MAX_PARAGRAPHS || total >= MAX_TOTAL_ITEMS) { report.skipped++; continue; }
         const width = contentWidth(p); if (!Number.isFinite(width) || width < 80) { report.skipped++; continue; }
         const units: Unit[] = [];
         let unsupported = false;
@@ -180,12 +222,16 @@ function layout(root: HTMLElement, owner?: object): ParagraphLayoutReport {
 }
 /** One bounded pass for reading view or a fully loaded static export document. */
 export function layoutParagraphs(root: HTMLElement) { return layout(root); }
+/** Only non-editable host callout widgets may use the DOM renderer inside Live Preview. */
+export function layoutReadOnlyCallout(root: HTMLElement) {
+    return root.matches('.callout') ? layout(root, undefined, root) : { processed: 0, skipped: 0, fallback: 0 };
+}
 
 export interface ParagraphLayoutController { refresh(): void; dispose(): void }
 /** Reading view only. Reflow runs after quiet changes; observers never react to our own edits. */
 export function createParagraphLayoutController(root: HTMLElement, options: { enabled?: boolean | (() => boolean); onError?: (error: unknown) => void } = {}): ParagraphLayoutController {
     const owner = {}, doc = root.ownerDocument, win = doc.defaultView;
-    if (!win || root.closest(EXCLUDED) || root.isContentEditable) return { refresh() {}, dispose() {} };
+    if (!win || root.closest(EXCLUDED) || editableContext(root)) return { refresh() {}, dispose() {} };
     let disposed = false, deferredSelection = false, timer: number | undefined, lastWidth = root.getBoundingClientRect().width;
     const enabled = () => typeof options.enabled === 'function' ? options.enabled() : options.enabled !== false;
     const observe = () => changes.observe(root, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'contenteditable', 'hidden', 'src', 'width', 'height'] });

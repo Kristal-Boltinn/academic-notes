@@ -1,3 +1,11 @@
+# Community review follow-up: 2.13.0
+
+- Optional mathematical-callout typography reuses the bounded local paragraph solver. Reading/PDF support inline math and links, floating first-line titles and a single final Proof QED. It adds no network, filesystem, installer or dependency capability.
+- Live Preview DOM layout is explicitly restricted to host-owned, non-editable callout widgets. Editable titles and descendants, active source ranges, IME composition and copy selections retain native behavior. Ordinary editable prose continues using official CodeMirror decorations.
+- Unchanged widgets avoid DOM rewrites; width, font and math changes invalidate cached layout. Restore removes only owned presentation spans, preserves host-updated text, and never restores stale source over new content. Listeners and layout are cleaned up on extension removal.
+- Emergency ragged lines are bounded and only retried after a normal solution fails for inline content, title or QED constraints. Unsupported, explicit-break, indented and oversized paragraphs retain native layout. No CSS priority declaration is added.
+- Synthetic narrow/wide callout fixtures, real CodeMirror editing/copying/cleanup checks and actual multi-page Proof PDF probes cover the change. Physical iPad/WebKit and full Obsidian acceptance remain separate checks.
+
 # Community review follow-up: 2.12.1
 
 - An opt-in Live Preview typography extension uses official CodeMirror state-field decorations. It does not move editable DOM nodes, rewrite notes, or invoke filesystem/network APIs.

@@ -36,15 +36,18 @@ interface State {
 /**
  * Finds a minimum-demerit set of breaks. An infeasible or expensive paragraph returns null.
  * A two-element width array specifies the first line's width and the remaining lines' width.
+ * finalReserve holds space for an end marker; emergencyStretch allows bounded ragged lines.
  * Breakpoint glue is discarded; a selected penalty contributes its width only to that line.
  */
-export function solveParagraph(items: KpItem[], width: number | number[]): KpSolution | null {
+export function solveParagraph(items: KpItem[], width: number | number[], finalReserve = 0, emergencyStretch = 0): KpSolution | null {
     if (!Array.isArray(items) || !items.length || items.length > MAX_ITEMS) return null;
     const widths = typeof width === 'number' ? [width, width] : width;
     if (!Array.isArray(widths) || widths.length < 1 || widths.length > 2 ||
         [...widths].some(value => !Number.isFinite(value) || value <= 0)) return null;
     const firstWidth = widths[0], followingWidth = widths[1] ?? firstWidth;
     const widest = Math.max(firstWidth, followingWidth);
+    if (!Number.isFinite(finalReserve) || finalReserve < 0 || finalReserve >= widest) return null;
+    if (!Number.isFinite(emergencyStretch) || emergencyStretch < 0) return null;
     const sums = [0], stretches = [0], shrinks = [0], boxes = [0], ends = [0];
     let lastBox = -1;
     for (let index = 0; index < items.length; index++) {
@@ -99,11 +102,14 @@ export function solveParagraph(items: KpItem[], width: number | number[]): KpSol
             const shrink = shrinks[naturalEnd] - shrinks[from];
             // Minimum possible line length increases as we look farther back.
             if (natural - shrink > widest + EPSILON) break;
-            const stretch = stretches[naturalEnd] - stretches[from];
+            // A bounded invisible right-edge allowance supports modestly ragged
+            // emergency lines when indivisible inline math prevents full justification.
+            const stretch = stretches[naturalEnd] - stretches[from] + emergencyStretch;
             for (const previous of states[start]) {
                 if (!previous) continue;
                 if (++operations > MAX_OPERATIONS) return null;
-                const target = previous.lineCount === 0 ? firstWidth : followingWidth;
+                const target = (previous.lineCount === 0 ? firstWidth : followingWidth) - (point.final ? finalReserve : 0);
+                if (target <= 0) continue;
                 const difference = target - natural;
                 let ratio = 0;
                 if (difference < -EPSILON) {

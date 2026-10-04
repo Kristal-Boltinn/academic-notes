@@ -1,3 +1,10 @@
+# 2.13.0
+
+- Extend optional Knuth–Plass typography to Proof, Remark and other mathematical callout bodies in Reading view, read-only Live Preview widgets and desktop PDF export.
+- Reserve first-line width for inline titles and last-line space for exactly one Proof QED. Preserve inline formulas, links, native copying and source text; allow bounded ragged emergency lines when indivisible math cannot be fully justified.
+- Keep active callouts and editable titles native. Defer reflow during copying, skip unchanged widgets, and restore original content on disable or extension removal.
+- Update English/Chinese settings and usage guides with a synthetic Proof illustration. Add narrow/wide callout, real CodeMirror and multi-page Proof PDF regressions. No dependency or permission is added.
+
 # 2.12.1
 
 - Add an independent, off-by-default Live Preview Knuth–Plass switch for inactive standalone plain paragraphs. Caret entry and intersecting selections restore native layout synchronously; leaving reoptimizes visible prose.

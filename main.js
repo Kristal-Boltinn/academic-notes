@@ -1,4 +1,4 @@
-/* Academic Notes 2.12.1 | MIT | generated from src/main.ts */
+/* Academic Notes 2.13.0 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -57026,12 +57026,12 @@ module.exports = __toCommonJS(main_exports);
 var ENGLISH = {
   "\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09": "Paragraph typography (Beta)",
   "\u5B9E\u65F6\u9884\u89C8\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C": "Use Knuth\u2013Plass line breaking in Live Preview",
-  "\u4F18\u5316\u672A\u7F16\u8F91\u7684\u666E\u901A\u6B63\u6587\uFF1B\u5149\u6807\u6216\u9009\u533A\u8FDB\u5165\u65F6\u6062\u590D\u539F\u751F\u6392\u7248\u3002\u7B2C\u4E00\u7248\u53EA\u5904\u7406\u6E90\u7801\u4E2D\u5355\u884C\u3001\u65E0\u884C\u5185\u683C\u5F0F\u7684\u72EC\u7ACB\u6BB5\u843D\uFF1B\u516C\u5F0F\u3001\u94FE\u63A5\u3001\u5217\u8868\u548C\u73AF\u5883\u4FDD\u6301\u539F\u751F\u3002\u9ED8\u8BA4\u5173\u95ED\u3002": "Optimize inactive prose; restore native layout when the caret or selection enters. This first beta handles standalone, single-source-line plain paragraphs. Formulas, links, lists and environments retain native layout. Off by default.",
+  "\u4F18\u5316\u672A\u7F16\u8F91\u7684\u5355\u884C\u666E\u901A\u6BB5\u843D\u548C\u53EA\u8BFB\u6570\u5B66\u73AF\u5883\u6B63\u6587\uFF1B\u73AF\u5883\u5185\u652F\u6301\u516C\u5F0F\u548C\u94FE\u63A5\u3002\u5149\u6807\u6216\u9009\u533A\u8FDB\u5165\u65F6\u6062\u590D\u539F\u751F\u6392\u7248\uFF0C\u7F16\u8F91\u6807\u9898\u65F6\u4FDD\u6301\u539F\u751F\u3002\u9ED8\u8BA4\u5173\u95ED\u3002": "Optimize inactive single-line plain paragraphs and read-only mathematical callout prose, including inline math and links in callouts. Restore native layout on caret or selection entry; retain native title editing. Off by default.",
   "\u9605\u8BFB\u89C6\u56FE\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C": "Use Knuth\u2013Plass line breaking in Reading view",
-  "\u6574\u6BB5\u4F18\u5316\u666E\u901A\u6B63\u6587\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002": "Optimize line breaks and spacing across ordinary paragraphs; reflow after width changes. Off by default. Live Preview and source editing are unaffected.",
+  "\u6574\u6BB5\u4F18\u5316\u6B63\u6587\u53CA\u6570\u5B66\u73AF\u5883\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002": "Optimize line breaks and spacing across prose and mathematical callouts; reflow after width changes. Off by default. Live Preview and source editing are unaffected.",
   "PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C": "Use Knuth\u2013Plass line breaking in PDF",
-  "\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u666E\u901A\u6B63\u6587\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002": "Reflow ordinary paragraphs at the final print width. HTML snapshots keep browser layout.",
-  "\u4E2D\u6587\u4E0E\u82F1\u6587\u57FA\u7840\u6BB5\u843D\u53EF\u7528\uFF1B\u94FE\u63A5\u548C\u884C\u5185\u516C\u5F0F\u4FDD\u6301\u5B8C\u6574\u3002\u4E0D\u652F\u6301\u7684\u6BB5\u843D\u6216\u8FC7\u957F\u5185\u5BB9\u81EA\u52A8\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\u3002Proof\u3001Remark\u3001\u5217\u8868\u3001\u56FE\u7247\u3001\u9996\u884C\u7F29\u8FDB\u548C\u590D\u6742\u6392\u7248\u6682\u4E0D\u5904\u7406\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002": "Supports basic Chinese and English paragraphs; links and inline math remain intact. Unsupported or oversized paragraphs use browser layout. Proof, Remark, lists, images, first-line indentation and complex layouts are excluded. No automatic hyphenation yet.",
+  "\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u6B63\u6587\u53CA\u6570\u5B66\u73AF\u5883\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002": "Reflow prose and mathematical callouts at the final print width. HTML snapshots keep browser layout.",
+  "\u652F\u6301 Proof\u3001Remark\u3001\u5B9A\u7406\u7B49\u73AF\u5883\uFF0C\u9884\u7559\u884C\u5185\u6807\u9898\u53CA\u8BC1\u660E\u7ED3\u675F\u65B9\u6846\u7684\u4F4D\u7F6E\uFF1B\u94FE\u63A5\u548C\u884C\u5185\u516C\u5F0F\u4FDD\u6301\u5B8C\u6574\u3002\u5217\u8868\u3001\u56FE\u7247\u3001\u663E\u5F0F\u6362\u884C\u3001\u9996\u884C\u7F29\u8FDB\u548C\u4E0D\u652F\u6301\u6216\u8FC7\u957F\u7684\u5185\u5BB9\u81EA\u52A8\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002": "Supports Proof, Remark and theorem callouts, reserving space for inline titles and the final QED. Links and inline math remain intact. Lists, images, explicit breaks, indentation and unsupported or oversized content use browser layout. No automatic hyphenation yet.",
   "\u6BB5\u843D\u6392\u7248\uFF1A{0} \u6BB5\u5B8C\u6210\uFF0C{1} \u6BB5\u56DE\u9000\u3002": "Paragraph typography: {0} laid out, {1} fell back.",
   "\u56FE\u6CE8\uFF08\u53EF\u7559\u7A7A\uFF09": "Caption (optional)",
   "\u5220\u9664\u4EA4\u6362\u56FE": "Delete diagram",
@@ -58218,6 +58218,471 @@ var DEFAULTS2 = {
   indexDelay: 450
 };
 
+// src/typography/solver.ts
+var KP_FORCED = -1e4;
+var KP_FORBIDDEN = 1e4;
+var MAX_ITEMS = 1200;
+var MAX_CANDIDATES = 650;
+var MAX_OPERATIONS = 2e5;
+var EPSILON = 1e-7;
+function solveParagraph(items, width, finalReserve = 0, emergencyStretch = 0) {
+  if (!Array.isArray(items) || !items.length || items.length > MAX_ITEMS) return null;
+  const widths = typeof width === "number" ? [width, width] : width;
+  if (!Array.isArray(widths) || widths.length < 1 || widths.length > 2 || [...widths].some((value) => !Number.isFinite(value) || value <= 0)) return null;
+  const firstWidth = widths[0], followingWidth = widths[1] ?? firstWidth;
+  const widest = Math.max(firstWidth, followingWidth);
+  if (!Number.isFinite(finalReserve) || finalReserve < 0 || finalReserve >= widest) return null;
+  if (!Number.isFinite(emergencyStretch) || emergencyStretch < 0) return null;
+  const sums = [0], stretches = [0], shrinks = [0], boxes = [0], ends = [0];
+  let lastBox = -1;
+  for (let index = 0; index < items.length; index++) {
+    const item = items[index];
+    if (!item || !Number.isFinite(item.width) || item.width < 0) return null;
+    if (item.type === "box") {
+      if (item.width > widest + EPSILON) return null;
+      lastBox = index;
+    } else if (item.type === "glue") {
+      if (!Number.isFinite(item.stretch) || !Number.isFinite(item.shrink) || item.stretch < 0 || item.shrink < 0 || item.shrink > item.width) return null;
+    } else if (item.type === "penalty") {
+      if (!Number.isFinite(item.cost) || item.flagged !== void 0 && typeof item.flagged !== "boolean") return null;
+    } else return null;
+    sums.push(sums[index] + (item.type === "penalty" ? 0 : item.width));
+    stretches.push(stretches[index] + (item.type === "glue" ? item.stretch : 0));
+    shrinks.push(shrinks[index] + (item.type === "glue" ? item.shrink : 0));
+    boxes.push(boxes[index] + (item.type === "box" ? 1 : 0));
+    ends.push(lastBox + 1);
+    if (![sums[index + 1], stretches[index + 1], shrinks[index + 1]].every(Number.isFinite)) return null;
+  }
+  if (lastBox < 0) return null;
+  const nextContent = (index) => {
+    while (index < items.length && items[index].type === "glue") index++;
+    return index;
+  };
+  const first = nextContent(0);
+  const points = [{ to: first, next: first, naturalEnd: first, cost: 0, extraWidth: 0, flagged: false, forced: false, final: false }];
+  for (let index = first; index < items.length; index++) {
+    const item = items[index];
+    if (item.type === "glue" && index < lastBox && items[index - 1]?.type === "box") {
+      points.push({ to: index, next: nextContent(index + 1), naturalEnd: ends[index], cost: 0, extraWidth: 0, flagged: false, forced: false, final: false });
+    } else if (item.type === "penalty" && item.cost < KP_FORBIDDEN && (index < lastBox || item.cost <= KP_FORCED)) {
+      const final = index > lastBox;
+      points.push({ to: index + 1, next: nextContent(index + 1), naturalEnd: ends[index], cost: item.cost, extraWidth: item.width, flagged: item.flagged === true, forced: item.cost <= KP_FORCED, final });
+      if (final) break;
+    }
+    if (points.length > MAX_CANDIDATES) return null;
+  }
+  if (!points.at(-1).final) points.push({ to: items.length, next: items.length, naturalEnd: lastBox + 1, cost: 0, extraWidth: 0, flagged: false, forced: true, final: true });
+  if (points.length > MAX_CANDIDATES) return null;
+  const states = [[void 0, { score: 0, fitness: 1, flagged: false, lineCount: 0 }, void 0, void 0]];
+  let mandatory = 0, operations = 0;
+  for (let end = 1; end < points.length; end++) {
+    const point = points[end];
+    const best = new Array(4);
+    for (let start = end - 1; start >= mandatory; start--) {
+      if (++operations > MAX_OPERATIONS) return null;
+      const from = points[start].next, naturalEnd = point.naturalEnd;
+      if (from >= naturalEnd || boxes[naturalEnd] === boxes[from]) continue;
+      const natural = sums[naturalEnd] - sums[from] + point.extraWidth;
+      const shrink = shrinks[naturalEnd] - shrinks[from];
+      if (natural - shrink > widest + EPSILON) break;
+      const stretch = stretches[naturalEnd] - stretches[from] + emergencyStretch;
+      for (const previous of states[start]) {
+        if (!previous) continue;
+        if (++operations > MAX_OPERATIONS) return null;
+        const target = (previous.lineCount === 0 ? firstWidth : followingWidth) - (point.final ? finalReserve : 0);
+        if (target <= 0) continue;
+        const difference = target - natural;
+        let ratio = 0;
+        if (difference < -EPSILON) {
+          if (shrink <= 0) continue;
+          ratio = difference / shrink;
+        } else if (!point.final && difference > EPSILON) {
+          if (stretch <= 0) continue;
+          ratio = difference / stretch;
+        }
+        if (!Number.isFinite(ratio) || ratio < -1 - EPSILON || ratio > 2.5 + EPSILON) continue;
+        ratio = Math.max(-1, Math.min(2.5, ratio));
+        const fitness = ratio < -0.5 ? 0 : ratio <= 0.5 ? 1 : ratio <= 1 ? 2 : 3;
+        const badness = 100 * Math.abs(ratio) ** 3;
+        let demerits = (10 + badness) ** 2;
+        if (point.cost >= 0) demerits += point.cost ** 2;
+        else if (!point.forced) demerits -= point.cost ** 2;
+        if (previous.lineCount && Math.abs(previous.fitness - fitness) > 1) demerits += 1e4;
+        if (previous.flagged && point.flagged) demerits += 1e4;
+        if (point.final && previous.lineCount && natural < target * 0.18) {
+          demerits += 1800 * (1 - natural / (target * 0.18));
+        }
+        const score = previous.score + demerits;
+        if (!Number.isFinite(score)) continue;
+        if (!best[fitness] || score < best[fitness].score) {
+          best[fitness] = {
+            score,
+            fitness,
+            flagged: point.flagged,
+            lineCount: previous.lineCount + 1,
+            line: { from, to: point.to, ratio, final: point.final },
+            previous
+          };
+        }
+      }
+    }
+    states.push(best);
+    if (point.forced) {
+      if (!best.some(Boolean)) return null;
+      mandatory = end;
+    }
+  }
+  const finalStates = states.at(-1).filter((state) => !!state);
+  if (!finalStates.length) return null;
+  const winner = finalStates.reduce((a, b) => a.score <= b.score ? a : b);
+  const lines = [];
+  for (let node = winner; node?.line; node = node.previous) lines.push(node.line);
+  lines.reverse();
+  return { lines, demerits: winner.score };
+}
+
+// src/typography/dom.ts
+var saved = /* @__PURE__ */ new WeakMap();
+var MAX_PARAGRAPHS = 120;
+var MAX_CHARACTERS = 4e3;
+var MAX_ITEMS2 = 900;
+var MAX_TOTAL_ITEMS = 12e3;
+var EDITOR = '.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]';
+var EXCLUDED = "table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media";
+function editableContext(root, readonlyCallout) {
+  if (!root.closest(EDITOR)) return root.isContentEditable;
+  return !readonlyCallout || !readonlyCallout.contains(root) || !readonlyCallout.closest('[contenteditable="false"]') || readonlyCallout.isContentEditable || !!readonlyCallout.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea') || root.isContentEditable;
+}
+var CJK = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
+var OPENING = /^[([{（［｛〈《「『【〔〖〘〚‘“]$/u;
+var CLOSING = /^[)\]}）］｝〉》」』】〕〗〙〛、。，．！？：；,.!?:;’”…ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヵヶ]$/u;
+var NONBREAKING = /[\u00a0\u202f\u2060\ufeff]/u;
+function paragraphs(root) {
+  return [...root.matches("p") ? [root] : [], ...root.querySelectorAll("p")];
+}
+function hasParagraphSelection(root) {
+  const selection = root.ownerDocument.getSelection();
+  if (!selection || selection.isCollapsed) return false;
+  for (let index = 0; index < selection.rangeCount; index++) {
+    try {
+      if (selection.getRangeAt(index).intersectsNode(root)) return true;
+    } catch {
+    }
+  }
+  return false;
+}
+function isOwned(p, state) {
+  return p.textContent === state.text && p.childNodes.length === state.lines.length && state.lines.every((line, index) => p.childNodes[index] === line);
+}
+function unwrapLines(p) {
+  const content = [];
+  for (const line of [...p.children]) for (const node of [...line.childNodes]) {
+    if (node.nodeType === 1 && node.matches("span.an-kp-space")) content.push(...node.childNodes);
+    else content.push(node);
+  }
+  p.replaceChildren(...content);
+}
+function restore(p, owner) {
+  const state = saved.get(p);
+  if (state) {
+    if (owner && state.owner !== owner) return;
+    if (isOwned(p, state)) p.replaceChildren(...state.nodes);
+    else if (p.childNodes.length === state.lines.length && state.lines.every((line, index) => p.childNodes[index] === line)) unwrapLines(p);
+    if (state.marker === null) p.removeAttribute("data-an-kp");
+    else p.setAttribute("data-an-kp", state.marker);
+    if (!state.hadClass) p.classList.remove("an-kp-paragraph");
+    if (!state.hadQed) p.classList.remove("an-kp-qed");
+    if (state.classAttribute === null && !p.classList.length) p.removeAttribute("class");
+    saved.delete(p);
+  } else if (!owner && p.dataset.anKp === "1") {
+    const lines = [...p.children];
+    if (!lines.length || !lines.every((line) => line.matches("span.an-kp-line"))) return;
+    unwrapLines(p);
+    p.removeAttribute("data-an-kp");
+    p.classList.remove("an-kp-paragraph", "an-kp-qed");
+    if (!p.classList.length) p.removeAttribute("class");
+  }
+}
+function restoreParagraphs(root) {
+  for (const p of paragraphs(root)) restore(p);
+}
+function proofEnd(p) {
+  return p.matches('.callout:is([data-callout="proof"],[data-callout="pf"]) > .callout-content > p:last-child') && p.ownerDocument.defaultView.getComputedStyle(p, "::after").content.replace(/["']/g, "") === "\u25A1";
+}
+function eligible(p, readonlyCallout) {
+  if (p.closest(EXCLUDED) || editableContext(p, readonlyCallout) || p.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block')) return false;
+  const win = p.ownerDocument.defaultView;
+  if (!win) return false;
+  const style = win.getComputedStyle(p);
+  if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || style.whiteSpace !== "normal" || Math.abs(parseFloat(style.textIndent) || 0) > 0.01 || !["start", "left", "justify"].includes(style.textAlign)) return false;
+  for (const pseudo of ["::before", "::after"]) {
+    const value = win.getComputedStyle(p, pseudo).content;
+    if (value && !["none", "normal", '""', "''"].includes(value) && !(pseudo === "::after" && proofEnd(p))) return false;
+  }
+  for (const element of p.children) {
+    if (!/^(A|EM|STRONG|B|I|S|DEL|MARK|U|SUB|SUP|CODE|SMALL|SPAN|MJX-CONTAINER|SVG)$/.test(element.tagName.toUpperCase())) return false;
+    const inline = win.getComputedStyle(element);
+    if (inline.cssFloat !== "none" || !["inline", "inline-block", "inline-flex"].includes(inline.display) || inline.position === "absolute" || inline.position === "fixed") return false;
+  }
+  return true;
+}
+function textUnits(node) {
+  const Segmenter = Intl.Segmenter;
+  if (!Segmenter) return null;
+  const parts = [...new Segmenter(void 0, { granularity: "grapheme" }).segment(node.data)];
+  const units = [];
+  for (const part of parts) {
+    const text = part.segment, kind = /^[\t\r\n ]+$/u.test(text) ? "space" : CJK.test(text) ? "cjk" : OPENING.test(text) || CLOSING.test(text) ? "punct" : "word";
+    const previous = units.at(-1);
+    if (previous && (kind === "word" || kind === "space") && previous.kind === kind) {
+      previous.text += text;
+      previous.end = part.index + text.length;
+    } else units.push({ node, start: part.index, end: part.index + text.length, text, kind });
+  }
+  return units;
+}
+function legalBoundary(left, right) {
+  if (!left || !right) return true;
+  const tail = Array.from(left.text).at(-1) || "", head = Array.from(right.text)[0] || "";
+  return !OPENING.test(tail) && !CLOSING.test(head) && !NONBREAKING.test(tail) && !NONBREAKING.test(head);
+}
+function contentWidth(p) {
+  const style = p.ownerDocument.defaultView.getComputedStyle(p);
+  return p.getBoundingClientRect().width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0) - (parseFloat(style.borderLeftWidth) || 0) - (parseFloat(style.borderRightWidth) || 0);
+}
+function availableWidths(p, width) {
+  const content = p.parentElement;
+  if (!content?.matches(".callout-content")) return width;
+  const title = content.parentElement?.querySelector(":scope > .callout-title");
+  if (!title) return width;
+  const win = p.ownerDocument.defaultView, style = win.getComputedStyle(title);
+  if (style.cssFloat === "none") return width;
+  const box = p.getBoundingClientRect(), label2 = title.getBoundingClientRect();
+  if (label2.bottom <= box.top + 0.5 || label2.top >= box.bottom) return width;
+  const lineHeight = parseFloat(win.getComputedStyle(p).lineHeight);
+  if (style.cssFloat !== "left" || !Number.isFinite(lineHeight) || label2.top > box.top + 1 || label2.bottom > box.top + lineHeight + 1) return null;
+  const first = width - Math.max(0, label2.right - box.left + (parseFloat(style.marginRight) || 0));
+  return first > 40 ? [first, width] : null;
+}
+function endReserve(p) {
+  if (!proofEnd(p)) return 0;
+  const probe = makeSpan(p.ownerDocument, "an-kp-qed-probe");
+  probe.textContent = "\u25A1";
+  p.appendChild(probe);
+  try {
+    return probe.getBoundingClientRect().width + (parseFloat(p.ownerDocument.defaultView.getComputedStyle(probe).marginInlineStart) || 0);
+  } finally {
+    probe.remove();
+  }
+}
+function measure(p, units) {
+  const style = p.ownerDocument.defaultView.getComputedStyle(p), em = parseFloat(style.fontSize) || 16;
+  const before = p.getAttribute("class");
+  const range = p.ownerDocument.createRange(), tokens = [];
+  p.classList.add("an-kp-measure");
+  try {
+    if (p.ownerDocument.defaultView.getComputedStyle(p).whiteSpace !== "nowrap") return null;
+    for (let index = 0; index < units.length; index++) {
+      const unit = units[index], previous = units[index - 1], next = units[index + 1];
+      if (previous && previous.kind !== "space" && unit.kind !== "space" && (previous.kind === "cjk" || unit.kind === "cjk") && legalBoundary(previous, unit)) tokens.push({ item: { type: "glue", width: 0, stretch: em * 0.12, shrink: 0 } });
+      if (unit.start !== void 0) {
+        range.setStart(unit.node, unit.start);
+        range.setEnd(unit.node, unit.end);
+      } else range.selectNode(unit.node);
+      let width = range.getBoundingClientRect().width;
+      if (unit.kind === "inline") {
+        const inline = p.ownerDocument.defaultView.getComputedStyle(unit.node);
+        width += (parseFloat(inline.marginLeft) || 0) + (parseFloat(inline.marginRight) || 0);
+      }
+      if (!Number.isFinite(width) || width < 0) return null;
+      const item = unit.kind === "space" && legalBoundary(previous, next) ? { type: "glue", width, stretch: Math.max(width * 0.65, em * 0.12), shrink: width * 0.4 } : { type: "box", width };
+      tokens.push({ item, unit });
+      if (tokens.length > MAX_ITEMS2) return null;
+    }
+    return tokens;
+  } finally {
+    if (before === null) p.removeAttribute("class");
+    else p.setAttribute("class", before);
+  }
+}
+function makeSpan(doc, cls) {
+  const span = doc.createElement("span");
+  span.className = cls;
+  return span;
+}
+function apply(p, tokens, width, owner) {
+  const widths = availableWidths(p, width), reserve = endReserve(p);
+  if (widths === null) return "fallback";
+  const items = tokens.map((token) => token.item);
+  const solution = solveParagraph(items, widths, reserve) || (reserve > 0 || Array.isArray(widths) || tokens.some((token) => token.unit?.kind === "inline") ? solveParagraph(items, widths, reserve, (parseFloat(p.ownerDocument.defaultView.getComputedStyle(p).fontSize) || 16) * 2) : null);
+  if (!solution) return "fallback";
+  if (solution.lines.length < 2) return "skip";
+  const original = [...p.childNodes], text = p.textContent;
+  const state = { nodes: original, lines: [], owner, marker: p.getAttribute("data-an-kp"), hadClass: p.classList.contains("an-kp-paragraph"), hadQed: p.classList.contains("an-kp-qed"), classAttribute: p.getAttribute("class"), text };
+  let cursor = 0;
+  for (let index = 0; index < solution.lines.length; index++) {
+    const line = solution.lines[index], end = solution.lines[index + 1]?.from ?? tokens.length;
+    const node = makeSpan(p.ownerDocument, "an-kp-line");
+    if (index === 0 && Array.isArray(widths)) node.style.width = widths[0] + "px";
+    let lastBox = line.to - 1;
+    while (lastBox >= line.from && tokens[lastBox].item.type !== "box") lastBox--;
+    for (; cursor < end; cursor++) {
+      const token = tokens[cursor], unit = token.unit;
+      if (token.item.type === "glue" || unit?.kind === "space") {
+        const gap = makeSpan(p.ownerDocument, "an-kp-space");
+        if (unit) gap.appendChild(p.ownerDocument.createTextNode(unit.text));
+        const visible = cursor >= line.from && cursor <= lastBox;
+        const item = token.item;
+        const value = !visible ? 0 : item.type === "glue" ? item.width + line.ratio * (line.ratio < 0 ? item.shrink : item.stretch) : item.width;
+        gap.style.width = Math.max(0, value) + "px";
+        node.appendChild(gap);
+      } else if (unit) node.appendChild(unit.start === void 0 ? unit.node : p.ownerDocument.createTextNode(unit.text));
+    }
+    state.lines.push(node);
+  }
+  p.replaceChildren(...state.lines);
+  p.dataset.anKp = "1";
+  p.classList.add("an-kp-paragraph");
+  saved.set(p, state);
+  if (reserve) p.classList.add("an-kp-qed");
+  if (p.textContent !== text || state.lines.some((line) => line.scrollWidth > line.getBoundingClientRect().width + 2)) {
+    restore(p, owner);
+    return "fallback";
+  }
+  return "processed";
+}
+function layout(root, owner, readonlyCallout) {
+  const report = { processed: 0, skipped: 0, fallback: 0 };
+  if (root.closest(EXCLUDED) || editableContext(root, readonlyCallout) || hasParagraphSelection(root)) return { processed: 0, skipped: paragraphs(root).length, fallback: 0 };
+  let total = 0, attempted = 0;
+  for (const p of paragraphs(root)) {
+    const existing = saved.get(p);
+    if (owner && existing?.owner && existing.owner !== owner) {
+      report.skipped++;
+      continue;
+    }
+    restore(p, owner);
+    const text = p.textContent || "";
+    if (!eligible(p, readonlyCallout) || !text.trim() || text.length > MAX_CHARACTERS || attempted >= MAX_PARAGRAPHS || total >= MAX_TOTAL_ITEMS) {
+      report.skipped++;
+      continue;
+    }
+    const width = contentWidth(p);
+    if (!Number.isFinite(width) || width < 80) {
+      report.skipped++;
+      continue;
+    }
+    const units = [];
+    let unsupported = false;
+    for (const node of p.childNodes) {
+      if (node.nodeType === 3) {
+        const parts = textUnits(node);
+        if (!parts) {
+          unsupported = true;
+          break;
+        }
+        units.push(...parts);
+      } else if (node.nodeType === 1) units.push({ node, text: node.textContent || "", kind: "inline" });
+      else {
+        unsupported = true;
+        break;
+      }
+    }
+    if (unsupported || units.length > MAX_ITEMS2) {
+      report.skipped++;
+      continue;
+    }
+    const estimated = units.length + units.filter((unit, index) => index > 0 && units[index - 1].kind !== "space" && unit.kind !== "space" && (units[index - 1].kind === "cjk" || unit.kind === "cjk") && legalBoundary(units[index - 1], unit)).length;
+    if (total + estimated > MAX_TOTAL_ITEMS) {
+      report.skipped++;
+      continue;
+    }
+    total += estimated;
+    attempted++;
+    const tokens = measure(p, units);
+    if (!tokens) {
+      report.fallback++;
+      continue;
+    }
+    const result = apply(p, tokens, width, owner);
+    if (result === "processed") report.processed++;
+    else if (result === "fallback") report.fallback++;
+    else report.skipped++;
+  }
+  return report;
+}
+function layoutReadOnlyCallout(root) {
+  return root.matches(".callout") ? layout(root, void 0, root) : { processed: 0, skipped: 0, fallback: 0 };
+}
+function createParagraphLayoutController(root, options = {}) {
+  const owner = {}, doc = root.ownerDocument, win = doc.defaultView;
+  if (!win || root.closest(EXCLUDED) || editableContext(root)) return { refresh() {
+  }, dispose() {
+  } };
+  let disposed = false, deferredSelection = false, timer, lastWidth = root.getBoundingClientRect().width;
+  const enabled = () => typeof options.enabled === "function" ? options.enabled() : options.enabled !== false;
+  const observe = () => changes.observe(root, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ["class", "style", "contenteditable", "hidden", "src", "width", "height"] });
+  const run = () => {
+    timer = void 0;
+    if (disposed) return;
+    if (hasParagraphSelection(root)) {
+      deferredSelection = true;
+      return;
+    }
+    deferredSelection = false;
+    changes.disconnect();
+    try {
+      if (enabled()) layout(root, owner);
+      else for (const p of paragraphs(root)) restore(p, owner);
+      lastWidth = root.getBoundingClientRect().width;
+    } catch (error) {
+      for (const p of paragraphs(root)) restore(p, owner);
+      options.onError?.(error);
+    } finally {
+      if (!disposed) observe();
+    }
+  };
+  const refresh = () => {
+    if (!disposed && timer === void 0) timer = win.setTimeout(run, 70);
+  };
+  const changes = new MutationObserver(refresh);
+  const resize = new ResizeObserver(() => {
+    const width = root.getBoundingClientRect().width;
+    if (Math.abs(width - lastWidth) > 0.5) refresh();
+  });
+  const theme = new MutationObserver(refresh);
+  const css = new MutationObserver(refresh);
+  const resource = (event) => {
+    const target = event.target;
+    if (target && (target.tagName === "LINK" || root.contains(target))) refresh();
+  };
+  const selection = () => {
+    if (deferredSelection && !hasParagraphSelection(root)) refresh();
+  };
+  observe();
+  resize.observe(root);
+  theme.observe(doc.body, { attributes: true, attributeFilter: ["class", "style"] });
+  css.observe(doc.head, { childList: true, characterData: true, subtree: true });
+  doc.fonts.addEventListener("loadingdone", refresh);
+  doc.addEventListener("load", resource, true);
+  doc.addEventListener("selectionchange", selection);
+  void doc.fonts.ready.then(refresh);
+  refresh();
+  return { refresh, dispose() {
+    if (disposed) return;
+    disposed = true;
+    win.clearTimeout(timer);
+    changes.disconnect();
+    resize.disconnect();
+    theme.disconnect();
+    css.disconnect();
+    doc.fonts.removeEventListener("loadingdone", refresh);
+    doc.removeEventListener("load", resource, true);
+    doc.removeEventListener("selectionchange", selection);
+    for (const p of paragraphs(root)) restore(p, owner);
+  } };
+}
+
 // src/rendering/adapters.ts
 var Obs = __toESM(require("obsidian"));
 var import_view = require("@codemirror/view");
@@ -58451,7 +58916,16 @@ function createLiveExtension(plugin) {
   return import_view.ViewPlugin.fromClass(class {
     constructor(view) {
       this.timer = null;
+      this.layouts = /* @__PURE__ */ new WeakMap();
+      this.deferredSelection = false;
+      this.selectionChanged = () => {
+        if (this.deferredSelection) this.schedule();
+      };
       this.compositionEnd = () => this.schedule();
+      this.fontsChanged = () => {
+        this.layouts = /* @__PURE__ */ new WeakMap();
+        this.schedule();
+      };
       this.view = view;
       this.disposed = false;
       plugin.editorViews.add(view);
@@ -58460,9 +58934,11 @@ function createLiveExtension(plugin) {
       this.observer = new MutationObserver(() => this.schedule());
       this.observer.observe(view.contentDOM, { childList: true, subtree: true });
       view.contentDOM.addEventListener("compositionend", this.compositionEnd);
+      view.dom.ownerDocument.fonts?.addEventListener("loadingdone", this.fontsChanged);
+      view.dom.ownerDocument.addEventListener("selectionchange", this.selectionChanged);
     }
     update(update) {
-      if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some((t2) => t2.effects.some((e) => e.is(refresh)))) {
+      if (update.docChanged || update.selectionSet || update.viewportChanged || update.geometryChanged || update.transactions.some((t2) => t2.effects.some((e) => e.is(refresh)))) {
         this.decorations = this.links(update.view);
         this.schedule();
       }
@@ -58503,7 +58979,7 @@ function createLiveExtension(plugin) {
     }
     paint() {
       const view = this.view, info = view.state.field(Obs.editorInfoField, false);
-      if (this.disposed || view.composing || view.compositionStarted || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file || !plugin.settings.livePreview)
+      if (this.disposed || view.composing || view.compositionStarted || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file)
         return;
       const note = plugin.graph?.notes.get(info.file.path);
       if (!note || note.source !== view.state.doc.toString())
@@ -58525,7 +59001,45 @@ function createLiveExtension(plugin) {
       };
       this.observer.disconnect();
       try {
-        renderFragment(view.contentDOM, note, plugin.graph, infoFor);
+        if (plugin.settings.livePreview) renderFragment(view.contentDOM, note, plugin.graph, infoFor);
+        let attempted = 0;
+        this.deferredSelection = false;
+        for (const box of view.contentDOM.querySelectorAll(".callout")) {
+          if (editableLiveNode(box) || !box.closest('[contenteditable="false"]')) continue;
+          if (hasParagraphSelection(box)) {
+            this.deferredSelection = true;
+            continue;
+          }
+          if (++attempted > 40) break;
+          const section = infoFor(box);
+          if (!section) continue;
+          const from = view.state.doc.line(Math.min(view.state.doc.lines, section.lineStart + 1)).from;
+          const to = view.state.doc.line(Math.min(view.state.doc.lines, section.lineEnd + 1)).to;
+          const enabled = plugin.settings.kpLivePreview && !view.state.selection.ranges.some((range) => range.from <= to && range.to >= from);
+          const content = box.querySelector(":scope > .callout-content");
+          if (!content) continue;
+          const title = box.querySelector(":scope > .callout-title"), win = box.ownerDocument.defaultView;
+          const style = win.getComputedStyle(content), titleStyle = title && win.getComputedStyle(title);
+          const key2 = enabled ? [
+            note.source.slice(from, to),
+            content.getBoundingClientRect().width,
+            style.font,
+            style.lineHeight,
+            style.letterSpacing,
+            style.wordSpacing,
+            content.textContent,
+            ...[...content.querySelectorAll(".math,mjx-container")].map((math) => math.getBoundingClientRect().width),
+            title?.textContent,
+            title?.getBoundingClientRect().width,
+            titleStyle?.cssFloat,
+            titleStyle?.font
+          ].join("|") : "";
+          const previous = this.layouts.get(box);
+          if (previous?.key === key2 && previous.nodes.length === content.childNodes.length && previous.nodes.every((node, index) => content.childNodes[index] === node)) continue;
+          restoreParagraphs(box);
+          if (enabled) layoutReadOnlyCallout(box);
+          this.layouts.set(box, { key: key2, nodes: [...content.childNodes] });
+        }
       } finally {
         if (!this.disposed) this.observer.observe(view.contentDOM, { childList: true, subtree: true });
       }
@@ -58535,6 +59049,11 @@ function createLiveExtension(plugin) {
       window.clearTimeout(this.timer ?? void 0);
       this.observer.disconnect();
       this.view.contentDOM.removeEventListener("compositionend", this.compositionEnd);
+      this.view.dom.ownerDocument.fonts?.removeEventListener("loadingdone", this.fontsChanged);
+      this.view.dom.ownerDocument.removeEventListener("selectionchange", this.selectionChanged);
+      for (const box of this.view.contentDOM.querySelectorAll(".callout")) {
+        if (!editableLiveNode(box) && box.closest('[contenteditable="false"]')) restoreParagraphs(box);
+      }
       plugin.editorViews.delete(this.view);
     }
   }, { decorations: (v) => v.decorations });
@@ -58544,128 +59063,6 @@ function createLiveExtension(plugin) {
 var import_state2 = require("@codemirror/state");
 var import_view2 = require("@codemirror/view");
 var import_obsidian = require("obsidian");
-
-// src/typography/solver.ts
-var KP_FORCED = -1e4;
-var KP_FORBIDDEN = 1e4;
-var MAX_ITEMS = 1200;
-var MAX_CANDIDATES = 650;
-var MAX_OPERATIONS = 2e5;
-var EPSILON = 1e-7;
-function solveParagraph(items, width) {
-  if (!Array.isArray(items) || !items.length || items.length > MAX_ITEMS) return null;
-  const widths = typeof width === "number" ? [width, width] : width;
-  if (!Array.isArray(widths) || widths.length < 1 || widths.length > 2 || [...widths].some((value) => !Number.isFinite(value) || value <= 0)) return null;
-  const firstWidth = widths[0], followingWidth = widths[1] ?? firstWidth;
-  const widest = Math.max(firstWidth, followingWidth);
-  const sums = [0], stretches = [0], shrinks = [0], boxes = [0], ends = [0];
-  let lastBox = -1;
-  for (let index = 0; index < items.length; index++) {
-    const item = items[index];
-    if (!item || !Number.isFinite(item.width) || item.width < 0) return null;
-    if (item.type === "box") {
-      if (item.width > widest + EPSILON) return null;
-      lastBox = index;
-    } else if (item.type === "glue") {
-      if (!Number.isFinite(item.stretch) || !Number.isFinite(item.shrink) || item.stretch < 0 || item.shrink < 0 || item.shrink > item.width) return null;
-    } else if (item.type === "penalty") {
-      if (!Number.isFinite(item.cost) || item.flagged !== void 0 && typeof item.flagged !== "boolean") return null;
-    } else return null;
-    sums.push(sums[index] + (item.type === "penalty" ? 0 : item.width));
-    stretches.push(stretches[index] + (item.type === "glue" ? item.stretch : 0));
-    shrinks.push(shrinks[index] + (item.type === "glue" ? item.shrink : 0));
-    boxes.push(boxes[index] + (item.type === "box" ? 1 : 0));
-    ends.push(lastBox + 1);
-    if (![sums[index + 1], stretches[index + 1], shrinks[index + 1]].every(Number.isFinite)) return null;
-  }
-  if (lastBox < 0) return null;
-  const nextContent = (index) => {
-    while (index < items.length && items[index].type === "glue") index++;
-    return index;
-  };
-  const first = nextContent(0);
-  const points = [{ to: first, next: first, naturalEnd: first, cost: 0, extraWidth: 0, flagged: false, forced: false, final: false }];
-  for (let index = first; index < items.length; index++) {
-    const item = items[index];
-    if (item.type === "glue" && index < lastBox && items[index - 1]?.type === "box") {
-      points.push({ to: index, next: nextContent(index + 1), naturalEnd: ends[index], cost: 0, extraWidth: 0, flagged: false, forced: false, final: false });
-    } else if (item.type === "penalty" && item.cost < KP_FORBIDDEN && (index < lastBox || item.cost <= KP_FORCED)) {
-      const final = index > lastBox;
-      points.push({ to: index + 1, next: nextContent(index + 1), naturalEnd: ends[index], cost: item.cost, extraWidth: item.width, flagged: item.flagged === true, forced: item.cost <= KP_FORCED, final });
-      if (final) break;
-    }
-    if (points.length > MAX_CANDIDATES) return null;
-  }
-  if (!points.at(-1).final) points.push({ to: items.length, next: items.length, naturalEnd: lastBox + 1, cost: 0, extraWidth: 0, flagged: false, forced: true, final: true });
-  if (points.length > MAX_CANDIDATES) return null;
-  const states = [[void 0, { score: 0, fitness: 1, flagged: false, lineCount: 0 }, void 0, void 0]];
-  let mandatory = 0, operations = 0;
-  for (let end = 1; end < points.length; end++) {
-    const point = points[end];
-    const best = new Array(4);
-    for (let start = end - 1; start >= mandatory; start--) {
-      if (++operations > MAX_OPERATIONS) return null;
-      const from = points[start].next, naturalEnd = point.naturalEnd;
-      if (from >= naturalEnd || boxes[naturalEnd] === boxes[from]) continue;
-      const natural = sums[naturalEnd] - sums[from] + point.extraWidth;
-      const shrink = shrinks[naturalEnd] - shrinks[from];
-      if (natural - shrink > widest + EPSILON) break;
-      const stretch = stretches[naturalEnd] - stretches[from];
-      for (const previous of states[start]) {
-        if (!previous) continue;
-        if (++operations > MAX_OPERATIONS) return null;
-        const target = previous.lineCount === 0 ? firstWidth : followingWidth;
-        const difference = target - natural;
-        let ratio = 0;
-        if (difference < -EPSILON) {
-          if (shrink <= 0) continue;
-          ratio = difference / shrink;
-        } else if (!point.final && difference > EPSILON) {
-          if (stretch <= 0) continue;
-          ratio = difference / stretch;
-        }
-        if (!Number.isFinite(ratio) || ratio < -1 - EPSILON || ratio > 2.5 + EPSILON) continue;
-        ratio = Math.max(-1, Math.min(2.5, ratio));
-        const fitness = ratio < -0.5 ? 0 : ratio <= 0.5 ? 1 : ratio <= 1 ? 2 : 3;
-        const badness = 100 * Math.abs(ratio) ** 3;
-        let demerits = (10 + badness) ** 2;
-        if (point.cost >= 0) demerits += point.cost ** 2;
-        else if (!point.forced) demerits -= point.cost ** 2;
-        if (previous.lineCount && Math.abs(previous.fitness - fitness) > 1) demerits += 1e4;
-        if (previous.flagged && point.flagged) demerits += 1e4;
-        if (point.final && previous.lineCount && natural < target * 0.18) {
-          demerits += 1800 * (1 - natural / (target * 0.18));
-        }
-        const score = previous.score + demerits;
-        if (!Number.isFinite(score)) continue;
-        if (!best[fitness] || score < best[fitness].score) {
-          best[fitness] = {
-            score,
-            fitness,
-            flagged: point.flagged,
-            lineCount: previous.lineCount + 1,
-            line: { from, to: point.to, ratio, final: point.final },
-            previous
-          };
-        }
-      }
-    }
-    states.push(best);
-    if (point.forced) {
-      if (!best.some(Boolean)) return null;
-      mandatory = end;
-    }
-  }
-  const finalStates = states.at(-1).filter((state) => !!state);
-  if (!finalStates.length) return null;
-  const winner = finalStates.reduce((a, b) => a.score <= b.score ? a : b);
-  const lines = [];
-  for (let node = winner; node?.line; node = node.previous) lines.push(node.line);
-  lines.reverse();
-  return { lines, demerits: winner.score };
-}
-
-// src/typography/live.ts
 var measured = import_state2.StateEffect.define();
 var composing = import_state2.StateEffect.define();
 var cjk = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
@@ -59310,10 +59707,10 @@ var AcademicSettings = class extends import_obsidian3.PluginSettingTab {
     const description = (desc) => definitions.push({ name: "", desc, render: () => {
     } });
     heading(t("\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09"));
-    toggle("kpReading", t("\u9605\u8BFB\u89C6\u56FE\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u6574\u6BB5\u4F18\u5316\u666E\u901A\u6B63\u6587\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002"));
-    toggle("kpLivePreview", t("\u5B9E\u65F6\u9884\u89C8\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u4F18\u5316\u672A\u7F16\u8F91\u7684\u666E\u901A\u6B63\u6587\uFF1B\u5149\u6807\u6216\u9009\u533A\u8FDB\u5165\u65F6\u6062\u590D\u539F\u751F\u6392\u7248\u3002\u7B2C\u4E00\u7248\u53EA\u5904\u7406\u6E90\u7801\u4E2D\u5355\u884C\u3001\u65E0\u884C\u5185\u683C\u5F0F\u7684\u72EC\u7ACB\u6BB5\u843D\uFF1B\u516C\u5F0F\u3001\u94FE\u63A5\u3001\u5217\u8868\u548C\u73AF\u5883\u4FDD\u6301\u539F\u751F\u3002\u9ED8\u8BA4\u5173\u95ED\u3002"));
-    if (import_obsidian3.Platform.isDesktopApp) toggle("kpPdf", t("PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u666E\u901A\u6B63\u6587\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002"));
-    description(t("\u4E2D\u6587\u4E0E\u82F1\u6587\u57FA\u7840\u6BB5\u843D\u53EF\u7528\uFF1B\u94FE\u63A5\u548C\u884C\u5185\u516C\u5F0F\u4FDD\u6301\u5B8C\u6574\u3002\u4E0D\u652F\u6301\u7684\u6BB5\u843D\u6216\u8FC7\u957F\u5185\u5BB9\u81EA\u52A8\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\u3002Proof\u3001Remark\u3001\u5217\u8868\u3001\u56FE\u7247\u3001\u9996\u884C\u7F29\u8FDB\u548C\u590D\u6742\u6392\u7248\u6682\u4E0D\u5904\u7406\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002"));
+    toggle("kpReading", t("\u9605\u8BFB\u89C6\u56FE\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u6574\u6BB5\u4F18\u5316\u6B63\u6587\u53CA\u6570\u5B66\u73AF\u5883\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002"));
+    toggle("kpLivePreview", t("\u5B9E\u65F6\u9884\u89C8\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u4F18\u5316\u672A\u7F16\u8F91\u7684\u5355\u884C\u666E\u901A\u6BB5\u843D\u548C\u53EA\u8BFB\u6570\u5B66\u73AF\u5883\u6B63\u6587\uFF1B\u73AF\u5883\u5185\u652F\u6301\u516C\u5F0F\u548C\u94FE\u63A5\u3002\u5149\u6807\u6216\u9009\u533A\u8FDB\u5165\u65F6\u6062\u590D\u539F\u751F\u6392\u7248\uFF0C\u7F16\u8F91\u6807\u9898\u65F6\u4FDD\u6301\u539F\u751F\u3002\u9ED8\u8BA4\u5173\u95ED\u3002"));
+    if (import_obsidian3.Platform.isDesktopApp) toggle("kpPdf", t("PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u6B63\u6587\u53CA\u6570\u5B66\u73AF\u5883\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002"));
+    description(t("\u652F\u6301 Proof\u3001Remark\u3001\u5B9A\u7406\u7B49\u73AF\u5883\uFF0C\u9884\u7559\u884C\u5185\u6807\u9898\u53CA\u8BC1\u660E\u7ED3\u675F\u65B9\u6846\u7684\u4F4D\u7F6E\uFF1B\u94FE\u63A5\u548C\u884C\u5185\u516C\u5F0F\u4FDD\u6301\u5B8C\u6574\u3002\u5217\u8868\u3001\u56FE\u7247\u3001\u663E\u5F0F\u6362\u884C\u3001\u9996\u884C\u7F29\u8FDB\u548C\u4E0D\u652F\u6301\u6216\u8FC7\u957F\u7684\u5185\u5BB9\u81EA\u52A8\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002"));
     heading(t("\u7F16\u53F7\u4E0E\u5F15\u7528"));
     toggle("numbered", t("\u5B9A\u7406\u7C7B\u73AF\u5883\u81EA\u52A8\u7F16\u53F7"), t("Proof\u3001Remark\u3001Solution \u9ED8\u8BA4\u4E0D\u8BA1\u6570\u3002"));
     select("equationMode", t("\u516C\u5F0F\u81EA\u52A8\u7F16\u53F7"), { referenced: t("\u4EC5\u88AB\u5F15\u7528\u7684\u516C\u5F0F\uFF08\u5168\u5E93\u5224\u65AD\uFF09"), all: t("\u6240\u6709\u72EC\u7ACB\u516C\u5F0F\u5757"), none: t("\u5173\u95ED\u81EA\u52A8\u7F16\u53F7") }, t("\u4FDD\u7559\u663E\u5F0F \\tag\uFF1B\u53EA\u6709\u8FDB\u5165\u81EA\u52A8\u7F16\u53F7\u7684\u516C\u5F0F\u624D\u589E\u52A0\u8BA1\u6570\u5668\u3002"));
@@ -59536,7 +59933,7 @@ function createFloatLayout(options) {
 }
 
 // academic-typography:client
-var client_default = `var AcademicParagraphLayout=(()=>{var B=Object.defineProperty;var Y=Object.getOwnPropertyDescriptor;var Z=Object.getOwnPropertyNames;var ee=Object.prototype.hasOwnProperty;var te=(e,t)=>{for(var n in t)B(e,n,{get:t[n],enumerable:!0})},ne=(e,t,n,s)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of Z(t))!ee.call(e,a)&&a!==n&&B(e,a,{get:()=>t[a],enumerable:!(s=Y(t,a))||s.enumerable});return e};var re=e=>ne(B({},"__esModule",{value:!0}),e);var ge={};te(ge,{createParagraphLayoutController:()=>me,hasParagraphSelection:()=>F,layoutParagraphs:()=>he,restoreParagraphs:()=>le});function j(e,t){if(!Array.isArray(e)||!e.length||e.length>1200)return null;let n=typeof t=="number"?[t,t]:t;if(!Array.isArray(n)||n.length<1||n.length>2||[...n].some(r=>!Number.isFinite(r)||r<=0))return null;let s=n[0],a=n[1]??s,o=Math.max(s,a),u=[0],d=[0],l=[0],c=[0],b=[0],h=-1;for(let r=0;r<e.length;r++){let i=e[r];if(!i||!Number.isFinite(i.width)||i.width<0)return null;if(i.type==="box"){if(i.width>o+1e-7)return null;h=r}else if(i.type==="glue"){if(!Number.isFinite(i.stretch)||!Number.isFinite(i.shrink)||i.stretch<0||i.shrink<0||i.shrink>i.width)return null}else if(i.type==="penalty"){if(!Number.isFinite(i.cost)||i.flagged!==void 0&&typeof i.flagged!="boolean")return null}else return null;if(u.push(u[r]+(i.type==="penalty"?0:i.width)),d.push(d[r]+(i.type==="glue"?i.stretch:0)),l.push(l[r]+(i.type==="glue"?i.shrink:0)),c.push(c[r]+(i.type==="box"?1:0)),b.push(h+1),![u[r+1],d[r+1],l[r+1]].every(Number.isFinite))return null}if(h<0)return null;let p=r=>{for(;r<e.length&&e[r].type==="glue";)r++;return r},g=p(0),f=[{to:g,next:g,naturalEnd:g,cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1}];for(let r=g;r<e.length;r++){let i=e[r];if(i.type==="glue"&&r<h&&e[r-1]?.type==="box")f.push({to:r,next:p(r+1),naturalEnd:b[r],cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1});else if(i.type==="penalty"&&i.cost<1e4&&(r<h||i.cost<=-1e4)){let A=r>h;if(f.push({to:r+1,next:p(r+1),naturalEnd:b[r],cost:i.cost,extraWidth:i.width,flagged:i.flagged===!0,forced:i.cost<=-1e4,final:A}),A)break}if(f.length>650)return null}if(f.at(-1).final||f.push({to:e.length,next:e.length,naturalEnd:h+1,cost:0,extraWidth:0,flagged:!1,forced:!0,final:!0}),f.length>650)return null;let m=[[void 0,{score:0,fitness:1,flagged:!1,lineCount:0},void 0,void 0]],x=0,L=0;for(let r=1;r<f.length;r++){let i=f[r],A=new Array(4);for(let D=r-1;D>=x;D--){if(++L>2e5)return null;let C=f[D].next,T=i.naturalEnd;if(C>=T||c[T]===c[C])continue;let I=u[T]-u[C]+i.extraWidth,K=l[T]-l[C];if(I-K>o+1e-7)break;let X=d[T]-d[C];for(let w of m[D]){if(!w)continue;if(++L>2e5)return null;let H=w.lineCount===0?s:a,O=H-I,y=0;if(O<-1e-7){if(K<=0)continue;y=O/K}else if(!i.final&&O>1e-7){if(X<=0)continue;y=O/X}if(!Number.isFinite(y)||y<-1-1e-7||y>2.5+1e-7)continue;y=Math.max(-1,Math.min(2.5,y));let P=y<-.5?0:y<=.5?1:y<=1?2:3,N=(10+100*Math.abs(y)**3)**2;i.cost>=0?N+=i.cost**2:i.forced||(N-=i.cost**2),w.lineCount&&Math.abs(w.fitness-P)>1&&(N+=1e4),w.flagged&&i.flagged&&(N+=1e4),i.final&&w.lineCount&&I<H*.18&&(N+=1800*(1-I/(H*.18)));let _=w.score+N;Number.isFinite(_)&&(!A[P]||_<A[P].score)&&(A[P]={score:_,fitness:P,flagged:i.flagged,lineCount:w.lineCount+1,line:{from:C,to:i.to,ratio:y,final:i.final},previous:w})}}if(m.push(A),i.forced){if(!A.some(Boolean))return null;x=r}}let E=m.at(-1).filter(r=>!!r);if(!E.length)return null;let k=E.reduce((r,i)=>r.score<=i.score?r:i),S=[];for(let r=k;r?.line;r=r.previous)S.push(r.line);return S.reverse(),{lines:S,demerits:k.score}}var R=new WeakMap,ie=120,se=4e3,$=900,V=12e3,W='.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"],table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media,.callout:is([data-callout="proof"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"])',ae=/^[\\p{Script=Han}\\p{Script=Hiragana}\\p{Script=Katakana}\\p{Script=Hangul}]/u,q=/^[([{\uFF08\uFF3B\uFF5B\u3008\u300A\u300C\u300E\u3010\u3014\u3016\u3018\u301A\u2018\u201C]$/u,J=/^[)\\]}\uFF09\uFF3D\uFF5D\u3009\u300B\u300D\u300F\u3011\u3015\u3017\u3019\u301B\u3001\u3002\uFF0C\uFF0E\uFF01\uFF1F\uFF1A\uFF1B,.!?:;\u2019\u201D\u2026\u3041\u3043\u3045\u3047\u3049\u3063\u3083\u3085\u3087\u308E\u30A1\u30A3\u30A5\u30A7\u30A9\u30C3\u30E3\u30E5\u30E7\u30EE\u30F5\u30F6]$/u,G=/[\\u00a0\\u202f\\u2060\\ufeff]/u;function v(e){return[...e.matches("p")?[e]:[],...e.querySelectorAll("p")]}function F(e){let t=e.ownerDocument.getSelection();if(!t||t.isCollapsed)return!1;for(let n=0;n<t.rangeCount;n++)try{if(t.getRangeAt(n).intersectsNode(e))return!0}catch{}return!1}function oe(e,t){return e.childNodes.length===t.lines.length&&t.lines.every((n,s)=>e.childNodes[s]===n)}function M(e,t){let n=R.get(e);if(n){if(t&&n.owner!==t)return;oe(e,n)&&e.replaceChildren(...n.nodes),n.marker===null?e.removeAttribute("data-an-kp"):e.setAttribute("data-an-kp",n.marker),n.hadClass||e.classList.remove("an-kp-paragraph"),n.classAttribute===null&&!e.classList.length&&e.removeAttribute("class"),R.delete(e)}else if(!t&&e.dataset.anKp==="1"){let s=[...e.children];if(!s.length||!s.every(o=>o.matches("span.an-kp-line")))return;let a=[];for(let o of s)for(let u of[...o.childNodes])u.nodeType===1&&u.matches("span.an-kp-space")?a.push(...u.childNodes):a.push(u);e.replaceChildren(...a),e.removeAttribute("data-an-kp"),e.classList.remove("an-kp-paragraph"),e.classList.length||e.removeAttribute("class")}}function le(e){for(let t of v(e))M(t)}function ce(e){if(e.closest(W)||e.isContentEditable||e.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block'))return!1;let t=e.ownerDocument.defaultView;if(!t)return!1;let n=t.getComputedStyle(e);if(n.direction!=="ltr"||n.writingMode!=="horizontal-tb"||n.whiteSpace!=="normal"||Math.abs(parseFloat(n.textIndent)||0)>.01||!["start","left","justify"].includes(n.textAlign))return!1;for(let s of["::before","::after"]){let a=t.getComputedStyle(e,s).content;if(a&&!["none","normal",'""',"''"].includes(a))return!1}for(let s of e.children){if(!/^(A|EM|STRONG|B|I|S|DEL|MARK|U|SUB|SUP|CODE|SMALL|SPAN|MJX-CONTAINER|SVG)$/.test(s.tagName.toUpperCase()))return!1;let a=t.getComputedStyle(s);if(a.cssFloat!=="none"||!["inline","inline-block","inline-flex"].includes(a.display)||a.position==="absolute"||a.position==="fixed")return!1}return!0}function ue(e){let t=Intl.Segmenter;if(!t)return null;let n=[...new t(void 0,{granularity:"grapheme"}).segment(e.data)],s=[];for(let a of n){let o=a.segment,u=/^[\\t\\r\\n ]+$/u.test(o)?"space":ae.test(o)?"cjk":q.test(o)||J.test(o)?"punct":"word",d=s.at(-1);d&&(u==="word"||u==="space")&&d.kind===u?(d.text+=o,d.end=a.index+o.length):s.push({node:e,start:a.index,end:a.index+o.length,text:o,kind:u})}return s}function U(e,t){if(!e||!t)return!0;let n=Array.from(e.text).at(-1)||"",s=Array.from(t.text)[0]||"";return!q.test(n)&&!J.test(s)&&!G.test(n)&&!G.test(s)}function de(e){let t=e.ownerDocument.defaultView.getComputedStyle(e);return e.getBoundingClientRect().width-(parseFloat(t.paddingLeft)||0)-(parseFloat(t.paddingRight)||0)-(parseFloat(t.borderLeftWidth)||0)-(parseFloat(t.borderRightWidth)||0)}function fe(e,t){let n=e.ownerDocument.defaultView.getComputedStyle(e),s=parseFloat(n.fontSize)||16,a=e.getAttribute("class"),o=e.ownerDocument.createRange(),u=[];e.classList.add("an-kp-measure");try{if(e.ownerDocument.defaultView.getComputedStyle(e).whiteSpace!=="nowrap")return null;for(let d=0;d<t.length;d++){let l=t[d],c=t[d-1],b=t[d+1];c&&c.kind!=="space"&&l.kind!=="space"&&(c.kind==="cjk"||l.kind==="cjk")&&U(c,l)&&u.push({item:{type:"glue",width:0,stretch:s*.12,shrink:0}}),l.start!==void 0?(o.setStart(l.node,l.start),o.setEnd(l.node,l.end)):o.selectNode(l.node);let h=o.getBoundingClientRect().width;if(l.kind==="inline"){let g=e.ownerDocument.defaultView.getComputedStyle(l.node);h+=(parseFloat(g.marginLeft)||0)+(parseFloat(g.marginRight)||0)}if(!Number.isFinite(h)||h<0)return null;let p=l.kind==="space"&&U(c,b)?{type:"glue",width:h,stretch:Math.max(h*.65,s*.12),shrink:h*.4}:{type:"box",width:h};if(u.push({item:p,unit:l}),u.length>$)return null}return u}finally{a===null?e.removeAttribute("class"):e.setAttribute("class",a)}}function z(e,t){let n=e.createElement("span");return n.className=t,n}function pe(e,t,n,s){let a=j(t.map(c=>c.item),n);if(!a)return"fallback";if(a.lines.length<2)return"skip";let o=[...e.childNodes],u=e.textContent,d={nodes:o,lines:[],owner:s,marker:e.getAttribute("data-an-kp"),hadClass:e.classList.contains("an-kp-paragraph"),classAttribute:e.getAttribute("class")},l=0;for(let c=0;c<a.lines.length;c++){let b=a.lines[c],h=a.lines[c+1]?.from??t.length,p=z(e.ownerDocument,"an-kp-line"),g=b.to-1;for(;g>=b.from&&t[g].item.type!=="box";)g--;for(;l<h;l++){let f=t[l],m=f.unit;if(f.item.type==="glue"||m?.kind==="space"){let x=z(e.ownerDocument,"an-kp-space");m&&x.appendChild(e.ownerDocument.createTextNode(m.text));let L=l>=b.from&&l<=g,E=f.item,k=L?E.type==="glue"?E.width+b.ratio*(b.ratio<0?E.shrink:E.stretch):E.width:0;x.style.width=Math.max(0,k)+"px",p.appendChild(x)}else m&&p.appendChild(m.start===void 0?m.node:e.ownerDocument.createTextNode(m.text))}d.lines.push(p)}return e.replaceChildren(...d.lines),e.dataset.anKp="1",e.classList.add("an-kp-paragraph"),R.set(e,d),e.textContent!==u||d.lines.some(c=>c.scrollWidth>n+2)?(M(e,s),"fallback"):"processed"}function Q(e,t){let n={processed:0,skipped:0,fallback:0};if(e.closest(W)||e.isContentEditable||F(e))return{processed:0,skipped:v(e).length,fallback:0};let s=0,a=0;for(let o of v(e)){let u=R.get(o);if(t&&u?.owner&&u.owner!==t){n.skipped++;continue}M(o,t);let d=o.textContent||"";if(!ce(o)||!d.trim()||d.length>se||a>=ie||s>=V){n.skipped++;continue}let l=de(o);if(!Number.isFinite(l)||l<80){n.skipped++;continue}let c=[],b=!1;for(let f of o.childNodes)if(f.nodeType===3){let m=ue(f);if(!m){b=!0;break}c.push(...m)}else if(f.nodeType===1)c.push({node:f,text:f.textContent||"",kind:"inline"});else{b=!0;break}if(b||c.length>$){n.skipped++;continue}let h=c.length+c.filter((f,m)=>m>0&&c[m-1].kind!=="space"&&f.kind!=="space"&&(c[m-1].kind==="cjk"||f.kind==="cjk")&&U(c[m-1],f)).length;if(s+h>V){n.skipped++;continue}s+=h,a++;let p=fe(o,c);if(!p){n.fallback++;continue}let g=pe(o,p,l,t);g==="processed"?n.processed++:g==="fallback"?n.fallback++:n.skipped++}return n}function he(e){return Q(e)}function me(e,t={}){let n={},s=e.ownerDocument,a=s.defaultView;if(!a||e.closest(W)||e.isContentEditable)return{refresh(){},dispose(){}};let o=!1,u=!1,d,l=e.getBoundingClientRect().width,c=()=>typeof t.enabled=="function"?t.enabled():t.enabled!==!1,b=()=>g.observe(e,{childList:!0,characterData:!0,subtree:!0,attributes:!0,attributeFilter:["class","style","contenteditable","hidden","src","width","height"]}),h=()=>{if(d=void 0,!o){if(F(e)){u=!0;return}u=!1,g.disconnect();try{if(c())Q(e,n);else for(let k of v(e))M(k,n);l=e.getBoundingClientRect().width}catch(k){for(let S of v(e))M(S,n);t.onError?.(k)}finally{o||b()}}},p=()=>{!o&&d===void 0&&(d=a.setTimeout(h,70))},g=new MutationObserver(p),f=new ResizeObserver(()=>{let k=e.getBoundingClientRect().width;Math.abs(k-l)>.5&&p()}),m=new MutationObserver(p),x=new MutationObserver(p),L=k=>{let S=k.target;S&&(S.tagName==="LINK"||e.contains(S))&&p()},E=()=>{u&&!F(e)&&p()};return b(),f.observe(e),m.observe(s.body,{attributes:!0,attributeFilter:["class","style"]}),x.observe(s.head,{childList:!0,characterData:!0,subtree:!0}),s.fonts.addEventListener("loadingdone",p),s.addEventListener("load",L,!0),s.addEventListener("selectionchange",E),s.fonts.ready.then(p),p(),{refresh:p,dispose(){if(!o){o=!0,a.clearTimeout(d),g.disconnect(),f.disconnect(),m.disconnect(),x.disconnect(),s.fonts.removeEventListener("loadingdone",p),s.removeEventListener("load",L,!0),s.removeEventListener("selectionchange",E);for(let k of v(e))M(k,n)}}}}return re(ge);})();
+var client_default = `var AcademicParagraphLayout=(()=>{var U=Object.defineProperty;var ie=Object.getOwnPropertyDescriptor;var re=Object.getOwnPropertyNames;var se=Object.prototype.hasOwnProperty;var ae=(e,t)=>{for(var i in t)U(e,i,{get:t[i],enumerable:!0})},oe=(e,t,i,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of re(t))!se.call(e,a)&&a!==i&&U(e,a,{get:()=>t[a],enumerable:!(n=ie(t,a))||n.enumerable});return e};var le=e=>oe(U({},"__esModule",{value:!0}),e);var Ce={};ae(Ce,{createParagraphLayoutController:()=>Se,hasParagraphSelection:()=>B,layoutParagraphs:()=>we,layoutReadOnlyCallout:()=>Le,restoreParagraphs:()=>me});function X(e,t,i=0,n=0){if(!Array.isArray(e)||!e.length||e.length>1200)return null;let a=typeof t=="number"?[t,t]:t;if(!Array.isArray(a)||a.length<1||a.length>2||[...a].some(s=>!Number.isFinite(s)||s<=0))return null;let o=a[0],l=a[1]??o,c=Math.max(o,l);if(!Number.isFinite(i)||i<0||i>=c||!Number.isFinite(n)||n<0)return null;let d=[0],h=[0],f=[0],m=[0],u=[0],g=-1;for(let s=0;s<e.length;s++){let r=e[s];if(!r||!Number.isFinite(r.width)||r.width<0)return null;if(r.type==="box"){if(r.width>c+1e-7)return null;g=s}else if(r.type==="glue"){if(!Number.isFinite(r.stretch)||!Number.isFinite(r.shrink)||r.stretch<0||r.shrink<0||r.shrink>r.width)return null}else if(r.type==="penalty"){if(!Number.isFinite(r.cost)||r.flagged!==void 0&&typeof r.flagged!="boolean")return null}else return null;if(d.push(d[s]+(r.type==="penalty"?0:r.width)),h.push(h[s]+(r.type==="glue"?r.stretch:0)),f.push(f[s]+(r.type==="glue"?r.shrink:0)),m.push(m[s]+(r.type==="box"?1:0)),u.push(g+1),![d[s+1],h[s+1],f[s+1]].every(Number.isFinite))return null}if(g<0)return null;let x=s=>{for(;s<e.length&&e[s].type==="glue";)s++;return s},b=x(0),p=[{to:b,next:b,naturalEnd:b,cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1}];for(let s=b;s<e.length;s++){let r=e[s];if(r.type==="glue"&&s<g&&e[s-1]?.type==="box")p.push({to:s,next:x(s+1),naturalEnd:u[s],cost:0,extraWidth:0,flagged:!1,forced:!1,final:!1});else if(r.type==="penalty"&&r.cost<1e4&&(s<g||r.cost<=-1e4)){let A=s>g;if(p.push({to:s+1,next:x(s+1),naturalEnd:u[s],cost:r.cost,extraWidth:r.width,flagged:r.flagged===!0,forced:r.cost<=-1e4,final:A}),A)break}if(p.length>650)return null}if(p.at(-1).final||p.push({to:e.length,next:e.length,naturalEnd:g+1,cost:0,extraWidth:0,flagged:!1,forced:!0,final:!0}),p.length>650)return null;let w=[[void 0,{score:0,fitness:1,flagged:!1,lineCount:0},void 0,void 0]],y=0,k=0;for(let s=1;s<p.length;s++){let r=p[s],A=new Array(4);for(let P=s-1;P>=y;P--){if(++k>2e5)return null;let M=p[P].next,F=r.naturalEnd;if(M>=F||m[F]===m[M])continue;let R=d[F]-d[M]+r.extraWidth,_=f[F]-f[M];if(R-_>c+1e-7)break;let $=h[F]-h[M]+n;for(let S of w[P]){if(!S)continue;if(++k>2e5)return null;let H=(S.lineCount===0?o:l)-(r.final?i:0);if(H<=0)continue;let O=H-R,E=0;if(O<-1e-7){if(_<=0)continue;E=O/_}else if(!r.final&&O>1e-7){if($<=0)continue;E=O/$}if(!Number.isFinite(E)||E<-1-1e-7||E>2.5+1e-7)continue;E=Math.max(-1,Math.min(2.5,E));let I=E<-.5?0:E<=.5?1:E<=1?2:3,N=(10+100*Math.abs(E)**3)**2;r.cost>=0?N+=r.cost**2:r.forced||(N-=r.cost**2),S.lineCount&&Math.abs(S.fitness-I)>1&&(N+=1e4),S.flagged&&r.flagged&&(N+=1e4),r.final&&S.lineCount&&R<H*.18&&(N+=1800*(1-R/(H*.18)));let W=S.score+N;Number.isFinite(W)&&(!A[I]||W<A[I].score)&&(A[I]={score:W,fitness:I,flagged:r.flagged,lineCount:S.lineCount+1,line:{from:M,to:r.to,ratio:E,final:r.final},previous:S})}}if(w.push(A),r.forced){if(!A.some(Boolean))return null;y=s}}let L=w.at(-1).filter(s=>!!s);if(!L.length)return null;let C=L.reduce((s,r)=>s.score<=r.score?s:r),D=[];for(let s=C;s?.line;s=s.previous)D.push(s.line);return D.reverse(),{lines:D,demerits:C.score}}var K=new WeakMap,ce=120,ue=4e3,Z=900,Q=12e3,de='.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]',q="table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media";function G(e,t){return e.closest(de)&&(!t||!t.contains(e)||!t.closest('[contenteditable="false"]')||t.isContentEditable||!!t.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea'))||e.isContentEditable}var fe=/^[\\p{Script=Han}\\p{Script=Hiragana}\\p{Script=Katakana}\\p{Script=Hangul}]/u,ee=/^[([{\uFF08\uFF3B\uFF5B\u3008\u300A\u300C\u300E\u3010\u3014\u3016\u3018\u301A\u2018\u201C]$/u,te=/^[)\\]}\uFF09\uFF3D\uFF5D\u3009\u300B\u300D\u300F\u3011\u3015\u3017\u3019\u301B\u3001\u3002\uFF0C\uFF0E\uFF01\uFF1F\uFF1A\uFF1B,.!?:;\u2019\u201D\u2026\u3041\u3043\u3045\u3047\u3049\u3063\u3083\u3085\u3087\u308E\u30A1\u30A3\u30A5\u30A7\u30A9\u30C3\u30E3\u30E5\u30E7\u30EE\u30F5\u30F6]$/u,J=/[\\u00a0\\u202f\\u2060\\ufeff]/u;function v(e){return[...e.matches("p")?[e]:[],...e.querySelectorAll("p")]}function B(e){let t=e.ownerDocument.getSelection();if(!t||t.isCollapsed)return!1;for(let i=0;i<t.rangeCount;i++)try{if(t.getRangeAt(i).intersectsNode(e))return!0}catch{}return!1}function pe(e,t){return e.textContent===t.text&&e.childNodes.length===t.lines.length&&t.lines.every((i,n)=>e.childNodes[n]===i)}function Y(e){let t=[];for(let i of[...e.children])for(let n of[...i.childNodes])n.nodeType===1&&n.matches("span.an-kp-space")?t.push(...n.childNodes):t.push(n);e.replaceChildren(...t)}function T(e,t){let i=K.get(e);if(i){if(t&&i.owner!==t)return;pe(e,i)?e.replaceChildren(...i.nodes):e.childNodes.length===i.lines.length&&i.lines.every((n,a)=>e.childNodes[a]===n)&&Y(e),i.marker===null?e.removeAttribute("data-an-kp"):e.setAttribute("data-an-kp",i.marker),i.hadClass||e.classList.remove("an-kp-paragraph"),i.hadQed||e.classList.remove("an-kp-qed"),i.classAttribute===null&&!e.classList.length&&e.removeAttribute("class"),K.delete(e)}else if(!t&&e.dataset.anKp==="1"){let n=[...e.children];if(!n.length||!n.every(a=>a.matches("span.an-kp-line")))return;Y(e),e.removeAttribute("data-an-kp"),e.classList.remove("an-kp-paragraph","an-kp-qed"),e.classList.length||e.removeAttribute("class")}}function me(e){for(let t of v(e))T(t)}function ne(e){return e.matches('.callout:is([data-callout="proof"],[data-callout="pf"]) > .callout-content > p:last-child')&&e.ownerDocument.defaultView.getComputedStyle(e,"::after").content.replace(/["']/g,"")==="\\u25A1"}function he(e,t){if(e.closest(q)||G(e,t)||e.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block'))return!1;let i=e.ownerDocument.defaultView;if(!i)return!1;let n=i.getComputedStyle(e);if(n.direction!=="ltr"||n.writingMode!=="horizontal-tb"||n.whiteSpace!=="normal"||Math.abs(parseFloat(n.textIndent)||0)>.01||!["start","left","justify"].includes(n.textAlign))return!1;for(let a of["::before","::after"]){let o=i.getComputedStyle(e,a).content;if(o&&!["none","normal",'""',"''"].includes(o)&&!(a==="::after"&&ne(e)))return!1}for(let a of e.children){if(!/^(A|EM|STRONG|B|I|S|DEL|MARK|U|SUB|SUP|CODE|SMALL|SPAN|MJX-CONTAINER|SVG)$/.test(a.tagName.toUpperCase()))return!1;let o=i.getComputedStyle(a);if(o.cssFloat!=="none"||!["inline","inline-block","inline-flex"].includes(o.display)||o.position==="absolute"||o.position==="fixed")return!1}return!0}function ge(e){let t=Intl.Segmenter;if(!t)return null;let i=[...new t(void 0,{granularity:"grapheme"}).segment(e.data)],n=[];for(let a of i){let o=a.segment,l=/^[\\t\\r\\n ]+$/u.test(o)?"space":fe.test(o)?"cjk":ee.test(o)||te.test(o)?"punct":"word",c=n.at(-1);c&&(l==="word"||l==="space")&&c.kind===l?(c.text+=o,c.end=a.index+o.length):n.push({node:e,start:a.index,end:a.index+o.length,text:o,kind:l})}return n}function j(e,t){if(!e||!t)return!0;let i=Array.from(e.text).at(-1)||"",n=Array.from(t.text)[0]||"";return!ee.test(i)&&!te.test(n)&&!J.test(i)&&!J.test(n)}function be(e){let t=e.ownerDocument.defaultView.getComputedStyle(e);return e.getBoundingClientRect().width-(parseFloat(t.paddingLeft)||0)-(parseFloat(t.paddingRight)||0)-(parseFloat(t.borderLeftWidth)||0)-(parseFloat(t.borderRightWidth)||0)}function ke(e,t){let i=e.parentElement;if(!i?.matches(".callout-content"))return t;let n=i.parentElement?.querySelector(":scope > .callout-title");if(!n)return t;let a=e.ownerDocument.defaultView,o=a.getComputedStyle(n);if(o.cssFloat==="none")return t;let l=e.getBoundingClientRect(),c=n.getBoundingClientRect();if(c.bottom<=l.top+.5||c.top>=l.bottom)return t;let d=parseFloat(a.getComputedStyle(e).lineHeight);if(o.cssFloat!=="left"||!Number.isFinite(d)||c.top>l.top+1||c.bottom>l.top+d+1)return null;let h=t-Math.max(0,c.right-l.left+(parseFloat(o.marginRight)||0));return h>40?[h,t]:null}function ye(e){if(!ne(e))return 0;let t=V(e.ownerDocument,"an-kp-qed-probe");t.textContent="\\u25A1",e.appendChild(t);try{return t.getBoundingClientRect().width+(parseFloat(e.ownerDocument.defaultView.getComputedStyle(t).marginInlineStart)||0)}finally{t.remove()}}function Ee(e,t){let i=e.ownerDocument.defaultView.getComputedStyle(e),n=parseFloat(i.fontSize)||16,a=e.getAttribute("class"),o=e.ownerDocument.createRange(),l=[];e.classList.add("an-kp-measure");try{if(e.ownerDocument.defaultView.getComputedStyle(e).whiteSpace!=="nowrap")return null;for(let c=0;c<t.length;c++){let d=t[c],h=t[c-1],f=t[c+1];h&&h.kind!=="space"&&d.kind!=="space"&&(h.kind==="cjk"||d.kind==="cjk")&&j(h,d)&&l.push({item:{type:"glue",width:0,stretch:n*.12,shrink:0}}),d.start!==void 0?(o.setStart(d.node,d.start),o.setEnd(d.node,d.end)):o.selectNode(d.node);let m=o.getBoundingClientRect().width;if(d.kind==="inline"){let g=e.ownerDocument.defaultView.getComputedStyle(d.node);m+=(parseFloat(g.marginLeft)||0)+(parseFloat(g.marginRight)||0)}if(!Number.isFinite(m)||m<0)return null;let u=d.kind==="space"&&j(h,f)?{type:"glue",width:m,stretch:Math.max(m*.65,n*.12),shrink:m*.4}:{type:"box",width:m};if(l.push({item:u,unit:d}),l.length>Z)return null}return l}finally{a===null?e.removeAttribute("class"):e.setAttribute("class",a)}}function V(e,t){let i=e.createElement("span");return i.className=t,i}function xe(e,t,i,n){let a=ke(e,i),o=ye(e);if(a===null)return"fallback";let l=t.map(u=>u.item),c=X(l,a,o)||(o>0||Array.isArray(a)||t.some(u=>u.unit?.kind==="inline")?X(l,a,o,(parseFloat(e.ownerDocument.defaultView.getComputedStyle(e).fontSize)||16)*2):null);if(!c)return"fallback";if(c.lines.length<2)return"skip";let d=[...e.childNodes],h=e.textContent,f={nodes:d,lines:[],owner:n,marker:e.getAttribute("data-an-kp"),hadClass:e.classList.contains("an-kp-paragraph"),hadQed:e.classList.contains("an-kp-qed"),classAttribute:e.getAttribute("class"),text:h},m=0;for(let u=0;u<c.lines.length;u++){let g=c.lines[u],x=c.lines[u+1]?.from??t.length,b=V(e.ownerDocument,"an-kp-line");u===0&&Array.isArray(a)&&(b.style.width=a[0]+"px");let p=g.to-1;for(;p>=g.from&&t[p].item.type!=="box";)p--;for(;m<x;m++){let w=t[m],y=w.unit;if(w.item.type==="glue"||y?.kind==="space"){let k=V(e.ownerDocument,"an-kp-space");y&&k.appendChild(e.ownerDocument.createTextNode(y.text));let L=m>=g.from&&m<=p,C=w.item,D=L?C.type==="glue"?C.width+g.ratio*(g.ratio<0?C.shrink:C.stretch):C.width:0;k.style.width=Math.max(0,D)+"px",b.appendChild(k)}else y&&b.appendChild(y.start===void 0?y.node:e.ownerDocument.createTextNode(y.text))}f.lines.push(b)}return e.replaceChildren(...f.lines),e.dataset.anKp="1",e.classList.add("an-kp-paragraph"),K.set(e,f),o&&e.classList.add("an-kp-qed"),e.textContent!==h||f.lines.some(u=>u.scrollWidth>u.getBoundingClientRect().width+2)?(T(e,n),"fallback"):"processed"}function z(e,t,i){let n={processed:0,skipped:0,fallback:0};if(e.closest(q)||G(e,i)||B(e))return{processed:0,skipped:v(e).length,fallback:0};let a=0,o=0;for(let l of v(e)){let c=K.get(l);if(t&&c?.owner&&c.owner!==t){n.skipped++;continue}T(l,t);let d=l.textContent||"";if(!he(l,i)||!d.trim()||d.length>ue||o>=ce||a>=Q){n.skipped++;continue}let h=be(l);if(!Number.isFinite(h)||h<80){n.skipped++;continue}let f=[],m=!1;for(let b of l.childNodes)if(b.nodeType===3){let p=ge(b);if(!p){m=!0;break}f.push(...p)}else if(b.nodeType===1)f.push({node:b,text:b.textContent||"",kind:"inline"});else{m=!0;break}if(m||f.length>Z){n.skipped++;continue}let u=f.length+f.filter((b,p)=>p>0&&f[p-1].kind!=="space"&&b.kind!=="space"&&(f[p-1].kind==="cjk"||b.kind==="cjk")&&j(f[p-1],b)).length;if(a+u>Q){n.skipped++;continue}a+=u,o++;let g=Ee(l,f);if(!g){n.fallback++;continue}let x=xe(l,g,h,t);x==="processed"?n.processed++:x==="fallback"?n.fallback++:n.skipped++}return n}function we(e){return z(e)}function Le(e){return e.matches(".callout")?z(e,void 0,e):{processed:0,skipped:0,fallback:0}}function Se(e,t={}){let i={},n=e.ownerDocument,a=n.defaultView;if(!a||e.closest(q)||G(e))return{refresh(){},dispose(){}};let o=!1,l=!1,c,d=e.getBoundingClientRect().width,h=()=>typeof t.enabled=="function"?t.enabled():t.enabled!==!1,f=()=>g.observe(e,{childList:!0,characterData:!0,subtree:!0,attributes:!0,attributeFilter:["class","style","contenteditable","hidden","src","width","height"]}),m=()=>{if(c=void 0,!o){if(B(e)){l=!0;return}l=!1,g.disconnect();try{if(h())z(e,i);else for(let k of v(e))T(k,i);d=e.getBoundingClientRect().width}catch(k){for(let L of v(e))T(L,i);t.onError?.(k)}finally{o||f()}}},u=()=>{!o&&c===void 0&&(c=a.setTimeout(m,70))},g=new MutationObserver(u),x=new ResizeObserver(()=>{let k=e.getBoundingClientRect().width;Math.abs(k-d)>.5&&u()}),b=new MutationObserver(u),p=new MutationObserver(u),w=k=>{let L=k.target;L&&(L.tagName==="LINK"||e.contains(L))&&u()},y=()=>{l&&!B(e)&&u()};return f(),x.observe(e),b.observe(n.body,{attributes:!0,attributeFilter:["class","style"]}),p.observe(n.head,{childList:!0,characterData:!0,subtree:!0}),n.fonts.addEventListener("loadingdone",u),n.addEventListener("load",w,!0),n.addEventListener("selectionchange",y),n.fonts.ready.then(u),u(),{refresh:u,dispose(){if(!o){o=!0,a.clearTimeout(c),g.disconnect(),x.disconnect(),b.disconnect(),p.disconnect(),n.fonts.removeEventListener("loadingdone",u),n.removeEventListener("load",w,!0),n.removeEventListener("selectionchange",y);for(let k of v(e))T(k,i)}}}}return le(Ce);})();
 `;
 
 // src/export/pdf-postprocess.ts
@@ -60467,310 +60864,14 @@ async function diagramProcessor(app, source, el, ctx) {
   }
 }
 
-// src/typography/dom.ts
-var saved = /* @__PURE__ */ new WeakMap();
-var MAX_PARAGRAPHS = 120;
-var MAX_CHARACTERS = 4e3;
-var MAX_ITEMS2 = 900;
-var MAX_TOTAL_ITEMS = 12e3;
-var EXCLUDED = '.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"],table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media,.callout:is([data-callout="proof"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"])';
-var CJK = /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
-var OPENING = /^[([{（［｛〈《「『【〔〖〘〚‘“]$/u;
-var CLOSING = /^[)\]}）］｝〉》」』】〕〗〙〛、。，．！？：；,.!?:;’”…ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヵヶ]$/u;
-var NONBREAKING = /[\u00a0\u202f\u2060\ufeff]/u;
-function paragraphs(root) {
-  return [...root.matches("p") ? [root] : [], ...root.querySelectorAll("p")];
-}
-function hasParagraphSelection(root) {
-  const selection = root.ownerDocument.getSelection();
-  if (!selection || selection.isCollapsed) return false;
-  for (let index = 0; index < selection.rangeCount; index++) {
-    try {
-      if (selection.getRangeAt(index).intersectsNode(root)) return true;
-    } catch {
-    }
-  }
-  return false;
-}
-function isOwned(p, state) {
-  return p.childNodes.length === state.lines.length && state.lines.every((line, index) => p.childNodes[index] === line);
-}
-function restore(p, owner) {
-  const state = saved.get(p);
-  if (state) {
-    if (owner && state.owner !== owner) return;
-    if (isOwned(p, state)) p.replaceChildren(...state.nodes);
-    if (state.marker === null) p.removeAttribute("data-an-kp");
-    else p.setAttribute("data-an-kp", state.marker);
-    if (!state.hadClass) p.classList.remove("an-kp-paragraph");
-    if (state.classAttribute === null && !p.classList.length) p.removeAttribute("class");
-    saved.delete(p);
-  } else if (!owner && p.dataset.anKp === "1") {
-    const lines = [...p.children];
-    if (!lines.length || !lines.every((line) => line.matches("span.an-kp-line"))) return;
-    const content = [];
-    for (const line of lines) for (const node of [...line.childNodes]) {
-      if (node.nodeType === 1 && node.matches("span.an-kp-space")) content.push(...node.childNodes);
-      else content.push(node);
-    }
-    p.replaceChildren(...content);
-    p.removeAttribute("data-an-kp");
-    p.classList.remove("an-kp-paragraph");
-    if (!p.classList.length) p.removeAttribute("class");
-  }
-}
-function restoreParagraphs(root) {
-  for (const p of paragraphs(root)) restore(p);
-}
-function eligible(p) {
-  if (p.closest(EXCLUDED) || p.isContentEditable || p.querySelector('[contenteditable],br,img,video,audio,iframe,button,input,textarea,select,canvas,pre,table,.math-block,mjx-container[display="true"],.phb-math[data-display="true"],.an-diagram-block')) return false;
-  const win = p.ownerDocument.defaultView;
-  if (!win) return false;
-  const style = win.getComputedStyle(p);
-  if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || style.whiteSpace !== "normal" || Math.abs(parseFloat(style.textIndent) || 0) > 0.01 || !["start", "left", "justify"].includes(style.textAlign)) return false;
-  for (const pseudo of ["::before", "::after"]) {
-    const value = win.getComputedStyle(p, pseudo).content;
-    if (value && !["none", "normal", '""', "''"].includes(value)) return false;
-  }
-  for (const element of p.children) {
-    if (!/^(A|EM|STRONG|B|I|S|DEL|MARK|U|SUB|SUP|CODE|SMALL|SPAN|MJX-CONTAINER|SVG)$/.test(element.tagName.toUpperCase())) return false;
-    const inline = win.getComputedStyle(element);
-    if (inline.cssFloat !== "none" || !["inline", "inline-block", "inline-flex"].includes(inline.display) || inline.position === "absolute" || inline.position === "fixed") return false;
-  }
-  return true;
-}
-function textUnits(node) {
-  const Segmenter = Intl.Segmenter;
-  if (!Segmenter) return null;
-  const parts = [...new Segmenter(void 0, { granularity: "grapheme" }).segment(node.data)];
-  const units = [];
-  for (const part of parts) {
-    const text = part.segment, kind = /^[\t\r\n ]+$/u.test(text) ? "space" : CJK.test(text) ? "cjk" : OPENING.test(text) || CLOSING.test(text) ? "punct" : "word";
-    const previous = units.at(-1);
-    if (previous && (kind === "word" || kind === "space") && previous.kind === kind) {
-      previous.text += text;
-      previous.end = part.index + text.length;
-    } else units.push({ node, start: part.index, end: part.index + text.length, text, kind });
-  }
-  return units;
-}
-function legalBoundary(left, right) {
-  if (!left || !right) return true;
-  const tail = Array.from(left.text).at(-1) || "", head = Array.from(right.text)[0] || "";
-  return !OPENING.test(tail) && !CLOSING.test(head) && !NONBREAKING.test(tail) && !NONBREAKING.test(head);
-}
-function contentWidth(p) {
-  const style = p.ownerDocument.defaultView.getComputedStyle(p);
-  return p.getBoundingClientRect().width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0) - (parseFloat(style.borderLeftWidth) || 0) - (parseFloat(style.borderRightWidth) || 0);
-}
-function measure(p, units) {
-  const style = p.ownerDocument.defaultView.getComputedStyle(p), em = parseFloat(style.fontSize) || 16;
-  const before = p.getAttribute("class");
-  const range = p.ownerDocument.createRange(), tokens = [];
-  p.classList.add("an-kp-measure");
-  try {
-    if (p.ownerDocument.defaultView.getComputedStyle(p).whiteSpace !== "nowrap") return null;
-    for (let index = 0; index < units.length; index++) {
-      const unit = units[index], previous = units[index - 1], next = units[index + 1];
-      if (previous && previous.kind !== "space" && unit.kind !== "space" && (previous.kind === "cjk" || unit.kind === "cjk") && legalBoundary(previous, unit)) tokens.push({ item: { type: "glue", width: 0, stretch: em * 0.12, shrink: 0 } });
-      if (unit.start !== void 0) {
-        range.setStart(unit.node, unit.start);
-        range.setEnd(unit.node, unit.end);
-      } else range.selectNode(unit.node);
-      let width = range.getBoundingClientRect().width;
-      if (unit.kind === "inline") {
-        const inline = p.ownerDocument.defaultView.getComputedStyle(unit.node);
-        width += (parseFloat(inline.marginLeft) || 0) + (parseFloat(inline.marginRight) || 0);
-      }
-      if (!Number.isFinite(width) || width < 0) return null;
-      const item = unit.kind === "space" && legalBoundary(previous, next) ? { type: "glue", width, stretch: Math.max(width * 0.65, em * 0.12), shrink: width * 0.4 } : { type: "box", width };
-      tokens.push({ item, unit });
-      if (tokens.length > MAX_ITEMS2) return null;
-    }
-    return tokens;
-  } finally {
-    if (before === null) p.removeAttribute("class");
-    else p.setAttribute("class", before);
-  }
-}
-function makeSpan(doc, cls) {
-  const span = doc.createElement("span");
-  span.className = cls;
-  return span;
-}
-function apply(p, tokens, width, owner) {
-  const solution = solveParagraph(tokens.map((token) => token.item), width);
-  if (!solution) return "fallback";
-  if (solution.lines.length < 2) return "skip";
-  const original = [...p.childNodes], text = p.textContent;
-  const state = { nodes: original, lines: [], owner, marker: p.getAttribute("data-an-kp"), hadClass: p.classList.contains("an-kp-paragraph"), classAttribute: p.getAttribute("class") };
-  let cursor = 0;
-  for (let index = 0; index < solution.lines.length; index++) {
-    const line = solution.lines[index], end = solution.lines[index + 1]?.from ?? tokens.length;
-    const node = makeSpan(p.ownerDocument, "an-kp-line");
-    let lastBox = line.to - 1;
-    while (lastBox >= line.from && tokens[lastBox].item.type !== "box") lastBox--;
-    for (; cursor < end; cursor++) {
-      const token = tokens[cursor], unit = token.unit;
-      if (token.item.type === "glue" || unit?.kind === "space") {
-        const gap = makeSpan(p.ownerDocument, "an-kp-space");
-        if (unit) gap.appendChild(p.ownerDocument.createTextNode(unit.text));
-        const visible = cursor >= line.from && cursor <= lastBox;
-        const item = token.item;
-        const value = !visible ? 0 : item.type === "glue" ? item.width + line.ratio * (line.ratio < 0 ? item.shrink : item.stretch) : item.width;
-        gap.style.width = Math.max(0, value) + "px";
-        node.appendChild(gap);
-      } else if (unit) node.appendChild(unit.start === void 0 ? unit.node : p.ownerDocument.createTextNode(unit.text));
-    }
-    state.lines.push(node);
-  }
-  p.replaceChildren(...state.lines);
-  p.dataset.anKp = "1";
-  p.classList.add("an-kp-paragraph");
-  saved.set(p, state);
-  if (p.textContent !== text || state.lines.some((line) => line.scrollWidth > width + 2)) {
-    restore(p, owner);
-    return "fallback";
-  }
-  return "processed";
-}
-function layout(root, owner) {
-  const report = { processed: 0, skipped: 0, fallback: 0 };
-  if (root.closest(EXCLUDED) || root.isContentEditable || hasParagraphSelection(root)) return { processed: 0, skipped: paragraphs(root).length, fallback: 0 };
-  let total = 0, attempted = 0;
-  for (const p of paragraphs(root)) {
-    const existing = saved.get(p);
-    if (owner && existing?.owner && existing.owner !== owner) {
-      report.skipped++;
-      continue;
-    }
-    restore(p, owner);
-    const text = p.textContent || "";
-    if (!eligible(p) || !text.trim() || text.length > MAX_CHARACTERS || attempted >= MAX_PARAGRAPHS || total >= MAX_TOTAL_ITEMS) {
-      report.skipped++;
-      continue;
-    }
-    const width = contentWidth(p);
-    if (!Number.isFinite(width) || width < 80) {
-      report.skipped++;
-      continue;
-    }
-    const units = [];
-    let unsupported = false;
-    for (const node of p.childNodes) {
-      if (node.nodeType === 3) {
-        const parts = textUnits(node);
-        if (!parts) {
-          unsupported = true;
-          break;
-        }
-        units.push(...parts);
-      } else if (node.nodeType === 1) units.push({ node, text: node.textContent || "", kind: "inline" });
-      else {
-        unsupported = true;
-        break;
-      }
-    }
-    if (unsupported || units.length > MAX_ITEMS2) {
-      report.skipped++;
-      continue;
-    }
-    const estimated = units.length + units.filter((unit, index) => index > 0 && units[index - 1].kind !== "space" && unit.kind !== "space" && (units[index - 1].kind === "cjk" || unit.kind === "cjk") && legalBoundary(units[index - 1], unit)).length;
-    if (total + estimated > MAX_TOTAL_ITEMS) {
-      report.skipped++;
-      continue;
-    }
-    total += estimated;
-    attempted++;
-    const tokens = measure(p, units);
-    if (!tokens) {
-      report.fallback++;
-      continue;
-    }
-    const result = apply(p, tokens, width, owner);
-    if (result === "processed") report.processed++;
-    else if (result === "fallback") report.fallback++;
-    else report.skipped++;
-  }
-  return report;
-}
-function createParagraphLayoutController(root, options = {}) {
-  const owner = {}, doc = root.ownerDocument, win = doc.defaultView;
-  if (!win || root.closest(EXCLUDED) || root.isContentEditable) return { refresh() {
-  }, dispose() {
-  } };
-  let disposed = false, deferredSelection = false, timer, lastWidth = root.getBoundingClientRect().width;
-  const enabled = () => typeof options.enabled === "function" ? options.enabled() : options.enabled !== false;
-  const observe = () => changes.observe(root, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ["class", "style", "contenteditable", "hidden", "src", "width", "height"] });
-  const run = () => {
-    timer = void 0;
-    if (disposed) return;
-    if (hasParagraphSelection(root)) {
-      deferredSelection = true;
-      return;
-    }
-    deferredSelection = false;
-    changes.disconnect();
-    try {
-      if (enabled()) layout(root, owner);
-      else for (const p of paragraphs(root)) restore(p, owner);
-      lastWidth = root.getBoundingClientRect().width;
-    } catch (error) {
-      for (const p of paragraphs(root)) restore(p, owner);
-      options.onError?.(error);
-    } finally {
-      if (!disposed) observe();
-    }
-  };
-  const refresh = () => {
-    if (!disposed && timer === void 0) timer = win.setTimeout(run, 70);
-  };
-  const changes = new MutationObserver(refresh);
-  const resize = new ResizeObserver(() => {
-    const width = root.getBoundingClientRect().width;
-    if (Math.abs(width - lastWidth) > 0.5) refresh();
-  });
-  const theme = new MutationObserver(refresh);
-  const css = new MutationObserver(refresh);
-  const resource = (event) => {
-    const target = event.target;
-    if (target && (target.tagName === "LINK" || root.contains(target))) refresh();
-  };
-  const selection = () => {
-    if (deferredSelection && !hasParagraphSelection(root)) refresh();
-  };
-  observe();
-  resize.observe(root);
-  theme.observe(doc.body, { attributes: true, attributeFilter: ["class", "style"] });
-  css.observe(doc.head, { childList: true, characterData: true, subtree: true });
-  doc.fonts.addEventListener("loadingdone", refresh);
-  doc.addEventListener("load", resource, true);
-  doc.addEventListener("selectionchange", selection);
-  void doc.fonts.ready.then(refresh);
-  refresh();
-  return { refresh, dispose() {
-    if (disposed) return;
-    disposed = true;
-    win.clearTimeout(timer);
-    changes.disconnect();
-    resize.disconnect();
-    theme.disconnect();
-    css.disconnect();
-    doc.fonts.removeEventListener("loadingdone", refresh);
-    doc.removeEventListener("load", resource, true);
-    doc.removeEventListener("selectionchange", selection);
-    for (const p of paragraphs(root)) restore(p, owner);
-  } };
-}
-
 // src/styles/diagrams.css
 var diagrams_default = '.an-diagram-modal {\n  width: min(850px, 96vw);\n}\n.an-diagram-toolbar,\n.an-diagram-fields,\n.an-diagram-arrow-list {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 12px;\n  margin: 12px 0;\n}\n.an-diagram-editor label {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.an-diagram-editor input[type=text] {\n  min-width: 140px;\n  max-width: 100%;\n}\n.an-diagram-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 10px;\n  max-width: 420px;\n  margin: 16px auto;\n}\n.an-diagram-grid[data-grid="3"] {\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n}\n.an-diagram-grid button {\n  min-height: 48px;\n  height: auto;\n  overflow-wrap: anywhere;\n}\n.an-diagram-grid button[aria-pressed=true] {\n  background: var(--background-modifier-hover);\n}\n.an-diagram-grid button:is(.is-selected, .is-start) {\n  outline: 2px solid var(--interactive-accent);\n  outline-offset: 2px;\n}\n.an-diagram-arrow-list button[aria-pressed=true] {\n  border-color: var(--interactive-accent);\n}\n.an-diagram-figure {\n  display: block;\n  width: 100%;\n  margin: 1em auto;\n  text-align: center;\n  break-inside: avoid;\n}\n.an-diagram-svg {\n  display: block;\n  width: 100%;\n  max-width: 700px;\n  height: auto;\n  margin: auto;\n  color: var(--text-normal,currentColor);\n}\n.an-diagram-math-stage {\n  position: fixed;\n  left: -10000px;\n  top: 0;\n  font-size: 20px;\n  opacity: 0;\n  pointer-events: none;\n  white-space: nowrap;\n}\n.an-diagram-math-stage mjx-container {\n  font-size: 20px;\n}\n.an-diagram-interactive-arrow {\n  cursor: pointer;\n}\n.an-diagram-interactive-arrow.is-selected {\n  color: var(--interactive-accent);\n}\n.an-diagram-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin: 8px 0;\n}\n.an-diagram-caption {\n  display: flex;\n  justify-content: center;\n  font-size: .9em;\n  margin-top: .5em;\n}\n.an-diagram-caption[hidden] {\n  display: none;\n}\n.an-diagram-status {\n  color: var(--text-muted);\n  margin: 8px 0;\n}\n.block-language-tikz svg {\n  max-width: 100%;\n  height: auto;\n}\n@media print {\n  .an-diagram-actions,\n  .an-diagram-edit {\n    display: none;\n  }\n  .an-diagram-block,\n  .an-diagram-figure,\n  .block-language-tikz {\n    break-inside: avoid;\n  }\n}\n';
 
 // src/styles/typography.css
-var typography_default = ".an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n.an-kp-live-line {\n  white-space: nowrap;\n}\n.an-kp-live-gap {\n  display: inline-block;\n  white-space: pre;\n  font-size: 0;\n  line-height: 0;\n  height: 0;\n}\n";
+var typography_default = '.an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n.an-kp-live-line {\n  white-space: nowrap;\n}\n.an-kp-live-gap {\n  display: inline-block;\n  white-space: pre;\n  font-size: 0;\n  line-height: 0;\n  height: 0;\n}\n.an-kp-qed > .an-kp-line:last-child::after {\n  content: "\\25a1";\n  float: right;\n  margin-inline-start: .75em;\n  font-style: normal;\n  font-weight: 400;\n  color: inherit;\n}\n.an-kp-qed-probe {\n  font-style: normal;\n  font-weight: 400;\n  margin-inline-start: .75em;\n}\n';
 
 // src/styles/callouts.css
-var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def: #a63c67;\n  --phb-thm: #6952a0;\n  --phb-lem: #8a4e8d;\n  --phb-prop: #406e68;\n  --phb-cor: #536c9a;\n  --phb-claim: #996040;\n  --phb-example: #8f6c25;\n  --phb-proof: #697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def: #227c77;\n  --phb-thm: #326694;\n  --phb-lem: #65709d;\n  --phb-prop: #457d5b;\n  --phb-cor: #6b7552;\n  --phb-claim: #4c7192;\n  --phb-example: #916b35;\n  --phb-proof: #647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def: #256f83;\n  --phb-thm: #2f609c;\n  --phb-lem: #665d98;\n  --phb-prop: #3d7a70;\n  --phb-cor: #536d86;\n  --phb-claim: #7f668d;\n  --phb-example: #956b35;\n  --phb-proof: #5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def: #247651;\n  --phb-thm: #286b76;\n  --phb-lem: #71628c;\n  --phb-prop: #62752e;\n  --phb-cor: #42786b;\n  --phb-claim: #44698c;\n  --phb-example: #946b2f;\n  --phb-proof: #687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def: #776085;\n  --phb-thm: #674386;\n  --phb-lem: #925d86;\n  --phb-prop: #5d7767;\n  --phb-cor: #646998;\n  --phb-claim: #896440;\n  --phb-example: #936c3f;\n  --phb-proof: #72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def: #88712e;\n  --phb-thm: #9c582d;\n  --phb-lem: #826489;\n  --phb-prop: #617542;\n  --phb-cor: #946640;\n  --phb-claim: #587a7b;\n  --phb-example: #a75c3c;\n  --phb-proof: #77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def: #9c3a55;\n  --phb-thm: #7f3f65;\n  --phb-lem: #845786;\n  --phb-prop: #3e756b;\n  --phb-cor: #626987;\n  --phb-claim: #9c5e36;\n  --phb-example: #906c32;\n  --phb-proof: #69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def: #2a6c76;\n  --phb-thm: #28558a;\n  --phb-lem: #6c608c;\n  --phb-prop: #477966;\n  --phb-cor: #526d94;\n  --phb-claim: #887052;\n  --phb-example: #926938;\n  --phb-proof: #5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def: #82d6ac;\n  --phb-thm: #bca1e2;\n  --phb-lem: #db9bc4;\n  --phb-prop: #afd294;\n  --phb-cor: #83c7d1;\n  --phb-claim: #e5b78f;\n  --phb-example: #dfc67d;\n  --phb-proof: #a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def: #73c9bc;\n  --phb-thm: #82b6df;\n  --phb-lem: #b4a1e0;\n  --phb-prop: #9bcba7;\n  --phb-cor: #78ccd2;\n  --phb-claim: #d0ac8e;\n  --phb-example: #d6c07c;\n  --phb-proof: #a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def: #86ca98;\n  --phb-thm: #83bbce;\n  --phb-lem: #b7a7ca;\n  --phb-prop: #b8c984;\n  --phb-cor: #8dcbb4;\n  --phb-claim: #9baed0;\n  --phb-example: #dec178;\n  --phb-proof: #a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\n';
+var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def: #a63c67;\n  --phb-thm: #6952a0;\n  --phb-lem: #8a4e8d;\n  --phb-prop: #406e68;\n  --phb-cor: #536c9a;\n  --phb-claim: #996040;\n  --phb-example: #8f6c25;\n  --phb-proof: #697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def: #227c77;\n  --phb-thm: #326694;\n  --phb-lem: #65709d;\n  --phb-prop: #457d5b;\n  --phb-cor: #6b7552;\n  --phb-claim: #4c7192;\n  --phb-example: #916b35;\n  --phb-proof: #647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def: #256f83;\n  --phb-thm: #2f609c;\n  --phb-lem: #665d98;\n  --phb-prop: #3d7a70;\n  --phb-cor: #536d86;\n  --phb-claim: #7f668d;\n  --phb-example: #956b35;\n  --phb-proof: #5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def: #247651;\n  --phb-thm: #286b76;\n  --phb-lem: #71628c;\n  --phb-prop: #62752e;\n  --phb-cor: #42786b;\n  --phb-claim: #44698c;\n  --phb-example: #946b2f;\n  --phb-proof: #687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def: #776085;\n  --phb-thm: #674386;\n  --phb-lem: #925d86;\n  --phb-prop: #5d7767;\n  --phb-cor: #646998;\n  --phb-claim: #896440;\n  --phb-example: #936c3f;\n  --phb-proof: #72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def: #88712e;\n  --phb-thm: #9c582d;\n  --phb-lem: #826489;\n  --phb-prop: #617542;\n  --phb-cor: #946640;\n  --phb-claim: #587a7b;\n  --phb-example: #a75c3c;\n  --phb-proof: #77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def: #9c3a55;\n  --phb-thm: #7f3f65;\n  --phb-lem: #845786;\n  --phb-prop: #3e756b;\n  --phb-cor: #626987;\n  --phb-claim: #9c5e36;\n  --phb-example: #906c32;\n  --phb-proof: #69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def: #2a6c76;\n  --phb-thm: #28558a;\n  --phb-lem: #6c608c;\n  --phb-prop: #477966;\n  --phb-cor: #526d94;\n  --phb-claim: #887052;\n  --phb-example: #926938;\n  --phb-proof: #5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def: #82d6ac;\n  --phb-thm: #bca1e2;\n  --phb-lem: #db9bc4;\n  --phb-prop: #afd294;\n  --phb-cor: #83c7d1;\n  --phb-claim: #e5b78f;\n  --phb-example: #dfc67d;\n  --phb-proof: #a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def: #73c9bc;\n  --phb-thm: #82b6df;\n  --phb-lem: #b4a1e0;\n  --phb-prop: #9bcba7;\n  --phb-cor: #78ccd2;\n  --phb-claim: #d0ac8e;\n  --phb-example: #d6c07c;\n  --phb-proof: #a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def: #86ca98;\n  --phb-thm: #83bbce;\n  --phb-lem: #b7a7ca;\n  --phb-prop: #b8c984;\n  --phb-cor: #8dcbb4;\n  --phb-claim: #9baed0;\n  --phb-example: #dec178;\n  --phb-proof: #a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child:not(.an-kp-qed)::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\n';
 
 // snippets/academic-layout.css
 var academic_layout_default = 'body {\n  --an-layout-caption-size: .9em;\n  --an-layout-caption-gap: .55em;\n  --an-layout-image-gap: 1.25em;\n  --an-layout-subfigure-min: 12rem;\n  --an-layout-rule: var(--text-normal, #26352c);\n  --an-layout-rule-heavy: 1.6px;\n  --an-layout-rule-light: 1px;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) {\n  border-collapse: collapse !important;\n  border-spacing: 0 !important;\n  border-radius: 0;\n  border: 0 !important;\n  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  background: transparent !important;\n  box-shadow: none;\n  width: auto;\n  min-width: min(100%, 22rem);\n  max-width: 100%;\n  margin: 1.25em auto;\n  font-variant-numeric: tabular-nums;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td, tr, thead, tbody, tfoot) {\n  border: 0 !important;\n  border-radius: 0;\n  background: transparent !important;\n  box-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) thead {\n  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td) {\n  padding: .5em .85em;\n  line-height: 1.5;\n  color: var(--text-normal, inherit) !important;\n  text-indent: 0;\n  overflow-wrap: anywhere;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) th {\n  font-weight: 650;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td):hover {\n  box-shadow: none !important;\n  background: transparent !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) {\n  --callout-blend-mode: normal;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: visible !important;\n  width: auto;\n  min-width: 0;\n  max-width: 100%;\n  margin: 1.5em 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit);\n  transform: none;\n  filter: none;\n  isolation: auto;\n  mix-blend-mode: normal;\n  box-sizing: border-box;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::before,\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::after {\n  content: none;\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {\n  position: static;\n  inset: auto;\n  display: var(--an-caption-display, flex) !important;\n  align-items: baseline;\n  justify-content: center;\n  order: 2;\n  width: auto;\n  max-width: 100%;\n  margin: var(--an-layout-caption-gap) 0 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit) !important;\n  text-align: center;\n  font: inherit;\n  font-size: var(--an-layout-caption-size);\n  line-height: 1.55;\n  white-space: normal;\n  overflow-wrap: anywhere;\n  transform: none;\n  text-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-icon {\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-title-inner {\n  display: block;\n  color: inherit;\n  font: inherit;\n  white-space: normal;\n  text-indent: 0;\n  padding: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content {\n  order: 1;\n  position: static;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--text-normal, inherit);\n  overflow: visible;\n  min-width: 0;\n  text-align: center;\n}\nbody .an-caption-label {\n  font-weight: 650;\n}\nbody .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {\n  content: "\\2002";\n}\nbody .an-caption-text {\n  font-weight: 400;\n}\nbody .callout.an-captionless:not(.is-collapsible) > .callout-title,\nbody.phb-export .callout.an-captionless > .callout-title {\n  --an-caption-display: none;\n}\nbody :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {\n  margin: .35em 0;\n  text-indent: 0;\n}\nbody .an-media .image-embed,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  display: inline-block !important;\n  margin: 0;\n  padding: 0;\n  min-width: 0;\n  max-width: 100%;\n  background: transparent;\n  border: 0;\n  box-shadow: none;\n  vertical-align: top;\n}\nbody .an-media img,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n  margin: 0 auto;\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n  object-fit: contain;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=table], [data-callout=tbl]) > .callout-title {\n  order: 0;\n  margin: 0 0 var(--an-layout-caption-gap) !important;\n}\nbody .callout:is([data-callout=table], [data-callout=tbl]) table {\n  margin: 0 auto !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig]) > .callout-content.an-figure-grid {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: flex-start;\n  gap: var(--an-layout-image-gap);\n}\nbody .an-figure-grid > :not(.an-subfigure-cell) {\n  flex: 0 0 100%;\n}\nbody .an-figure-grid > .an-subfigure-cell {\n  flex: 1 1 calc(50% - var(--an-layout-image-gap));\n  min-width: min(100%, var(--an-layout-subfigure-min));\n  max-width: 100%;\n  margin: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) {\n  margin: 0 !important;\n}\nbody .an-figure-grid > .an-empty-anchor {\n  display: none;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig]) {\n  container: an-figure / inline-size;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n  --an-columns: 1;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid > .an-subfigure-cell {\n  flex: 0 0 calc((100% - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns));\n  min-width: 0;\n}\n@container an-figure (min-width: 26rem) {\n  body .callout:is(.an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n    --an-columns: 2;\n  }\n}\n@container an-figure (min-width: 39rem) {\n  body .callout.an-columns-3 > .an-figure-grid {\n    --an-columns: 3;\n  }\n}\n@container an-figure (min-width: 52rem) {\n  body .callout.an-columns-4 > .an-figure-grid {\n    --an-columns: 4;\n  }\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  width: 100% !important;\n  max-width: 100%;\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) img {\n  width: auto !important;\n  height: min(var(--an-subfigure-height), calc((100cqw - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns) / var(--an-max-image-ratio, 1))) !important;\n  max-height: none;\n  object-fit: contain;\n  object-position: center;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {\n  text-indent: 2em;\n}\nbody .academic-indent :is(.callout, blockquote, li, td, th, figcaption, .phb-toc) p {\n  text-indent: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-serif {\n  font-family:\n    "Latin Modern Roman",\n    "Times New Roman",\n    "Noto Serif CJK SC",\n    "Source Han Serif SC",\n    "Songti SC",\n    "SimSun",\n    serif;\n}\n@media print {\n  body .an-media {\n    break-inside: avoid;\n  }\n  body .an-media > .callout-title {\n    break-before: avoid;\n    break-after: auto;\n  }\n  body .an-table {\n    display: block !important;\n    break-inside: auto;\n  }\n  body .an-table > .callout-title {\n    break-before: auto;\n    break-after: avoid;\n  }\n  body .callout.an-media img {\n    max-height: 155mm;\n  }\n  body .an-figure-grid {\n    --an-layout-image-gap: 4mm;\n    gap: var(--an-layout-image-gap);\n  }\n  body .an-figure-grid > .an-subfigure-cell {\n    min-width: 0;\n    flex-basis: calc(50% - 4mm);\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) table {\n    break-inside: auto;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) thead {\n    display: table-header-group;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) tr {\n    break-inside: avoid;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) :is(table, .an-media) {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n  }\n}\n';

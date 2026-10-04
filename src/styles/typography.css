@@ -25,3 +25,12 @@
 .an-active p.an-kp-measure, body.phb-export p.an-kp-measure { white-space: nowrap !important; }
 .an-kp-live-line { white-space: nowrap; }
 .an-kp-live-gap { display: inline-block; white-space: pre; font-size: 0; line-height: 0; height: 0; }
+.an-kp-qed > .an-kp-line:last-child::after {
+  content: "□";
+  float: right;
+  margin-inline-start: .75em;
+  font-style: normal;
+  font-weight: 400;
+  color: inherit;
+}
+.an-kp-qed-probe { font-style: normal; font-weight: 400; margin-inline-start: .75em; }
