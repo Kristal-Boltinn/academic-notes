@@ -138,7 +138,9 @@ function measure(p: HTMLElement, units: Unit[]): Token[] | null {
             let width = range.getBoundingClientRect().width;
             if (unit.kind === 'inline') {
                 const inline = p.ownerDocument.defaultView!.getComputedStyle(unit.node as Element);
-                width += (parseFloat(inline.marginLeft) || 0) + (parseFloat(inline.marginRight) || 0);
+                // The inline element's own box excludes offscreen assistive math
+                // descendants that may be included in a Range's union on WebKit.
+                width = (unit.node as HTMLElement).getBoundingClientRect().width + (parseFloat(inline.marginLeft) || 0) + (parseFloat(inline.marginRight) || 0);
             }
             if (!Number.isFinite(width) || width < 0) return null;
             const item: KpItem = unit.kind === 'space' && legalBoundary(previous, next) ? { type: 'glue', width, stretch: Math.max(width * .65, em * .12), shrink: width * .4 } : { type: 'box', width };
@@ -236,7 +238,7 @@ export function createParagraphLayoutController(root: HTMLElement, options: { en
     const enabled = () => typeof options.enabled === 'function' ? options.enabled() : options.enabled !== false;
     const observe = () => changes.observe(root, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'contenteditable', 'hidden', 'src', 'width', 'height'] });
     const run = () => {
-        timer = undefined; if (disposed) return;
+        timer = undefined; if (disposed || editableContext(root)) return;
         if (hasParagraphSelection(root)) { deferredSelection = true; return; }
         deferredSelection = false;
         changes.disconnect();
@@ -257,5 +259,5 @@ export function createParagraphLayoutController(root: HTMLElement, options: { en
     css.observe(doc.head, { childList: true, characterData: true, subtree: true });
     doc.fonts.addEventListener('loadingdone', refresh); doc.addEventListener('load', resource, true); doc.addEventListener('selectionchange', selection);
     void doc.fonts.ready.then(refresh); refresh();
-    return { refresh, dispose() { if (disposed) return; disposed = true; win.clearTimeout(timer); changes.disconnect(); resize.disconnect(); theme.disconnect(); css.disconnect(); doc.fonts.removeEventListener('loadingdone', refresh); doc.removeEventListener('load', resource, true); doc.removeEventListener('selectionchange', selection); for (const p of paragraphs(root)) restore(p, owner); } };
+    return { refresh, dispose() { if (disposed) return; disposed = true; win.clearTimeout(timer); changes.disconnect(); resize.disconnect(); theme.disconnect(); css.disconnect(); doc.fonts.removeEventListener('loadingdone', refresh); doc.removeEventListener('load', resource, true); doc.removeEventListener('selectionchange', selection); if (!editableContext(root)) for (const p of paragraphs(root)) restore(p, owner); } };
 }

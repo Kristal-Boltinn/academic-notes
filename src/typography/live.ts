@@ -3,6 +3,7 @@ import { Decoration, EditorView, ViewPlugin, WidgetType, type DecorationSet, typ
 import { editorLivePreviewField } from 'obsidian';
 import type AcademicNotes from '../main';
 import { solveParagraph, type KpItem } from './solver';
+import { editorIdleScheduler } from '../rendering/editor-dom';
 
 interface Plan { from: number; to: number; decorations: Range<Decoration>[] }
 interface Token { from: number; to: number; item: KpItem }
@@ -100,8 +101,9 @@ export function createLiveParagraphExtension(plugin: AcademicNotes) {
         provide: field => EditorView.decorations.from(field, value => value.decorations)
     });
     const worker = ViewPlugin.fromClass(class {
-        timer: number | undefined; destroyed = false; observer: ResizeObserver; theme: MutationObserver;
+        destroyed = false; observer: ResizeObserver; theme: MutationObserver; idle: ReturnType<typeof editorIdleScheduler>;
         constructor(readonly view: EditorView) {
+            this.idle = editorIdleScheduler(view.dom, () => this.requestLayout(), 90);
             this.observer = new ResizeObserver(() => this.schedule()); this.observer.observe(view.contentDOM);
             this.theme = new MutationObserver(() => this.schedule());
             const doc = view.dom.ownerDocument;
@@ -119,15 +121,15 @@ export function createLiveParagraphExtension(plugin: AcademicNotes) {
             if (update.docChanged || update.selectionSet || update.viewportChanged || update.transactions.some(tr => tr.effects.some(effect => effect.is(plugin.refreshEffect)))) this.schedule();
         }
         schedule() {
-            window.clearTimeout(this.timer);
-            this.timer = window.setTimeout(() => {
-                if (this.destroyed) return;
-                this.view.requestMeasure({ key: this, read: view => ({ doc: view.state.doc, plans: this.measure(view) }), write: result => {
-                    // requestMeasure writes run inside a view update. Dispatch only after it finishes,
-                    // and discard positions if the source changed while measurements were pending.
-                    queueMicrotask(() => { if (!this.destroyed && this.view.state.doc === result.doc) this.view.dispatch({ effects: measured.of(result.plans) }); });
-                } });
-            }, 90);
+            this.idle.schedule();
+        }
+        requestLayout() {
+            if (this.destroyed) return;
+            this.view.requestMeasure({ key: this, read: view => ({ doc: view.state.doc, plans: this.measure(view) }), write: result => {
+                // requestMeasure writes run inside a view update. Dispatch only after it finishes,
+                // and discard positions if the source changed while measurements were pending.
+                queueMicrotask(() => { if (!this.destroyed && this.idle.isIdle() && this.view.state.doc === result.doc) this.view.dispatch({ effects: measured.of(result.plans) }); });
+            } });
         }
         measure(view: EditorView) {
             if (!enabled(view.state) || view.composing || view.state.field(field).composing) return [];
@@ -152,7 +154,7 @@ export function createLiveParagraphExtension(plugin: AcademicNotes) {
             return plans;
         }
         destroy() {
-            this.destroyed = true; window.clearTimeout(this.timer); this.observer.disconnect(); this.theme.disconnect();
+            this.destroyed = true; this.idle.dispose(); this.observer.disconnect(); this.theme.disconnect();
             this.view.contentDOM.removeEventListener('compositionstart', this.start); this.view.contentDOM.removeEventListener('compositionend', this.end);
             this.view.dom.ownerDocument.fonts?.removeEventListener('loadingdone', this.fonts);
         }

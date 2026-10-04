@@ -19,6 +19,7 @@ import { exportPdf, pdfAvailability } from './export/pdf';
 import { waitForTikz } from './export/tikz';
 import { openDiagramEditor, diagramProcessor } from './ui/diagram-modal';
 import { createParagraphLayoutController, hasParagraphSelection, restoreParagraphs } from './typography/dom';
+import { editorFragment } from './rendering/editor-dom';
 import diagramCss from './styles/diagrams.css';
 import typographyCss from './styles/typography.css';
 import calloutCss from './styles/callouts.css';
@@ -260,11 +261,17 @@ export default class AcademicNotes extends Plugin {
         }
     }
     postprocess(el: HTMLElement, ctx: MarkdownPostProcessorContext) {
-        if (el.closest('.phb-export-stage'))
+        if (el.closest('.phb-export-stage') || editorFragment(el))
             return;
         let layout: ReturnType<typeof createParagraphLayoutController> | undefined;
         let selectionDeferred = false;
         const refresh = () => {
+            // Native callouts also invoke Markdown postprocessors. Only the Live
+            // Preview extension may manage their layout after they enter an editor.
+            if (editorFragment(el)) {
+                if (layout) { layout.dispose(); this.paragraphLayouts.delete(layout); layout = undefined; }
+                return;
+            }
             if (layout && hasParagraphSelection(el)) { selectionDeferred = true; return; }
             selectionDeferred = false;
             if (layout && !this.settings.kpReading) { layout.dispose(); this.paragraphLayouts.delete(layout); layout = undefined; }
@@ -289,6 +296,7 @@ export default class AcademicNotes extends Plugin {
                 this.resumeSelection = () => { if (selectionDeferred && !hasParagraphSelection(el)) refresh(); };
                 el.ownerDocument.addEventListener('selectionchange', this.resumeSelection);
                 this.follow = event => {
+                    if (editorFragment(el)) return;
                     if (event.defaultPrevented || ('button' in event && event.button !== 0) || ('key' in event && event.key !== 'Enter'))
                         return;
                     const target = event.target as Element | null;

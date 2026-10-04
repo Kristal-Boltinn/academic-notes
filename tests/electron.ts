@@ -4,7 +4,8 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createServer } from 'node:http';
 import assert from 'node:assert/strict';
-import { buildSync } from 'esbuild';
+import { build, buildSync } from 'esbuild';
+import { typographyClient } from '../scripts/typography-client.mjs';
 import { exportPdf } from '../src/export/pdf';
 import { PDFDocument, PDFName } from 'pdf-lib';
 import { setLanguage } from '../src/i18n';
@@ -47,7 +48,7 @@ async function run() {
       await runFloatRegressions(win, html, print, floatClient); return;
     }
     console.log('Building browser UI regression fixture');
-    const uiClient = buildSync({ stdin: { contents: "import { runUiRegressions } from './tests/browser-regression'; import { runFeatureRegressions } from './tests/feature-browser'; import { runKpBrowserRegressions } from './tests/kp-browser'; import { runKpLiveRegressions } from './tests/kp-live-browser'; import { runCalloutTypographyRegressions } from './tests/kp-callouts-browser'; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions; globalThis.runKpBrowserRegressions = runKpBrowserRegressions; globalThis.runKpLiveRegressions = runKpLiveRegressions; globalThis.runCalloutTypographyRegressions = runCalloutTypographyRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', alias: { obsidian: resolve('tests/browser-host.ts') } }).outputFiles[0].text;
+    const uiClient = (await build({ stdin: { contents: "import { runUiRegressions } from './tests/browser-regression'; import { runFeatureRegressions } from './tests/feature-browser'; import { runKpBrowserRegressions } from './tests/kp-browser'; import { runKpLiveRegressions } from './tests/kp-live-browser'; import { runCalloutTypographyRegressions } from './tests/kp-callouts-browser'; import { runReadingOwnershipRegressions } from './tests/reading-ownership-browser'; import { runEditorIdleRegressions } from './tests/editor-idle-browser'; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions; globalThis.runKpBrowserRegressions = runKpBrowserRegressions; globalThis.runKpLiveRegressions = runKpLiveRegressions; globalThis.runCalloutTypographyRegressions = runCalloutTypographyRegressions; globalThis.runReadingOwnershipRegressions = runReadingOwnershipRegressions; globalThis.runEditorIdleRegressions = runEditorIdleRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', plugins: [typographyClient], loader: { '.css': 'text' }, external: ['electron', '@electron/remote'], alias: { obsidian: resolve('tests/browser-host.ts') } })).outputFiles[0].text;
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('')));
     console.log('Running browser UI regression fixture');
     await wc.executeJavaScript(uiClient);
@@ -55,6 +56,8 @@ async function run() {
     console.log(await wc.executeJavaScript('runKpLiveRegressions()'));
     const calloutTypography = await wc.executeJavaScript('runCalloutTypographyRegressions()') as { message: string; markup: string };
     console.log(calloutTypography.message);
+    console.log(await wc.executeJavaScript('runReadingOwnershipRegressions()'));
+    console.log(await wc.executeJavaScript('runEditorIdleRegressions()'));
     if (process.env.ACADEMIC_TEST_KP_CALLOUTS_ONLY === '1') return;
     if (process.env.ACADEMIC_TEST_KP_LIVE_ONLY === '1') return;
     const typography = await wc.executeJavaScript('runKpBrowserRegressions()') as { message: string; markup: string };

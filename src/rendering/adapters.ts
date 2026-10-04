@@ -1,6 +1,7 @@
 import { t } from '../i18n';
 import { applyFigureLayout } from './figure-layout';
 import { hasParagraphSelection, layoutReadOnlyCallout, restoreParagraphs } from '../typography/dom';
+import { nativeEditorInteraction, editorIdleScheduler } from './editor-dom';
 import * as Obs from 'obsidian';
 import Engine from '../indexing/engine';
 import type AcademicNotes from '../main';
@@ -11,9 +12,7 @@ type SectionInfo = { lineStart: number; lineEnd: number };
 // CodeMirror owns editable DOM. Reparenting its text while a title is edited can
 // trigger DOM reconciliation and repeated selection/scroll restoration.
 function editableLiveNode(node: HTMLElement) {
-    const active = node.ownerDocument.activeElement;
-    return !!node.closest('.cm-content') && (node.isContentEditable || !!node.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]') ||
-        !!(active?.matches('input,textarea') && node.contains(active)));
+    return nativeEditorInteraction(node);
 }
 function setAttribute(node: HTMLElement, name: string, value: string) { if (node.getAttribute(name) !== value) node.setAttribute(name, value); }
 function setClass(node: Element, name: string, enabled = true) { if (node.classList.contains(name) !== enabled) node.classList.toggle(name, enabled); }
@@ -221,7 +220,8 @@ function createLiveExtension(plugin: AcademicNotes) {
         ignoreEvent() { return true; }
     }
     return ViewPlugin.fromClass(class {
-        view: EditorView; disposed: boolean; decorations: DecorationSet; observer: MutationObserver; timer: number | null = null;
+        view: EditorView; disposed: boolean; decorations: DecorationSet; observer: MutationObserver;
+        idle: ReturnType<typeof editorIdleScheduler>;
         layouts = new WeakMap<HTMLElement, { key: string; nodes: Node[] }>();
         deferredSelection = false;
         selectionChanged = () => { if (this.deferredSelection) this.schedule(); };
@@ -232,6 +232,7 @@ function createLiveExtension(plugin: AcademicNotes) {
             this.disposed = false;
             plugin.editorViews.add(view);
             this.decorations = this.links(view);
+            this.idle = editorIdleScheduler(view.dom, () => { try { this.paint(); } catch (e) { plugin.recordError('Live Preview DOM', e); } });
             this.schedule();
             this.observer = new MutationObserver(() => this.schedule());
             this.observer.observe(view.contentDOM, { childList: true, subtree: true });
@@ -264,13 +265,7 @@ function createLiveExtension(plugin: AcademicNotes) {
             }
             return Decoration.set(ranges, true);
         }
-        schedule() { if (this.timer || this.disposed)
-            return; this.timer = window.setTimeout(() => { this.timer = null; try {
-            this.paint();
-        }
-        catch (e) {
-            plugin.recordError('Live Preview DOM', e);
-        } }, 30); }
+        schedule() { this.idle.schedule(); }
         paint() {
             const view = this.view, info = view.state.field(Obs.editorInfoField, false);
             if (this.disposed || view.composing || view.compositionStarted || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file)
@@ -300,7 +295,8 @@ function createLiveExtension(plugin: AcademicNotes) {
                 let attempted = 0;
                 this.deferredSelection = false;
                 for (const box of view.contentDOM.querySelectorAll<HTMLElement>('.callout')) {
-                    if (editableLiveNode(box) || !box.closest('[contenteditable="false"]')) continue;
+                    if (editableLiveNode(box)) { this.deferredSelection = true; continue; }
+                    if (!box.closest('[contenteditable="false"]')) continue;
                     if (hasParagraphSelection(box)) { this.deferredSelection = true; continue; }
                     // Body layout is confined to the host's read-only widget subtree.
                     // Never restructure native editable lines or an editable callout title.
@@ -325,7 +321,7 @@ function createLiveExtension(plugin: AcademicNotes) {
             finally { if (!this.disposed) this.observer.observe(view.contentDOM, { childList: true, subtree: true }); }
         }
         destroy() {
-            this.disposed = true; window.clearTimeout(this.timer ?? undefined); this.observer.disconnect();
+            this.disposed = true; this.idle.dispose(); this.observer.disconnect();
             this.view.contentDOM.removeEventListener('compositionend', this.compositionEnd); this.view.dom.ownerDocument.fonts?.removeEventListener('loadingdone', this.fontsChanged);
             this.view.dom.ownerDocument.removeEventListener('selectionchange', this.selectionChanged);
             for (const box of this.view.contentDOM.querySelectorAll<HTMLElement>('.callout')) {

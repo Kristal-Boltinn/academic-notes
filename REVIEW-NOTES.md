@@ -1,3 +1,11 @@
+# Community review follow-up: 2.13.1
+
+- The emergency KP pass now returns actual visible gap ratios, evaluates their spacing cost and fully justifies non-final lines. It remains bounded and falls back to native layout when no valid fit exists. Inline formula measurements exclude offscreen assistive descendants without removing them.
+- Reading postprocessors and queued reading-controller work check editor ownership dynamically. Cleanup removes observers without unwrapping content transferred to Live Preview. Reading link handlers also leave editor navigation to its existing handler.
+- A native selection endpoint anywhere inside an editor callout prevents title/body mutations, even after blur. Source selections and IME retain existing protections. Live layout uses passive touch/pointer/scroll listeners and waits for gesture and momentum quiet time; it never prevents scrolling, blurs the editor, clears selections or recreates a view.
+- New browser regressions exercise the actual plugin postprocessor, source-preserving CodeMirror callouts, retained native carets, cancelled pointers with ongoing native touches, idle coalescing and disposal. Width checks inspect visible non-final right edges on screen and in the final print window.
+- No dependencies, network access, filesystem capabilities or CSS rules are added. Physical iPad/WebKit and full Obsidian verification remain separate from Chromium regression coverage.
+
 # Community review follow-up: 2.13.0
 
 - Optional mathematical-callout typography reuses the bounded local paragraph solver. Reading/PDF support inline math and links, floating first-line titles and a single final Proof QED. It adds no network, filesystem, installer or dependency capability.

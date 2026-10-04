@@ -69,11 +69,16 @@ test('KP reserves end-marker width on the final line without narrowing preceding
     assert.ok(natural <= 30);
     for (const reserve of [-1, NaN, Infinity, 36]) assert.equal(solveParagraph(items, 36, reserve), null);
 });
-test('KP emergency allowance finds bounded ragged lines when full justification is infeasible', () => {
+test('KP emergency tolerance returns actual fully justified spacing', () => {
     const items = [box(100), glue(5, 2, 0), box(100), glue(5, 2, 0), box(100)];
     assert.equal(solveParagraph(items, 230), null);
     const result = solveParagraph(items, 230, 0, 20)!;
     assert.equal(result.lines.length, 2);
-    assert.ok(result.lines[0].ratio > 0 && result.lines[0].ratio < 2.5);
+    const line = result.lines[0]; let filled = 0;
+    for (let index = line.from; index < line.to; index++) {
+        const item = items[index]; filled += item.width + (item.type === 'glue' ? line.ratio * item.stretch : 0);
+    }
+    assert.equal(filled, 230);
+    assert.equal(solveParagraph([box(100), glue(0, 0, 0), box(100)], 130, 0, 40), null, 'A short unit without visible flexible gaps cannot be justified');
     for (const allowance of [-1, NaN, Infinity]) assert.equal(solveParagraph(items, 230, 0, allowance), null);
 });

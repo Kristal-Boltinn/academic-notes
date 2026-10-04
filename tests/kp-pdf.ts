@@ -51,7 +51,7 @@ export async function runKpPdfRegressions(win: BrowserWindow, html: (body: strin
         if (mode !== 'widow') assert.ok(fixture.height > pageHeight, 'The orphan/proof fixture must be longer than one page to test a genuine split');
         else assert.ok(fixture.height < pageHeight, 'The widow fixture must allow exactly one remaining line without widow protection');
 
-        let captured: { count: number; text: string; widthsFit: boolean; linkResolved: boolean; qed: number } | undefined;
+        let captured: { count: number; text: string; widthsFit: boolean; justified: boolean; linkResolved: boolean; qed: number } | undefined;
         let measured: Awaited<ReturnType<typeof measurePdf>> | undefined;
         class ProbedWindow extends BrowserWindow {
             constructor(options: BrowserWindowConstructorOptions) {
@@ -61,7 +61,12 @@ export async function runKpPdfRegressions(win: BrowserWindow, html: (body: strin
                     if (!captured) captured = await output.executeJavaScript(`(()=>{
                         const p=document.querySelector('[data-kp-fixture]'),lines=[...p.querySelectorAll(':scope > .an-kp-line')],link=p.querySelector('a');
                         const qed=[getComputedStyle(p,'::after').content,...lines.map(line=>getComputedStyle(line,'::after').content)].filter(value=>value.includes('□')).length;
-                        const result={count:lines.length,text:p.textContent,widthsFit:lines.every(line=>line.scrollWidth<=line.getBoundingClientRect().width+2),linkResolved:!!link?.dataset.phbResolved&&link.getAttribute('href')==='#'+link.dataset.phbResolved,qed};
+                        const justified=lines.slice(0,-1).every(line=>{
+                            const last=[...line.childNodes].reverse().find(node=>node.nodeType===3?node.textContent.trim():!node.matches('.an-kp-space'));
+                            if(!last)return false;const range=document.createRange();range.selectNode(last);
+                            return Math.abs(range.getBoundingClientRect().right-line.getBoundingClientRect().right)<2;
+                        });
+                        const result={count:lines.length,text:p.textContent,widthsFit:lines.every(line=>line.scrollWidth<=line.getBoundingClientRect().width+2),justified,linkResolved:!!link?.dataset.phbResolved&&link.getAttribute('href')==='#'+link.dataset.phbResolved,qed};
                         lines.forEach((line,index)=>{
                             const marker=document.createElement('a');marker.className='phb-probe kp-line-probe';marker.setAttribute('aria-hidden','true');marker.href=${JSON.stringify(PROBE + 'kp-' + mode + '-line-')}+index;marker.textContent='.';
                             marker.style.cssText='position:relative!important;display:inline-block!important;top:auto!important;left:auto!important;width:1px!important;height:1px!important;font:1px/1px Arial!important;margin-left:-1px!important;vertical-align:baseline!important;padding:0!important;border:0!important';
@@ -81,6 +86,7 @@ export async function runKpPdfRegressions(win: BrowserWindow, html: (body: strin
         assert.equal(captured!.count, fixture.count, 'Print-width reflow must reproduce the dry-layout line count');
         assert.equal(captured!.text, fixture.text, 'Every source character must remain in the exported paragraph');
         assert.equal(captured!.widthsFit, true, 'Every generated line must fit the final paper width');
+        assert.equal(captured!.justified, true, 'Non-final PDF lines must visibly fill their final paper width');
         assert.equal(captured!.linkResolved, true, 'The inline link must retain its resolved PDF destination');
         assert.equal(captured!.qed, mode === 'proof' ? 1 : 0, 'An optimized proof must have exactly one final QED');
         assert.ok(result.report.validInternalLinks > 0, 'Inline reference links must remain usable in the finished PDF');

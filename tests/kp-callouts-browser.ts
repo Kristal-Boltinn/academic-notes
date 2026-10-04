@@ -21,6 +21,8 @@ export async function runCalloutTypographyRegressions() {
             const link = p.createEl('a', { text: 'the preceding lemma', attr: { href: '#lemma', 'data-href': '#lemma' } });
             p.append(' ');
             const formula = p.createSpan({ cls: 'math' }); formula.appendChild(renderMath('f^{-1}(U) \\subseteq X', false));
+            formula.style.cssText = 'position:relative;display:inline-block';
+            formula.createSpan({ text: 'accessible formula', attr: { style: 'position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden' } });
             p.append(' completes the proof. ' + '数学论证的断行应该考虑整个段落，并保持公式和引用完整。'.repeat(3));
             const original = [...p.childNodes], before = p.outerHTML, text = p.textContent;
             const selection = document.getSelection()!, nativeRange = document.createRange(); selection.removeAllRanges(); nativeRange.selectNodeContents(p); selection.addRange(nativeRange);
@@ -29,6 +31,12 @@ export async function runCalloutTypographyRegressions() {
             check(result.processed === 1, `${type}/${width}: callout prose must use KP: ${JSON.stringify(result)}`);
             const lines = [...p.querySelectorAll<HTMLElement>(':scope > .an-kp-line')];
             check(lines.length > 2 && lines.every(line => line.scrollWidth <= line.getBoundingClientRect().width + 2), `${type}/${width}: all lines must fit`);
+            for (const line of lines.slice(0, -1)) {
+                const last = [...line.childNodes].reverse().find(node => node.nodeType === 3 && !!node.textContent?.trim() || node.nodeType === 1 && !(node as Element).matches('.an-kp-space'))!;
+                const range = document.createRange(); range.selectNode(last);
+                const right = last.nodeType === 1 ? (last as Element).getBoundingClientRect().right : range.getBoundingClientRect().right;
+                check(Math.abs(right - line.getBoundingClientRect().right) < 2, `${type}/${width}: each non-final line must actually align at the right edge`);
+            }
             check(p.textContent === text && p.querySelector('a') === link && p.querySelector('.math') === formula, 'Text, original links and formulas must remain intact');
             const proof = ['proof', 'pf'].includes(type);
             const marks = [getComputedStyle(p, '::after').content, ...lines.map(line => getComputedStyle(line, '::after').content)].filter(value => value.includes('□'));
@@ -54,7 +62,7 @@ export async function runCalloutTypographyRegressions() {
 
 async function liveCallout() {
     const host = document.body.createDiv(); host.style.width = '520px';
-    const text = prose.repeat(3), source = '> [!proof]\n> ' + text + '\n\nAfter the proof.';
+    const text = prose.repeat(3), source = '> [!proof]\n> ' + text + '\n\nAfter the proof.' + '\n\nTail.'.repeat(80);
     const note = Engine.parse('live.md', source), graph = Engine.graph([note]);
     let box: HTMLElement, p: HTMLElement, title: HTMLElement;
     class NativeCallout extends WidgetType {
@@ -93,8 +101,26 @@ async function liveCallout() {
         for (let n = 0; n < 3; n++) { view.dispatch({ effects: plugin.refreshEffect.of(n + 10) }); await settle(); }
         check(title!.firstChild === node && document.getSelection()!.anchorNode === node, 'KP must not replace an editable native title or its caret');
         title!.blur(); title!.removeAttribute('contenteditable');
+        const nativeAfterBlur = p!.outerHTML;
+        view.dispatch({ effects: plugin.refreshEffect.of(19) }); await settle();
+        check(title!.firstChild === node && p!.outerHTML === nativeAfterBlur, 'The retained native DOM caret must protect the entire callout after blur');
+        document.getSelection()!.removeAllRanges();
         view.dispatch({ selection: { anchor: source.length }, effects: plugin.refreshEffect.of(20) }); await settle();
         check(!!p!.querySelector('.an-kp-line'), 'Leaving the native callout must optimize its body again');
+        const beforeTouch = [...p!.childNodes];
+        const down = new PointerEvent('pointerdown', { bubbles: true, pointerId: 7, pointerType: 'touch', cancelable: true });
+        check(view.dom.dispatchEvent(down), 'Scrolling touch must not be prevented');
+        host.style.width = '420px';
+        for (let n = 0; n < 4; n++) { view.dispatch({ effects: plugin.refreshEffect.of(30 + n) }); await settle(); }
+        check(beforeTouch.every((child, index) => p!.childNodes[index] === child), 'Refreshes must not replace callout body nodes while a finger is down');
+        document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 7, pointerType: 'touch' }));
+        await settle(); await settle();
+        check(!!p!.querySelector('.an-kp-line') && p!.textContent === text, 'Layout must resume after touch scrolling settles');
+        view.dom.style.height = '220px'; view.scrollDOM.style.overflow = 'auto';
+        view.scrollDOM.scrollTop = 250; await settle(); await settle();
+        const scrollTop = view.scrollDOM.scrollTop; check(scrollTop > 0, 'A proof editor must actually scroll after editing');
+        for (let n = 0; n < 4; n++) { view.dispatch({ effects: plugin.refreshEffect.of(40 + n) }); await settle(); }
+        check(Math.abs(view.scrollDOM.scrollTop - scrollTop) < 2, 'Idle proof refreshes must preserve the post-edit scroll position');
         plugin.settings.kpLivePreview = false; view.dispatch({ effects: plugin.refreshEffect.of(21) }); await settle();
         check(!p!.querySelector('.an-kp-line') && p!.textContent === text, 'Disabling KP must restore a read-only callout');
         check(view.state.doc.toString() === source && !errors.length, 'Read-only layout must not change Markdown or raise errors');

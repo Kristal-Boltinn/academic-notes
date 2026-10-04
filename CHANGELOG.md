@@ -1,3 +1,11 @@
+# 2.13.1
+
+- Fix ragged non-final Proof and other mathematical-callout lines in the emergency KP pass: distribute the required width into visible gaps and score the actual spacing. Paragraph-final lines retain natural spacing.
+- Measure inline formula boxes without offscreen accessibility descendants inflating their widths. Preserve original math nodes, links, copying and Markdown.
+- Keep reading postprocessors and pending reading controllers away from Live Preview editor fragments, including fragments moved into the editor after rendering.
+- Protect the entire callout while a native caret remains inside it, even after focus or contenteditable changes. Defer editor layout during touch gestures and momentum scrolling; remove passive listeners on cleanup.
+- Add real postprocessor ownership, retained-caret, cancelled-touch, scroll-settling and visible right-edge regressions. Update both usage guides. Physical iPad verification remains a separate acceptance check.
+
 # 2.13.0
 
 - Extend optional Knuth–Plass typography to Proof, Remark and other mathematical callout bodies in Reading view, read-only Live Preview widgets and desktop PDF export.

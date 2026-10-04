@@ -105,6 +105,9 @@ export async function runUiRegressions() {
     for (let n = 0; n < 8; n++) { view.dispatch({ effects: livePlugin.refreshEffect.of(n) }); await settle(); }
     check(widgetTitle!.firstChild === editedNode && selection.anchorNode === editedNode && selection.anchorOffset === 5, 'refresh must preserve native title DOM and caret');
     widgetTitle!.blur(); widgetTitle!.removeAttribute('contenteditable');
+    view.dispatch({ effects: livePlugin.refreshEffect.of(8) }); await settle();
+    check(widgetTitle!.firstChild === editedNode && selection.anchorNode === editedNode, 'A retained native caret must protect the title even after focus/editability changes');
+    selection.removeAllRanges();
     view.dispatch({ effects: livePlugin.refreshEffect.of(9) }); await settle();
     check(!!widgetTitle!.querySelector('.phb-type-label'), 'numbering must resume after title editing');
     view.scrollDOM.scrollTop = 250; view.requestMeasure(); await settle();

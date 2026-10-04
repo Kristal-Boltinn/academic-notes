@@ -36,7 +36,8 @@ interface State {
 /**
  * Finds a minimum-demerit set of breaks. An infeasible or expensive paragraph returns null.
  * A two-element width array specifies the first line's width and the remaining lines' width.
- * finalReserve holds space for an end marker; emergencyStretch allows bounded ragged lines.
+ * finalReserve holds space for an end marker; emergencyStretch widens break tolerance.
+ * Returned ratios always fill actual visible gaps; non-final lines stay justified.
  * Breakpoint glue is discarded; a selected penalty contributes its width only to that line.
  */
 export function solveParagraph(items: KpItem[], width: number | number[], finalReserve = 0, emergencyStretch = 0): KpSolution | null {
@@ -102,9 +103,8 @@ export function solveParagraph(items: KpItem[], width: number | number[], finalR
             const shrink = shrinks[naturalEnd] - shrinks[from];
             // Minimum possible line length increases as we look farther back.
             if (natural - shrink > widest + EPSILON) break;
-            // A bounded invisible right-edge allowance supports modestly ragged
-            // emergency lines when indivisible inline math prevents full justification.
-            const stretch = stretches[naturalEnd] - stretches[from] + emergencyStretch;
+            const visibleStretch = stretches[naturalEnd] - stretches[from];
+            const stretch = visibleStretch + emergencyStretch;
             for (const previous of states[start]) {
                 if (!previous) continue;
                 if (++operations > MAX_OPERATIONS) return null;
@@ -116,11 +116,15 @@ export function solveParagraph(items: KpItem[], width: number | number[], finalR
                     if (shrink <= 0) continue;
                     ratio = difference / shrink;
                 } else if (!point.final && difference > EPSILON) {
-                    if (stretch <= 0) continue;
+                    // Never accept a short indivisible unit with no gap to justify.
+                    if (visibleStretch <= 0) continue;
                     ratio = difference / stretch;
                 }
                 if (!Number.isFinite(ratio) || ratio < -1 - EPSILON || ratio > 2.5 + EPSILON) continue;
                 ratio = Math.max(-1, Math.min(2.5, ratio));
+                // Emergency tolerance affects feasibility only. Draw and score the
+                // actual spacing so it cannot become invisible right-edge whitespace.
+                if (!point.final && difference > EPSILON && emergencyStretch) ratio = difference / visibleStretch;
                 const fitness = ratio < -.5 ? 0 : ratio <= .5 ? 1 : ratio <= 1 ? 2 : 3;
                 const badness = 100 * Math.abs(ratio) ** 3;
                 let demerits = (10 + badness) ** 2;

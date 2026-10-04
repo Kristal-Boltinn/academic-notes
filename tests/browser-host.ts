@@ -19,6 +19,12 @@ export const renderMath = (source: string, display: boolean) => {
 export const finishRenderMath = async () => {};
 export const editorInfoField = StateField.define({ create: () => ({ file: { path: 'live.md' } }), update: value => value });
 export const editorLivePreviewField = StateField.define({ create: () => true, update: value => value });
+export class MarkdownRenderChild {
+  constructor(public containerEl: HTMLElement) {}
+  onload() {}
+  onunload() {}
+  unload() { this.onunload(); }
+}
 export class PluginSettingTab {
   containerEl = document.createElement('div');
   constructor(..._args: unknown[]) {}
