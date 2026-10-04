@@ -11,13 +11,13 @@ export async function runCalloutTypographyRegressions() {
     const host = document.body.createDiv({ cls: 'markdown-rendered' });
     let example = '';
     try {
-        for (const type of ['proof', 'pf', 'remark', 'rem', 'thm', 'def']) for (const width of [340, 720]) {
+        for (const type of ['proof', 'pf', 'remark', 'rem', 'thm', 'def']) for (const width of [340, 720, 900]) for (const spacing of [0, 1]) {
             host.style.width = width + 'px';
             const box = host.createDiv({ cls: 'callout', attr: { 'data-callout': type } });
             const title = box.createDiv({ cls: 'callout-title' });
             title.createDiv({ cls: 'callout-title-inner' }).createSpan({ cls: 'phb-type-label', text: ['proof', 'pf'].includes(type) ? 'Proof' : type === 'thm' ? 'Theorem 1.1' : type === 'def' ? 'Definition 1.1' : 'Remark' });
             const content = box.createDiv({ cls: 'callout-content' });
-            const p = content.createEl('p'); p.append(prose.repeat(2));
+            const p = content.createEl('p'); p.style.letterSpacing = spacing + 'px'; p.append(prose.repeat(2));
             const link = p.createEl('a', { text: 'the preceding lemma', attr: { href: '#lemma', 'data-href': '#lemma' } });
             p.append(' ');
             const formula = p.createSpan({ cls: 'math' }); formula.appendChild(renderMath('f^{-1}(U) \\subseteq X', false));
@@ -27,7 +27,16 @@ export async function runCalloutTypographyRegressions() {
             const original = [...p.childNodes], before = p.outerHTML, text = p.textContent;
             const selection = document.getSelection()!, nativeRange = document.createRange(); selection.removeAllRanges(); nativeRange.selectNodeContents(p); selection.addRange(nativeRange);
             const nativeCopy = selection.toString(); selection.removeAllRanges();
-            const result = layoutParagraphs(box);
+            // Model the device report: measured text fragments can be wider than
+            // the final shaped line. Test the actual rendered right edge, not a sum.
+            const rangeRect = Range.prototype.getBoundingClientRect;
+            if (type === 'proof' && width === 900 && spacing === 1) Range.prototype.getBoundingClientRect = function () {
+                const rect = rangeRect.call(this);
+                return this.startContainer.parentElement?.closest('.an-kp-measure') ? new DOMRect(rect.x, rect.y, rect.width + .6, rect.height) : rect;
+            };
+            let result;
+            try { result = layoutParagraphs(box); }
+            finally { Range.prototype.getBoundingClientRect = rangeRect; }
             check(result.processed === 1, `${type}/${width}: callout prose must use KP: ${JSON.stringify(result)}`);
             const lines = [...p.querySelectorAll<HTMLElement>(':scope > .an-kp-line')];
             check(lines.length > 2 && lines.every(line => line.scrollWidth <= line.getBoundingClientRect().width + 2), `${type}/${width}: all lines must fit`);
@@ -35,7 +44,7 @@ export async function runCalloutTypographyRegressions() {
                 const last = [...line.childNodes].reverse().find(node => node.nodeType === 3 && !!node.textContent?.trim() || node.nodeType === 1 && !(node as Element).matches('.an-kp-space'))!;
                 const range = document.createRange(); range.selectNode(last);
                 const right = last.nodeType === 1 ? (last as Element).getBoundingClientRect().right : range.getBoundingClientRect().right;
-                check(Math.abs(right - line.getBoundingClientRect().right) < 2, `${type}/${width}: each non-final line must actually align at the right edge`);
+                check(Math.abs(right - line.getBoundingClientRect().right) < 2, `${type}/${width}/${spacing}px tracking: each non-final line must actually align at the right edge: ${line.getBoundingClientRect().right - right}px`);
             }
             check(p.textContent === text && p.querySelector('a') === link && p.querySelector('.math') === formula, 'Text, original links and formulas must remain intact');
             const proof = ['proof', 'pf'].includes(type);

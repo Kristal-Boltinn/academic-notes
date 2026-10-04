@@ -1,3 +1,11 @@
+# 2.13.3
+
+- Save layout recordings as visible Markdown notes containing JSON, using vault create/modify APIs and readback verification. Add in-app View recording and Open saved report buttons, retain the report for retry after a failed save, and preserve the original active note when starting from the diagnostic dialog.
+- Calibrate each rendered non-final KP line against its actual right edge after applying the solver's spacing. Distribute only small residuals through existing flexible gaps, retain original breaks/formula/link nodes and the natural final line, and fall back to native layout when calibration is unsupported.
+- Extend synthetic browser coverage to 340/720/900px callouts with 0/1px tracking and divergent measurement/shaping metrics. Add vault creation/update/readback-failure/retry coverage.
+- Record viewport changes and anonymous hit targets, and classify outside-note touch events during manual recording. No note text or source is recorded.
+- Remaining physical iPad scrolling failures are not claimed fixed; the device recording shows keyboard/editor-height changes, requiring further device verification.
+
 # 2.13.2
 
 - Add opt-in local layout/scroll diagnostics for iPad and desktop: 90-second recordings, initial and 15-second vault checkpoints, automatic stop and manual Stop/Save commands.

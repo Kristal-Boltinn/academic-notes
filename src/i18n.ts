@@ -1,6 +1,10 @@
 // Application language is set from Obsidian's public getLanguage() API on load.
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
+  "诊断路径被文件夹占用。": "The diagnostic path is occupied by a folder.",
+  "诊断文件写入后校验失败。": "Diagnostic file verification failed after writing.",
+  "查看记录": "View recording", "打开已保存报告": "Open saved report",
+  "诊断文件尚未保存，请查看诊断错误。": "The diagnostic file has not been saved. Check the diagnostic errors.",
   "开始记录排版与滚动诊断（90 秒）": "Record layout and scrolling diagnostics (90 seconds)",
   "停止并保存排版与滚动诊断": "Stop and save layout and scrolling diagnostics",
   "排版与滚动诊断": "Layout and scrolling diagnostics",

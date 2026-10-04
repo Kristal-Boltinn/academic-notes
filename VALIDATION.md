@@ -1,3 +1,12 @@
+# 2.13.3 Device evidence and visible recordings
+
+- An actual iPad report showed optimized non-final callout lines with 15–41px right gaps and inherited 1px tracking. It also showed editor-height changes followed by stalled scroll positions; this is evidence for further investigation, not proof of a specific scroll-freeze cause. Private recordings are not bundled or published.
+- Browser coverage extends mathematical callouts to 340/720/900px with 0/1px tracking and deliberately divergent fragment/final shaping metrics. Assertions inspect actual right edges, native copying, original formula/link identity, exactly one QED and full native restoration.
+- Recording save coverage uses vault create/modify/read, verifies ordered checkpoints and visible `.md` paths, rejects mismatched readback, and permits retry with the retained report. Privacy sentinels remain excluded.
+- TypeScript, 27 Node regressions, mobile bundle loading without Node/Electron and three-file release checks pass. ESLint retains zero errors and the two existing isolated-print DOM-helper recommendations.
+- Full default browser/PDF regressions pass: 13 palette cases, 11 book pages, 19 valid internal links, no invalid links/overflow/print warnings, 34 optimized paragraphs without fallback, unchanged widow/orphan/Proof pagination and figure shrinking/floating/boundary/rollback coverage.
+- Physical iPad acceptance is still required. No confirmed freeze fix is claimed.
+
 # 2.13.2 Opt-in device layout diagnostics
 
 - All 27 existing Node regressions pass; the two new diagnostic commands are registered on mobile and desktop. TypeScript, the release-bundle no-Node/no-Electron mobile host and three-file release checks pass. ESLint retains zero errors and the two existing isolated-print DOM-helper recommendations.

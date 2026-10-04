@@ -157,6 +157,31 @@ function makeSpan(doc: Document, cls: string) {
     // This renderer also runs in an isolated print window without Obsidian DOM helpers.
     const span = doc.createElement('span'); span.className = cls; return span;
 }
+/** Range metrics can differ from the final shaped line on WebKit/custom fonts.
+ * Keep the solver's breaks, then distribute the measured residual over its glue.
+ * Never adjust glyphs, formulas, titles or the natural final line. */
+function alignRenderedLine(line: HTMLElement, gaps: { node: HTMLElement; stretch: number }[]) {
+    const last = [...line.childNodes].reverse().find(node => node.nodeType === 3 && !!node.textContent?.trim() || node.nodeType === 1 && !(node as Element).matches('.an-kp-space'));
+    if (!last) return false;
+    const range = line.ownerDocument.createRange(); range.selectNode(last);
+    for (let pass = 0; pass < 3; pass++) {
+        const box = line.getBoundingClientRect();
+        const right = last.nodeType === 1 ? (last as Element).getBoundingClientRect().right : range.getBoundingClientRect().right;
+        const residual = box.right - right;
+        if (Math.abs(residual) <= .5) return true;
+        // A large discrepancy indicates an unsupported layout, not rounding.
+        if (!Number.isFinite(residual) || Math.abs(residual) > box.width * .15) return false;
+        const eligible = gaps.filter(gap => residual > 0 ? gap.stretch > 0 : parseFloat(gap.node.style.width) > 0);
+        const weight = eligible.reduce((sum, gap) => sum + (residual > 0 ? gap.stretch : parseFloat(gap.node.style.width)), 0);
+        if (!weight || residual < -weight) return false;
+        for (const gap of eligible) {
+            const width = parseFloat(gap.node.style.width), share = residual > 0 ? gap.stretch : width;
+            gap.node.style.width = Math.max(0, width + residual * share / weight) + 'px';
+        }
+    }
+    const right = last.nodeType === 1 ? (last as Element).getBoundingClientRect().right : range.getBoundingClientRect().right;
+    return Math.abs(line.getBoundingClientRect().right - right) < 2;
+}
 function apply(p: HTMLElement, tokens: Token[], width: number, owner?: object) {
     const widths = availableWidths(p, width), reserve = endReserve(p);
     if (widths === null) return 'fallback';
@@ -168,9 +193,11 @@ function apply(p: HTMLElement, tokens: Token[], width: number, owner?: object) {
     const original = [...p.childNodes], text = p.textContent;
     const state: SavedParagraph = { nodes: original, lines: [], owner, marker: p.getAttribute('data-an-kp'), hadClass: p.classList.contains('an-kp-paragraph'), hadQed: p.classList.contains('an-kp-qed'), classAttribute: p.getAttribute('class'), text };
     let cursor = 0;
+    const lineGaps: { node: HTMLElement; stretch: number }[][] = [];
     for (let index = 0; index < solution.lines.length; index++) {
         const line = solution.lines[index], end = solution.lines[index + 1]?.from ?? tokens.length;
         const node = makeSpan(p.ownerDocument, 'an-kp-line');
+        const gaps: { node: HTMLElement; stretch: number }[] = [];
         if (index === 0 && Array.isArray(widths)) node.style.width = widths[0] + 'px';
         let lastBox = line.to - 1;
         while (lastBox >= line.from && tokens[lastBox].item.type !== 'box') lastBox--;
@@ -183,14 +210,17 @@ function apply(p: HTMLElement, tokens: Token[], width: number, owner?: object) {
                 const item = token.item;
                 const value = !visible ? 0 : item.type === 'glue' ? item.width + line.ratio * (line.ratio < 0 ? item.shrink : item.stretch) : item.width;
                 gap.style.width = Math.max(0, value) + 'px';
+                if (visible && item.type === 'glue') gaps.push({ node: gap, stretch: item.stretch });
                 node.appendChild(gap);
             } else if (unit) node.appendChild(unit.start === undefined ? unit.node : p.ownerDocument.createTextNode(unit.text));
         }
         state.lines.push(node);
+        lineGaps.push(gaps);
     }
     p.replaceChildren(...state.lines); p.dataset.anKp = '1'; p.classList.add('an-kp-paragraph'); saved.set(p, state);
     if (reserve) p.classList.add('an-kp-qed');
-    if (p.textContent !== text || state.lines.some(line => line.scrollWidth > line.getBoundingClientRect().width + 2)) { restore(p, owner); return 'fallback'; }
+    if (p.textContent !== text || state.lines.slice(0, -1).some((line, index) => !alignRenderedLine(line, lineGaps[index])) ||
+        state.lines.some(line => line.scrollWidth > line.getBoundingClientRect().width + 2)) { restore(p, owner); return 'fallback'; }
     return 'processed';
 }
 function layout(root: HTMLElement, owner?: object, readonlyCallout?: HTMLElement): ParagraphLayoutReport {

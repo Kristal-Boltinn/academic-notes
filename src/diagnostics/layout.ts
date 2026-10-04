@@ -6,7 +6,9 @@ const round = (n: number) => Number.isFinite(n) ? Math.round(n * 100) / 100 : nu
 function role(node: Node | null): string {
     const el = node?.nodeType === 1 ? node as Element : node?.parentElement;
     if (!el) return 'none';
-    for (const selector of ['.callout-title', '.callout-content', '.callout', '.cm-scroller', '.cm-content', '.cm-editor', '.markdown-preview-view', '.markdown-source-view', 'p', 'input', 'textarea']) if (el.closest(selector)) return selector;
+    const selectors = ['input', 'textarea', '.callout-title', '.callout-content', '.callout', '.cm-content', '.cm-scroller', '.cm-editor', '.markdown-preview-view', '.markdown-source-view', 'p'];
+    const closest = el.closest(selectors.join(','));
+    for (const selector of selectors) if (closest?.matches(selector)) return selector;
     return 'other';
 }
 function css(el: HTMLElement) {
@@ -67,14 +69,18 @@ export class LayoutRecorder {
         const listen = (target: EventTarget, type: string, callback: EventListener) => { target.addEventListener(type, callback, { passive: true, capture: true }); this.cleanups.push(() => target.removeEventListener(type, callback, true)); };
         const times = new Map<string, number>();
         for (const type of ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'pointerdown', 'pointerup', 'pointercancel', 'scroll', 'beforeinput', 'input', 'compositionstart', 'compositionend', 'focusin', 'focusout']) listen(doc, type, event => {
-            const root = this.root(), target = event.target as Node | null; if (!root || !target || !root.contains(target)) return;
+            const root = this.root(), target = event.target as Node | null; if (!root || !target) return;
+            const inRoot = root.contains(target);
+            if (!inRoot && !/^(touch|pointer)/.test(type)) return;
             const now = Date.now(); if ((type === 'touchmove' || type === 'scroll') && now - (times.get(type) || 0) < 200) return; times.set(type, now);
             const touch = event as TouchEvent, pointer = event as PointerEvent;
-            this.event(type + '.capture', target, { prevented: event.defaultPrevented, cancelable: event.cancelable, touches: touch.touches?.length ?? 0, touchPointer: pointer.pointerType === 'touch' });
+            this.event(type + '.capture', target, { inRoot, prevented: event.defaultPrevented, cancelable: event.cancelable, touches: touch.touches?.length ?? 0, touchPointer: pointer.pointerType === 'touch' });
             queueMicrotask(() => { if (this.running) { this.event(type + '.final', target, { prevented: event.defaultPrevented }); if (event.defaultPrevented) this.event(type + '.prevented', target); } });
         });
         listen(doc, 'selectionchange', () => { const root = this.root(), s = doc.getSelection(); if (root && s && (s.anchorNode && root.contains(s.anchorNode) || s.focusNode && root.contains(s.focusNode))) this.event('selectionchange', s.anchorNode, { collapsed: s.isCollapsed, anchorOffset: s.anchorOffset, focusOffset: s.focusOffset }); });
         listen(win, 'error', () => this.event('runtime.error', null)); listen(win, 'unhandledrejection', () => this.event('runtime.rejection', null));
+        listen(win, 'resize', () => { this.event('viewport.resize', null); this.sample(); });
+        if (win.visualViewport) listen(win.visualViewport, 'resize', () => { this.event('viewport.visual-resize', null); this.sample(); });
         this.sample(); this.tick = win.setInterval(() => this.sample(), options.sampleMs ?? 2000);
         this.checkpoint = win.setInterval(() => options.onCheckpoint?.(this.report()), options.checkpointMs ?? 15000);
         this.deadline = win.setTimeout(() => { const report = this.stop(); options.onFinish?.(report); }, options.durationMs ?? 90000);
@@ -99,7 +105,18 @@ export class LayoutRecorder {
             return { id: this.id(box), proof: box.matches('[data-callout="proof"],[data-callout="pf"]'), geometry: geometry(box), css: css(box), title: title ? { geometry: geometry(title), css: css(title), contentEditable: title.isContentEditable, editableDescendants: !!title.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]') } : null,
                 paragraphs: [...box.querySelectorAll<HTMLElement>(':scope > .callout-content > p')].filter(visible).slice(0, 2).map(p => ({ id: this.id(p), ...paragraph(p) })) };
         }) : [];
-        return { ms: (this.stopped || Date.now()) - this.started, mode, settings: this.metadata(), rootPresent: !!root,
+        const scroller = source?.querySelector<HTMLElement>('.cm-scroller');
+        const hitTargets: { x: number | null; y: number | null; inRoot: boolean; role: string; editable: boolean }[] = [];
+        if (scroller) {
+            const rect = scroller.getBoundingClientRect();
+            for (const fraction of [.2, .5, .8]) {
+                const x = rect.left + rect.width / 2, y = rect.top + rect.height * fraction;
+                if (x < 0 || x >= win.innerWidth || y < 0 || y >= win.innerHeight) continue;
+                const hit = this.doc.elementFromPoint(x, y) as HTMLElement | null;
+                hitTargets.push({ x: round(x), y: round(y), inRoot: !!hit && !!root?.contains(hit), role: role(hit), editable: !!hit?.isContentEditable });
+            }
+        }
+        return { ms: (this.stopped || Date.now()) - this.started, mode, settings: this.metadata(), rootPresent: !!root, hitTargets,
             window: { width: win.innerWidth, height: win.innerHeight, dpr: win.devicePixelRatio, visual: vv ? { width: round(vv.width), height: round(vv.height), offsetTop: round(vv.offsetTop), scale: round(vv.scale) } : null },
             activeElement: { role: role(this.doc.activeElement), inRoot: !!root?.contains(this.doc.activeElement) },
             selection: { collapsed: selection?.isCollapsed ?? true, anchorRole: role(selection?.anchorNode || null), focusRole: role(selection?.focusNode || null), inRoot: !!root && !!(selection?.anchorNode && root.contains(selection.anchorNode) || selection?.focusNode && root.contains(selection.focusNode)) }, scrollers, callouts };

@@ -1,3 +1,10 @@
+# Community review follow-up: 2.13.3
+
+- Layout diagnostic reports are visible vault-local Markdown notes created/updated through the public vault API, with readback verification and in-app viewing. Source notes and settings are not changed. Private device recordings remain outside release/source packages.
+- Rendered KP calibration adjusts only the existing presentation gaps of eligible read-only prose, keeps breaks/content intact, is bounded to three passes and falls back to native layout on unsupported geometry. Final lines stay naturally spaced.
+- Manual diagnostics add anonymous hit-test/viewport evidence and outside-note touch/pointer classification. They remain opt-in, bounded, passive, local, and exclude source text, filenames, block IDs and arbitrary error messages. Recording automatically ends after 90 seconds.
+- This release does not claim to fix the remaining physical iPad scrolling issue.
+
 # Community review follow-up: 2.13.2
 
 - Manual local diagnostic commands add a 90-second bounded recording with initial and 15-second vault checkpoints, automatic stop and explicit Stop/Save. No recorder, listener or file write starts on plugin load.

@@ -61,6 +61,7 @@ export default class AcademicNotes extends Plugin {
     settings: AcademicSettingsData;
     layoutDiagnostics?: LayoutRecorder;
     layoutDiagnosticPath?: string;
+    private layoutReport?: LayoutReport;
     private layoutWrite: Promise<void> = Promise.resolve();
     async onload() {
         setLanguage(Obs.getLanguage());
@@ -132,9 +133,9 @@ export default class AcademicNotes extends Plugin {
         }
         if (Obs.EditorSuggest)
             this.registerEditorSuggest(new ReferenceSuggest(this));
-        this.registerEvent(this.app.metadataCache.on('changed', file => { if (file)
-            this.dirty.set(file.path, true); this.scheduleIndex(); }));
-        this.registerEvent(this.app.vault.on('create', () => this.scheduleIndex()));
+        this.registerEvent(this.app.metadataCache.on('changed', file => { if (file && !this.included(file)) return;
+            if (file) this.dirty.set(file.path, true); this.scheduleIndex(); }));
+        this.registerEvent(this.app.vault.on('create', file => { if (!(file instanceof TFile) || this.included(file)) this.scheduleIndex(); }));
         this.registerEvent(this.app.vault.on('delete', () => this.scheduleIndex()));
         this.registerEvent(this.app.vault.on('rename', () => this.scheduleIndex()));
         this.registerEvent(this.app.workspace.on('editor-change', (editor, info) => {
@@ -204,7 +205,13 @@ export default class AcademicNotes extends Plugin {
     }
     scheduleIndex() { if (!this.active)
         return; window.clearTimeout(this.indexTimer); this.indexTimer = window.setTimeout(() => { void this.rebuild().catch(e => this.fail(t("更新索引"), e)); }, Math.max(150, this.settings.indexDelay || 450)); }
-    included(file: TFile) { const path = file.path; const excluded = this.settings.excludedFolders.split(/\n/).map(x => x.trim().replace(/\/$/, '')).filter(Boolean); return !excluded.some(p => path === p || path.startsWith(p + '/')); }
+    included(file: TFile) {
+        const path = file.path;
+        // Generated recordings must not trigger indexing or enter the note graph.
+        if (/(?:^|\/)academic-layout-diagnostics-\d+\.md$/.test(path)) return false;
+        const excluded = this.settings.excludedFolders.split(/\n/).map(x => x.trim().replace(/\/$/, '')).filter(Boolean);
+        return !excluded.some(p => path === p || path.startsWith(p + '/'));
+    }
     resolver(name: string, here: string) { return this.app.metadataCache.getFirstLinkpathDest(name, here)?.path || null; }
     async rebuild() {
         if (this.indexRunning) {
@@ -796,16 +803,23 @@ export default class AcademicNotes extends Plugin {
         return chunks.join('\n');
     }
     private saveLayoutDiagnostics(report: LayoutReport, path: string) {
-        const write = this.layoutWrite.catch(() => {}).then(() => this.app.vault.adapter.write(path, JSON.stringify(report, null, 2)));
+        this.layoutReport = report;
+        const content = '# Academic Notes · Layout diagnostics\n\n```json\n' + JSON.stringify(report, null, 2) + '\n```\n';
+        const write = this.layoutWrite.catch(() => {}).then(async () => {
+            const existing = this.app.vault.getAbstractFileByPath(path);
+            if (existing && !(existing instanceof TFile)) throw new Error(t('诊断路径被文件夹占用。'));
+            const file = existing instanceof TFile ? existing : await this.app.vault.create(path, content);
+            if (existing) await this.app.vault.modify(file, content);
+            if (await this.app.vault.read(file) !== content) throw new Error(t('诊断文件写入后校验失败。'));
+        });
         this.layoutWrite = write;
         return write;
     }
-    async startLayoutDiagnostics() {
+    async startLayoutDiagnostics(view = this.app.workspace.getActiveViewOfType(MarkdownView)) {
         if (this.layoutDiagnostics?.running) { new Notice(t('排版诊断正在记录。')); return; }
-        const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (!view) { new Notice(t('请先打开需要检查的笔记。')); return; }
         const folder = safeFolder(this.settings.exportFolder); await this.mkdir(folder);
-        const path = folder + '/academic-layout-diagnostics-' + Date.now() + '.json';
+        const path = folder + '/academic-layout-diagnostics-' + Date.now() + '.md';
         const root = view.containerEl;
         const metadata = () => ({ pluginVersion: this.manifest.version, appVersion: Obs.apiVersion || '', ios: !!Obs.Platform.isIosApp, android: !!Obs.Platform.isAndroidApp,
             kpReading: this.settings.kpReading, kpLivePreview: this.settings.kpLivePreview, livePreview: this.settings.livePreview });
@@ -824,6 +838,7 @@ export default class AcademicNotes extends Plugin {
         new Notice(t('排版诊断已保存：') + this.layoutDiagnosticPath, 15000);
     }
     async diagnostics() {
+        const diagnosticView = this.app.workspace.getActiveViewOfType(MarkdownView);
         const result = { plugin: this.manifest.name, version: this.manifest.version, indexedFiles: this.graph?.notes.size || 0,
             warnings: this.graph?.warnings || [], errors: this.errors.slice(), pdf: pdfAvailability(), lastPdfExport: this.lastPdfExport || { status: 'not-run-this-session' },
             layoutDiagnostics: { running: !!this.layoutDiagnostics?.running, output: this.layoutDiagnosticPath || null } };
@@ -832,8 +847,25 @@ export default class AcademicNotes extends Plugin {
         const pre = modal.contentEl.createEl('pre', { text: JSON.stringify(result, null, 2) });
         pre.classList.add('an-diagnostics');
         new Setting(modal.contentEl).setName(t('排版与滚动诊断')).setDesc(t('仅记录尺寸、样式和事件计数，不记录笔记文字、公式源码或文件名。90 秒后自动停止，每 15 秒保存到库内导出目录。'))
-            .addButton(b => b.setButtonText(t('开始记录')).onClick(() => { modal.close(); void this.startLayoutDiagnostics().catch(e => this.fail(t('排版与滚动诊断'), e)); }))
-            .addButton(b => b.setButtonText(t('停止并保存')).onClick(() => { modal.close(); void this.stopLayoutDiagnostics().catch(e => this.fail(t('排版与滚动诊断'), e)); }));
+            .addButton(b => b.setButtonText(t('开始记录')).onClick(() => { modal.close(); void this.startLayoutDiagnostics(diagnosticView).catch(e => this.fail(t('排版与滚动诊断'), e)); }))
+            .addButton(b => b.setButtonText(t('停止并保存')).onClick(() => { modal.close(); void this.stopLayoutDiagnostics().catch(e => this.fail(t('排版与滚动诊断'), e)); }))
+            .addButton(b => b.setButtonText(t('查看记录')).onClick(() => {
+                const report = this.layoutDiagnostics?.report() || this.layoutReport;
+                if (!report) { new Notice(t('尚未开始排版诊断。')); return; }
+                const viewer = new Modal(this.app); viewer.titleEl.setText(t('排版与滚动诊断'));
+                viewer.contentEl.createEl('p', { text: this.layoutDiagnosticPath || '' });
+                viewer.contentEl.createEl('pre', { cls: 'an-diagnostics', text: JSON.stringify(report, null, 2) });
+                new Setting(viewer.contentEl).addButton(control => control.setButtonText(t('打开已保存报告')).onClick(async () => {
+                    try {
+                        if (this.layoutDiagnostics?.running) await this.stopLayoutDiagnostics();
+                        await this.layoutWrite;
+                        const file = this.layoutDiagnosticPath && this.app.vault.getAbstractFileByPath(this.layoutDiagnosticPath);
+                        if (!(file instanceof TFile)) throw new Error(t('诊断文件尚未保存，请查看诊断错误。'));
+                        modal.close(); viewer.close(); await this.app.workspace.getLeaf(false).openFile(file);
+                    } catch (error) { this.fail(t('排版与滚动诊断'), error); }
+                }));
+                viewer.open();
+            }));
         new Setting(modal.contentEl).addButton(b => b.setButtonText(t("保存诊断 JSON 到导出目录")).onClick(async () => { try {
             const folder = safeFolder(this.settings.exportFolder);
             await this.mkdir(folder);

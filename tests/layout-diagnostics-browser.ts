@@ -2,6 +2,7 @@ import { LayoutRecorder, traceLayout } from '../src/diagnostics/layout';
 import { layoutParagraphs, restoreParagraphs } from '../src/typography/dom';
 import AcademicNotes from '../src/main';
 import { DEFAULTS } from '../src/settings';
+import { TFile } from 'obsidian';
 const check = (value: unknown, message: string) => { if (!value) throw new Error(message); };
 const settle = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms));
 export async function runLayoutDiagnosticRegressions() {
@@ -43,17 +44,29 @@ export async function runLayoutDiagnosticRegressions() {
         check(recorder.report().events.length === count && !recorder.running && checkpoints.length > 0, 'Stop must remove listeners/timers and unregister traces');
         const timed = new LayoutRecorder(document, () => host, meta, { durationMs: 30, sampleMs: 10, checkpointMs: 10, onFinish: report => { completed = report; } });
         await settle(100); check(!timed.running && completed && !completed.running, 'Automatic stop must produce a final report'); timed.stop();
-        const saved: { path: string; report: ReturnType<LayoutRecorder['report']> }[] = [], folders = new Set<string>();
-        const plugin = new AcademicNotes({ workspace: { getActiveViewOfType: () => ({ containerEl: host }) }, vault: { adapter: {
-            exists: async (path: string) => folders.has(path), mkdir: async (path: string) => { folders.add(path); },
-            write: async (path: string, content: string) => { await settle(5); saved.push({ path, report: JSON.parse(content) }); }
-        } } } as any, { version: 'test' } as any);
+        const saved: { path: string; report: ReturnType<LayoutRecorder['report']> }[] = [], folders = new Set<string>(), files = new Map<string, TFile>(), contents = new Map<TFile, string>();
+        let creates = 0, modifies = 0, corruptRead = false;
+        const write = async (file: TFile, content: string) => { await settle(5); contents.set(file, content); saved.push({ path: file.path, report: JSON.parse(content.split('```json\n')[1].split('\n```')[0]) }); };
+        const vault = {
+            getAbstractFileByPath: (path: string) => files.get(path),
+            create: async (path: string, content: string) => { creates++; const file = Object.assign(new TFile(), { path }); files.set(path, file); await write(file, content); return file; },
+            modify: async (file: TFile, content: string) => { modifies++; await write(file, content); },
+            read: async (file: TFile) => corruptRead ? 'bad readback' : contents.get(file),
+            adapter: { exists: async (path: string) => folders.has(path), mkdir: async (path: string) => { folders.add(path); } }
+        };
+        const plugin = new AcademicNotes({ workspace: { getActiveViewOfType: () => ({ containerEl: host }) }, vault } as any, { version: 'test' } as any);
         plugin.settings = { ...DEFAULTS }; plugin.active = true;
+        check(!plugin.included(Object.assign(new TFile(), { path: '_exports/academic-layout-diagnostics-123.md' })) && plugin.included(Object.assign(new TFile(), { path: 'Proof.md' })), 'Generated diagnostic notes must stay out of indexing');
         await plugin.startLayoutDiagnostics();
         plugin.layoutDiagnostics!.options.onCheckpoint!(plugin.layoutDiagnostics!.report());
         await plugin.stopLayoutDiagnostics();
         check(saved.length === 3 && saved[0].report.running && !saved.at(-1)!.report.running && saved.every(s => s.path === plugin.layoutDiagnosticPath), 'Actual plugin commands must serialize initial, checkpoint and final vault writes');
-        check(saved[0].path.startsWith('_exports/academic-layout-diagnostics-') && !JSON.stringify(saved).includes(secret), 'Reports must stay in the vault export folder and omit note content');
+        check(saved[0].path.startsWith('_exports/academic-layout-diagnostics-') && saved[0].path.endsWith('.md') && creates === 1 && modifies === 2 && !JSON.stringify(saved).includes(secret), 'Reports must be visible Markdown notes created/modified through the vault API and omit note content');
+        corruptRead = true; let failed = false;
+        try { await plugin.stopLayoutDiagnostics(); } catch { failed = true; }
+        check(failed, 'A failed readback must never be reported as a successful save');
+        corruptRead = false; await plugin.stopLayoutDiagnostics();
+        check(!saved.at(-1)!.report.running, 'A failed save must preserve the report for retry');
         check(p.querySelector('.math') === math, 'Original formula node must remain intact');
     } finally { recorder.stop(); document.getSelection()?.removeAllRanges(); restoreParagraphs(box); host.remove(); }
     return 'Local layout diagnostics: privacy, native/KP geometry, passive events, final prevention, immutable checkpoints, bounds and cleanup passed';
