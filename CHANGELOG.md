@@ -1,3 +1,11 @@
+# 2.13.2
+
+- Add opt-in local layout/scroll diagnostics for iPad and desktop: 90-second recordings, initial and 15-second vault checkpoints, automatic stop and manual Stop/Save commands.
+- Record visible callout/native/KP geometry, font and scroll CSS, right-edge gaps, selection/touch/scroll state, downstream event prevention, mutation counts and fixed plugin layout trace codes.
+- Exclude note text, formulas, file names, block IDs, HTML, input values and error messages. No remote upload or automatic recording. Keep bounded histories and clean up listeners on stop/unload.
+- Add real browser privacy, geometry, passive-event, checkpoint ordering and cleanup coverage. Document the workflow in English and Chinese.
+- Paragraph rendering and KP defaults are unchanged. The remaining iPad scrolling and typography issues need device reports; this release does not claim to fix them.
+
 # 2.13.1
 
 - Fix ragged non-final Proof and other mathematical-callout lines in the emergency KP pass: distribute the required width into visible gaps and score the actual spacing. Paragraph-final lines retain natural spacing.

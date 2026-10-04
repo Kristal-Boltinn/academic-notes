@@ -13,6 +13,7 @@ export class Plugin {
   registerEvent() {}
   register() {}
 }
+export const apiVersion = 'test';
 export class PluginSettingTab { constructor(public app: any, public plugin: any) {} }
 export class Modal { constructor(public app: any) {} }
 export class FuzzySuggestModal extends Modal {}

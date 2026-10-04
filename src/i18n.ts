@@ -1,6 +1,16 @@
 // Application language is set from Obsidian's public getLanguage() API on load.
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
+  "开始记录排版与滚动诊断（90 秒）": "Record layout and scrolling diagnostics (90 seconds)",
+  "停止并保存排版与滚动诊断": "Stop and save layout and scrolling diagnostics",
+  "排版与滚动诊断": "Layout and scrolling diagnostics",
+  "排版诊断正在记录。": "Layout diagnostics are already recording.",
+  "请先打开需要检查的笔记。": "Open the affected note first.",
+  "排版诊断已保存：": "Layout diagnostics saved: ",
+  "已开始记录 90 秒；请复现断行或滑动异常。每 15 秒保存，结束后自动停止。": "Recording for 90 seconds. Reproduce the line-breaking or scrolling issue. Saved every 15 seconds; recording stops automatically.",
+  "尚未开始排版诊断。": "Layout diagnostics have not been started.",
+  "仅记录尺寸、样式和事件计数，不记录笔记文字、公式源码或文件名。90 秒后自动停止，每 15 秒保存到库内导出目录。": "Records geometry, styles and event counts, without note text, formula source or filenames. Stops after 90 seconds; saves every 15 seconds to the vault export folder.",
+  "开始记录": "Start recording", "停止并保存": "Stop and save",
   "段落排版（Beta）": "Paragraph typography (Beta)",
   "实时预览使用 Knuth–Plass 断行": "Use Knuth–Plass line breaking in Live Preview",
   "优化未编辑的单行普通段落和只读数学环境正文；环境内支持公式和链接。光标或选区进入时恢复原生排版，编辑标题时保持原生。默认关闭。": "Optimize inactive single-line plain paragraphs and read-only mathematical callout prose, including inline math and links in callouts. Restore native layout on caret or selection entry; retain native title editing. Off by default.",

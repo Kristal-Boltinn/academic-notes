@@ -114,7 +114,7 @@ test('plugin lifecycle registers new commands, drops removed settings and restor
   try {
     setTestLanguage('en');
     await plugin.onload();
-    assert.equal(plugin.commands.length, 11);
+    assert.equal(plugin.commands.length, 13);
     assert.equal(plugin.commands.find((c: any) => c.id === 'export-current-pdf').name, 'Export current note to PDF');
     assert.ok(!plugin.commands.some((c: any) => c.id === 'setup-pdf'));
     for (const key of ['legacy', 'legacyCaptions', 'followPhycat', 'pythonPath']) assert.ok(!(key in plugin.settings));
@@ -169,9 +169,9 @@ test('mobile registers numbering and HTML commands without desktop PDF', async (
   const plugin: any = new AcademicNotes(app, { id: 'academic-notes', name: 'Academic Notes', version: '2.7.0' } as any);
   try {
     await plugin.onload();
-    assert.equal(plugin.commands.length, 8);
+    assert.equal(plugin.commands.length, 10);
     assert.ok(plugin.commands.every((command: any) => !command.id.endsWith('-pdf')));
-    for (const id of ['export-current', 'export-book', 'insert-reference', 'label-block', 'insert-environment', 'refresh'])
+    for (const id of ['export-current', 'export-book', 'insert-reference', 'label-block', 'insert-environment', 'refresh', 'start-layout-diagnostics', 'stop-layout-diagnostics'])
       assert.ok(plugin.commands.some((command: any) => command.id === id), id);
     assert.ok(!new AcademicSettings(app, plugin).getSettingDefinitions().some(setting => setting.name === 'Open the PDF in Obsidian after export'));
     assert.equal(pdfAvailability().interfaceAvailable, false);

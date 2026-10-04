@@ -1,3 +1,12 @@
+# 2.13.2 Opt-in device layout diagnostics
+
+- All 27 existing Node regressions pass; the two new diagnostic commands are registered on mobile and desktop. TypeScript, the release-bundle no-Node/no-Electron mobile host and three-file release checks pass. ESLint retains zero errors and the two existing isolated-print DOM-helper recommendations.
+- Real browser tests distinguish native rectangles from optimized KP rows, measure visible non-final right gaps, and preserve paragraph HTML, the original formula node and native caret during sampling. Test-only private text, formula attributes, filename and block-ID sentinels never appear in saved reports.
+- Passive touch capture leaves native gestures uncancelled and detects cancellation by a later handler. DOM mutation and fixed plugin work counters are observed without writing DOM. Immutable checkpoints, capped histories, retention of the first sample, automatic stop and complete listener/timer/trace cleanup are checked.
+- The actual plugin Start/Stop methods are exercised with a vault adapter: initial, checkpoint and final writes remain ordered, share one vault-local export path and end with running=false. They neither change settings nor send data externally.
+- Existing default-theme browser/PDF coverage passes: 13 palette cases, 11 book pages, 19 valid internal links, no invalid links or horizontal overflow, complete multi-page Proof text/math/references, exactly one final QED, and existing safe-figure/print-isolation checks. Phycat focused callout/diagnostic compatibility is also checked.
+- Recording is disabled by default. This release adds an investigation workflow, not a verified fix for the user's remaining iPad freeze or irregular line edges. Physical iPad/WebKit and full Obsidian observations must come from a manually captured device report.
+
 # 2.13.1 Proof alignment and editor ownership
 
 - All 27 Node regressions pass. Emergency-fit tests sum real visible glue widths and verify that non-final lines exactly fill their target; short units without a flexible gap are rejected. TypeScript, mobile bundle loading without Node/Electron and three-file release checks pass. ESLint retains zero errors and the two existing isolated-print DOM-helper recommendations.

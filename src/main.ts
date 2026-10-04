@@ -20,6 +20,7 @@ import { waitForTikz } from './export/tikz';
 import { openDiagramEditor, diagramProcessor } from './ui/diagram-modal';
 import { createParagraphLayoutController, hasParagraphSelection, restoreParagraphs } from './typography/dom';
 import { editorFragment } from './rendering/editor-dom';
+import { LayoutRecorder, traceLayout, type LayoutReport } from './diagnostics/layout';
 import diagramCss from './styles/diagrams.css';
 import typographyCss from './styles/typography.css';
 import calloutCss from './styles/callouts.css';
@@ -58,6 +59,9 @@ export default class AcademicNotes extends Plugin {
     refreshEffect: StateEffectType<number>;
     lastPdfExport?: { status: string; time: string; output?: string; message?: string; report?: unknown };
     settings: AcademicSettingsData;
+    layoutDiagnostics?: LayoutRecorder;
+    layoutDiagnosticPath?: string;
+    private layoutWrite: Promise<void> = Promise.resolve();
     async onload() {
         setLanguage(Obs.getLanguage());
         this.errors = [];
@@ -92,6 +96,8 @@ export default class AcademicNotes extends Plugin {
         this.addCommand({ id: 'export-current', name: t("导出当前笔记为 HTML 快照"), callback: () => this.exportActive(false, false) });
         this.addCommand({ id: 'export-book', name: t("按 phb-book 清单导出 HTML 快照"), callback: () => this.exportActive(true, false) });
         this.addCommand({ id: 'diagnostics', name: t("检查插件状态与导出环境"), callback: () => this.diagnostics() });
+        this.addCommand({ id: 'start-layout-diagnostics', name: t('开始记录排版与滚动诊断（90 秒）'), callback: () => { void this.startLayoutDiagnostics().catch(e => this.fail(t('排版与滚动诊断'), e)); } });
+        this.addCommand({ id: 'stop-layout-diagnostics', name: t('停止并保存排版与滚动诊断'), callback: () => { void this.stopLayoutDiagnostics().catch(e => this.fail(t('排版与滚动诊断'), e)); } });
         this.addCommand({ id: 'refresh', name: t("重建定理公式索引并刷新引用"), callback: () => { this.parsed.clear(); this.rebuild().then(() => new Notice(t("索引已重建。"))).catch(e => this.fail(t("重建索引"), e)); } });
         this.addCommand({ id: 'insert-reference', name: t("插入定理、公式或图表引用"), editorCallback: (editor, view) => new ReferencePicker(this, editor, view.file).open() });
         this.addCommand({ id: 'label-block', name: t("为光标所在公式、定理或图表添加块 ID"), editorCallback: (editor, view) => this.labelBlock(editor, view.file) });
@@ -148,6 +154,9 @@ export default class AcademicNotes extends Plugin {
     }
     onunload() {
         this.active = false;
+        if (this.layoutDiagnostics?.running && this.layoutDiagnosticPath) {
+            void this.saveLayoutDiagnostics(this.layoutDiagnostics.stop(), this.layoutDiagnosticPath).catch(() => {});
+        }
         window.clearTimeout(this.indexTimer);
         for (const unload of this.readerUnloads) unload();
         this.readerUnloads.clear();
@@ -269,6 +278,7 @@ export default class AcademicNotes extends Plugin {
             // Native callouts also invoke Markdown postprocessors. Only the Live
             // Preview extension may manage their layout after they enter an editor.
             if (editorFragment(el)) {
+                traceLayout(el, 'reading.editor-skip');
                 if (layout) { layout.dispose(); this.paragraphLayouts.delete(layout); layout = undefined; }
                 return;
             }
@@ -280,6 +290,7 @@ export default class AcademicNotes extends Plugin {
                 this.paragraphLayouts.add(layout);
             }
             restoreParagraphs(el);
+            traceLayout(el, 'reading.render');
             const n = this.graph?.notes.get(ctx.sourcePath);
             if (n) renderFragment(el, n, this.graph, node => ctx.getSectionInfo(node) || ctx.getSectionInfo(el));
             layout?.refresh();
@@ -784,13 +795,45 @@ export default class AcademicNotes extends Plugin {
             await visit(sheet);
         return chunks.join('\n');
     }
+    private saveLayoutDiagnostics(report: LayoutReport, path: string) {
+        const write = this.layoutWrite.catch(() => {}).then(() => this.app.vault.adapter.write(path, JSON.stringify(report, null, 2)));
+        this.layoutWrite = write;
+        return write;
+    }
+    async startLayoutDiagnostics() {
+        if (this.layoutDiagnostics?.running) { new Notice(t('排版诊断正在记录。')); return; }
+        const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+        if (!view) { new Notice(t('请先打开需要检查的笔记。')); return; }
+        const folder = safeFolder(this.settings.exportFolder); await this.mkdir(folder);
+        const path = folder + '/academic-layout-diagnostics-' + Date.now() + '.json';
+        const root = view.containerEl;
+        const metadata = () => ({ pluginVersion: this.manifest.version, appVersion: Obs.apiVersion || '', ios: !!Obs.Platform.isIosApp, android: !!Obs.Platform.isAndroidApp,
+            kpReading: this.settings.kpReading, kpLivePreview: this.settings.kpLivePreview, livePreview: this.settings.livePreview });
+        const recorder = new LayoutRecorder(root.ownerDocument, () => root.isConnected ? root : null, metadata, {
+            onCheckpoint: report => { void this.saveLayoutDiagnostics(report, path).catch(e => { recorder.stop(); this.fail(t('排版与滚动诊断'), e); }); },
+            onFinish: report => { void this.saveLayoutDiagnostics(report, path).then(() => { if (this.active) new Notice(t('排版诊断已保存：') + path, 15000); }).catch(e => this.fail(t('排版与滚动诊断'), e)); }
+        });
+        this.layoutDiagnostics = recorder; this.layoutDiagnosticPath = path;
+        try { await this.saveLayoutDiagnostics(recorder.report(), path); }
+        catch (e) { recorder.stop(); throw e; }
+        new Notice(t('已开始记录 90 秒；请复现断行或滑动异常。每 15 秒保存，结束后自动停止。') + '\n' + path, 14000);
+    }
+    async stopLayoutDiagnostics() {
+        if (!this.layoutDiagnostics || !this.layoutDiagnosticPath) { new Notice(t('尚未开始排版诊断。')); return; }
+        await this.saveLayoutDiagnostics(this.layoutDiagnostics.stop(), this.layoutDiagnosticPath);
+        new Notice(t('排版诊断已保存：') + this.layoutDiagnosticPath, 15000);
+    }
     async diagnostics() {
         const result = { plugin: this.manifest.name, version: this.manifest.version, indexedFiles: this.graph?.notes.size || 0,
-            warnings: this.graph?.warnings || [], errors: this.errors.slice(), pdf: pdfAvailability(), lastPdfExport: this.lastPdfExport || { status: 'not-run-this-session' } };
+            warnings: this.graph?.warnings || [], errors: this.errors.slice(), pdf: pdfAvailability(), lastPdfExport: this.lastPdfExport || { status: 'not-run-this-session' },
+            layoutDiagnostics: { running: !!this.layoutDiagnostics?.running, output: this.layoutDiagnosticPath || null } };
         const modal = new Modal(this.app);
         modal.titleEl.setText(t("Academic Notes 诊断"));
         const pre = modal.contentEl.createEl('pre', { text: JSON.stringify(result, null, 2) });
         pre.classList.add('an-diagnostics');
+        new Setting(modal.contentEl).setName(t('排版与滚动诊断')).setDesc(t('仅记录尺寸、样式和事件计数，不记录笔记文字、公式源码或文件名。90 秒后自动停止，每 15 秒保存到库内导出目录。'))
+            .addButton(b => b.setButtonText(t('开始记录')).onClick(() => { modal.close(); void this.startLayoutDiagnostics().catch(e => this.fail(t('排版与滚动诊断'), e)); }))
+            .addButton(b => b.setButtonText(t('停止并保存')).onClick(() => { modal.close(); void this.stopLayoutDiagnostics().catch(e => this.fail(t('排版与滚动诊断'), e)); }));
         new Setting(modal.contentEl).addButton(b => b.setButtonText(t("保存诊断 JSON 到导出目录")).onClick(async () => { try {
             const folder = safeFolder(this.settings.exportFolder);
             await this.mkdir(folder);

@@ -410,6 +410,16 @@ This is a bounded experiment for explicit figure callouts. Standalone diagrams, 
 
 ## Troubleshooting
 
+### Record a device-specific layout or scrolling issue
+
+If Proof lines look uneven or Live Preview stops scrolling, open the affected note and run **Record layout and scrolling diagnostics (90 seconds)**. First leave the affected paragraph visible in Reading view for a few seconds, then switch to Live Preview, edit the Proof title/body and try scrolling. Keep the same note open. Run **Stop and save layout and scrolling diagnostics**, or wait for recording to stop automatically after 90 seconds.
+
+A separate `_exports/academic-layout-diagnostics-*.json` is written immediately and every 15 seconds, using your configured vault export folder. If restarting the app is necessary, the last saved checkpoint remains available. Send this report from iPad and optionally desktop to compare the two devices. No Mac or remote developer tools are required. The existing general diagnostics also offer Start/Stop buttons.
+
+Recording is off until you run the command. It observes visible callout geometry, computed font/layout/scroll styles, KP markers and visible right-edge gaps, selection location, passive touch/scroll events, event prevention by other handlers, DOM mutation counts and plugin layout activity. Logs are bounded and listeners stop with recording or plugin unload. It does not record note text, formula source, file names, block IDs, HTML, input values or error messages, and does not upload anything. It never changes the note, theme, KP switches or editor selection. Font/style and device/version metadata are included. Review the JSON before sharing it.
+
+A native paragraph without KP markers uses browser line breaking. All KP switches remain off by default; check the Reading and Live Preview switches separately. Diagnostics gather evidence and do not themselves fix an iPad scrolling freeze.
+
 The export progress window shows errors. Afterwards, open diagnostics and inspect `errors` and `lastPdfExport`. Use **Save diagnostic JSON to export folder** to save diagnostics, normally to `_exports/academic-diagnostics-*.json`. Error history lasts for the current plugin session, so save it before reloading.
 
 `pdf.interfaceAvailable` only checks whether the interface exists; it does not prove export succeeded. A successful export creates `.report.json`; on failure, a `.phb.html` snapshot may already exist. For more logs, open Developer Tools (`Ctrl+Shift+I` on Windows) and search the Console for `[Academic Notes]`.

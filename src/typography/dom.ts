@@ -1,4 +1,5 @@
 import { solveParagraph, type KpItem } from './solver';
+import { traceLayout } from '../diagnostics/layout';
 
 export interface ParagraphLayoutReport { processed: number; skipped: number; fallback: number }
 interface SavedParagraph { nodes: Node[]; lines: HTMLElement[]; owner?: object; marker: string | null; hadClass: boolean; hadQed: boolean; classAttribute: string | null; text: string | null }
@@ -220,6 +221,7 @@ function layout(root: HTMLElement, owner?: object, readonlyCallout?: HTMLElement
         const result = apply(p, tokens, width, owner);
         if (result === 'processed') report.processed++; else if (result === 'fallback') report.fallback++; else report.skipped++;
     }
+    traceLayout(root, 'kp.layout', report);
     return report;
 }
 /** One bounded pass for reading view or a fully loaded static export document. */

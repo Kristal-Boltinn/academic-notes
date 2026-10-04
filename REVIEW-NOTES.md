@@ -1,3 +1,11 @@
+# Community review follow-up: 2.13.2
+
+- Manual local diagnostic commands add a 90-second bounded recording with initial and 15-second vault checkpoints, automatic stop and explicit Stop/Save. No recorder, listener or file write starts on plugin load.
+- Geometry and computed layout/font/scroll CSS come from the originally selected note view. Events use passive capture listeners; a microtask observes downstream cancellation without intercepting the gesture. Mutation records are reduced to counts. Trace codes and values are fixed enums/numeric data.
+- Reports omit note/formula text, filenames, block IDs, DOM attributes/HTML, input values and error messages. Node identities are session-local generated numbers. No user-agent OS detection, remote upload, network permission or direct filesystem API is introduced. Platform flags use Obsidian's API.
+- Reports retain at most 400 events and 24 bounded geometry samples (including the starting sample); checkpoints are immutable and serialized so final Stop cannot be overwritten by an earlier checkpoint. Listeners, observers and timers stop on timeout, manual stop or unload.
+- Existing general diagnostics remain separate; the new report is intentionally narrower and is documented in both READMEs. Rendering algorithms and default switches are unchanged. Remaining iPad typography/scrolling problems require device evidence; no fix is claimed in this release.
+
 # Community review follow-up: 2.13.1
 
 - The emergency KP pass now returns actual visible gap ratios, evaluates their spacing cost and fully justifies non-final lines. It remains bounded and falls back to native layout when no valid fit exists. Inline formula measurements exclude offscreen assistive descendants without removing them.

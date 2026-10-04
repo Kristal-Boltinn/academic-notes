@@ -2,6 +2,7 @@ import { t } from '../i18n';
 import { applyFigureLayout } from './figure-layout';
 import { hasParagraphSelection, layoutReadOnlyCallout, restoreParagraphs } from '../typography/dom';
 import { nativeEditorInteraction, editorIdleScheduler } from './editor-dom';
+import { traceLayout } from '../diagnostics/layout';
 import * as Obs from 'obsidian';
 import Engine from '../indexing/engine';
 import type AcademicNotes from '../main';
@@ -268,6 +269,7 @@ function createLiveExtension(plugin: AcademicNotes) {
         schedule() { this.idle.schedule(); }
         paint() {
             const view = this.view, info = view.state.field(Obs.editorInfoField, false);
+            traceLayout(view.contentDOM, 'live.paint', { composing: view.composing });
             if (this.disposed || view.composing || view.compositionStarted || !view.state.field(Obs.editorLivePreviewField, false) || !info?.file)
                 return;
             const note = plugin.graph?.notes.get(info.file.path);
@@ -295,7 +297,7 @@ function createLiveExtension(plugin: AcademicNotes) {
                 let attempted = 0;
                 this.deferredSelection = false;
                 for (const box of view.contentDOM.querySelectorAll<HTMLElement>('.callout')) {
-                    if (editableLiveNode(box)) { this.deferredSelection = true; continue; }
+                    if (editableLiveNode(box)) { traceLayout(box, 'live.native-skip'); this.deferredSelection = true; continue; }
                     if (!box.closest('[contenteditable="false"]')) continue;
                     if (hasParagraphSelection(box)) { this.deferredSelection = true; continue; }
                     // Body layout is confined to the host's read-only widget subtree.
@@ -314,6 +316,7 @@ function createLiveExtension(plugin: AcademicNotes) {
                     const previous = this.layouts.get(box);
                     if (previous?.key === key && previous.nodes.length === content.childNodes.length && previous.nodes.every((node, index) => content.childNodes[index] === node)) continue;
                     restoreParagraphs(box);
+                    traceLayout(box, 'live.layout', { enabled });
                     if (enabled) layoutReadOnlyCallout(box);
                     this.layouts.set(box, { key, nodes: [...content.childNodes] });
                 }
