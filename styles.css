@@ -1146,7 +1146,8 @@ body :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-s
   }
 }
 
-.an-kp-paragraph {
+body.an-active p.an-kp-paragraph,
+body.phb-export p.an-kp-paragraph {
   text-indent: 0 !important;
 }
 .an-kp-math-end {
@@ -1157,10 +1158,11 @@ body :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-s
   margin-inline-end: 0 !important;
 }
 body.an-active.an-prose-indent .markdown-rendered p,
+body.an-active.an-prose-indent .markdown-rendered .callout > .callout-content p,
 body.phb-export.an-prose-indent .markdown-rendered p {
   text-indent: 2em;
 }
-body.an-prose-indent :is(li, table, figcaption, .an-media, .phb-toc, .phb-frontmatter, .an-diagram-block) p {
+body.an-prose-indent :is(li, table, figcaption, .callout-title, .an-diagram-caption, .an-media, .phb-toc, .phb-frontmatter, .an-diagram-block) p {
   text-indent: 0 !important;
 }
 body.an-prose-indent p:has(> img, > .image-embed, > .math-block) {
@@ -1181,6 +1183,7 @@ body.an-prose-indent p:has(> img, > .image-embed, > .math-block) {
   vertical-align: top;
   white-space: nowrap;
   text-align: start;
+  text-indent: 0;
   font: inherit;
   margin: 0;
   padding: 0;

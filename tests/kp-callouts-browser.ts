@@ -68,8 +68,32 @@ export async function runCalloutTypographyRegressions() {
         }
     } finally { restoreParagraphs(host); host.remove(); document.getSelection()?.removeAllRanges(); }
     await formulaEnds();
+    await indentCallouts();
     await liveCallout();
     return { message: 'Callout KP: Proof/Remark/theorem/definition, first-line width, QED, math/link/copy identity, native editing and inert Live Preview refreshes passed', markup: example };
+}
+
+async function indentCallouts() {
+    const host = document.body.createDiv({cls:'markdown-rendered'}); host.style.width='720px';
+    const hadIndent=document.body.classList.contains('an-prose-indent'); document.body.classList.add('an-prose-indent');
+    try {
+        for (const type of ['proof','remark','thm']) {
+            const box=host.createDiv({cls:'callout',attr:{'data-callout':type}});
+            box.createDiv({cls:'callout-title'}).createDiv({cls:'callout-title-inner',text:type});
+            const p=box.createDiv({cls:'callout-content'}).createEl('p',{text:prose.repeat(3)});
+            const indent=2*parseFloat(getComputedStyle(p).fontSize);
+            check(Math.abs(parseFloat(getComputedStyle(p).textIndent)-indent)<1, 'The global indent option must reach native '+type+' prose');
+            const original=p.outerHTML;
+            check(layoutParagraphs(box).processed===1, 'Indented '+type+' must optimize');
+            const rows=[...p.querySelectorAll<HTMLElement>(':scope > .an-kp-line')], edge=p.getBoundingClientRect().right;
+            for (const row of rows.slice(0,-1)) {
+                const last=[...row.childNodes].reverse().find(node=>node.nodeType===3 && !!node.textContent?.trim());
+                const range=document.createRange(); range.selectNode(last!);
+                check(Math.abs(range.getBoundingClientRect().right-edge)<2, 'Indented '+type+' non-final text must reach the paragraph right edge');
+            }
+            restoreParagraphs(box); check(p.outerHTML===original,'Indented callout must restore exactly'); box.remove();
+        }
+    } finally { restoreParagraphs(host);host.remove();if(!hadIndent)document.body.classList.remove('an-prose-indent'); }
 }
 
 async function formulaEnds() {

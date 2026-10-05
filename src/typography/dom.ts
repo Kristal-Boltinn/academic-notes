@@ -202,8 +202,10 @@ function apply(p: HTMLElement, tokens: Token[], width: number, owner?: object) {
         const line = solution.lines[index], end = solution.lines[index + 1]?.from ?? tokens.length;
         const node = makeSpan(p.ownerDocument, 'an-kp-line');
         const gaps: { node: HTMLElement; stretch: number }[] = [];
-        if (index === 0 && Array.isArray(widths)) node.style.width = widths[0] + 'px';
-        if (index === 0 && indent) node.style.marginInlineStart = indent + 'px';
+        // The row keeps its full outer width. Its border-box padding owns the
+        // indentation, while the solver sees only the remaining text width.
+        if (index === 0 && Array.isArray(widths)) node.style.width = (widths[0] + indent) + 'px';
+        if (index === 0 && indent) node.style.paddingInlineStart = indent + 'px';
         let lastBox = line.to - 1;
         while (lastBox >= line.from && tokens[lastBox].item.type !== 'box') lastBox--;
         for (; cursor < end; cursor++) {

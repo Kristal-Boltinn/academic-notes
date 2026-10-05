@@ -83,7 +83,9 @@ export async function runKpBrowserRegressions() {
         const indented = paragraph(host, english.repeat(2), 350); indented.style.textIndent = '2em'; const indentBefore = indented.outerHTML;
         check(layoutParagraphs(indented).processed === 1, 'Positive first-line indentation must participate in KP');
         const indentRows = [...indented.querySelectorAll<HTMLElement>(':scope > .an-kp-line')];
-        check(Math.abs(indentRows[0].getBoundingClientRect().left - indented.getBoundingClientRect().left - 36) < 2 && Math.abs(indentRows[1].getBoundingClientRect().left - indented.getBoundingClientRect().left) < 2, 'Only the first line must indent by exactly two em');
+        const firstGlyph = document.createRange(); firstGlyph.selectNode(indentRows[0].firstChild!);
+        check(Math.abs(firstGlyph.getBoundingClientRect().left - indented.getBoundingClientRect().left - 36) < 2 && Math.abs(indentRows[1].getBoundingClientRect().left - indented.getBoundingClientRect().left) < 2, 'Only the first line must indent visible text by exactly two em');
+        check(indentRows.slice(0,-1).every(line=>Math.abs(line.getBoundingClientRect().right-indented.getBoundingClientRect().right)<2), 'Indent must not leave blank space at the first row right edge');
         restoreParagraphs(indented); check(indented.outerHTML === indentBefore, 'Indentation layout must restore the original style and nodes');
         const hardBreak = paragraph(host, english, 350); hardBreak.appendChild(document.createElement('br')); hardBreak.append(english); const breakBefore = hardBreak.outerHTML;
         check(layoutParagraphs(hardBreak).processed === 0 && hardBreak.outerHTML === breakBefore, 'Author-specified line breaks must not be rewritten');

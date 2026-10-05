@@ -6,6 +6,23 @@ import { DEFAULTS } from '../src/settings';
 
 const check = (value: unknown, message: string) => { if (!value) throw new Error(message); };
 const settle = () => new Promise(resolve => setTimeout(resolve, 700));
+function glyphRows(line: HTMLElement) {
+    const rows: {top:number;left:number;right:number}[] = [];
+    const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT), range = document.createRange();
+    while (walker.nextNode()) {
+        const node = walker.currentNode as Text;
+        if (node.parentElement?.closest('.an-kp-live-gap,.cm-widgetBuffer')) continue;
+        for (let index = 0; index < node.length; index++) {
+            if (/\s/.test(node.data[index])) continue;
+            range.setStart(node,index); range.setEnd(node,index+1);
+            const rect = range.getBoundingClientRect(); if (!rect.width || !rect.height) continue;
+            let row = rows.find(row => Math.abs(row.top-rect.top)<2);
+            if (!row) { row={top:rect.top,left:rect.left,right:rect.right}; rows.push(row); }
+            else { row.left=Math.min(row.left,rect.left); row.right=Math.max(row.right,rect.right); }
+        }
+    }
+    return rows.sort((a,b)=>a.top-b.top);
+}
 export async function runKpLiveRegressions() {
     const host = document.body.createDiv(); host.style.width = '490px';
     host.createEl('style', { text: '.kp-live-test .cm-editor{height:720px}.kp-live-test .cm-scroller{overflow:auto}' }); host.className = 'kp-live-test';
@@ -25,6 +42,13 @@ export async function runKpLiveRegressions() {
         const chineseNode = view.domAtPos(chineseFrom + 1).node;
         check((chineseNode.nodeType === 1 ? chineseNode as HTMLElement : chineseNode.parentElement)?.closest('.cm-line')?.querySelector('.an-kp-live-break'), 'visible CJK prose must get optimized breaks');
         const breaks = () => view.dom.querySelectorAll('.an-kp-live-break').length;
+        plugin.settings.paragraphIndent = true; view.dispatch({ effects: plugin.refreshEffect.of(110) }); await settle(); await settle();
+        const indentNode = view.domAtPos(englishFrom+1).node;
+        const indentLine = (indentNode.nodeType===1 ? indentNode as HTMLElement : indentNode.parentElement)!.closest('.cm-line') as HTMLElement;
+        const rows = glyphRows(indentLine), bounds = indentLine.getBoundingClientRect(), style = getComputedStyle(indentLine);
+        check(rows.length>2 && Math.abs(rows[0].left-bounds.left-parseFloat(style.paddingLeft)-parseFloat(style.textIndent))<2, 'Inactive KP prose must indent visible first glyphs once');
+        check(rows.slice(0,-1).every(row=>Math.abs(bounds.right-parseFloat(style.paddingRight)-row.right)<2), 'All indented non-final KP rows must reach the same actual right edge: '+JSON.stringify({rows,bounds:bounds.toJSON(),indent:style.textIndent}));
+        plugin.settings.paragraphIndent = false; view.dispatch({ effects: plugin.refreshEffect.of(111) }); await settle();
         const count = breaks();
         const pos = englishFrom + 70;
         const coords = view.coordsAtPos(pos); check(coords, 'decorated text must retain position coordinates');

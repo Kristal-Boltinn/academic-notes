@@ -1,3 +1,9 @@
+# 2.14.1
+
+- Put first-line indentation inside the full outer width of a generated KP row. The solver reserves only its text area; explicit zero text-indent on owned rows prevents inherited indentation from adding another offset.
+- Make the prose-indent option override mathematical-callout default indentation while keeping native paragraph restoration intact.
+- Measure actual first glyph positions and non-final right edges in indented Reading/Live Preview prose and mathematical callouts; retain PDF indentation/pagination coverage.
+
 # 2.14.0
 
 - Add optional visual 2em first-line prose indentation across Reading view, Live Preview and exports; default off and independent of KP.

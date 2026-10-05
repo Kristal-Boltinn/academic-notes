@@ -37,7 +37,8 @@ export async function runKpPdfRegressions(win: BrowserWindow, html: (body: strin
             const originalText=p.textContent,link=p.querySelector('a');
             const report=AcademicParagraphLayout.layoutParagraphs(root),lines=[...p.querySelectorAll(':scope > .an-kp-line')];
             if(report.processed!==1||lines.length<4) throw new Error('Pagination fixture did not produce optimized lines: '+JSON.stringify(report));
-            if(${JSON.stringify(mode)}==='widow' && (Math.abs(lines[0].getBoundingClientRect().left-p.getBoundingClientRect().left-44)>1 || Math.abs(lines[1].getBoundingClientRect().left-p.getBoundingClientRect().left)>1)) throw new Error('PDF indentation must affect only the first line');
+            const firstGlyph=document.createRange();firstGlyph.selectNode(lines[0].firstChild);
+            if(${JSON.stringify(mode)}==='widow' && (Math.abs(firstGlyph.getBoundingClientRect().left-p.getBoundingClientRect().left-44)>1 || Math.abs(lines[1].getBoundingClientRect().left-p.getBoundingClientRect().left)>1)) throw new Error('PDF indentation must affect only the first line');
             if(p.textContent!==originalText||p.querySelector('a')!==link||!link.dataset.phbResolved) throw new Error('Dry layout lost source text or its resolved link');
             const height=lines[0].getBoundingClientRect().height,paragraphHeight=p.getBoundingClientRect().height;
             const headingHeight=root.querySelector('h1').getBoundingClientRect().height;

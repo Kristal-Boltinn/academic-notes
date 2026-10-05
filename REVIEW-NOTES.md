@@ -1,3 +1,7 @@
+# Community review follow-up: 2.14.1
+
+The indentation adjustment affects only owned KP presentation spans and the optional prose-indent CSS. The first row retains its outer width and contains the indentation as padding. It introduces no permissions, storage or network access; note text and original nodes remain restorable.
+
 # Community review follow-up: 2.14.0
 
 Visual indentation uses CSS and CodeMirror line decorations, changes no Markdown and introduces no permissions. Formula-end wrappers retain original math nodes and styles, restoring them when layout ends. The existing opt-in, local-only diagnostic report adds numeric fit results without note text or formula source.

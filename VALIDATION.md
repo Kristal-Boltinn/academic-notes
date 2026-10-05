@@ -1,3 +1,9 @@
+# 2.14.1 First-line indentation geometry
+
+- New regressions compare visible first-line glyphs and non-final right edges, including inactive CodeMirror prose and globally indented Proof/Remark/theorem bodies.
+- The previous regression only checked reading row left positions, not the actual indented editor right edge. The new callout test exposed its default text-indent overriding the optional indent.
+- Default and Phycat browser fixtures exercise the border-box first-line padding, exact restoration and existing caret/touch protections. Physical iPad behavior still requires a device check.
+
 # 2.14.0 Typography and visual indentation
 
 - Browser regressions exercise formula-ending rows at font-dependent widths, original formula margins/node restoration, two-em first-line geometry, active editor justification and unchanged source/caret.

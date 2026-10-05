@@ -63,6 +63,7 @@ async function run() {
     if (process.env.ACADEMIC_TEST_KP_LIVE_ONLY === '1') return;
     const typography = await wc.executeJavaScript('runKpBrowserRegressions()') as { message: string; markup: string };
     console.log(typography.message);
+    if (process.env.ACADEMIC_TEST_KP_READING_ONLY === '1') return;
     const features = await wc.executeJavaScript('runFeatureRegressions()') as { message: string; svg: string; diagramMarkup: string; proofMarkup: string };
     console.log(features.message);
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered" style="width:720px"><h2>Proof · Knuth–Plass typography</h2>' + calloutTypography.markup + '</main>')));
