@@ -183,6 +183,33 @@ With H2 headings, material before the first H2 belongs to section 0. If a note h
 
 Equation references default to `eq:{number}`; mathematical callouts use `{type} {number}`. `{type}` follows the abbreviation setting, `{abbr}` is always abbreviated, and `{name}` is always the full name. `{title}` and `{file}` are also available. Figures and tables default to `fig {number}` and `tab {number}`.
 
+## Custom environment names and references
+
+In **Settings → Academic Notes → Environment names and references**, select any environment and set:
+
+- **Display name**: the name in its heading and full-name references, in any language (for example, `Satz`, `算法`, or `Observación`).
+- **Reference abbreviation**: for example, `S.`, `算`, or `obs`. The default algorithm/figure/table/equation reference prefixes also respect this field.
+- **Reference format for this environment**: an optional override such as `{abbr} {number}`, `{name} {number}`, or `算法 {number}`. Available placeholders: `{type}`, `{abbr}`, `{name}`, `{number}`, `{title}`, `{file}`.
+
+Click **Save**. Empty fields use defaults; **Reset to default** clears only the selected environment’s overrides. Explicit link aliases remain unchanged when **Respect handwritten link aliases** is enabled. These settings change displayed text; existing `^block-ids` and wikilink destinations stay valid.
+
+### Add a new Markdown environment
+
+Under **Custom environments**, choose **New environment**. For example, set ID `observation`, display name `Observation`, abbreviation `obs`, base appearance `Lemma`, and enable automatic numbering. Optional light/dark accents accept `#RRGGBB`; empty colors follow the selected base palette. Click **Save environment**, then write:
+
+```markdown
+> [!observation] Compactness
+> A mathematical observation with inline math $x\in K$.
+
+^obs-compact
+
+See [[#^obs-compact]].
+```
+
+The new environment appears in **Insert academic environment**. It has an independent counter when shared theorem counters are disabled, follows the same section/chapter rules when exporting books, and supports cross-file references and PDF links. Choose `Remark` for an unboxed heading. The **Automatic numbering** switch controls the new environment; the global theorem numbering switch still applies. `[!observation|*]` suppresses one instance’s number; `[!observation|A]` supplies a manual number.
+
+IDs must start with a lowercase English letter and use only lowercase letters, digits and hyphens (up to 40 characters). Built-in IDs and aliases are reserved. Up to 64 custom environments are supported. Saved IDs cannot be renamed: create another environment to use a different ID. Deleting a definition leaves the original note text intact; its callouts revert to ordinary Obsidian callouts on the next native render. Custom environments reuse the existing mathematical-box/Remark layout and Markdown body; they do not define new pseudocode grammars or LaTeX macros.
+
 ## Algorithms and pseudocode
 
 Write algorithms using the [pseudocode.js](https://github.com/SaswatPadhi/pseudocode.js) / LaTeX `algorithmic` grammar. The grammar is bundled; no Pseudocode plugin or external rendering service is required. Choose either wrapper below. They share one renderer, an independent algorithm counter, cross-file references and PDF output.

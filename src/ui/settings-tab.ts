@@ -1,3 +1,4 @@
+import { renderEnvironmentSettings } from './environment-settings';
 import { t } from '../i18n';
 import Engine from '../indexing/engine';
 import { MOTIFS, motifMask, parseAppearance, type AppearanceEntry } from '../rendering/custom-appearance';
@@ -109,11 +110,14 @@ class AcademicSettings extends PluginSettingTab {
         toggle('algorithmLineNumbers', t('显示算法行号'), t('行号与算法编号互相独立；输入、输出和注释不计行号。'));
         text('algorithmFormat', t('算法引用格式'), t('默认 alg {number}；支持与定理引用相同的占位符。'));
         text('numberPrefix', t("编号前缀"), t("留空不会从日期文件名推断章节号。"));
+        text('figureFormat', t('图片引用格式'), t('支持 {type}、{abbr}、{name}、{number}、{title}、{file}。'));
+        text('tableFormat', t('表格引用格式'), t('支持 {type}、{abbr}、{name}、{number}、{title}、{file}。'));
         text('eqFormat', t("公式引用格式"), t("支持 {number}、{file}；默认 eq:{number}，也可设 Eq. ({number})。"));
         text('theoremFormat', t("定理引用格式"), t("支持 {type}、{number}、{title}、{file}；{abbr} 始终缩写，{name} 始终全称。"));
         toggle('respectAliases', t("保留手写链接别名"), t("[[#^id|自己的文字]] 不被自动编号替换，但仍算引用。"));
         toggle('livePreview', t("在实时预览中转换链接与编号"), t("光标进入链接时恢复源码。源码模式不进行显示替换。"));
         text('excludedFolders', t("排除索引的路径"), t("多个目录/文件请用换行分隔；也可直接编辑本插件 data.json。"));
+        definitions.push({ name: '', render: setting => renderEnvironmentSettings(setting.settingEl, p) });
         heading(t("独立配色"));
         select('lightPalette', t("浅色数学框配色"), { theme: t("跟随 Obsidian 主题配色"), forest: 'Forest', sakura: 'Sakura', mint: 'Mint', sky: 'Sky', mauve: 'Mauve', golden: 'Golden', cherry: 'Cherry', prussian: 'Prussian' });
         select('darkPalette', t("深色数学框配色"), { theme: t("跟随 Obsidian 主题配色"), radiation: 'Radiation', vampire: 'Vampire', abyss: 'Abyss' });

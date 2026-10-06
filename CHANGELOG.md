@@ -1,3 +1,11 @@
+# 2.16.0
+
+- Restore centered fixed-width figure images when themes justify or indent native image paragraphs.
+- Keep algorithm callouts in traditional three-rule form under Phycat, including full-width caption separators and hidden native icons.
+- Add per-environment names, reference abbreviations and reference formats in any language, including figure/table format settings.
+- Add configurable Markdown environments with boxed or Remark appearance, optional numbering, light/dark accents, insertion templates and cross-file/book references.
+- Preserve existing block IDs, handwritten aliases and active native editor ownership. Update both usage guides.
+
 # 2.15.0
 
 - Add numbered algorithms with equivalent `algorithm` fences and `[!algorithm]` callouts, based on the locally bundled pseudocode.js parser.

@@ -1,3 +1,4 @@
+import { titleInk } from './custom-appearance';
 import { algorithmRecord } from '../algorithms/render';
 import { t } from '../i18n';
 import { applyFigureLayout } from './figure-layout';
@@ -28,6 +29,17 @@ function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined, graph
         return;
     setClass(box, 'an-math-callout');
     setAttribute(box, 'data-an-type', r.key);
+    setClass(box, 'an-custom-environment', !!r.environment);
+    if (r.environment) {
+        setAttribute(box, 'data-an-style', r.environment.style);
+        for (const mode of ['light', 'dark'] as const) {
+            const color = r.environment[mode];
+            for (const [part, value] of [['color', color], ['ink', color && titleInk(color)]]) {
+                const property = `--an-custom-${part}-${mode}`;
+                if (value) { if (box.style.getPropertyValue(property) !== value) box.style.setProperty(property, value); } else box.style.removeProperty(property);
+            }
+        }
+    }
     setAttribute(box, 'data-an-line', String(r.line));
     setClass(box, 'an-proof-own-line', r.key === 'proof' && !!r.proofOwnLine);
     const proofLink = r.key === 'proof' ? r.title?.match(/^\[\[([^\]]+)\]\]$/) : null;
@@ -37,7 +49,7 @@ function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined, graph
     if (!label) {
         const original = box.ownerDocument.win.createSpan();
         original.className = 'phb-title-name';
-        const defaultTitle = Engine.TYPES[r.key].map(x => x.toLowerCase()).includes(inner.textContent.trim().toLowerCase());
+        const defaultTitle = Engine.typeNames(r.key, graph?.settings).map(x => x.toLowerCase()).includes(inner.textContent.trim().toLowerCase());
         if (!defaultTitle)
             while (inner.firstChild)
                 original.appendChild(inner.firstChild);
@@ -47,7 +59,7 @@ function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined, graph
         label.className = 'phb-type-label';
         inner.replaceChildren(label, original);
     }
-    const text = Engine.TYPES[r.key][0] + (box.classList.contains('an-proof-reference') ? ' of' : '') + (r.number ? ' ' + r.number : '');
+    const text = Engine.labelName(r.key, graph?.settings) + (box.classList.contains('an-proof-reference') ? ' of' : '') + (r.number ? ' ' + r.number : '');
     if (label.textContent !== text)
         label.textContent = text;
     if (proofTarget && proofTarget.kind === 'theorem' && (!graph?.settings.respectAliases || !proofLink[1].includes('|'))) {
@@ -57,7 +69,7 @@ function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined, graph
     }
 }
 /** Captions keep Obsidian's native callout tree and block links; only decorate it. */
-function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
+function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined, settings = Engine.DEFAULTS) {
     if (!r || editableLiveNode(box))
         return;
     setClass(box, 'an-media'); setClass(box, 'an-' + r.kind);
@@ -80,7 +92,7 @@ function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined) {
         label.className = 'an-caption-label';
         inner.replaceChildren(label, original);
     }
-    const text = r.kind === 'subfigure' ? (r.subletter ? '(' + r.subletter + ')' : r.number || '') : Engine.MEDIA[r.kind][0] + (r.number ? ' ' + r.number : '');
+    const text = r.kind === 'subfigure' ? (r.subletter ? '(' + r.subletter + ')' : r.number || '') : Engine.labelName(r.kind, settings) + (r.number ? ' ' + r.number : '');
     if (label.textContent !== text)
         label.textContent = text;
     if (r.kind === 'figure') {
@@ -139,7 +151,7 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
         return rec;
     };
     for (const box of allNodes(el, '.callout[data-callout]')) {
-        const key = Engine.canon(box.dataset.callout);
+        const key = Engine.canon(box.dataset.callout, graph.settings);
         if (!key)
             continue;
         const r = pick(box, note.theorems.filter(r => r.key === key));
@@ -153,12 +165,12 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
             continue;
         const r = pick(box, note.media.filter(r => r.key === key && !r.diagram && r.kind !== 'algorithm'));
         if (r)
-            mediaRecord(box, r);
+            mediaRecord(box, r, graph.settings);
     }
     used.clear();
     for (const host of allNodes(el, '.callout[data-callout="algorithm"],.an-algorithm-fence')) {
         const record = pick(host, note.media.filter(r => r.kind === 'algorithm'));
-        if (record) algorithmRecord(host, record, graph.settings.algorithmLineNumbers);
+        if (record) algorithmRecord(host, record, graph.settings.algorithmLineNumbers, Engine.labelName("algorithm", graph.settings));
     }
     used.clear();
     let mathChanged = false;
@@ -166,7 +178,7 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
         const record = pick(diagram, note.media.filter(r => r.diagram));
         const caption = diagram.querySelector<HTMLElement>('.an-diagram-caption');
         if (caption && caption.hidden !== !record) caption.hidden = !record;
-        if (record) mediaRecord(diagram, record);
+        if (record) mediaRecord(diagram, record, graph.settings);
     }
     used.clear();
     for (const mjx of allNodes(el, 'mjx-container[display="true"]')) {

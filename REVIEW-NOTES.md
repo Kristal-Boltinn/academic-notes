@@ -1,3 +1,9 @@
+# Community review follow-up: 2.16.0
+
+This release addresses native theme overrides affecting algorithm rules and justified image paragraphs. New environment definitions are local validated data: reserved IDs are rejected, names/references are inserted as text, styles come from a fixed set, and colors accept only six-digit hex. No new filesystem or network capability is introduced. Original note syntax and block destinations remain unchanged. Native active editing guards remain in place.
+
+Validation covers 32 Node regressions, actual Phycat light/dark algorithm border geometry, sized-image centering despite prose justification/indentation, settings persistence, custom colors/counters, mobile loading, and exported cross-file anchors. Physical iPad acceptance remains outstanding. Previous release validation follows.
+
 # Community review follow-up: 2.15.0
 
 Algorithms use the locally bundled MIT pseudocode.js Lexer/Parser. The upstream HTML renderer, KaTeX and optional MathJax package are excluded from the plugin bundle; formulas reuse the existing host math renderer and bundled local fallback. User text is inserted as text nodes, not HTML. No TeX engine, external service, runtime installation, new network access or filesystem permission is introduced. Source/caption length and recursion limits bound parsing. Traditional algorithm styles are scoped to plugin-owned output. The unused transitive KaTeX build dependency is pinned to its patched release.

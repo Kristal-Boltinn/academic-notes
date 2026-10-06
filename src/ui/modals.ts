@@ -1,5 +1,5 @@
 import { t } from '../i18n';
-import { environmentTemplate, type EnvironmentKind } from './environment';
+import { environmentTemplate } from './environment';
 import type { FigureLayout } from '../rendering/figure-layout';
 import type AcademicNotes from '../main';
 import type { SourceRecord } from '../indexing/engine';
@@ -112,15 +112,15 @@ class BookPicker extends Modal {
     }
 }
 class EnvironmentModal extends Modal {
-    constructor(app: App, private editor: Editor) { super(app); }
+    constructor(app: App, private editor: Editor, private customEnvironments: Record<string, import("../indexing/environments").CustomEnvironment> = {}) { super(app); }
     onOpen() {
         this.titleEl.setText(t('插入学术环境'));
         this.contentEl.createEl('p', { text: t('在当前行前插入完整环境，保留原文；插入后直接填写选中的标题。') });
-        let kind: EnvironmentKind = 'subfigures', count = 2, columns: FigureLayout['columns'] = 'auto', height = '';
+        let kind = 'subfigures', count = 2, columns: FigureLayout['columns'] = 'auto', height = '';
         let group: HTMLDivElement;
         new Setting(this.contentEl).setName(t('环境类型')).addDropdown(d => d.addOptions({
-            thm: t('定理'), def: t('定义'), proof: t('证明'), remark: t('注记'), figure: t('单图'), subfigures: t('子图组'), table: t('表格'), algorithm: t('算法（Callout）'), 'algorithm-fence': t('算法（代码块）'), tikz: 'TikZ (TikZJax)'
-        }).setValue(kind).onChange(v => { kind = v as EnvironmentKind; group.hidden = kind !== 'subfigures'; }));
+            thm: t('定理'), def: t('定义'), proof: t('证明'), remark: t('注记'), figure: t('单图'), subfigures: t('子图组'), table: t('表格'), algorithm: t('算法（Callout）'), 'algorithm-fence': t('算法（代码块）'), tikz: 'TikZ (TikZJax)', ...Object.fromEntries(Object.entries(this.customEnvironments).map(([key, entry]) => [key, entry.name]))
+        }).setValue(kind).onChange(v => { kind = v; group.hidden = kind !== 'subfigures'; }));
         group = this.contentEl.createDiv();
         new Setting(group).setName(t('子图数量')).addDropdown(d => d.addOptions(Object.fromEntries(Array.from({ length: 11 }, (_, i) => [String(i + 2), String(i + 2)]))).setValue('2').onChange(v => { count = Number(v); }));
         new Setting(group).setName(t('最大列数')).setDesc(t('自动：四幅最多四列，其余最多三列；窄窗格会减少列数，四列直接变两列。')).addDropdown(d => d.addOptions({ auto: t('自动'), '1': '1', '2': '2', '3': '3', '4': '4' }).setValue('auto').onChange(v => { columns = v === 'auto' ? v : Number(v) as 1 | 2 | 3 | 4; }));

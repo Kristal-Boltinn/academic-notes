@@ -3,20 +3,22 @@ body.an-active .an-algorithm,
 body.phb-export .an-algorithm,
 body.an-active .callout[data-callout="algorithm"] {
   --an-algorithm-accent: var(--an-color-algorithm, var(--phb-thm));
-  display: block; color: var(--text-normal, #24372e); background: transparent;
-  border: 0; border-top: 2px solid var(--an-algorithm-accent); border-bottom: 2px solid var(--an-algorithm-accent);
-  border-radius: 0; box-shadow: none; padding: 0; margin: 1.2em 0;
+  display: block; color: var(--text-normal, #24372e); background: transparent !important;
+  border: 0 !important; border-top: 2px solid var(--an-algorithm-accent) !important; border-bottom: 2px solid var(--an-algorithm-accent) !important;
+  border-radius: 0 !important; box-shadow: none; padding: 0 !important; margin: 1.2em 0 !important;
   font-family: var(--font-text); font-size: 1em; line-height: 1.6; overflow: visible;
 }
-body.an-active .callout[data-callout="algorithm"]::after { display: none; }
-.an-algorithm > .callout-title,
-.an-algorithm > .an-algorithm-caption,
-.an-appearance-preview .callout[data-callout="algorithm"] > .callout-title {
-  display: flex; background: transparent; color: var(--an-algorithm-accent);
-  padding: .35em .5em; border: 0; border-bottom: 1px solid var(--an-algorithm-accent); margin: 0;
-  font-weight: 400; font-style: normal; border-radius: 0;
+body.an-active .callout[data-callout="algorithm"]::before,
+body.an-active .callout[data-callout="algorithm"]::after { content: none; display: none; }
+body .an-algorithm > .callout-title,
+body .an-algorithm > .an-algorithm-caption,
+body .an-appearance-preview .callout[data-callout="algorithm"] > .callout-title {
+  display: flex !important; background: transparent !important; color: var(--an-algorithm-accent) !important;
+  position: static; float: none; width: 100%; max-width: 100%; box-sizing: border-box; box-shadow: none;
+  padding: .35em .5em !important; border: 0 !important; border-bottom: 1px solid var(--an-algorithm-accent) !important; margin: 0 !important;
+  font-weight: 400; font-style: normal; border-radius: 0 !important;
 }
-.an-algorithm > .callout-title > .callout-icon { display: none; }
+body .an-algorithm > .callout-title > .callout-icon { display: none !important; }
 .an-algorithm-label { font-weight: 700; }
 .an-algorithm-title { color: var(--text-normal); }
 .an-algorithm > .callout-content { padding: 0; margin: 0; }

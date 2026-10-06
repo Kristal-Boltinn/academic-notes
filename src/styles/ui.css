@@ -19,3 +19,5 @@
 
 .an-custom-appearance-row { display: block; }
 .an-custom-appearance-row > .setting-item-info, .an-custom-appearance-row > .setting-item-control { display: none; }
+
+.an-environment-example { white-space: pre-wrap; font-family: var(--font-monospace); }

@@ -388,3 +388,32 @@ test('algorithm source adapters preserve nesting, math and IDs while ignoring co
   for(const kind of ['algorithm','algorithm-fence'] as const) { const template=environmentTemplate(kind,'^alg-1'); assert.match(template.text,/\^alg-2/); assert.equal(algorithmBlocks(template.text).length,1); assert.doesNotThrow(()=>parseAlgorithm(algorithmBlocks(template.text)[0].source)); }
   const state=EditorState.create({doc:'> [!algorithm] Example\n> '+body+'\n\nPlain prose'}); assert.deepEqual(proseLines(state).map(l=>state.doc.lineAt(l.from).text),['Plain prose']);
 });
+
+
+test('custom environments number independently and resolve multilingual cross-file references', () => {
+  const settings = { ...Engine.DEFAULTS, customEnvironments: JSON.stringify({ observation: { name: 'Observation', abbr: 'obs', style: 'lem', numbered: true, light: '#4488aa', dark: '#aaddff' }, noteplain: { name: 'Note', abbr: 'N', style: 'remark', numbered: false } }), referenceOverrides: JSON.stringify({ thm: { name: 'Satz', abbr: 'S.' }, algorithm: { name: '算法', abbr: '算法' }, observation: { format: '{name} {number} ({title})' } }) };
+  const source = '## A\n> [!thm] One\n> Body\n\n^one\n\n> [!observation] Compactness\n> Content\n\n^obs-one\n\n> [!observation|7] Manual\n> Text\n\n> [!observation|*] No number\n> Text\n\n> [!noteplain] Plain\n> Text\n\n## B\n> [!observation] Second section\n> Text';
+  const note = Engine.parse('one.md', source, {}, settings), other = Engine.parse('two.md', '[[one#^obs-one]]');
+  const graph = Engine.graph([note, other], settings);
+  assert.deepEqual(note.theorems.map(r => r.number), ['1.1','1.1','7','','','2.1']);
+  assert.equal(Engine.refText(note.theorems[0], graph.settings), 'S. 1.1');
+  assert.equal(Engine.refText(graph.resolve('one#^obs-one','two.md'), graph.settings), 'Observation 1.1 (Compactness)');
+  assert.equal(Engine.labelName('thm', settings), 'Satz');
+  assert.equal(note.theorems[1].environment?.style, 'lem');
+  Engine.graph([note,other],{...settings,sharedCounter:true}); assert.equal(note.theorems[1].number,'1.2');
+  Engine.graph([note,other],settings,undefined,new Map([['one.md',{chapter:3,mode:'chapter'}]])); assert.equal(note.theorems[1].number,'3.1');
+  const alg = Engine.parse('alg.md','> [!algorithm] Euclid\n> \\RETURN $a$'); Engine.graph([alg],settings); assert.equal(Engine.refText(alg.media[0], settings),'算法 1');
+  assert.equal(Engine.parse('disabled.md',source).theorems.length,1);
+  assert.match(environmentTemplate('observation','^observation-1').text,/\[!observation\]/);
+});
+
+test('environment settings reject reserved IDs, invalid colors and executable-style payloads', () => {
+  const raw = JSON.stringify({ thm: {name:'Override'}, algorithm: {name:'Override'}, constructor: {name:'Bad'}, 'bad id': {name:'Bad'}, good: {name:'Good', style:'url(script)', light:'red;display:none', dark:'#abcdef'} });
+  const defs = Engine.environments({customEnvironments:raw});
+  assert.deepEqual(Object.keys(defs),['good']); assert.equal(defs.good.style,'thm'); assert.equal(defs.good.light,undefined); assert.equal(defs.good.dark,'#abcdef');
+  assert.equal(Engine.canon('constructor'),null); assert.equal(Engine.mediaCanon('constructor'),null);
+  assert.deepEqual(Engine.environments({customEnvironments:'broken JSON'}),{});
+  assert.equal(Engine.validCustomKey('definition'),false); assert.equal(Engine.validCustomKey('observation'),true);
+  const overrides=Engine.referenceOverrides({referenceOverrides:JSON.stringify({thm:{abbr:'S.', format:'{abbr} {number}'},unknown:{name:'Unexpected'}})});
+  assert.deepEqual(Object.keys(overrides),['thm']);
+});

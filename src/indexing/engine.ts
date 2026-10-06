@@ -1,3 +1,4 @@
+import { readEnvironments, readReferenceOverrides, validEnvironmentKey, type CustomEnvironment } from './environments';
 import { algorithmBlocks, parseAlgorithm, type AlgorithmData } from '../algorithms/model';
 import { t } from '../i18n';
 import { diagramBlocks, parseDiagram } from '../diagrams/model';
@@ -32,6 +33,7 @@ export interface SourceRecord {
     diagram?: boolean;
     algorithm?: AlgorithmData;
     algorithmError?: string;
+    environment?: CustomEnvironment;
 }
 export interface SourceReference {
     file: string;
@@ -64,6 +66,7 @@ export interface ParsedNote {
         title: string;
     }[];
     warnings: string[];
+    _environments?: string;
     _mtime?: number;
     _fromEditor?: boolean;
 }
@@ -80,12 +83,17 @@ const TYPES: Record<string, string[]> = {
 const MEDIA: Record<string, string[]> = { figure: ['Figure', 'figure', 'fig'], subfigure: ['Subfigure', 'subfigure', 'subfig'], table: ['Table', 'table', 'tbl'], algorithm: ['Algorithm', 'algorithm'] };
 const ABBR: Record<string, string> = { def: 'def', thm: 'thm', lem: 'lem', prop: 'prop', cor: 'cor', claim: 'clm', example: 'ex', proof: 'pf', remark: 'rem', axiom: 'ax', assumption: 'asm', exercise: 'exr', conjecture: 'conj', hypothesis: 'hyp', solution: 'sol', equation: 'eq', figure: 'fig', subfigure: 'fig', table: 'tab', algorithm: 'alg' };
 const mediaAliases = Object.fromEntries(Object.entries(MEDIA).flatMap(([k, v]) => v.slice(1).map(a => [a, k])));
-const mediaCanon = (s: string | null | undefined): string | null => mediaAliases[String(s || '').toLowerCase()] || null;
+const mediaCanon = (s: string | null | undefined): string | null => { const key = String(s || '').toLowerCase(); return Object.hasOwn(mediaAliases, key) ? mediaAliases[key] : null; };
 const aliases = Object.fromEntries(Object.entries(TYPES).flatMap(([k, v]) => v.slice(1).map(a => [a, k])));
-const canon = (s: string | null | undefined): string | null => aliases[String(s || '').toLowerCase()] || null;
+const reservedEnvironmentKeys = [...Object.keys(TYPES), ...Object.keys(MEDIA), ...Object.keys(aliases), ...Object.keys(mediaAliases), 'equation'];
+const environments = (opts: { customEnvironments?: string } = {}) => readEnvironments(opts.customEnvironments || '{}', reservedEnvironmentKeys);
+const canon = (s: string | null | undefined, opts: { customEnvironments?: string } = {}): string | null => {
+    const key = String(s || '').toLowerCase();
+    return Object.hasOwn(aliases, key) ? aliases[key] : Object.hasOwn(environments(opts), key) ? key : null;
+};
 const DEFAULTS = { numbered: true, equationMode: 'referenced', numbering: 'section', sharedCounter: false,
     eqFormat: 'eq:{number}', theoremFormat: '{type} {number}', respectAliases: true, numberPrefix: '',
-    sectionPrefix: true, sectionNumberSource: 'order', shortReferences: true, mediaNumbered: true, figureFormat: 'fig {number}', tableFormat: 'tab {number}', algorithmFormat: 'alg {number}', algorithmNumbered: true, algorithmLineNumbers: false };
+    sectionPrefix: true, sectionNumberSource: 'order', shortReferences: true, mediaNumbered: true, figureFormat: 'fig {number}', tableFormat: 'tab {number}', algorithmFormat: 'alg {number}', algorithmNumbered: true, algorithmLineNumbers: false, customEnvironments: '{}', referenceOverrides: '{}' };
 const blank = (s: string) => s.replace(/[^\r\n]/g, ' ');
 const decode = (s: string) => { try {
     return decodeURIComponent(s);
@@ -135,7 +143,9 @@ function maskedSource(source: string) {
 }
 function parse(path: string, source: string, cache: {
     blocks?: Record<string, { position: { start: { line: number }; end: { line: number } } }>;
-} = {}): ParsedNote {
+} = {}, opts: Partial<typeof DEFAULTS> = {}): ParsedNote {
+    const custom = environments(opts);
+    const calloutCanon = (key: string) => Object.hasOwn(aliases, key.toLowerCase()) ? aliases[key.toLowerCase()] : Object.hasOwn(custom, key.toLowerCase()) ? key.toLowerCase() : null;
     const lines = source.split('\n'), starts: number[] = [];
     let offset = 0;
     lines.forEach(l => { starts.push(offset); offset += l.length + 1; });
@@ -187,7 +197,7 @@ function parse(path: string, source: string, cache: {
         if (!q.depth)
             continue;
         const m = q.body.match(/^\[!([\w-]+)(?:\|([^\]]*))?\]([+-])?[ \t]*(.*?)\r?$/);
-        if (!m || !(canon(m[1]) || mediaCanon(m[1])))
+        if (!m || !(calloutCanon(m[1]) || mediaCanon(m[1])))
             continue;
         let endLine = line;
         for (let n = line + 1; n < lines.length; n++) {
@@ -198,15 +208,15 @@ function parse(path: string, source: string, cache: {
                 break;
             endLine = n;
         }
-        const key = (canon(m[1]) || mediaCanon(m[1]))!;
+        const key = (calloutCanon(m[1]) || mediaCanon(m[1]))!;
         const rawMeta = m[2] === undefined ? 'auto' : m[2].trim();
         const figure = key === 'figure' ? figureMetadata(rawMeta) : undefined;
         const meta = figure ? figure.numbering : rawMeta;
-        const rec: SourceRecord = { kind: canon(m[1]) ? 'theorem' : key, key, rawType: m[1], path, line, endLine, from: starts[line],
+        const rec: SourceRecord = { kind: calloutCanon(m[1]) ? 'theorem' : key, key, rawType: m[1], path, line, endLine, from: starts[line],
             to: starts[endLine] + lines[endLine].length, depth: q.depth, title: (m[4] || '').trim(),
             manual: meta && !['auto', '*', '-'].includes(meta) ? meta : null,
             suppress: meta === '' || meta === '*' || meta === '-', number: '', id: null, ids: [], layout: figure?.layout,
-            proofOwnLine: key === 'proof' && (!(m[4] || '').trim() || !quote(lines[line + 1] || '').body.trim()) };
+            environment: custom[key], proofOwnLine: key === 'proof' && (!(m[4] || '').trim() || !quote(lines[line + 1] || '').body.trim()) };
         (rec.kind === 'theorem' ? theorems : media).push(rec);
         callouts.push(rec);
         records.push(rec);
@@ -297,7 +307,7 @@ function parse(path: string, source: string, cache: {
         if (!r.parent)
             warnings.push(t("{0}:{1} subfigure 不在 figure 内，仅显示题注，不猜测主图编号。", path, r.line + 1));
     }
-    return { path, source, lines, starts, records, theorems, equations, media, callouts, blocks, refs, headings, warnings };
+    return { _environments: opts.customEnvironments || '{}', path, source, lines, starts, records, theorems, equations, media, callouts, blocks, refs, headings, warnings };
 }
 function splitTarget(raw: string) {
     raw = decode(raw);
@@ -365,7 +375,7 @@ function assign(note: ParsedNote, settings: typeof DEFAULTS, referenced: Set<str
             r.number = r.manual;
             continue;
         }
-        const should = r.kind === 'algorithm' ? settings.algorithmNumbered : r.kind === 'equation' ? (settings.equationMode === 'all' || settings.equationMode === 'referenced' && r.referenced) : r.kind === 'theorem' ? settings.numbered && !['proof', 'remark', 'solution'].includes(r.key) : settings.mediaNumbered;
+        const should = r.kind === 'algorithm' ? settings.algorithmNumbered : r.kind === 'equation' ? (settings.equationMode === 'all' || settings.equationMode === 'referenced' && r.referenced) : r.kind === 'theorem' ? settings.numbered && (r.environment ? r.environment.numbered : !['proof', 'remark', 'solution'].includes(r.key)) : settings.mediaNumbered;
         if (!should || r.suppress || r.multiTag)
             continue;
         const k = bucket(r), taken = reserved.get(k) || new Set();
@@ -419,11 +429,18 @@ function refText(r: SourceRecord | null | undefined, settings = DEFAULTS) {
     if (!r)
         return null;
     settings = { ...DEFAULTS, ...settings };
-    const name = r.kind === 'equation' ? 'Equation' : (TYPES[r.key] || MEDIA[r.key])[0];
-    const abbr = ABBR[r.key] || r.key, type = settings.shortReferences ? abbr : name;
+    const override = referenceOverrides(settings)[r.key] || {};
+    const name = override.name || typeNames(r.key, settings)[0];
+    const abbr = override.abbr || r.environment?.abbr || ABBR[r.key] || r.key, type = settings.shortReferences ? abbr : name;
     if (!r.number)
         return `${type}${r.title ? ' · ' + plain(r.title) : t("（未编号）")}`;
-    const format = r.kind === 'algorithm' ? settings.algorithmFormat : r.kind === 'equation' ? settings.eqFormat : r.kind === 'table' ? settings.tableFormat : r.kind === 'figure' || r.kind === 'subfigure' ? settings.figureFormat : settings.theoremFormat;
+    let format = override.format || (r.kind === 'algorithm' ? settings.algorithmFormat : r.kind === 'equation' ? settings.eqFormat : r.kind === 'table' ? settings.tableFormat : r.kind === 'figure' || r.kind === 'subfigure' ? settings.figureFormat : settings.theoremFormat);
+    // Legacy defaults contain literal English prefixes; an abbreviation override
+    // must still take effect without making users replace those defaults first.
+    if (!override.format && override.abbr) {
+        const key = r.kind === 'algorithm' ? 'algorithmFormat' : r.kind === 'equation' ? 'eqFormat' : r.kind === 'table' ? 'tableFormat' : ['figure', 'subfigure'].includes(r.kind) ? 'figureFormat' : null;
+        if (key && format === DEFAULTS[key]) format = r.kind === 'equation' ? '{abbr}:{number}' : '{abbr} {number}';
+    }
     return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k: 'number' | 'type' | 'name' | 'abbr' | 'title' | 'file') => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, '').split('/').pop() || '' })[k]);
 }
 function taggedTex(eq: SourceRecord) {
@@ -435,5 +452,16 @@ function taggedTex(eq: SourceRecord) {
         tex += '\\tag{' + eq.number + '}';
     return tex;
 }
+function typeNames(key: string, opts: Partial<typeof DEFAULTS> = {}) {
+    const custom = environments(opts)[key];
+    return custom ? [custom.name, key] : TYPES[key] || MEDIA[key] || [key === 'equation' ? 'Equation' : key, key];
+}
+function referenceOverrides(opts: Partial<typeof DEFAULTS> = {}) {
+    return readReferenceOverrides(opts.referenceOverrides || '{}', [...Object.keys(TYPES), ...Object.keys(MEDIA), 'equation', ...Object.keys(environments(opts))]);
+}
+function labelName(key: string, opts: Partial<typeof DEFAULTS> = {}) {
+    return referenceOverrides(opts)[key]?.name || (key === 'algorithm' ? t('算法') : typeNames(key, opts)[0]);
+}
+const validCustomKey = (key: string) => validEnvironmentKey(key, reservedEnvironmentKeys);
 const APPEARANCE_TYPES: Record<string, string[]> = { ...TYPES, algorithm: MEDIA.algorithm };
-export default { TYPES, APPEARANCE_TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, resolvePath, cleanPath, lineOf, quote, plain };
+export default { environments, referenceOverrides, typeNames, labelName, validCustomKey, TYPES, APPEARANCE_TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, resolvePath, cleanPath, lineOf, quote, plain };

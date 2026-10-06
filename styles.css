@@ -205,6 +205,7 @@ body .callout:is([data-callout=solution], [data-callout=sol]) {
   --phb-accent: var(--phb-proof);
   --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);
 }
+body .callout.an-custom-environment,
 body .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {
   --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));
   --callout-blend-mode: normal;
@@ -356,7 +357,7 @@ body .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [d
   &.is-collapsed > .callout-content {
     display: none;
   }
-  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {
+  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk], [data-an-style=remark]) {
     --phb-accent: var(--phb-text);
     --phb-ink: var(--phb-text);
     display: flow-root;
@@ -651,6 +652,45 @@ body.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=
   --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));
   --an-motif-display: var(--an-motif-display-solution, block);
 }
+body .callout.an-custom-environment {
+  --an-custom-fallback: var(--phb-thm);
+  --phb-accent: var(--an-custom-color-light, var(--an-custom-fallback));
+  --phb-badge-ink: var(--an-custom-ink-light, var(--an-custom-default-ink, #fff));
+  --phb-symbol: none;
+  --an-motif-display: none;
+}
+body .callout.an-custom-environment[data-an-style=def] {
+  --an-custom-fallback: var(--phb-def);
+}
+body .callout.an-custom-environment[data-an-style=lem] {
+  --an-custom-fallback: var(--phb-lem);
+}
+body .callout.an-custom-environment[data-an-style=prop] {
+  --an-custom-fallback: var(--phb-prop);
+}
+body .callout.an-custom-environment[data-an-style=cor] {
+  --an-custom-fallback: var(--phb-cor);
+}
+body .callout.an-custom-environment[data-an-style=claim] {
+  --an-custom-fallback: var(--phb-claim);
+}
+body .callout.an-custom-environment[data-an-style=example] {
+  --an-custom-fallback: var(--phb-example);
+}
+body .callout.an-custom-environment[data-an-style=remark] {
+  --an-custom-fallback: var(--phb-remark, var(--phb-def));
+}
+body.theme-dark .callout.an-custom-environment {
+  --an-custom-default-ink: #18181b;
+  --phb-accent: var(--an-custom-color-dark, var(--an-custom-fallback));
+  --phb-badge-ink: var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff));
+}
+body .callout.an-custom-environment[data-an-style=remark] > .callout-title {
+  color: var(--an-custom-color-light, var(--an-remark-color)) !important;
+}
+body.theme-dark .callout.an-custom-environment[data-an-style=remark] > .callout-title {
+  color: var(--an-custom-color-dark, var(--an-remark-color)) !important;
+}
 
 body {
   --an-layout-caption-size: .9em;
@@ -790,14 +830,16 @@ body.phb-export .callout.an-captionless > .callout-title {
 body :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {
   margin: .35em 0;
   text-indent: 0;
+  text-align: center !important;
 }
 body .an-media .image-embed,
 body .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {
   display: inline-block !important;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   min-width: 0;
   max-width: 100%;
+  float: none !important;
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -936,6 +978,15 @@ body :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-s
     print-color-adjust: exact;
   }
 }
+body .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content:not(.an-figure-grid),
+body .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content > p {
+  text-align: center !important;
+  text-indent: 0 !important;
+}
+body .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {
+  justify-content: center;
+  text-align: center;
+}
 
 .an-progress,
 .an-diagnostics {
@@ -1029,6 +1080,10 @@ body :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-s
 .an-custom-appearance-row > .setting-item-info,
 .an-custom-appearance-row > .setting-item-control {
   display: none;
+}
+.an-environment-example {
+  white-space: pre-wrap;
+  font-family: var(--font-monospace);
 }
 
 .an-diagram-modal {
@@ -1233,38 +1288,46 @@ body.an-active .callout[data-callout=algorithm] {
   --an-algorithm-accent: var(--an-color-algorithm, var(--phb-thm));
   display: block;
   color: var(--text-normal, #24372e);
-  background: transparent;
-  border: 0;
-  border-top: 2px solid var(--an-algorithm-accent);
-  border-bottom: 2px solid var(--an-algorithm-accent);
-  border-radius: 0;
+  background: transparent !important;
+  border: 0 !important;
+  border-top: 2px solid var(--an-algorithm-accent) !important;
+  border-bottom: 2px solid var(--an-algorithm-accent) !important;
+  border-radius: 0 !important;
   box-shadow: none;
-  padding: 0;
-  margin: 1.2em 0;
+  padding: 0 !important;
+  margin: 1.2em 0 !important;
   font-family: var(--font-text);
   font-size: 1em;
   line-height: 1.6;
   overflow: visible;
 }
+body.an-active .callout[data-callout=algorithm]::before,
 body.an-active .callout[data-callout=algorithm]::after {
+  content: none;
   display: none;
 }
-.an-algorithm > .callout-title,
-.an-algorithm > .an-algorithm-caption,
-.an-appearance-preview .callout[data-callout=algorithm] > .callout-title {
-  display: flex;
-  background: transparent;
-  color: var(--an-algorithm-accent);
-  padding: .35em .5em;
-  border: 0;
-  border-bottom: 1px solid var(--an-algorithm-accent);
-  margin: 0;
+body .an-algorithm > .callout-title,
+body .an-algorithm > .an-algorithm-caption,
+body .an-appearance-preview .callout[data-callout=algorithm] > .callout-title {
+  display: flex !important;
+  background: transparent !important;
+  color: var(--an-algorithm-accent) !important;
+  position: static;
+  float: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  box-shadow: none;
+  padding: .35em .5em !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--an-algorithm-accent) !important;
+  margin: 0 !important;
   font-weight: 400;
   font-style: normal;
-  border-radius: 0;
+  border-radius: 0 !important;
 }
-.an-algorithm > .callout-title > .callout-icon {
-  display: none;
+body .an-algorithm > .callout-title > .callout-icon {
+  display: none !important;
 }
 .an-algorithm-label {
   font-weight: 700;

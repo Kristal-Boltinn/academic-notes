@@ -104,7 +104,7 @@ export default class AcademicNotes extends Plugin {
         this.addCommand({ id: 'refresh', name: t("重建定理公式索引并刷新引用"), callback: () => { this.parsed.clear(); this.rebuild().then(() => new Notice(t("索引已重建。"))).catch(e => this.fail(t("重建索引"), e)); } });
         this.addCommand({ id: 'insert-reference', name: t("插入定理、公式或图表引用"), editorCallback: (editor, view) => new ReferencePicker(this, editor, view.file).open() });
         this.addCommand({ id: 'label-block', name: t("为光标所在公式、定理或图表添加块 ID"), editorCallback: (editor, view) => this.labelBlock(editor, view.file) });
-        this.addCommand({ id: 'insert-environment', name: t('插入学术环境'), editorCallback: editor => new EnvironmentModal(this.app, editor).open() });
+        this.addCommand({ id: 'insert-environment', name: t('插入学术环境'), editorCallback: editor => new EnvironmentModal(this.app, editor, Engine.environments(this.settings)).open() });
         this.addCommand({ id: 'edit-diagram', name: t('插入或编辑交换图（Beta）'), editorCallback: editor => { try { openDiagramEditor(this.app, editor); } catch (error) { this.fail(t('编辑交换图'), error); } } });
         this.registerMarkdownCodeBlockProcessor('academic-diagram', (source, el, ctx) => diagramProcessor(this.app, source, el, ctx));
         this.registerMarkdownCodeBlockProcessor('algorithm', (source, el) => algorithmProcessor(source, el, this.settings.algorithmLineNumbers));
@@ -235,7 +235,7 @@ export default class AcademicNotes extends Plugin {
                 const f = files[i], cache = this.app.metadataCache.getFileCache(f) || {};
                 const old = this.parsed.get(f.path), fromEditor = open.has(f.path);
                 const text = fromEditor ? open.get(f.path)! : (old && old._mtime === f.stat.mtime && !old._fromEditor && !this.dirty.has(f.path) ? old.source : await this.app.vault.cachedRead(f));
-                let n = old?.source === text && !this.dirty.has(f.path) ? old : Engine.parse(f.path, text, cache);
+                let n = old?.source === text && old._environments === this.settings.customEnvironments && !this.dirty.has(f.path) ? old : Engine.parse(f.path, text, cache, this.settings);
                 n._mtime = f.stat.mtime;
                 n._fromEditor = fromEditor;
                 this.dirty.delete(f.path);
@@ -368,7 +368,7 @@ export default class AcademicNotes extends Plugin {
     labelBlock(editor: Editor, file: TFile | null) {
         if (!file)
             return;
-        const note = Engine.parse(file.path, editor.getValue()), line = editor.getCursor().line;
+        const note = Engine.parse(file.path, editor.getValue(), {}, this.settings), line = editor.getCursor().line;
         const r = note.records.filter(r => r.line <= line && r.endLine >= line).sort((a, b) => b.line - a.line)[0];
         if (!r) {
             new Notice(t("请把光标放到 $$ 公式块或定理、figure、subfigure、table callout 内。"));
@@ -558,7 +558,7 @@ export default class AcademicNotes extends Plugin {
         for (const { file: f } of files) {
             const existing = this.graph?.notes.get(f.path);
             const source = existing?.source ?? await this.app.vault.cachedRead(f);
-            notes.push(Engine.parse(f.path, source, this.app.metadataCache.getFileCache(f) || {}));
+            notes.push(Engine.parse(f.path, source, this.app.metadataCache.getFileCache(f) || {}, this.settings));
         }
         const chapterMap = options.book && this.settings.exportNumbering !== 'note' ? new Map(notes.map((n, i) => [n.path, { chapter: i + 1, mode: this.settings.exportNumbering }])) : undefined;
         const graph = Engine.graph(notes, this.settings, (n, h) => this.resolver(n, h), chapterMap);
@@ -609,24 +609,24 @@ export default class AcademicNotes extends Plugin {
                     const box = diagrams.filter(d => !d.parentElement?.closest('.callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"])'))[index];
                     if (!box) continue;
                     const caption = box.querySelector<HTMLElement>('.an-diagram-caption'); if (caption) caption.hidden = false;
-                    mediaRecord(box, record); if (record.id) box.dataset.phbBlock = record.id; box.dataset.phbBlocks = JSON.stringify(record.ids);
+                    mediaRecord(box, record, this.settings); if (record.id) box.dataset.phbBlock = record.id; box.dataset.phbBlocks = JSON.stringify(record.ids);
                 }
                 const algorithmFences = [...section.querySelectorAll<HTMLElement>('.an-algorithm-fence')];
                 for (const [index, record] of note.media.filter(r => r.kind === 'algorithm' && !note.callouts.includes(r)).entries()) {
                     const host = algorithmFences[index]; if (!host) continue;
-                    algorithmRecord(host, record, this.settings.algorithmLineNumbers);
+                    algorithmRecord(host, record, this.settings.algorithmLineNumbers, Engine.labelName("algorithm", this.settings));
                     if (record.id) host.dataset.phbBlock = record.id; host.dataset.phbBlocks = JSON.stringify(record.ids);
                 }
                 const consumed = new Set();
                 for (const rec of note.callouts) {
-                    const box = boxes.find(b => !consumed.has(b) && (Engine.canon(b.dataset.callout) || Engine.mediaCanon(b.dataset.callout)) === rec.key);
+                    const box = boxes.find(b => !consumed.has(b) && (Engine.canon(b.dataset.callout, this.settings) || Engine.mediaCanon(b.dataset.callout)) === rec.key);
                     if (box) {
                         consumed.add(box);
-                        if (rec.kind === 'algorithm') algorithmRecord(box, rec, this.settings.algorithmLineNumbers);
+                        if (rec.kind === 'algorithm') algorithmRecord(box, rec, this.settings.algorithmLineNumbers, Engine.labelName("algorithm", this.settings));
                         else if (rec.kind === 'theorem')
                             titleRecord(box, rec, graph);
                         else
-                            mediaRecord(box, rec);
+                            mediaRecord(box, rec, this.settings);
                         if (rec.id)
                             box.dataset.phbBlock = rec.id;
                         if (rec.ids.length)

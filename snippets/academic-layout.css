@@ -167,14 +167,16 @@ body :is(.an-media,[data-callout="figure"],[data-callout="fig"],[data-callout="s
          [data-callout="subfig"],[data-callout="table"],[data-callout="tbl"]) > .callout-content > p {
   margin: .35em 0;
   text-indent: 0;
+  text-align: center !important;
 }
 body .an-media .image-embed,
 body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) .image-embed {
   display: inline-block !important;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   min-width: 0;
   max-width: 100%;
+  float: none !important;
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -277,4 +279,17 @@ body :is(.markdown-preview-view,.markdown-source-view,.phb-chapter).academic-ser
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+}
+
+/* A figure's native paragraph may inherit theme prose justification. */
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"])
+  > .callout-content:not(.an-figure-grid),
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"])
+  > .callout-content > p {
+  text-align: center !important;
+  text-indent: 0 !important;
+}
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) .image-embed {
+  justify-content: center;
+  text-align: center;
 }

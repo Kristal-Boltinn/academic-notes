@@ -231,6 +231,7 @@ body .callout:is([data-callout="solution"],[data-callout="sol"]) {
  * Important declarations are limited to properties that themes also force:
  * callout paint, padding, rounded badges, hidden icons and decorative motifs.
  * Other layout and typography rely on these scoped selectors. */
+body .callout.an-custom-environment,
 body .callout[data-callout]:is(
   [data-callout="def"],
   [data-callout="assumption"],
@@ -371,7 +372,7 @@ body .callout[data-callout]:is(
 
   /* Proof and remark are paragraphs, without the theorem box or motif.
    * Direct-child selectors keep nested theorems and proofs independent. */
-  &:is([data-callout="proof"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"]) {
+  &:is([data-callout="proof"],[data-callout="pf"],[data-callout="remark"],[data-callout="rem"],[data-callout="rmk"],[data-an-style="remark"]) {
     --phb-accent: var(--phb-text);
     --phb-ink: var(--phb-text);
     display: flow-root;
@@ -583,3 +584,26 @@ body.an-active .callout[data-callout]:is([data-callout="solution"],[data-callout
   --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));
   --an-motif-display: var(--an-motif-display-solution, block);
 }
+
+/* Custom environments share the native theorem structure and safe palette roles. */
+body .callout.an-custom-environment {
+  --an-custom-fallback: var(--phb-thm);
+  --phb-accent: var(--an-custom-color-light, var(--an-custom-fallback));
+  --phb-badge-ink: var(--an-custom-ink-light, var(--an-custom-default-ink, #fff));
+  --phb-symbol: none;
+  --an-motif-display: none;
+}
+body .callout.an-custom-environment[data-an-style="def"] { --an-custom-fallback: var(--phb-def); }
+body .callout.an-custom-environment[data-an-style="lem"] { --an-custom-fallback: var(--phb-lem); }
+body .callout.an-custom-environment[data-an-style="prop"] { --an-custom-fallback: var(--phb-prop); }
+body .callout.an-custom-environment[data-an-style="cor"] { --an-custom-fallback: var(--phb-cor); }
+body .callout.an-custom-environment[data-an-style="claim"] { --an-custom-fallback: var(--phb-claim); }
+body .callout.an-custom-environment[data-an-style="example"] { --an-custom-fallback: var(--phb-example); }
+body .callout.an-custom-environment[data-an-style="remark"] { --an-custom-fallback: var(--phb-remark, var(--phb-def)); }
+body.theme-dark .callout.an-custom-environment {
+  --an-custom-default-ink: #18181b;
+  --phb-accent: var(--an-custom-color-dark, var(--an-custom-fallback));
+  --phb-badge-ink: var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff));
+}
+body .callout.an-custom-environment[data-an-style="remark"] > .callout-title { color: var(--an-custom-color-light, var(--an-remark-color)) !important; }
+body.theme-dark .callout.an-custom-environment[data-an-style="remark"] > .callout-title { color: var(--an-custom-color-dark, var(--an-remark-color)) !important; }

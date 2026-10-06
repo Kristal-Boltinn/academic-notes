@@ -18,9 +18,9 @@ function styleText(span: HTMLElement, command: string) {
     for (const [key, family] of Object.entries(families)) if (name.startsWith(key)) span.style.fontFamily = family;
 }
 /** Own DOM renderer: user strings become text nodes, never HTML or executable TeX. */
-export function renderAlgorithm(host: HTMLElement, data: AlgorithmData, number = '', lineNumbers = false, captionHost?: HTMLElement) {
+export function renderAlgorithm(host: HTMLElement, data: AlgorithmData, number = '', lineNumbers = false, captionHost?: HTMLElement, name = t('算法')) {
     const doc = host.ownerDocument, formulas: { span: HTMLElement; source: string }[] = [];
-    const signature = JSON.stringify([data, number, lineNumbers, !!captionHost?.isContentEditable]);
+    const signature = JSON.stringify([data, number, lineNumbers, !!captionHost?.isContentEditable, name]);
     if (host.dataset.anAlgorithm === signature) return;
     host.dataset.anAlgorithm = signature;
     host.classList.add('an-algorithm'); host.classList.remove('an-algorithm-error');
@@ -31,10 +31,10 @@ export function renderAlgorithm(host: HTMLElement, data: AlgorithmData, number =
     const body = doc.win.createDiv({ cls: 'an-algorithm-body' });
     content.replaceChildren(...(captionHost ? [body] : [caption, body]));
     const nativeTitle = !!captionHost?.isContentEditable;
-    if (nativeTitle) caption.dataset.anAlgorithmLabel = t('算法') + (number ? ' ' + number : '');
+    if (nativeTitle) caption.dataset.anAlgorithmLabel = name + (number ? ' ' + number : '');
     else { caption.removeAttribute('data-an-algorithm-label'); caption.replaceChildren(); }
     const decoratedCaption = nativeTitle ? doc.win.createDiv() : caption;
-    decoratedCaption.createSpan({ cls: 'an-algorithm-label', text: t('算法') + (number ? ' ' + number : '') });
+    decoratedCaption.createSpan({ cls: 'an-algorithm-label', text: name + (number ? ' ' + number : '') });
     const title = decoratedCaption.createSpan({ cls: 'an-algorithm-title' });
     const inline = (parent: HTMLElement, nodes: AlgorithmNode[]) => {
         for (let index = 0; index < nodes.length; index++) {
@@ -122,12 +122,12 @@ export function algorithmError(host: HTMLElement, error: unknown) {
     const body = host.querySelector<HTMLElement>(':scope > .callout-content') || host;
     body.replaceChildren(body.ownerDocument.win.createEl('pre', { text: t('算法语法错误：') + String(error instanceof Error ? error.message : error) }));
 }
-export function algorithmRecord(host: HTMLElement, record: SourceRecord, lineNumbers: boolean) {
+export function algorithmRecord(host: HTMLElement, record: SourceRecord, lineNumbers: boolean, name = t('算法')) {
     if (editorFragment(host) && (!host.closest('[contenteditable="false"]') || nativeCalloutBodyInteraction(host))) return;
     if (record.algorithmError) { algorithmError(host, record.algorithmError); return; }
     if (!record.algorithm) return;
     const caption = host.matches('.callout') ? host.querySelector<HTMLElement>(':scope > .callout-title > .callout-title-inner') || undefined : undefined;
-    renderAlgorithm(host, record.algorithm, record.number, lineNumbers, caption);
+    renderAlgorithm(host, record.algorithm, record.number, lineNumbers, caption, name);
     host.dataset.anLine = String(record.line);
 }
 export function algorithmProcessor(source: string, host: HTMLElement, lineNumbers: boolean) {

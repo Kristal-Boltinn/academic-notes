@@ -16,7 +16,8 @@ const body = '\\INPUT $a,b\\in\\mathbb{N}$\n\\WHILE{$b\\ne 0$}\n  \\STATE $(a,b)
 const full = '\\begin{algorithm}\n\\caption{Euclid}\n\\begin{algorithmic}\n' + body + '\n\\end{algorithmic}\n\\end{algorithm}';
 function callout(parent: HTMLElement) {
     const box=parent.createDiv({cls:'callout',attr:{'data-callout':'algorithm'}});
-    const title=box.createDiv({cls:'callout-title'}).createDiv({cls:'callout-title-inner',text:'Euclid'});
+    const heading=box.createDiv({cls:'callout-title'}); heading.createDiv({cls:'callout-icon',text:'Native icon'});
+    const title=heading.createDiv({cls:'callout-title-inner',text:'Euclid'});
     box.createDiv({cls:'callout-content'}).createEl('p',{text:'Unrendered pseudocode'});
     return {box,title};
 }
@@ -37,6 +38,15 @@ export async function runAlgorithmRegressions() {
     }
     setMathOutput('svg');
     for(const width of [320,720]) { host.style.width=width+'px'; await wait(); check([...host.querySelectorAll('.an-algorithm-line')].every(line=>line.getBoundingClientRect().right<=host.getBoundingClientRect().right+1),'Algorithm must fit a narrow mobile pane'); }
+    for (const mode of ['theme-light', 'theme-dark']) {
+        document.body.classList.remove('theme-light','theme-dark'); document.body.classList.add(mode);
+        const style=getComputedStyle(box), heading=box.querySelector<HTMLElement>(':scope > .callout-title')!, titleStyle=getComputedStyle(heading);
+        check(style.borderTopWidth==='2px' && style.borderBottomWidth==='2px','Algorithms must keep top and bottom rules under the real theme');
+        check(titleStyle.borderBottomWidth==='1px' && titleStyle.borderTopWidth==='0px' && titleStyle.borderRadius==='0px','Algorithm caption must have only its separator rule, without a theme badge');
+        check(Math.abs(heading.getBoundingClientRect().width-box.getBoundingClientRect().width)<2,'Algorithm caption separator must span the whole box');
+        check(getComputedStyle(heading.querySelector('.callout-icon')!).display==='none','Algorithm native icon must stay hidden');
+    }
+    document.body.classList.remove('theme-dark'); document.body.classList.add('theme-light');
     const first=box.querySelector('.an-algorithm-line')!; renderFragment(host,note,graph,info); await finishAlgorithms(host); check(box.querySelector('.an-algorithm-line')===first,'Idle refresh must retain algorithm nodes');
     check(layoutParagraphs(host).processed===0,'Algorithms must not enter prose KP layout');
     const untrusted=host.createDiv(); algorithmProcessor('\\STATE <img src=x onerror=alert(1)>',untrusted,false); await finishAlgorithms(untrusted);

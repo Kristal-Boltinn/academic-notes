@@ -43,6 +43,8 @@ export class Setting {
     const control: any = {
       selectEl: el, toggleEl: el, buttonEl: el,
       setValue(value: any) { if (type === 'checkbox') el.checked = value; else el.value = value; return this; },
+      setPlaceholder(value: string) { el.placeholder = value; return this; },
+      setCta() { return this; },
       setDisabled(value: boolean) { el.disabled = value; return this; },
       addOptions(values: Record<string, string>) { for (const [value, label] of Object.entries(values)) { const option = document.createElement('option'); option.value = value; option.textContent = label; el.appendChild(option); } return this; },
       setButtonText(text: string) { el.textContent = text; return this; },

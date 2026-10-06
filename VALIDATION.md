@@ -1,3 +1,9 @@
+# 2.16.0 Environment customization
+
+This release addresses native theme overrides affecting algorithm rules and justified image paragraphs. New environment definitions are local validated data: reserved IDs are rejected, names/references are inserted as text, styles come from a fixed set, and colors accept only six-digit hex. No new filesystem or network capability is introduced. Original note syntax and block destinations remain unchanged. Native active editing guards remain in place.
+
+Validation covers 32 Node regressions, actual Phycat light/dark algorithm border geometry, sized-image centering despite prose justification/indentation, settings persistence, custom colors/counters, mobile loading, and exported cross-file anchors. Physical iPad acceptance remains outstanding. Previous release validation follows.
+
 # 2.15.0 Algorithms
 
 - 30 Node regressions cover equivalent wrapper syntax, independent counters, section/chapter renumbering, cross-file references, original-source ranges/IDs, nesting, manual/suppressed numbering, line-number overrides, parser limits and insertion templates.

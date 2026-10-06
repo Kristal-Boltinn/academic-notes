@@ -2,7 +2,7 @@ import type { FigureLayout } from '../rendering/figure-layout';
 import { t } from '../i18n';
 
 export type EnvironmentKind = 'thm' | 'def' | 'proof' | 'remark' | 'figure' | 'subfigures' | 'table' | 'tikz' | 'algorithm' | 'algorithm-fence';
-export function environmentTemplate(kind: EnvironmentKind, source: string, count = 2, columns: FigureLayout['columns'] = 'auto', height?: number) {
+export function environmentTemplate(kind: string, source: string, count = 2, columns: FigureLayout['columns'] = 'auto', height?: number) {
     const used = new Set([...source.matchAll(/\^([A-Za-z0-9-]+)/g)].map(m => m[1]));
     const id = (prefix: string) => { let n = 1; while (used.has(prefix + '-' + n)) n++; const value = prefix + '-' + n; used.add(value); return value; };
     const title = t('在此填写标题');
