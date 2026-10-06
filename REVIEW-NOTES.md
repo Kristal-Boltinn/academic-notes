@@ -2,6 +2,10 @@
 
 Fresh-editor boundary regressions verify synchronous paragraph decorations without relying on asynchronous measurement transactions.
 
+Additional verification in a running Obsidian 1.14.4 instance with Phycat measured a 300px Live Preview figure centered within 0.001px while KP was enabled. The conflict was `text-align-last: start` applying to figure paragraphs; native prose fallback now excludes media/algorithms, and figure image rows set centered last-line alignment. The original width and Markdown are retained.
+
+Algorithm checks cover the authoritative global line-number switch, explicit `lines=true`/`[1]`, per-block opt-out, removal of the empty gutter, same-baseline numbers with inline math, and full-caption accent inheritance. The running app confirmed zero baseline offset on all algorithm rows and matching caption/rule colors. Temporary verification settings were restored without writing preference files.
+
 Palette definitions and overrides remain validated local settings (fixed appearance roles, six-digit hex colors, bounded counts and JSON size). Legacy global colors migrate only to the selected light/dark palettes. No new permission, external resource or network access is introduced. CSS presets and UI defaults share one catalog; custom palette copies retain a validated built-in/theme base. Environment IDs and source references do not change.
 
 Settings now enter through the host’s 1.13/1.14 settings contract; the private local 1.14.4 stylesheet is used for additional settings/image geometry checks and is not bundled. Overall palette selection remains visible, with a single environment editor for names, references, colors and motifs. Theme-accent changes propagate without saved fixed colors. Curated heading contrast is checked.

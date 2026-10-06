@@ -251,7 +251,7 @@ class AcademicSettings extends PluginSettingTab {
         toggle('mediaNumbered', t("图、表和子图自动编号"), t("用 [!figure] / [!table]；嵌套 [!subfigure] 得到 (a)、(b)。安装后即可使用内置图表样式。"));
         toggle('sharedCounter', t("不同定理类型共享计数器"), t("关闭时 Definition、Theorem 等各自计数。公式始终独立。"));
         toggle('algorithmNumbered', t('算法自动编号'), t('代码块与 Callout 共用独立计数器，遵循当前分节或整篇编号设置。'));
-        toggle('algorithmLineNumbers', t('显示算法行号'), t('行号与算法编号互相独立；输入、输出和注释不计行号。'));
+        toggle('algorithmLineNumbers', t('显示算法行号'), t('这是所有算法的行号总开关；关闭时即使源码写了 lines=true 也不显示。开启后可用 lines=false 单独关闭；输入、输出和注释不计行号。'));
         group = 'numbering';
         text('numberPrefix', t("编号前缀"), t("留空不会从日期文件名推断章节号。"));
         group = 'references';

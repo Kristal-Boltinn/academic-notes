@@ -10,6 +10,7 @@ import { parseAlgorithm } from '../src/algorithms/model';
 import { createLiveExtension, renderFragment } from '../src/rendering/adapters';
 import DocCore from '../src/export/document';
 import { layoutParagraphs } from '../src/typography/dom';
+import { nativeCalloutBodyInteraction } from '../src/rendering/editor-dom';
 const check = (value: unknown, message: string) => { if (!value) throw new Error(message); };
 const wait = () => new Promise(resolve => setTimeout(resolve, 220));
 const body = '\\INPUT $a,b\\in\\mathbb{N}$\n\\WHILE{$b\\ne 0$}\n  \\STATE $(a,b)\\gets(b,a\\bmod b)$\n\\ENDWHILE\n\\RETURN $a$';
@@ -37,6 +38,21 @@ export async function runAlgorithmRegressions() {
         check(title.textContent==='Algorithm 1 · Euclid','Callout caption and counter');
     }
     setMathOutput('svg');
+    // The global switch is authoritative, including source-level opt-ins.
+    for (const local of [undefined, true, false]) {
+        const record = { ...note.media[0], algorithm: { ...note.media[0].algorithm!, lineNumbers: local } };
+        for (const enabled of [true, false, true]) {
+            algorithmRecord(box, record, enabled); await finishAlgorithms(box);
+            const visible = enabled && local !== false;
+            check(box.dataset.anAlgorithmLineNumbers === String(visible), 'Algorithm records expose their effective line-number state');
+            check(box.querySelectorAll('.an-algorithm-line-number').length === (visible ? 5 : 0), 'Turning line numbers off must remove both digits and their gutter, even with lines=true');
+            if (!visible) check(Math.abs(box.querySelector('.an-algorithm-line-content')!.getBoundingClientRect().left - box.querySelector('.an-algorithm-body')!.getBoundingClientRect().left - parseFloat(getComputedStyle(box.querySelector('.an-algorithm-body')!).paddingLeft)) < 1, 'Unnumbered algorithm statements must not retain an empty number column');
+        }
+    }
+    const optIn = full.replace('\\begin{algorithmic}', '\\begin{algorithmic}[1]');
+    algorithmProcessor(optIn, fence, false); await finishAlgorithms(fence);
+    check(!fence.querySelector('.an-algorithm-line-number'), 'The master switch also hides explicit [1] in fenced algorithms');
+    graph.settings.algorithmLineNumbers = true; renderFragment(host,note,graph,info); await finishAlgorithms(host);
     for(const width of [320,720]) { host.style.width=width+'px'; await wait(); check([...host.querySelectorAll('.an-algorithm-line')].every(line=>line.getBoundingClientRect().right<=host.getBoundingClientRect().right+1),'Algorithm must fit a narrow mobile pane'); }
     for (const mode of ['theme-light', 'theme-dark']) {
         document.body.classList.remove('theme-light','theme-dark'); document.body.classList.add(mode);
@@ -45,6 +61,13 @@ export async function runAlgorithmRegressions() {
         check(titleStyle.borderBottomWidth==='1px' && titleStyle.borderTopWidth==='0px' && titleStyle.borderRadius==='0px','Algorithm caption must have only its separator rule, without a theme badge');
         check(Math.abs(heading.getBoundingClientRect().width-box.getBoundingClientRect().width)<2,'Algorithm caption separator must span the whole box');
         check(getComputedStyle(heading.querySelector('.callout-icon')!).display==='none','Algorithm native icon must stay hidden');
+        for (const caption of [title, title.querySelector('.an-algorithm-title')!, fence.querySelector('.an-algorithm-title')!]) check(getComputedStyle(caption).color === style.borderTopColor, 'The complete algorithm caption must follow its rule accent under the real theme');
+        for (const row of box.querySelectorAll('.an-algorithm-line')) {
+            const number = row.querySelector<HTMLElement>('.an-algorithm-line-number')!, content = row.querySelector<HTMLElement>('.an-algorithm-line-content')!;
+            const marker = () => { const span=document.createElement('span'); span.style.cssText='display:inline-block;width:0;height:0;vertical-align:baseline;padding:0;border:0'; return span; };
+            const a=marker(), b=marker(); number.appendChild(a); content.prepend(b);
+            check(Math.abs(a.getBoundingClientRect().top-b.getBoundingClientRect().top)<.6,'Algorithm line numbers must share the statement baseline, including formula rows'); a.remove(); b.remove();
+        }
     }
     document.body.classList.remove('theme-dark'); document.body.classList.add('theme-light');
     const first=box.querySelector('.an-algorithm-line')!; renderFragment(host,note,graph,info); await finishAlgorithms(host); check(box.querySelector('.an-algorithm-line')===first,'Idle refresh must retain algorithm nodes');
@@ -83,14 +106,18 @@ export async function runAlgorithmRegressions() {
     host.remove();
 
     // A real CodeMirror read-only widget with the native editable title retained.
-    const parent=document.body.createDiv(); parent.style.width='520px';
+    const parent=document.body.createDiv({cls:'markdown-source-view mod-cm6'}); parent.style.cssText='width:520px;height:400px;position:relative';
     const calloutSource=source.slice(0,source.indexOf('\n\n^alg-callout'))+'\n\nTail.'.repeat(20), liveNote=Engine.parse('live.md',calloutSource), liveGraph=Engine.graph([liveNote]);
     let liveBox:HTMLElement, liveTitle:HTMLElement;
     class NativeAlgorithm extends WidgetType { toDOM(){ const generated=callout(document.createElement('div')); liveBox=generated.box; liveTitle=generated.title; liveBox.contentEditable='false'; liveTitle.contentEditable='true'; return liveBox; } }
     const field=StateField.define({create:()=>Decoration.set([Decoration.replace({widget:new NativeAlgorithm(),block:true}).range(0,liveNote.media[0].to)]),update:(value,tr)=>value.map(tr.changes),provide:field=>EditorView.decorations.from(field)});
     const errors:unknown[]=[], plugin:any={settings:{...DEFAULTS},graph:liveGraph,editorViews:new Set(),recordError:(...args:unknown[])=>errors.push(args)};
-    const view=new EditorView({parent,state:EditorState.create({doc:calloutSource,selection:{anchor:calloutSource.length},extensions:[editorInfoField,editorLivePreviewField,field,createLiveExtension(plugin)]})});
+    const extension=createLiveExtension(plugin);
+    const view=new EditorView({parent,state:EditorState.create({doc:calloutSource,selection:{anchor:calloutSource.length},extensions:[editorInfoField,editorLivePreviewField,field,extension]})});
     try {
+        // This fixture is inactive; do not carry a collapsed caret from earlier tests.
+        document.getSelection()?.removeAllRanges();
+        check(!nativeCalloutBodyInteraction(liveBox!), 'Inactive fixture must have no native caret in its editable title');
         for(let n=0;n<15&&!liveBox!.querySelector('.an-algorithm-line');n++) await wait();
         await finishAlgorithms(liveBox!); check(!!liveBox!.querySelector('.an-algorithm-line'),'Inactive Live Preview callout must render');
         check(liveTitle!.textContent==='Euclid'&&liveTitle!.isContentEditable,'Native editable title must retain its text and editor ownership');
@@ -111,5 +138,5 @@ export async function runAlgorithmRegressions() {
     check(link.dataset.phbResolved===target.id&&!meta.warnings.length,'Exported cross-file algorithm link must resolve to its actual box');
     const long=two.createDiv(); algorithmProcessor('\\begin{algorithm}\n\\caption{Long algorithm}\n\\begin{algorithmic}\n'+Array.from({length:100},(_,n)=>'\\STATE row-'+String(n).padStart(3,'0')).join('\n')+'\n\\end{algorithmic}\n\\end{algorithm}',long,true); await finishAlgorithms(root);
     const pdfMarkup=root.outerHTML+'<script id="phb-meta" type="application/json">'+JSON.stringify(meta)+'</script>'; root.remove();
-    return {message:'Algorithms: equivalent wrappers, math fallback, narrow panes, native title editing, idle DOM stability and cross-file export anchors passed.',markup,pdfMarkup};
+    return {message:'Algorithms: equivalent wrappers, authoritative line-number switch and gutter removal, aligned baselines, complete caption accents, math fallback, narrow panes, native title editing, idle DOM stability and cross-file export anchors passed.',markup,pdfMarkup};
 }

@@ -24,6 +24,9 @@ export function renderAlgorithm(host: HTMLElement, data: AlgorithmData, number =
     if (host.dataset.anAlgorithm === signature) return;
     host.dataset.anAlgorithm = signature;
     host.classList.add('an-algorithm'); host.classList.remove('an-algorithm-error');
+    // The settings switch controls all algorithms; block options can opt out.
+    const showLineNumbers = lineNumbers && data.lineNumbers !== false;
+    host.dataset.anAlgorithmLineNumbers = String(showLineNumbers);
     host.setAttribute('role', 'group');
     const content = captionHost ? host.querySelector<HTMLElement>(':scope > .callout-content') : host;
     if (!content) return;
@@ -67,8 +70,8 @@ export function renderAlgorithm(host: HTMLElement, data: AlgorithmData, number =
     const line = (depth: number, keyword = '', text?: AlgorithmNode, ending = '', numbered = true) => {
         const row = body.createDiv({ cls: 'an-algorithm-line' });
         row.style.setProperty('--an-algorithm-depth', String(depth));
-        const n = row.createSpan({ cls: 'an-algorithm-line-number' });
-        if (numbered) { serial++; if (data.lineNumbers ?? lineNumbers) n.textContent = String(serial); }
+        const n = showLineNumbers ? row.createSpan({ cls: 'an-algorithm-line-number' }) : undefined;
+        if (numbered) { serial++; if (n) n.textContent = String(serial); }
         current = row.createDiv({ cls: 'an-algorithm-line-content' });
         if (keyword) current.createSpan({ cls: 'an-algorithm-keyword', text: keyword });
         if (text) inline(current, text.children || [text]);

@@ -1,5 +1,7 @@
 # 2.15.0
 
+- Fix the Live Preview image alignment conflict with KP native fallback: prose-only last-line justification no longer affects figure callouts; image rows explicitly center their last line. Verify a 300px figure in running Obsidian 1.14.4.
+- Make the algorithm line-number setting a master switch, removing digits and the empty gutter even with `lines=true` or `[1]` in the source. Keep per-block opt-out when enabled. Align numbers with statement/formula baselines and apply the selected accent to the complete caption.
 - Fix the settings interface collision introduced by Obsidian 1.13 and retained in 1.14: the host now reaches the complete grouped settings screen instead of a flat internal definition list. Add host-entry regression coverage.
 - Keep overall light/dark palette selection visible above four tabs. Unify environment selection, creation, names, references, colors and motifs; edit colors without enabling toggles. Keep numbering, typography and export separate; only KP is marked Beta.
 - Curate neighbouring and muted complementary palette tones, add light/dark Colorful choices, and derive every theme-following role from the host accent so accent changes propagate immediately. Preserve per-palette overrides and resets.

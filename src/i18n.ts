@@ -82,7 +82,7 @@ export const ENGLISH = {
 
   "算法": "Algorithm", "算法（Callout）": "Algorithm (callout)", "算法（代码块）": "Algorithm (code block)",
   "算法自动编号": "Automatically number algorithms", "代码块与 Callout 共用独立计数器，遵循当前分节或整篇编号设置。": "Fences and callouts share a separate algorithm counter, following the current section or whole-note numbering scope.",
-  "显示算法行号": "Show algorithm line numbers", "行号与算法编号互相独立；输入、输出和注释不计行号。": "Line numbers are independent of algorithm numbers. Input, output and comments do not consume a line number.",
+  "显示算法行号": "Show algorithm line numbers", "这是所有算法的行号总开关；关闭时即使源码写了 lines=true 也不显示。开启后可用 lines=false 单独关闭；输入、输出和注释不计行号。": "Master switch for all algorithm line numbers: off hides them even when the source says lines=true. When on, use lines=false to disable individual blocks. Input, output and comments do not consume a line number.",
   "算法引用格式": "Algorithm reference format", "默认 alg {number}；支持与定理引用相同的占位符。": "Default: alg {number}. Supports the same placeholders as theorem references.",
   "算法使用三线样式；主色改变线条和标题，正文保持中性色。": "Algorithms use three rules. The accent changes the rules and caption; body text remains neutral.",
   "算法语法错误：": "Algorithm syntax error: ", "算法语法错误，已停止导出。": "Algorithm syntax error; export stopped.",

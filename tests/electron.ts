@@ -34,7 +34,10 @@ const box = (type: string, title: string, content = '<p>中文正文 · A mathem
 const content = box('def', 'Definition 1.1 · Compactness') + box('thm', 'Theorem 1.1 · Finite spaces',
   '<p>A finite space is compact.</p>' + box('lem', 'Lemma 1.1 · Nested', '<p>The nested box keeps its own shade of the selected palette.</p>')) +
   box('prop', 'Proposition 1.1') + box('cor', 'Corollary 1.1') + box('example', 'Example 1.1') + box('proof', 'Proof') + box('remark', 'Remark');
-const html = (body: string, css = '') => `<!doctype html><html><head><meta charset="utf-8"><base href="https://academic.test.invalid/"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; script-src 'none'"><style>${native}\n${shell}\n${extra}\n${base}\n${css}</style></head><body class="theme-light an-active" data-an-palette="forest">${body}</body></html>`;
+const html = (body: string, css = '', includeNative = true) => `<!doctype html><html><head><meta charset="utf-8"><base href="https://academic.test.invalid/"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; script-src 'none'"><style>${includeNative ? native : ''}\n${shell}\n${extra}\n${base}\n${css}</style></head><body class="theme-light an-active" data-an-palette="forest">${body}</body></html>`;
+
+// App viewport CSS is a private UI fixture, never part of the isolated PDF document.
+const pdfHtml = (body: string, css = '') => html(body, css, false);
 
 async function run() {
   mkdirSync('output', { recursive: true }); mkdirSync('screenshots', { recursive: true });
@@ -44,11 +47,11 @@ async function run() {
     wc.on('console-message', (details) => { if (details.level === 'error') console.error('Renderer:', details.message); else if(process.env.ACADEMIC_TEST_SETTINGS_ONLY==='1') console.log('Renderer:',details.message); });
     if (process.env.ACADEMIC_TEST_KP_ONLY === '1') {
       const kpClient = buildSync({ stdin: { contents: "import core from './src/export/document'; globalThis.AcademicTestDoc=core;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', target: 'es2022' }).outputFiles[0].text;
-      await runKpPdfRegressions(win, html, print, kpClient); return;
+      await runKpPdfRegressions(win, pdfHtml, print, kpClient); return;
     }
     if (process.env.ACADEMIC_TEST_FLOAT_ONLY === '1') {
       const floatClient = buildSync({ stdin: { contents: "import core from './src/export/document'; globalThis.AcademicTestDoc=core;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', target: 'es2022' }).outputFiles[0].text;
-      await runFloatRegressions(win, html, print, floatClient); return;
+      await runFloatRegressions(win, pdfHtml, print, floatClient); return;
     }
     console.log('Building browser UI regression fixture');
     const uiClient = (await build({ stdin: { contents: "import { runEnvironmentRegressions } from './tests/environment-browser'; globalThis.runEnvironmentRegressions=runEnvironmentRegressions; import { runAlgorithmRegressions } from './tests/algorithm-browser'; import { runUiRegressions, mountSettingsPreview } from './tests/browser-regression'; globalThis.mountSettingsPreview=mountSettingsPreview; import { runFeatureRegressions } from './tests/feature-browser'; import { runKpBrowserRegressions } from './tests/kp-browser'; import { runKpLiveRegressions } from './tests/kp-live-browser'; import { runCalloutTypographyRegressions } from './tests/kp-callouts-browser'; import { runReadingOwnershipRegressions } from './tests/reading-ownership-browser'; import { runEditorIdleRegressions } from './tests/editor-idle-browser'; import { runLayoutDiagnosticRegressions } from './tests/layout-diagnostics-browser'; globalThis.runAlgorithmRegressions=runAlgorithmRegressions; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions; globalThis.runKpBrowserRegressions = runKpBrowserRegressions; globalThis.runKpLiveRegressions = runKpLiveRegressions; globalThis.runCalloutTypographyRegressions = runCalloutTypographyRegressions; globalThis.runReadingOwnershipRegressions = runReadingOwnershipRegressions; globalThis.runEditorIdleRegressions = runEditorIdleRegressions; globalThis.runLayoutDiagnosticRegressions = runLayoutDiagnosticRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', plugins: [typographyClient], loader: { '.css': 'text' }, external: ['electron', '@electron/remote'], alias: { obsidian: resolve('tests/browser-host.ts') } })).outputFiles[0].text;
@@ -71,7 +74,7 @@ async function run() {
     }
     const algorithms = await wc.executeJavaScript('runAlgorithmRegressions()') as { message: string; markup: string; pdfMarkup: string };
     console.log(algorithms.message);
-    if (process.env.ACADEMIC_TEST_ALGORITHM_ONLY === '1') { await runAlgorithmPdf(algorithms.pdfMarkup, html, print); return; }
+    if (process.env.ACADEMIC_TEST_ALGORITHM_ONLY === '1') { await runAlgorithmPdf(algorithms.pdfMarkup, pdfHtml, print); return; }
     console.log(await wc.executeJavaScript('runKpLiveRegressions()'));
     const calloutTypography = await wc.executeJavaScript('runCalloutTypographyRegressions()') as { message: string; markup: string };
     console.log(calloutTypography.message);
@@ -376,9 +379,9 @@ async function run() {
     const pdf = await PDFDocument.load(result.bytes);
     assert.ok(pdf.catalog.get(PDFName.of('Outlines')));
     console.log(JSON.stringify({ paletteCases: cases, pdf: result.report }));
-    await runAlgorithmPdf(algorithms.pdfMarkup, html, print);
-    await runKpPdfRegressions(win, html, print, client);
-    await runFloatRegressions(win, html, print, client);
+    await runAlgorithmPdf(algorithms.pdfMarkup, pdfHtml, print);
+    await runKpPdfRegressions(win, pdfHtml, print, client);
+    await runFloatRegressions(win, pdfHtml, print, client);
   } finally { win.destroy(); }
 }
 

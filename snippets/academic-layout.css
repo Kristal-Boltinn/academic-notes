@@ -287,6 +287,7 @@ body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="sub
 body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"])
   > .callout-content > p {
   text-align: center !important;
+  text-align-last: center !important;
   text-indent: 0 !important;
 }
 body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) .image-embed {
@@ -296,6 +297,7 @@ body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="sub
 
 body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="图"],[data-callout="subfigure"],[data-callout="subfig"],[data-callout="子图"]) > .callout-content :is(.cm-line,.cm-embed-block):has(.image-embed) {
   text-align:center !important;
+  text-align-last:center !important;
   text-indent:0 !important;
   padding-inline:0 !important;
 }

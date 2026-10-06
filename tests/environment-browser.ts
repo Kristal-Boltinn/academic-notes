@@ -105,15 +105,15 @@ export async function runEnvironmentRegressions() {
     const addImage=(parent:HTMLElement,wrapper:string)=>{
       const fig=callout(parent,'figure','Centered image'),content=fig.querySelector<HTMLElement>('.callout-content')!;content.replaceChildren();
       const holder=wrapper==='native-1.14'?content.createDiv({cls:'cm-sizer'}).createDiv({cls:'cm-contentContainer'}).createDiv({cls:'cm-content'}):wrapper==='direct'?content:wrapper==='p'?content.createEl('p'):content.createDiv({cls:wrapper});
-      const embed=wrapper==='native-1.14'?holder.createDiv({cls:'internal-embed image-embed'}):holder.createSpan({cls:'internal-embed image-embed'});
+      const embed=wrapper==='native-1.14'?holder.createDiv({cls:'internal-embed media-embed image-embed is-loaded',attr:{width:'200'}}):holder.createSpan({cls:'internal-embed media-embed image-embed is-loaded',attr:{width:'200'}});
       const imageParent=wrapper==='native-1.14'?embed.createDiv({cls:'image-wrapper'}):embed;
       const img=imageParent.createEl('img',{attr:{src:imageSource,width:'200',height:'120'}});
       if(wrapper==='native-1.14')imageParent.createDiv({cls:'image-resize-corner'});
       mediaRecord(fig,{kind:'figure',key:'figure',line:0,title:'Centered image',number:'1'} as any);return {fig,img};
     };
     const fixtures=[addImage(host,'p')];
-    const liveHost=host.createDiv({cls:'markdown-source-view mod-cm6'});
-    class ImageWidget extends WidgetType {toDOM(){const wrapper=document.createElement('div');wrapper.contentEditable='false';for(const cls of ['direct','cm-line','cm-embed-block','native-1.14'])fixtures.push(addImage(wrapper,cls));return wrapper;}}
+    const liveHost=host.createDiv({cls:'markdown-source-view mod-cm6 an-kp-native-justify'});
+    class ImageWidget extends WidgetType {toDOM(){const wrapper=document.createElement('div');wrapper.contentEditable='false';for(const cls of ['p','direct','cm-line','cm-embed-block','native-1.14'])fixtures.push(addImage(wrapper,cls));return wrapper;}}
     const widgets=StateField.define({create:()=>Decoration.set([Decoration.widget({widget:new ImageWidget(),block:true}).range(0)]),update:value=>value,provide:field=>EditorView.decorations.from(field)});
     const view=new EditorView({parent:liveHost,state:EditorState.create({doc:'Image fixture',extensions:[widgets]})});
     try {await Promise.all(fixtures.map(({img})=>img.decode()));
