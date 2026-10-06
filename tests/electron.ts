@@ -9,6 +9,7 @@ import { typographyClient } from '../scripts/typography-client.mjs';
 import { exportPdf } from '../src/export/pdf';
 import { PDFDocument, PDFName } from 'pdf-lib';
 import { setLanguage } from '../src/i18n';
+import { PRESETS } from '../src/rendering/palettes';
 import { MOTIFS, motifMask, appearanceValues } from '../src/rendering/custom-appearance';
 import { runAlgorithmPdf } from './algorithm-pdf';
 import { runFloatRegressions } from './float-electron';
@@ -25,6 +26,7 @@ app.commandLine.appendSwitch('force-device-scale-factor', '1');
 
 const base = readFileSync('styles.css', 'utf8');
 const print = readFileSync('src/styles/document.css', 'utf8');
+const native = process.env.ACADEMIC_TEST_OBSIDIAN_CSS ? readFileSync(process.env.ACADEMIC_TEST_OBSIDIAN_CSS, 'utf8') : '';
 const extra = process.env.ACADEMIC_TEST_THEME ? readFileSync(process.env.ACADEMIC_TEST_THEME, 'utf8') : '';
 const shell = `body{--text-normal:#292929;--text-muted:#666;--text-accent:#248051;--color-blue:#286b76;--color-purple:#71628c;--color-green:#62752e;--color-cyan:#42786b;--color-orange:#946b2f;font:17px/1.65 'Microsoft YaHei',sans-serif;margin:40px;background:#fff}.theme-dark{--text-normal:#ededed;--text-muted:#aaa;background:#171717;color:#ededed}h1,h2{font-family:inherit}.callout-title{display:flex}.callout-icon{display:none}*{transition:none!important;animation:none!important}`;
 const box = (type: string, title: string, content = '<p>中文正文 · A mathematical statement, with <strong>emphasis</strong>.</p>') =>
@@ -32,14 +34,14 @@ const box = (type: string, title: string, content = '<p>中文正文 · A mathem
 const content = box('def', 'Definition 1.1 · Compactness') + box('thm', 'Theorem 1.1 · Finite spaces',
   '<p>A finite space is compact.</p>' + box('lem', 'Lemma 1.1 · Nested', '<p>The nested box keeps its own shade of the selected palette.</p>')) +
   box('prop', 'Proposition 1.1') + box('cor', 'Corollary 1.1') + box('example', 'Example 1.1') + box('proof', 'Proof') + box('remark', 'Remark');
-const html = (body: string, css = '') => `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; script-src 'none'"><style>${shell}\n${extra}\n${base}\n${css}</style></head><body class="theme-light an-active" data-an-palette="forest">${body}</body></html>`;
+const html = (body: string, css = '') => `<!doctype html><html><head><meta charset="utf-8"><base href="https://academic.test.invalid/"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; script-src 'none'"><style>${native}\n${shell}\n${extra}\n${base}\n${css}</style></head><body class="theme-light an-active" data-an-palette="forest">${body}</body></html>`;
 
 async function run() {
   mkdirSync('output', { recursive: true }); mkdirSync('screenshots', { recursive: true });
   const win = new BrowserWindow({ show: false, width: 1000, height: 1300, webPreferences: { sandbox: true, nodeIntegration: false, contextIsolation: true, backgroundThrottling: false } });
   try {
     const wc = win.webContents;
-    wc.on('console-message', (details) => { if (details.level === 'error') console.error('Renderer:', details.message); });
+    wc.on('console-message', (details) => { if (details.level === 'error') console.error('Renderer:', details.message); else if(process.env.ACADEMIC_TEST_SETTINGS_ONLY==='1') console.log('Renderer:',details.message); });
     if (process.env.ACADEMIC_TEST_KP_ONLY === '1') {
       const kpClient = buildSync({ stdin: { contents: "import core from './src/export/document'; globalThis.AcademicTestDoc=core;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', target: 'es2022' }).outputFiles[0].text;
       await runKpPdfRegressions(win, html, print, kpClient); return;
@@ -49,12 +51,24 @@ async function run() {
       await runFloatRegressions(win, html, print, floatClient); return;
     }
     console.log('Building browser UI regression fixture');
-    const uiClient = (await build({ stdin: { contents: "import { runEnvironmentRegressions } from './tests/environment-browser'; globalThis.runEnvironmentRegressions=runEnvironmentRegressions; import { runAlgorithmRegressions } from './tests/algorithm-browser'; import { runUiRegressions } from './tests/browser-regression'; import { runFeatureRegressions } from './tests/feature-browser'; import { runKpBrowserRegressions } from './tests/kp-browser'; import { runKpLiveRegressions } from './tests/kp-live-browser'; import { runCalloutTypographyRegressions } from './tests/kp-callouts-browser'; import { runReadingOwnershipRegressions } from './tests/reading-ownership-browser'; import { runEditorIdleRegressions } from './tests/editor-idle-browser'; import { runLayoutDiagnosticRegressions } from './tests/layout-diagnostics-browser'; globalThis.runAlgorithmRegressions=runAlgorithmRegressions; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions; globalThis.runKpBrowserRegressions = runKpBrowserRegressions; globalThis.runKpLiveRegressions = runKpLiveRegressions; globalThis.runCalloutTypographyRegressions = runCalloutTypographyRegressions; globalThis.runReadingOwnershipRegressions = runReadingOwnershipRegressions; globalThis.runEditorIdleRegressions = runEditorIdleRegressions; globalThis.runLayoutDiagnosticRegressions = runLayoutDiagnosticRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', plugins: [typographyClient], loader: { '.css': 'text' }, external: ['electron', '@electron/remote'], alias: { obsidian: resolve('tests/browser-host.ts') } })).outputFiles[0].text;
+    const uiClient = (await build({ stdin: { contents: "import { runEnvironmentRegressions } from './tests/environment-browser'; globalThis.runEnvironmentRegressions=runEnvironmentRegressions; import { runAlgorithmRegressions } from './tests/algorithm-browser'; import { runUiRegressions, mountSettingsPreview } from './tests/browser-regression'; globalThis.mountSettingsPreview=mountSettingsPreview; import { runFeatureRegressions } from './tests/feature-browser'; import { runKpBrowserRegressions } from './tests/kp-browser'; import { runKpLiveRegressions } from './tests/kp-live-browser'; import { runCalloutTypographyRegressions } from './tests/kp-callouts-browser'; import { runReadingOwnershipRegressions } from './tests/reading-ownership-browser'; import { runEditorIdleRegressions } from './tests/editor-idle-browser'; import { runLayoutDiagnosticRegressions } from './tests/layout-diagnostics-browser'; globalThis.runAlgorithmRegressions=runAlgorithmRegressions; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions; globalThis.runKpBrowserRegressions = runKpBrowserRegressions; globalThis.runKpLiveRegressions = runKpLiveRegressions; globalThis.runCalloutTypographyRegressions = runCalloutTypographyRegressions; globalThis.runReadingOwnershipRegressions = runReadingOwnershipRegressions; globalThis.runEditorIdleRegressions = runEditorIdleRegressions; globalThis.runLayoutDiagnosticRegressions = runLayoutDiagnosticRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', plugins: [typographyClient], loader: { '.css': 'text' }, external: ['electron', '@electron/remote'], alias: { obsidian: resolve('tests/browser-host.ts') } })).outputFiles[0].text;
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('')));
     console.log('Running browser UI regression fixture');
+    await wc.executeJavaScript("window.addEventListener('unhandledrejection',event=>console.error(event.reason?.stack || event.reason));");
     await wc.executeJavaScript(uiClient);
     console.log(await wc.executeJavaScript('runUiRegressions()'));
     console.log(await wc.executeJavaScript('runEnvironmentRegressions()'));
+    if (process.env.ACADEMIC_TEST_SETTINGS_ONLY === '1') {
+      await wc.executeJavaScript(`(async()=>{document.body.replaceChildren();document.body.style.cssText='margin:0;padding:28px;overflow:hidden;height:100vh;display:block;background:var(--background-primary);';const tab=mountSettingsPreview();tab.containerEl.style.cssText='width:100%;max-width:720px;height:calc(100vh - 56px);margin:auto;padding:0;overflow:auto';document.documentElement.style.overflow='hidden';window.scrollTo(0,0);await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));console.log('Settings preview bounds',JSON.stringify(tab.containerEl.getBoundingClientRect()));})()`);
+      writeFileSync('output/settings-1.14.png', (await wc.capturePage({x:0,y:0,width:1000,height:1250})).toPNG());
+      await wc.executeJavaScript(`(async()=>{document.querySelector('.an-custom-appearance-row').scrollIntoView();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));})()`);
+      writeFileSync('output/settings-environment-1.14.png', (await wc.capturePage({x:0,y:0,width:1000,height:1000})).toPNG());
+      win.setSize(460,1100);
+      await new Promise(resolve=>setTimeout(resolve,200));
+      await wc.executeJavaScript(`(async()=>{document.querySelector('.an-settings-test-preview').scrollTop=0;await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));})()`);
+      writeFileSync('output/settings-compact-1.14.png', (await wc.capturePage()).toPNG());
+      return;
+    }
     const algorithms = await wc.executeJavaScript('runAlgorithmRegressions()') as { message: string; markup: string; pdfMarkup: string };
     console.log(algorithms.message);
     if (process.env.ACADEMIC_TEST_ALGORITHM_ONLY === '1') { await runAlgorithmPdf(algorithms.pdfMarkup, html, print); return; }
@@ -84,9 +98,16 @@ async function run() {
     writeFileSync('screenshots/diagram.png', (await wc.capturePage({ x: 20, y: 20, width: 960, height: 630 })).toPNG());
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered">' + features.proofMarkup + '</main>')));
     writeFileSync('screenshots/proof-reference.png', (await wc.capturePage({ x: 20, y: 20, width: 960, height: 250 })).toPNG());
+    const cards=['forest','sakura','colorful'].map(name => {
+      const variables=Object.entries(PRESETS[name].colors).map(([role,color])=>'--phb-'+role+':'+color).join(';');
+      return '<section style="'+variables+'"><h2>'+PRESETS[name].name+'</h2>'+['def','thm','lem','prop','cor','example'].map((role,i)=>box(role,(['Definition','Theorem','Lemma','Proposition','Corollary','Example'][i])+' 1.1','<p>A synthetic mathematical note.</p>')).join('')+'</section>';
+    }).join('');
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px">'+cards+'</main>')));
+    await wc.executeJavaScript('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+    writeFileSync('screenshots/palettes.png',(await wc.capturePage({x:20,y:20,width:960,height:1050})).toPNG());
     console.log('Checking palettes');
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-preview-view markdown-rendered">' + content + '</main>')));
-    const palettes = { light: ['forest', 'sakura', 'mint', 'sky', 'mauve', 'golden', 'cherry', 'prussian', 'theme'], dark: ['radiation', 'vampire', 'abyss', 'theme'] };
+    const palettes = { light: ['forest', 'colorful', 'sakura', 'mint', 'sky', 'mauve', 'golden', 'cherry', 'prussian', 'theme'], dark: ['radiation', 'colorful-dark', 'vampire', 'abyss', 'theme'] };
     let cases = 0;
     for (const [mode, names] of Object.entries(palettes)) for (const palette of names) {
       const result = await wc.executeJavaScript(`((mode,palette)=>{

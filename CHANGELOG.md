@@ -1,11 +1,16 @@
 # 2.15.0
 
+- Fix the settings interface collision introduced by Obsidian 1.13 and retained in 1.14: the host now reaches the complete grouped settings screen instead of a flat internal definition list. Add host-entry regression coverage.
+- Keep overall light/dark palette selection visible above four tabs. Unify environment selection, creation, names, references, colors and motifs; edit colors without enabling toggles. Keep numbering, typography and export separate; only KP is marked Beta.
+- Curate neighbouring and muted complementary palette tones, add light/dark Colorful choices, and derive every theme-following role from the host accent so accent changes propagate immediately. Preserve per-palette overrides and resets.
+- Support native 1.14 image-resize wrappers when centering fixed-width figures in Live Preview; validate with actual 1.14 styles and Phycat.
+
 - Apply Live Preview paragraph-start/continuation decorations synchronously on editor creation, before any asynchronous layout measurement.
 
 - Add numbered algorithms with equivalent `algorithm` fences and `[!algorithm]` callouts using locally bundled pseudocode.js; share independent counters, block IDs, cross-file references and book renumbering. Add optional line numbers, bilingual settings and insertion templates.
 - Retain traditional three-rule pseudocode styling, neutral math/body text, and complete-row PDF pagination; keep algorithm callouts independent of Phycat theme frames.
 - Add multilingual environment names, abbreviations and formats, plus user-defined Markdown environments with existing box/Remark styles, numbering, templates and cross-file/PDF references.
-- Group settings into four tabs and one environment/reference editor. Remove duplicate figure/table/algorithm/equation format controls, preserve saved formats, and show their inherited defaults. Preserve control scrolling and native picker behavior.
+- Group settings into four tabs with an always-visible overall palette and one environment/reference/appearance editor. Remove duplicate figure/table/algorithm/equation format controls, preserve saved formats, and show their inherited defaults. Preserve control scrolling and native picker behavior.
 - Store colors and motifs independently per palette, migrate earlier overrides to the selected presets, and add custom copies, single-environment reset and whole-palette reset.
 - Give each built-in preset a coherent family of its named hue. Apply preset colors at runtime as well as in CSS to protect against later legacy/theme color rules; show the complete palette and the current light/dark mode.
 - Match algorithm rules and captions to the palette’s primary accent, retaining neutral body text.

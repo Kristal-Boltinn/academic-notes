@@ -9,6 +9,6 @@ await build({ entryPoints: ['tests/electron.ts'], outfile: '.test-build/electron
 const env = { ...process.env };
 delete env.ELECTRON_RUN_AS_NODE;
 const child = spawn(electron, ['.test-build/electron.cjs'], { env, stdio: 'inherit', windowsHide: true });
-const timer = setTimeout(() => { console.error('Electron regressions exceeded five minutes.'); child.kill(); }, 300000);
+const timer = setTimeout(() => { console.error('Electron regressions exceeded eight minutes.'); child.kill(); }, 480000);
 child.on('error', error => { console.error(error); clearTimeout(timer); process.exitCode = 1; });
 child.on('exit', code => { clearTimeout(timer); process.exitCode = code ?? 1; });

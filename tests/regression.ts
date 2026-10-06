@@ -100,7 +100,7 @@ test('PDF floating settings validate priorities and bound adjustment attempts', 
   assert.deepEqual(normalizeFloatOptions('move-shrink', 999), { mode: 'move-shrink', maxRounds: 10 });
   assert.equal(normalizeFloatOptions('shrink', -2).maxRounds, 1);
   const plugin: any = { settings: { ...PluginDefaults }, saveSettings: async () => {} };
-  const definitions = new AcademicSettings({} as any, plugin).getSettingDefinitions();
+  const definitions = new AcademicSettings({} as any, plugin).buildSettingRows();
   const choice = definitions.find(d => d.name === 'Figure layout priority (experimental)')!;
   const options: Record<string,string> = {}; let callback: ((v: string) => Promise<void>) | undefined;
   const control: any = { addOptions(v: Record<string,string>) { Object.assign(options,v); return this; }, setValue() { return this; }, onChange(fn: typeof callback) { callback=fn; return this; } };
@@ -189,7 +189,7 @@ test('mobile registers numbering and HTML commands without desktop PDF', async (
     assert.ok(plugin.commands.every((command: any) => !command.id.endsWith('-pdf')));
     for (const id of ['export-current', 'export-book', 'insert-reference', 'label-block', 'insert-environment', 'refresh', 'start-layout-diagnostics', 'stop-layout-diagnostics'])
       assert.ok(plugin.commands.some((command: any) => command.id === id), id);
-    assert.ok(!new AcademicSettings(app, plugin).getSettingDefinitions().some(setting => setting.name === 'Open the PDF in Obsidian after export'));
+    assert.ok(!new AcademicSettings(app, plugin).buildSettingRows().some(setting => setting.name === 'Open the PDF in Obsidian after export'));
     assert.equal(pdfAvailability().interfaceAvailable, false);
     plugin.onunload();
   } finally {
@@ -200,11 +200,11 @@ test('mobile registers numbering and HTML commands without desktop PDF', async (
 
 test('language follows Obsidian with English fallback; settings values and placeholders stay stable', () => {
   const plugin: any = { settings: { ...Engine.DEFAULTS, tocDepth: 3, lightPalette: 'forest', darkPalette: 'radiation' }, saveSettings: async () => {} };
-  const names: Record<string, string> = { en: 'Paragraph typography (Beta)', 'zh-CN': '段落排版（Beta）', 'zh-TW': '段落排版（Beta）', de: 'Paragraph typography (Beta)' };
+  const names: Record<string, string> = { en: 'Paragraph typography', 'zh-CN': '段落排版', 'zh-TW': '段落排版', de: 'Paragraph typography' };
   let baseline: string[][] | undefined;
   for (const [locale, expected] of Object.entries(names)) {
     setLanguage(locale);
-    const definitions = new AcademicSettings({} as any, plugin).getSettingDefinitions();
+    const definitions = new AcademicSettings({} as any, plugin).buildSettingRows();
     assert.equal(definitions[0].name, expected);
     const options: string[][] = [], labels: string[] = [];
     const control: any = { setValue() { return this; }, onChange() { return this; }, addOptions(values: Record<string,string>) { options.push(Object.keys(values)); labels.push(...Object.values(values)); return this; } };
@@ -349,7 +349,7 @@ test('appearance settings persist changes independently and reset the selected e
   const selector = Setting.controls.find(c => c.options?.laurel);
   await selector.change('none');
   assert.equal(paletteOverrides(plugin.settings).forest.def.motif, 'none');
-  await Setting.controls.find(c => c.click).click();
+  await Setting.controls.find(c => c.buttonEl.dataset.anControl === 'reset').click();
   assert.deepEqual(paletteOverrides(plugin.settings).forest, { thm: { light: '#123456' } });
   assert.equal(saves, 4);
   tab.appearanceType = 'proof'; Setting.controls = []; tab.renderAppearance(new MockElement() as any);
@@ -459,17 +459,19 @@ test('display equations continue prose until an empty source line, including cal
 });
 
 
-test('preset colors resolve at runtime and every environment belongs to its palette hue family', () => {
+test('curated palettes retain a family, Colorful is distinct, and theme palettes follow the host accent', () => {
   const hue=(hex:string)=>{const [r,g,b]=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255),max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;return d?(((max===r?(g-b)/d:max===g?(b-r)/d+2:(r-g)/d+4)*60)+360)%360:0;};
   for(const [key,preset] of Object.entries(PRESETS)) {
     const settings={...PluginDefaults,...(preset.mode==='light'?{lightPalette:key}:{darkPalette:key})};
     const values=paletteValues(settings,preset.mode as 'light'|'dark'),base=hue(preset.colors.def);
     for(const [role,color] of Object.entries(preset.colors)) {
       assert.equal(values['--phb-'+role],color);
-      const difference=Math.abs(hue(color)-base);assert.ok(Math.min(difference,360-difference)<10,key+'/'+role+' must retain the main hue');
+      const difference=Math.abs(hue(color)-base);if(!key.startsWith('colorful')) assert.ok(Math.min(difference,360-difference)<130,key+'/'+role+' must stay within neighbouring hues');
     }
   }
-  assert.equal(paletteValues({...PluginDefaults,lightPalette:'theme'},'light')['--phb-lem'],undefined);
+  assert.match(paletteValues({...PluginDefaults,lightPalette:'theme'},'light')['--phb-lem'],/var\(--text-accent/);
+  assert.notEqual(PRESETS.forest.colors.lem,PRESETS.colorful.colors.lem);
+  assert.notEqual(PRESETS.forest.colors.thm,PRESETS.forest.colors.def);
 });
 
 test('one reference-format resolver preserves existing defaults and per-environment priority', () => {
@@ -495,4 +497,19 @@ test('exclusive legacy reference defaults migrate to individual editors without 
   const overrides=Engine.referenceOverrides(settings);delete overrides.figure;settings.referenceOverrides=JSON.stringify(overrides);
   assert.equal(Engine.referenceFormat('figure',settings),Engine.DEFAULTS.figureFormat);
   assert.equal(Engine.referenceFormat('subfigure',settings),'子图 {number}');
+});
+
+test('Obsidian 1.13 and 1.14 must reach the grouped settings display path', () => {
+  const tab=new AcademicSettings({} as any,{settings:{...PluginDefaults}} as any);
+  assert.deepEqual(tab.getSettingDefinitions(),[],'Public host hook must not leak internal flat setting rows');
+  assert.ok(tab.buildSettingRows().some(row=>row.group==='numbering'));
+});
+
+test('every curated preset heading keeps readable default text contrast', () => {
+  for(const preset of Object.values(PRESETS)) for(const color of Object.values(preset.colors)) {
+    const rgb=[1,3,5].map(i=>parseInt(color.slice(i,i+2),16)/255).map(n=>n<=.04045?n/12.92:((n+.055)/1.055)**2.4);
+    const luminance=rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
+    const contrast=preset.mode==='light'?1.05/(luminance+.05):(luminance+.05)/.05;
+    assert.ok(contrast>=4.5,preset.name+' heading must be readable');
+  }
 });

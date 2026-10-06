@@ -1,9 +1,11 @@
 import { EditorState, StateField } from '@codemirror/state';
 import { EditorView, Decoration, WidgetType } from '@codemirror/view';
 import { editorInfoField, editorLivePreviewField } from 'obsidian';
+import { showSettingTab } from './browser-host';
 import { AcademicSettings } from '../src/ui/settings-tab';
 import { DEFAULTS } from '../src/settings';
 import Engine from '../src/indexing/engine';
+import AcademicNotes from '../src/main';
 import { titleRecord, mediaRecord, createLiveExtension } from '../src/rendering/adapters';
 
 const check = (value: unknown, message: string) => { if (!value) throw new Error(message); };
@@ -39,8 +41,10 @@ export async function runUiRegressions() {
   const style = host.createEl('style', { text: '.ui-test-scroll{height:320px;overflow:auto}.ui-test-scroll .setting-item{min-height:48px}.cm-editor{height:220px}.cm-scroller{overflow:auto}' });
   const scroll = host.createDiv({ cls: 'ui-test-scroll' });
   const plugin: any = { settings: { ...DEFAULTS }, saveSettings: async () => {} };
-  const tab = new AcademicSettings({} as any, plugin); scroll.appendChild(tab.containerEl); tab.display();
-  tab.containerEl.querySelector<HTMLButtonElement>('[data-an-section=appearance]')!.click();
+  const tab = new AcademicSettings({} as any, plugin); scroll.appendChild(tab.containerEl); showSettingTab(tab);
+  check(tab.containerEl.querySelector('[data-an-control=lightPalette]'),'1.14 host must render overall palette controls');
+  check(tab.containerEl.querySelectorAll('[data-an-control=environment]').length===1,'Exactly one environment selector must serve references and colors');
+  check(!tab.containerEl.textContent?.includes('line breaking (Beta)'),'KP must not label the whole settings page');
   tab.containerEl.querySelector('.an-settings-panel')!.prepend(Object.assign(document.createElement('div'), {style:'height:600px'}));
   scroll.createDiv({ attr: { style: 'height:400px' } });
   const firstRow = tab.containerEl.firstElementChild;
@@ -48,7 +52,7 @@ export async function runUiRegressions() {
   scroll.scrollTop = section.offsetTop - scroll.offsetTop;
   const top = scroll.scrollTop; check(top > 500, 'settings fixture must start well below the top');
   const control = (id: string) => section.querySelector<HTMLElement>(`[data-an-control="${id}"]`)!;
-  for (const id of ['laurel', 'compass', 'orbit', 'light', 'motif', 'environment', 'reset']) {
+  for (const id of ['laurel', 'compass', 'orbit', 'reset-light', 'motif', 'reset']) {
     const el = control(id); el.focus({ preventScroll: true });
     if (el instanceof HTMLSelectElement) { el.value = id === 'motif' ? 'rosette' : 'def'; el.dispatchEvent(new Event('change')); }
     else el.click();
@@ -124,4 +128,14 @@ export async function runUiRegressions() {
     check(errors.length === 0, 'Live Preview raised an error');
   } finally { view.destroy(); style.remove(); host.remove(); }
   return 'Settings scroll/focus and native title ownership, caret, idle mutations and CodeMirror scrolling passed';
+}
+
+// Use the current host entry point for visual inspection, too.
+export function mountSettingsPreview() {
+  helpers();
+  const plugin: any = {active:true,appearanceBefore:{variables:{}},settings:{...DEFAULTS},saveSettings:async () => { AcademicNotes.prototype.applyAppearance.call(plugin); }};
+  const tab = new AcademicSettings({} as any,plugin);
+  document.body.appendChild(tab.containerEl); tab.containerEl.className='vertical-tab-content an-settings-test-preview';
+  showSettingTab(tab);
+  return tab;
 }

@@ -57766,70 +57766,70 @@ var palettes_default = {
     name: "Sakura",
     mode: "light",
     colors: {
-      def: "#a63c67",
-      thm: "#903c62",
-      lem: "#a14b68",
-      prop: "#9d406e",
-      cor: "#953f5a",
-      claim: "#914868",
-      example: "#9f556f",
-      proof: "#7f5768"
+      def: "#a94d70",
+      thm: "#83507f",
+      lem: "#ad5d79",
+      prop: "#8d657a",
+      cor: "#a8616f",
+      claim: "#965b8f",
+      example: "#a26756",
+      proof: "#806771"
     }
   },
   mint: {
     name: "Mint",
     mode: "light",
     colors: {
-      def: "#227c77",
-      thm: "#236b63",
-      lem: "#2e7677",
-      prop: "#26756a",
-      cor: "#266b6f",
-      claim: "#2d6b65",
-      example: "#367575",
-      proof: "#3a5c5a"
+      def: "#23786b",
+      thm: "#2d6a79",
+      lem: "#507d70",
+      prop: "#657b59",
+      cor: "#32827e",
+      claim: "#527988",
+      example: "#647e57",
+      proof: "#536c67"
     }
   },
   sky: {
     name: "Sky",
     mode: "light",
     colors: {
-      def: "#2e729e",
-      thm: "#2f6a88",
-      lem: "#3d6e98",
-      prop: "#337795",
-      cor: "#33618d",
-      claim: "#3b6d89",
-      example: "#477395",
-      proof: "#4c6576"
+      def: "#326d99",
+      thm: "#475f95",
+      lem: "#586faa",
+      prop: "#467e90",
+      cor: "#527b97",
+      claim: "#6c719a",
+      example: "#637b78",
+      proof: "#5e6c7b"
     }
   },
   forest: {
     name: "Forest",
     mode: "light",
     colors: {
-      def: "#247651",
-      thm: "#256645",
-      lem: "#2f7158",
-      prop: "#277049",
-      cor: "#276a52",
-      claim: "#2e664b",
-      example: "#367059",
-      proof: "#3a594b"
+      def: "#2e7055",
+      thm: "#296a70",
+      lem: "#537354",
+      prop: "#73723d",
+      cor: "#367d69",
+      claim: "#477486",
+      example: "#87653e",
+      proof: "#5c6d61"
     }
   },
   mauve: {
     name: "Mauve",
     mode: "light",
     colors: {
-      def: "#776085",
-      thm: "#695876",
-      lem: "#7d6886",
-      prop: "#716081",
-      cor: "#725d7b",
-      claim: "#70617b",
-      example: "#806f89",
-      proof: "#6e6674"
+      def: "#7c588c",
+      thm: "#615b8d",
+      lem: "#8f6a90",
+      prop: "#7f6a80",
+      cor: "#766283",
+      claim: "#6b6c94",
+      example: "#946a7f",
+      proof: "#726574"
     }
   },
   golden: {
@@ -57837,13 +57837,13 @@ var palettes_default = {
     mode: "light",
     colors: {
       def: "#88712e",
-      thm: "#76602e",
-      lem: "#83753a",
-      prop: "#816631",
-      cor: "#7a6f31",
-      claim: "#766438",
-      example: "#827543",
-      proof: "#685f45"
+      thm: "#8a603d",
+      lem: "#89744a",
+      prop: "#727039",
+      cor: "#8c733f",
+      claim: "#806344",
+      example: "#9f6b41",
+      proof: "#70644c"
     }
   },
   cherry: {
@@ -57851,13 +57851,13 @@ var palettes_default = {
     mode: "light",
     colors: {
       def: "#9c3a55",
-      thm: "#873953",
-      lem: "#974858",
-      prop: "#943e5d",
-      cor: "#8c3d4b",
-      claim: "#89455a",
-      example: "#965161",
-      proof: "#78535d"
+      thm: "#873950",
+      lem: "#a94d59",
+      prop: "#905466",
+      cor: "#a95e64",
+      claim: "#865275",
+      example: "#a56650",
+      proof: "#7e5d65"
     }
   },
   prussian: {
@@ -57865,13 +57865,13 @@ var palettes_default = {
     mode: "light",
     colors: {
       def: "#28558a",
-      thm: "#295177",
-      lem: "#355484",
-      prop: "#2c5b82",
-      cor: "#2c497b",
-      claim: "#345577",
-      example: "#3e5a83",
-      proof: "#425367"
+      thm: "#324775",
+      lem: "#456a91",
+      prop: "#356876",
+      cor: "#465c86",
+      claim: "#5b5b83",
+      example: "#5d756e",
+      proof: "#4e6073"
     }
   },
   vampire: {
@@ -57879,13 +57879,13 @@ var palettes_default = {
     mode: "dark",
     colors: {
       def: "#df939e",
-      thm: "#d17c8d",
-      lem: "#dba6aa",
-      prop: "#d991a2",
-      cor: "#d4888b",
-      claim: "#d0939e",
-      example: "#dbb4b8",
-      proof: "#c19fa4"
+      thm: "#c897ba",
+      lem: "#e6a7ab",
+      prop: "#cba2b2",
+      cor: "#e4b2ae",
+      claim: "#b8a3ce",
+      example: "#e0b995",
+      proof: "#bfa8b0"
     }
   },
   abyss: {
@@ -57893,13 +57893,13 @@ var palettes_default = {
     mode: "dark",
     colors: {
       def: "#82b6df",
-      thm: "#6daad1",
-      lem: "#97b7d9",
-      prop: "#81b9d9",
-      cor: "#79a2d3",
-      claim: "#85b0ce",
-      example: "#a6bfd7",
-      proof: "#93aabc"
+      thm: "#8aa0d8",
+      lem: "#9ab7dd",
+      prop: "#87c3ca",
+      cor: "#9dc9d6",
+      claim: "#b0b1d7",
+      example: "#a9c8bc",
+      proof: "#9daebc"
     }
   },
   radiation: {
@@ -57907,13 +57907,41 @@ var palettes_default = {
     mode: "dark",
     colors: {
       def: "#b8ce86",
-      thm: "#acbf73",
-      lem: "#b7cb97",
-      prop: "#b9c885",
-      cor: "#a6c27d",
-      claim: "#b0bf87",
-      example: "#bdcba4",
-      proof: "#a8b192"
+      thm: "#9dc7b8",
+      lem: "#afcf9b",
+      prop: "#cfca89",
+      cor: "#a6c99b",
+      claim: "#9abfbf",
+      example: "#d4bd8f",
+      proof: "#acb7a0"
+    }
+  },
+  colorful: {
+    name: "Colorful",
+    mode: "light",
+    colors: {
+      def: "#247651",
+      thm: "#286b76",
+      lem: "#71628c",
+      prop: "#62752e",
+      cor: "#42786b",
+      claim: "#44698c",
+      example: "#946b2f",
+      proof: "#687252"
+    }
+  },
+  "colorful-dark": {
+    name: "Colorful",
+    mode: "dark",
+    colors: {
+      def: "#86ca98",
+      thm: "#83bbce",
+      lem: "#b7a7ca",
+      prop: "#b8c984",
+      cor: "#8dcbb4",
+      claim: "#9baed0",
+      example: "#dec178",
+      proof: "#a8b898"
     }
   }
 };
@@ -58078,6 +58106,25 @@ function algorithmBlocks(source) {
 
 // src/i18n.ts
 var ENGLISH = {
+  "\u65B0\u5EFA\u81EA\u5B9A\u4E49\u8272\u677F\u2026": "Create custom palette\u2026",
+  "\u73AF\u5883": "Environments",
+  "\u7F16\u53F7\u4E0E\u5F15\u7528\u9ED8\u8BA4\u503C": "Numbering and reference defaults",
+  "\u901A\u7528\u5916\u89C2\u9009\u9879": "General appearance",
+  "\u8DDF\u968F\u4E3B\u9898\u4E3B\u8272": "Follow theme accent",
+  "\u5F69\u8272": "Colorful",
+  "\u6574\u4F53\u914D\u8272": "Overall palette",
+  "\u5148\u9009\u6574\u5957\u914D\u8272\uFF0C\u518D\u5728\u73AF\u5883\u4E2D\u8C03\u6574\u5F15\u7528\u3001\u989C\u8272\u548C\u56FE\u6807\u3002\u6D45\u8272\u548C\u6DF1\u8272\u5404\u4FDD\u5B58\u4E00\u5957\uFF0C\u968F Obsidian \u660E\u6697\u6A21\u5F0F\u5207\u6362\u3002": "Choose a palette first, then edit each environment\u2019s references, colors and motifs. Light and dark palettes switch with Obsidian\u2019s appearance mode.",
+  "\u6D45\u8272\u914D\u8272": "Light palette",
+  "\u6DF1\u8272\u914D\u8272": "Dark palette",
+  "\u5F53\u524D\u7F16\u8F91\u7684\u8272\u677F": "Palette mode to edit",
+  "\u81EA\u5B9A\u4E49\u8272\u677F\u4E0E\u6062\u590D\u9ED8\u8BA4": "Custom palettes and reset",
+  "\u989C\u8272\u4E0E\u56FE\u6807": "Colors and motifs",
+  "\u540D\u79F0\u4E0E\u5F15\u7528": "Names and references",
+  "\u9ED8\u8BA4": "Default",
+  "\u989C\u8272\u53EF\u76F4\u63A5\u4FEE\u6539\uFF0C\u81EA\u52A8\u4FDD\u5B58\u5230\u5F53\u524D\u8272\u677F\u3002\u540D\u79F0\u4E0E\u5F15\u7528\u4FEE\u6539\u540E\u70B9\u51FB\u4FDD\u5B58\u3002": "Change colors directly; they save automatically to this palette. Click Save after editing names or references.",
+  "\u6B64\u73AF\u5883\u4FDD\u6301\u56FE\u8868\u6216\u516C\u5F0F\u7684\u539F\u751F\u6392\u7248\uFF1B\u5F15\u7528\u540D\u79F0\u548C\u683C\u5F0F\u53EF\u5728\u4E0A\u65B9\u8C03\u6574\u3002": "This environment keeps its figure, table or equation layout. Edit its reference name and format above.",
+  "\u4FDD\u5B58\u65B0\u73AF\u5883\u540E\uFF0C\u53EF\u5728\u672C\u9875\u8C03\u6574\u989C\u8272\u548C\u56FE\u6807\uFF1B\u7F16\u53F7\u89C4\u5219\u5728\u72EC\u7ACB\u7684\u7F16\u53F7\u8BBE\u7F6E\u4E2D\u3002": "Save the new environment to edit its colors and motifs here. Counter rules are on the Numbering tab.",
+  "Knuth\u2013Plass \u65AD\u884C\uFF08Beta\uFF09": "Knuth\u2013Plass line breaking (Beta)",
   "\u6B63\u5728\u7F16\u8F91\uFF1A{0} \xB7 {1}\u3002\u7B14\u8BB0\u5F53\u524D\u4F7F\u7528\uFF1A{2} \xB7 {3}\u3002": "Editing: {0} \xB7 {1}. Notes currently use: {2} \xB7 {3}.",
   "\u5B9A\u7406\u7C7B\u73AF\u5883\u7684\u9ED8\u8BA4\u5F15\u7528\u683C\u5F0F": "Default reference format for theorem environments",
   "\u4EC5\u7528\u4E8E\u672A\u5355\u72EC\u8BBE\u7F6E\u683C\u5F0F\u7684\u5B9A\u7406\u3001\u5B9A\u4E49\u3001\u5F15\u7406\u7B49\u73AF\u5883\uFF1B\u56FE\u3001\u8868\u3001\u7B97\u6CD5\u548C\u516C\u5F0F\u8BF7\u5728\u4E0A\u65B9\u9009\u62E9\u73AF\u5883\u540E\u8BBE\u7F6E\u3002": "Applies to theorems, definitions and lemmas without their own format. Select figures, tables, algorithms or equations above to edit their formats.",
@@ -59189,14 +59236,43 @@ function paletteOverrides(settings) {
   }
   return result;
 }
+var themeMix = {
+  def: [82, "#3e594c"],
+  thm: [77, "#354d68"],
+  lem: [80, "#605268"],
+  prop: [75, "#686340"],
+  cor: [85, "#3e645a"],
+  claim: [79, "#495d73"],
+  example: [70, "#886b45"],
+  proof: [65, "#606862"]
+};
+function themeRoleValue(role2, mode) {
+  const [weight, neutral] = themeMix[role2] || themeMix.def;
+  return `color-mix(in srgb, var(--text-accent, #247651) ${mode === "dark" ? weight - 16 : weight}%, ${mode === "dark" ? "#e0e5df" : neutral})`;
+}
+function defaultRoleValue(settings, palette, key2, mode) {
+  const env = engine_default.environments(settings)[key2], role2 = roleBase[env?.style || key2] || env?.style || key2;
+  return PRESETS[basePalette(settings, palette)]?.colors[role2] || themeRoleValue(role2, mode);
+}
 function paletteValues(settings, mode) {
   const palette = selectedPalette(settings, mode), overrides = paletteOverrides(settings)[palette] || {};
-  const defaults = Object.fromEntries(Object.entries(PRESETS[basePalette(settings, palette)]?.colors || {}).map(([role2, color]) => [`--phb-${role2}`, color]));
+  const colors = PRESETS[basePalette(settings, palette)]?.colors || Object.fromEntries(Object.keys(themeMix).map((role2) => [role2, themeRoleValue(role2, mode)]));
+  const defaults = Object.fromEntries(Object.entries(colors).map(([role2, color]) => [`--phb-${role2}`, color]));
   return { ...defaults, ...appearanceValues(JSON.stringify(overrides), mode === "dark", Object.keys(appearanceRoles(settings))) };
 }
-function defaultRoleColor(settings, palette, key2) {
-  const env = engine_default.environments(settings)[key2], role2 = roleBase[env?.style || key2] || env?.style || key2;
-  return PRESETS[basePalette(settings, palette)]?.colors[role2] || "#286b76";
+function defaultRoleColor(settings, palette, key2, mode = PRESETS[basePalette(settings, palette)]?.mode === "dark" ? "dark" : "light") {
+  const value = defaultRoleValue(settings, palette, key2, mode);
+  if (value.startsWith("#")) return value;
+  if (typeof document === "undefined" || !document.body?.appendChild) return mode === "dark" ? "#acc5b6" : "#286b76";
+  const probe = document.body.createSpan({ attr: { hidden: "" } });
+  probe.style.color = value;
+  const resolved = probe.ownerDocument.defaultView.getComputedStyle(probe).color;
+  probe.remove();
+  const context = document.win.createEl("canvas").getContext("2d");
+  if (!context) return "#286b76";
+  context.fillStyle = resolved;
+  context.fillRect(0, 0, 1, 1);
+  return "#" + Array.from(context.getImageData(0, 0, 1, 1).data).slice(0, 3).map((n) => n.toString(16).padStart(2, "0")).join("");
 }
 function migratePaletteSettings(settings) {
   const before = JSON.stringify([settings.customAppearance, settings.customEnvironments, settings.paletteAppearance, settings.lightPalette, settings.darkPalette]);
@@ -61578,15 +61654,17 @@ var EnvironmentModal = class extends import_obsidian3.Modal {
 
 // src/ui/environment-settings.ts
 var import_obsidian4 = require("obsidian");
-function renderEnvironmentSettings(container, plugin) {
+function renderEnvironmentSettings(container, plugin, editor = {}) {
   const syntaxExamples = { name: "Observation", key: "observation" };
   const root = container.createDiv({ cls: "an-environment-settings" });
-  new import_obsidian4.Setting(root).setName(t("\u73AF\u5883\u4E0E\u5F15\u7528")).setHeading();
   root.createEl("p", { text: t("\u6309\u73AF\u5883\u81EA\u5B9A\u4E49\u663E\u793A\u540D\u79F0\u3001\u5F15\u7528\u7F29\u5199\u548C\u5B8C\u6574\u683C\u5F0F\u3002\u7559\u7A7A\u4F7F\u7528\u9ED8\u8BA4\u503C\uFF1B\u683C\u5F0F\u652F\u6301 {type}\u3001{abbr}\u3001{name}\u3001{number}\u3001{title}\u3001{file}\u3002\u8BBE\u7F6E\u540E\u70B9\u51FB\u4FDD\u5B58\u3002") });
   const form = root.createDiv();
-  let selected = "algorithm";
+  let selected = editor.selected ?? "algorithm";
   const draw = () => {
+    const scrolls = [];
+    for (let node = form; node; node = node.parentElement) if (node.scrollTop) scrolls.push([node, node.scrollTop]);
     form.empty();
+    editor.onSelect?.(selected);
     const definitions = engine_default.environments(plugin.settings), isNew = !selected, custom = definitions[selected];
     const reference = { ...engine_default.referenceOverrides(plugin.settings)[selected] };
     const inherited = engine_default.referenceOverrides(plugin.settings);
@@ -61598,11 +61676,15 @@ function renderEnvironmentSettings(container, plugin) {
     const entry = { ...custom || { name: "", abbr: "", style: "thm", numbered: true } };
     let key2 = selected;
     const options = Object.fromEntries([...Object.keys(engine_default.TYPES), ...Object.keys(engine_default.MEDIA), "equation", ...Object.keys(definitions)].map((key3) => [key3, engine_default.typeNames(key3, plugin.settings)[0] + ` [${key3}]`]));
-    new import_obsidian4.Setting(form).setName(t("\u9009\u62E9\u73AF\u5883")).addDropdown((d) => d.addOptions({ ...options, "": t("\u65B0\u5EFA\u73AF\u5883") }).setValue(selected).onChange((value) => {
-      d.selectEl.blur();
-      selected = value;
-      draw();
-    }));
+    new import_obsidian4.Setting(form).setName(t("\u9009\u62E9\u73AF\u5883")).addDropdown((d) => {
+      d.selectEl.dataset.anControl = "environment";
+      return d.addOptions({ ...options, "": t("\u65B0\u5EFA\u73AF\u5883") }).setValue(selected).onChange((value) => {
+        d.selectEl.blur();
+        selected = value;
+        draw();
+      });
+    });
+    new import_obsidian4.Setting(form).setName(t("\u540D\u79F0\u4E0E\u5F15\u7528")).setHeading();
     if (isNew || custom) new import_obsidian4.Setting(form).setName(t("\u73AF\u5883\u6807\u8BC6")).setDesc(t("\u5982 observation\uFF0C\u5BF9\u5E94 [!observation]\uFF1B\u4F7F\u7528\u5C0F\u5199\u82F1\u6587\u5B57\u6BCD\u3001\u6570\u5B57\u548C\u8FDE\u5B57\u7B26\uFF0C\u4EE5\u5B57\u6BCD\u5F00\u5934\uFF0C\u4E0D\u80FD\u5360\u7528\u5DF2\u6709\u7C7B\u578B\u3002\u4FDD\u5B58\u540E\u4E0D\u53EF\u6539\u540D\u3002")).addText((c) => c.setValue(key2).setDisabled(!!selected).setPlaceholder(syntaxExamples.key).onChange((value) => {
       key2 = value.trim();
     }));
@@ -61624,7 +61706,7 @@ function renderEnvironmentSettings(container, plugin) {
       new import_obsidian4.Setting(form).setName(t("\u81EA\u52A8\u7F16\u53F7")).addToggle((c) => c.setValue(entry.numbered).onChange((value) => {
         entry.numbered = value;
       }));
-      form.createEl("p", { text: t("\u989C\u8272\u5728\u914D\u8272\u4E0E\u5916\u89C2\u4E2D\u6309\u8272\u677F\u8BBE\u7F6E\uFF1B\u7F16\u53F7\u9075\u5FAA\u4E0B\u65B9\u7684\u7F16\u53F7\u89C4\u5219\u3002") });
+      form.createEl("p", { text: t("\u4FDD\u5B58\u65B0\u73AF\u5883\u540E\uFF0C\u53EF\u5728\u672C\u9875\u8C03\u6574\u989C\u8272\u548C\u56FE\u6807\uFF1B\u7F16\u53F7\u89C4\u5219\u5728\u72EC\u7ACB\u7684\u7F16\u53F7\u8BBE\u7F6E\u4E2D\u3002") });
       if (custom) form.createEl("p", { cls: "an-environment-example", text: `> [!${selected}] ${t("\u6807\u9898")}
 > ${t("\u6B63\u6587")}
 
@@ -61645,10 +61727,8 @@ function renderEnvironmentSettings(container, plugin) {
       plugin.settings.referenceOverrides = JSON.stringify(engine_default.referenceOverrides({ ...plugin.settings, referenceOverrides: JSON.stringify(all) }));
       await plugin.saveSettings();
       new import_obsidian4.Notice(t("\u5DF2\u4FDD\u5B58\u3002"));
-      if (isNew) {
-        selected = key2;
-        draw();
-      }
+      selected = key2;
+      draw();
     }));
     if (!isNew) actions.addButton((b) => b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
       const all = engine_default.referenceOverrides(plugin.settings);
@@ -61671,6 +61751,8 @@ function renderEnvironmentSettings(container, plugin) {
       selected = "algorithm";
       draw();
     }));
+    if (!isNew) editor.renderAppearance?.(form);
+    for (const [node, top] of scrolls) node.scrollTop = top;
   };
   draw();
 }
@@ -61685,14 +61767,22 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     this.appearanceMode = typeof document !== "undefined" && document.body.classList.contains("theme-dark") ? "dark" : "light";
     this.plugin = plugin;
   }
+  // Obsidian 1.13+ bypasses display() when this public hook is nonempty.
+  // Keep our grouped editor on the imperative path, including older hosts.
+  getSettingDefinitions() {
+    return [];
+  }
   display() {
     this.refreshSettings();
   }
   refreshSettings() {
     this.containerEl.empty();
+    this.appearanceHost = void 0;
+    this.paletteHost = this.containerEl.createDiv({ cls: "an-overall-palette" });
+    this.renderPalette(this.paletteHost);
     const navigation = this.containerEl.createDiv({ cls: "an-settings-tabs", attr: { role: "tablist", "aria-label": t("\u63D2\u4EF6\u8BBE\u7F6E") } });
     const panel = this.containerEl.createDiv({ cls: "an-settings-panel", attr: { role: "tabpanel", id: "an-settings-panel" } });
-    const sections = { environment: t("\u73AF\u5883\u4E0E\u5F15\u7528"), appearance: t("\u914D\u8272\u4E0E\u5916\u89C2"), typography: t("\u6BB5\u843D\u6392\u7248"), export: t("\u76EE\u5F55\u4E0E\u5BFC\u51FA") };
+    const sections = { environment: t("\u73AF\u5883"), numbering: t("\u7F16\u53F7\u4E0E\u5F15\u7528\u9ED8\u8BA4\u503C"), typography: t("\u6BB5\u843D\u6392\u7248"), export: t("\u76EE\u5F55\u4E0E\u5BFC\u51FA") };
     for (const [key2, name] of Object.entries(sections)) {
       const button = navigation.createEl("button", { text: name, attr: { role: "tab", "aria-controls": "an-settings-panel", "aria-selected": String(key2 === this.section), tabindex: key2 === this.section ? "0" : "-1", id: "an-settings-" + key2, "data-an-section": key2 } });
       button.addEventListener("click", () => {
@@ -61708,7 +61798,7 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
       event.preventDefault();
       navigation.querySelector(`[data-an-section="${keys[index]}"]`)?.click();
     });
-    const definitions = this.getSettingDefinitions();
+    const definitions = this.buildSettingRows();
     const render = (parent, group) => {
       for (const definition of definitions.filter((definition2) => definition2.group === group)) {
         const setting = new import_obsidian5.Setting(parent).setName(definition.name).setDesc(definition.desc || "");
@@ -61716,16 +61806,24 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
       }
     };
     if (this.section === "environment") {
-      renderEnvironmentSettings(panel, this.plugin);
-      for (const [group, name] of [["numbering", t("\u7F16\u53F7\u89C4\u5219")], ["references", t("\u5F15\u7528\u9ED8\u8BA4\u683C\u5F0F\u4E0E\u7D22\u5F15")]]) {
-        const details = panel.createEl("details", { cls: "an-settings-details" });
-        details.createEl("summary", { text: name });
-        render(details, group);
-      }
-    } else if (this.section === "appearance") {
-      render(panel, "appearance");
-      const section = panel.createDiv({ cls: "an-custom-appearance-row" });
-      this.renderAppearance(section);
+      renderEnvironmentSettings(panel, this.plugin, {
+        selected: this.appearanceType,
+        onSelect: (key2) => {
+          this.appearanceType = key2;
+          this.appearanceHost = void 0;
+        },
+        renderAppearance: (parent) => {
+          this.appearanceHost = parent.createDiv({ cls: "an-custom-appearance-row" });
+          this.renderAppearance(this.appearanceHost);
+        }
+      });
+      const details = panel.createEl("details", { cls: "an-settings-details" });
+      details.createEl("summary", { text: t("\u901A\u7528\u5916\u89C2\u9009\u9879") });
+      render(details, "appearance");
+    } else if (this.section === "numbering") {
+      render(panel, "numbering");
+      new import_obsidian5.Setting(panel).setName(t("\u5F15\u7528\u9ED8\u8BA4\u683C\u5F0F\u4E0E\u7D22\u5F15")).setHeading();
+      render(panel, "references");
     } else render(panel, this.section);
   }
   async changeAppearance(field, value) {
@@ -61739,6 +61837,9 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     await this.plugin.saveSettings();
   }
   refreshAppearance(container) {
+    this.replaceSection(container, (parent) => this.renderAppearance(parent));
+  }
+  replaceSection(container, render) {
     const positions = [];
     for (let node = container; node; node = node.parentElement)
       if (node.scrollTop) positions.push([node, node.scrollTop]);
@@ -61747,87 +61848,149 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     const restoreFocus = focused?.tagName !== "SELECT";
     if (!restoreFocus) focused?.blur();
     const staging = container.ownerDocument.win.createDiv();
-    this.renderAppearance(staging);
+    render(staging);
     container.replaceChildren(...staging.childNodes);
     if (control && restoreFocus) container.querySelector(`[data-an-control="${control}"]`)?.focus({ preventScroll: true });
     for (const [node, top] of positions) node.scrollTop = top;
+  }
+  refreshPalette() {
+    if (this.paletteHost) this.replaceSection(this.paletteHost, (parent) => this.renderPalette(parent));
+    if (this.appearanceHost) this.refreshAppearance(this.appearanceHost);
+  }
+  paletteLabels(mode) {
+    return {
+      ...paletteOptions(this.plugin.settings, mode),
+      theme: t("\u8DDF\u968F\u4E3B\u9898\u4E3B\u8272"),
+      ...mode === "light" ? { colorful: t("\u5F69\u8272") } : { "colorful-dark": t("\u5F69\u8272") },
+      "new-custom": t("\u65B0\u5EFA\u81EA\u5B9A\u4E49\u8272\u677F\u2026")
+    };
+  }
+  renderPalette(container) {
+    const root = container.createDiv({ cls: "an-palette-settings" }), settings = this.plugin.settings;
+    new import_obsidian5.Setting(root).setName(t("\u6574\u4F53\u914D\u8272")).setHeading();
+    root.createEl("p", { cls: "an-settings-intro", text: t("\u5148\u9009\u6574\u5957\u914D\u8272\uFF0C\u518D\u5728\u73AF\u5883\u4E2D\u8C03\u6574\u5F15\u7528\u3001\u989C\u8272\u548C\u56FE\u6807\u3002\u6D45\u8272\u548C\u6DF1\u8272\u5404\u4FDD\u5B58\u4E00\u5957\uFF0C\u968F Obsidian \u660E\u6697\u6A21\u5F0F\u5207\u6362\u3002") });
+    for (const mode of ["light", "dark"]) {
+      const field = mode === "light" ? "lightPalette" : "darkPalette";
+      new import_obsidian5.Setting(root).setName(t(mode === "light" ? "\u6D45\u8272\u914D\u8272" : "\u6DF1\u8272\u914D\u8272")).addDropdown((d) => {
+        d.selectEl.dataset.anControl = field;
+        d.addOptions(this.paletteLabels(mode)).setValue(selectedPalette(settings, mode)).onChange(async (value) => {
+          d.selectEl.blur();
+          this.appearanceMode = mode;
+          if (value === "new-custom") {
+            this.refreshPalette();
+            const management2 = this.paletteHost?.querySelector(".an-palette-management");
+            if (management2) {
+              management2.open = true;
+              management2.querySelector("input[type=text]")?.focus({ preventScroll: true });
+            }
+            return;
+          }
+          settings[field] = value;
+          await this.plugin.saveSettings();
+          this.refreshPalette();
+        });
+      });
+    }
+    new import_obsidian5.Setting(root).setName(t("\u5F53\u524D\u7F16\u8F91\u7684\u8272\u677F")).addDropdown((d) => {
+      d.selectEl.dataset.anControl = "mode";
+      d.addOptions({ light: t("\u6D45\u8272"), dark: t("\u6DF1\u8272") }).setValue(this.appearanceMode).onChange((value) => {
+        d.selectEl.blur();
+        this.appearanceMode = value;
+        this.refreshPalette();
+      });
+    });
+    const palette = selectedPalette(settings, this.appearanceMode);
+    const activeMode = typeof document !== "undefined" && document.body.classList.contains("theme-dark") ? "dark" : "light";
+    root.createEl("p", { cls: "an-palette-status", text: t("\u6B63\u5728\u7F16\u8F91\uFF1A{0} \xB7 {1}\u3002\u7B14\u8BB0\u5F53\u524D\u4F7F\u7528\uFF1A{2} \xB7 {3}\u3002", t(this.appearanceMode === "light" ? "\u6D45\u8272" : "\u6DF1\u8272"), this.paletteLabels(this.appearanceMode)[palette], t(activeMode === "light" ? "\u6D45\u8272" : "\u6DF1\u8272"), this.paletteLabels(activeMode)[selectedPalette(settings, activeMode)]) });
+    const overview = root.createDiv({ cls: "an-palette-overview" }), profile = paletteOverrides(settings)[palette] || {};
+    for (const role2 of ["def", "thm", "lem", "prop", "cor", "claim", "example", "algorithm"]) {
+      const swatch = overview.createDiv({ cls: "an-palette-swatch", attr: { "data-an-swatch": role2 } });
+      swatch.style.setProperty("--an-swatch-color", profile[role2]?.[this.appearanceMode] || defaultRoleValue(settings, palette, role2, this.appearanceMode));
+      swatch.createSpan({ text: engine_default.labelName(role2, settings) });
+    }
+    const management = root.createEl("details", { cls: "an-settings-details an-palette-management" });
+    management.createEl("summary", { text: t("\u81EA\u5B9A\u4E49\u8272\u677F\u4E0E\u6062\u590D\u9ED8\u8BA4") });
+    let name = "";
+    new import_obsidian5.Setting(management).setName(t("\u590D\u5236\u4E3A\u81EA\u5B9A\u4E49\u8272\u677F")).setDesc(t("\u590D\u5236\u5F53\u524D\u8272\u677F\u53CA\u5176\u73AF\u5883\u8986\u76D6\uFF1B\u65B0\u8272\u677F\u53EF\u72EC\u7ACB\u7F16\u8F91\u548C\u6062\u590D\u9ED8\u8BA4\u3002")).addText((c) => c.setPlaceholder(t("\u8272\u677F\u540D\u79F0")).onChange((value) => {
+      name = value.trim();
+    })).addButton((b) => b.setButtonText(t("\u521B\u5EFA\u8272\u677F")).onClick(async () => {
+      const all = customPalettes(settings.customPalettes);
+      if (!name || Object.keys(all).length >= 32) {
+        new import_obsidian5.Notice(t("\u8BF7\u586B\u5199\u8272\u677F\u540D\u79F0\uFF1B\u6700\u591A 32 \u4E2A\u81EA\u5B9A\u4E49\u8272\u677F\u3002"));
+        return;
+      }
+      let key2 = "custom-" + Date.now().toString(36);
+      while (Object.hasOwn(all, key2)) key2 += "x";
+      all[key2] = { name, mode: this.appearanceMode, base: basePalette(settings, palette) };
+      settings.customPalettes = JSON.stringify(all);
+      const overrides = paletteOverrides(settings);
+      overrides[key2] = structuredClone(overrides[palette] || {});
+      settings.paletteAppearance = JSON.stringify(overrides);
+      settings[this.appearanceMode === "dark" ? "darkPalette" : "lightPalette"] = key2;
+      await this.plugin.saveSettings();
+      this.refreshPalette();
+    }));
+    new import_obsidian5.Setting(management).setName(t("\u6062\u590D\u6574\u5957\u8272\u677F\u9ED8\u8BA4\u503C")).setDesc(t("\u53EA\u6E05\u9664\u5F53\u524D\u8272\u677F\u7684\u6240\u6709\u73AF\u5883\u8986\u76D6\uFF0C\u5176\u4ED6\u8272\u677F\u4E0D\u53D8\u3002")).addButton((b) => {
+      b.buttonEl.dataset.anControl = "resetPalette";
+      b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
+        const all = paletteOverrides(settings);
+        delete all[palette];
+        settings.paletteAppearance = JSON.stringify(all);
+        await this.plugin.saveSettings();
+        this.refreshPalette();
+      });
+    });
+    const custom = customPalettes(settings.customPalettes)[palette];
+    if (custom) new import_obsidian5.Setting(management).setName(t("\u5220\u9664\u5F53\u524D\u81EA\u5B9A\u4E49\u8272\u677F")).addButton((b) => b.setButtonText(t("\u5220\u9664\u8272\u677F")).onClick(async () => {
+      const all = customPalettes(settings.customPalettes), overrides = paletteOverrides(settings);
+      delete all[palette];
+      delete overrides[palette];
+      settings.customPalettes = JSON.stringify(all);
+      settings.paletteAppearance = JSON.stringify(overrides);
+      settings[this.appearanceMode === "dark" ? "darkPalette" : "lightPalette"] = custom.base;
+      await this.plugin.saveSettings();
+      this.refreshPalette();
+    }));
   }
   renderAppearance(container) {
     const root = container.createDiv({ cls: "an-appearance-settings" }), settings = this.plugin.settings;
     const redraw = () => {
       if (root.parentElement) this.refreshAppearance(root.parentElement);
     };
-    const options = (mode) => ({ ...paletteOptions(settings, mode), theme: t("\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272") });
-    new import_obsidian5.Setting(root).setName(t("\u6D45\u8272\u6570\u5B66\u6846\u914D\u8272")).addDropdown((d) => {
-      d.selectEl.dataset.anControl = "lightPalette";
-      d.addOptions(options("light")).setValue(settings.lightPalette).onChange(async (value) => {
-        d.selectEl.blur();
-        settings.lightPalette = value;
-        this.appearanceMode = "light";
-        await this.plugin.saveSettings();
-        redraw();
-      });
-    });
-    new import_obsidian5.Setting(root).setName(t("\u6DF1\u8272\u6570\u5B66\u6846\u914D\u8272")).addDropdown((d) => {
-      d.selectEl.dataset.anControl = "darkPalette";
-      d.addOptions(options("dark")).setValue(settings.darkPalette).onChange(async (value) => {
-        d.selectEl.blur();
-        settings.darkPalette = value;
-        this.appearanceMode = "dark";
-        await this.plugin.saveSettings();
-        redraw();
-      });
-    });
-    new import_obsidian5.Setting(root).setName(t("\u7F16\u8F91\u8272\u677F\u6A21\u5F0F")).addDropdown((d) => {
-      d.selectEl.dataset.anControl = "mode";
-      d.addOptions({ light: t("\u6D45\u8272"), dark: t("\u6DF1\u8272") }).setValue(this.appearanceMode).onChange((value) => {
-        this.appearanceMode = value;
-        redraw();
-      });
-    });
-    const palette = selectedPalette(settings, this.appearanceMode), profiles = paletteOverrides(settings), roles = appearanceRoles(settings);
-    const activeMode = typeof document !== "undefined" && document.body.classList.contains("theme-dark") ? "dark" : "light";
-    root.createEl("p", { cls: "an-palette-status", text: t("\u6B63\u5728\u7F16\u8F91\uFF1A{0} \xB7 {1}\u3002\u7B14\u8BB0\u5F53\u524D\u4F7F\u7528\uFF1A{2} \xB7 {3}\u3002", t(this.appearanceMode === "light" ? "\u6D45\u8272" : "\u6DF1\u8272"), options(this.appearanceMode)[palette], t(activeMode === "light" ? "\u6D45\u8272" : "\u6DF1\u8272"), options(activeMode)[selectedPalette(settings, activeMode)]) });
-    const overview = root.createDiv({ cls: "an-palette-overview" });
+    if (!Object.hasOwn(appearanceRoles(settings), this.appearanceType)) {
+      root.createEl("p", { text: t("\u6B64\u73AF\u5883\u4FDD\u6301\u56FE\u8868\u6216\u516C\u5F0F\u7684\u539F\u751F\u6392\u7248\uFF1B\u5F15\u7528\u540D\u79F0\u548C\u683C\u5F0F\u53EF\u5728\u4E0A\u65B9\u8C03\u6574\u3002") });
+      return;
+    }
+    new import_obsidian5.Setting(root).setName(t("\u989C\u8272\u4E0E\u56FE\u6807")).setHeading();
+    root.createEl("p", { cls: "an-settings-intro", text: t("\u989C\u8272\u53EF\u76F4\u63A5\u4FEE\u6539\uFF0C\u81EA\u52A8\u4FDD\u5B58\u5230\u5F53\u524D\u8272\u677F\u3002\u540D\u79F0\u4E0E\u5F15\u7528\u4FEE\u6539\u540E\u70B9\u51FB\u4FDD\u5B58\u3002") });
+    const palette = selectedPalette(settings, this.appearanceMode), profiles = paletteOverrides(settings);
     const updateOverview = () => {
-      overview.empty();
-      const profile = paletteOverrides(settings)[palette] || {};
-      for (const role2 of ["def", "thm", "lem", "prop", "cor", "claim", "example", "algorithm"]) {
-        const swatch = overview.createDiv({ cls: "an-palette-swatch", attr: { "data-an-swatch": role2 } });
-        swatch.style.setProperty("--an-swatch-color", profile[role2]?.[this.appearanceMode] || defaultRoleColor(settings, palette, role2));
-        swatch.createSpan({ text: engine_default.labelName(role2, settings) });
-      }
+      if (this.paletteHost) this.replaceSection(this.paletteHost, (parent) => this.renderPalette(parent));
     };
-    updateOverview();
-    if (!Object.hasOwn(roles, this.appearanceType)) this.appearanceType = "thm";
-    new import_obsidian5.Setting(root).setName(t("\u9009\u62E9\u73AF\u5883")).setDesc(t("\u4FEE\u6539\u53EA\u5E94\u7528\u4E8E\u5F53\u524D\u8272\u677F\uFF1B\u5207\u6362\u8272\u677F\u65F6\u6062\u590D\u8BE5\u8272\u677F\u81EA\u5DF1\u7684\u989C\u8272\u3002")).addDropdown((d) => {
-      d.selectEl.dataset.anControl = "environment";
-      d.addOptions(Object.fromEntries(Object.entries(roles).map(([key2, names2]) => [key2, engine_default.typeNames(key2, settings)[0] || names2[0]]))).setValue(this.appearanceType).onChange((value) => {
-        this.appearanceType = value;
-        redraw();
-      });
-    });
     const entry = profiles[palette]?.[this.appearanceType] || {};
     const field = this.appearanceMode, motifField = field === "light" ? "motifLight" : "motifDark";
-    const fallback = defaultRoleColor(settings, palette, this.appearanceType);
+    const fallback = defaultRoleColor(settings, palette, this.appearanceType, this.appearanceMode);
+    const fallbackValue = defaultRoleValue(settings, palette, this.appearanceType, this.appearanceMode);
     const plain2 = ["proof", "remark", "algorithm"].includes(this.appearanceType) || engine_default.environments(settings)[this.appearanceType]?.style === "remark";
     const colors = [[field, t("\u73AF\u5883\u4E3B\u8272"), fallback]];
     if (!plain2) colors.push([motifField, t("\u89D2\u6807\u989C\u8272"), entry[field] || fallback]);
-    for (const [colorField, name2, defaultColor] of colors) {
-      const row = new import_obsidian5.Setting(root).setName(name2).setDesc(entry[colorField] || t("\u8DDF\u968F\u5F53\u524D\u8272\u677F\u9ED8\u8BA4\u503C"));
-      row.addToggle((c) => {
-        c.toggleEl.dataset.anControl = colorField;
-        c.setValue(!!entry[colorField]).onChange(async (enabled) => {
-          await this.changeAppearance(colorField, enabled ? defaultColor : "");
-          redraw();
-        });
-      });
-      row.addColorPicker((c) => c.setValue(entry[colorField] || defaultColor).setDisabled(!entry[colorField]).onChange(async (value) => {
+    for (const [colorField, name, defaultColor] of colors) {
+      const row = new import_obsidian5.Setting(root).setName(name).setDesc(entry[colorField] || t("\u8DDF\u968F\u5F53\u524D\u8272\u677F\u9ED8\u8BA4\u503C"));
+      row.addColorPicker((c) => c.setValue(entry[colorField] || defaultColor).onChange(async (value) => {
         await this.changeAppearance(colorField, value);
         row.setDesc(value);
         updatePreview();
         updateOverview();
       }));
+      row.settingEl.querySelector("input[type=color]").dataset.anControl = colorField;
+      row.addButton((b) => {
+        b.buttonEl.dataset.anControl = "reset-" + colorField;
+        b.setButtonText(t("\u9ED8\u8BA4")).onClick(async () => {
+          await this.changeAppearance(colorField, "");
+          redraw();
+          updateOverview();
+        });
+      });
     }
     const names = { laurel: t("\u6708\u6842"), compass: t("\u7F57\u76D8"), rosette: t("\u82B1\u7AE0"), orbit: t("\u8F68\u9053"), lattice: t("\u6676\u683C"), knot: t("\u7F16\u7ED3"), arch: t("\u62F1\u5ECA"), quill: t("\u7FBD\u7B14"), folio: t("\u4E66\u9875") };
     if (!plain2) {
@@ -61854,20 +62017,26 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     if (custom) box.dataset.anStyle = custom.style;
     const updatePreview = () => {
       const current2 = paletteOverrides(settings)[palette]?.[this.appearanceType] || {};
-      box.style.setProperty("--phb-accent", current2[field] || fallback);
+      box.style.setProperty("--phb-surface", field === "dark" ? "#18181b" : "#ffffff");
+      box.style.setProperty("--phb-tint", field === "dark" ? "8%" : "6%");
+      const activeMode = typeof document !== "undefined" && document.body.classList.contains("theme-dark") ? "dark" : "light";
+      box.style.setProperty("--text-normal", field === activeMode ? "inherit" : field === "dark" ? "#e5e7eb" : "#24372e");
+      box.style.setProperty("--an-ink-" + this.appearanceType, titleInk(current2[field] || fallback));
+      box.style.setProperty("--an-motif-color-" + this.appearanceType, current2[motifField] || current2[field] || fallbackValue);
+      box.style.setProperty("--phb-accent", current2[field] || fallbackValue);
       box.style.setProperty("--phb-badge-ink", titleInk(current2[field] || fallback));
-      box.style.setProperty("--an-algorithm-accent", current2[field] || fallback);
+      box.style.setProperty("--an-algorithm-accent", current2[field] || fallbackValue);
       box.style.setProperty("--an-color-" + this.appearanceType, current2[field] || "initial");
       box.style.setProperty("--an-symbol-" + this.appearanceType, current2.motif ? motifMask(current2.motif) : "initial");
       box.style.setProperty("--an-motif-display-" + this.appearanceType, current2.motif ? current2.motif === "none" ? "none" : "block" : "initial");
       box.style.setProperty("--phb-symbol", current2.motif ? motifMask(current2.motif) : "var(--an-original-symbol, none)");
       box.style.setProperty("--an-motif-display", current2.motif ? current2.motif === "none" ? "none" : "block" : custom ? "none" : "block");
-      if (this.appearanceType === "remark" || custom?.style === "remark") box.style.setProperty("--an-remark-color", `color-mix(in srgb, ${fallback} ${field === "dark" ? "80%" : "98%"}, white)`);
+      if (this.appearanceType === "remark" || custom?.style === "remark") box.style.setProperty("--an-remark-color", `color-mix(in srgb, ${fallbackValue} ${field === "dark" ? "80%" : "98%"}, white)`);
       if (custom) {
-        box.style.setProperty("--an-custom-palette-color", current2[field] || (plain2 ? "var(--an-remark-color)" : fallback));
+        box.style.setProperty("--an-custom-palette-color", current2[field] || (plain2 ? "var(--an-remark-color)" : fallbackValue));
         box.style.setProperty("--an-custom-palette-ink", titleInk(current2[field] || fallback));
       }
-      box.style.setProperty("--phb-motif-color", current2[motifField] || current2[field] || fallback);
+      box.style.setProperty("--phb-motif-color", current2[motifField] || current2[field] || fallbackValue);
     };
     updatePreview();
     box.createDiv({ cls: "callout-title" }).createDiv({ cls: "callout-title-inner", text: engine_default.typeNames(this.appearanceType, settings)[0] });
@@ -61883,52 +62052,9 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
         redraw();
       });
     });
-    new import_obsidian5.Setting(root).setName(t("\u6062\u590D\u6574\u5957\u8272\u677F\u9ED8\u8BA4\u503C")).setDesc(t("\u53EA\u6E05\u9664\u5F53\u524D\u8272\u677F\u7684\u6240\u6709\u73AF\u5883\u8986\u76D6\uFF0C\u5176\u4ED6\u8272\u677F\u4E0D\u53D8\u3002")).addButton((b) => {
-      b.buttonEl.dataset.anControl = "resetPalette";
-      b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
-        const all = paletteOverrides(settings);
-        delete all[palette];
-        settings.paletteAppearance = JSON.stringify(all);
-        await this.plugin.saveSettings();
-        redraw();
-      });
-    });
-    let name = "";
-    new import_obsidian5.Setting(root).setName(t("\u590D\u5236\u4E3A\u81EA\u5B9A\u4E49\u8272\u677F")).setDesc(t("\u590D\u5236\u5F53\u524D\u8272\u677F\u53CA\u5176\u73AF\u5883\u8986\u76D6\uFF1B\u65B0\u8272\u677F\u53EF\u72EC\u7ACB\u7F16\u8F91\u548C\u6062\u590D\u9ED8\u8BA4\u3002")).addText((c) => c.setPlaceholder(t("\u8272\u677F\u540D\u79F0")).onChange((value) => {
-      name = value.trim();
-    })).addButton((b) => b.setButtonText(t("\u521B\u5EFA\u8272\u677F")).onClick(async () => {
-      const all = customPalettes(settings.customPalettes);
-      if (!name || Object.keys(all).length >= 32) {
-        new import_obsidian5.Notice(t("\u8BF7\u586B\u5199\u8272\u677F\u540D\u79F0\uFF1B\u6700\u591A 32 \u4E2A\u81EA\u5B9A\u4E49\u8272\u677F\u3002"));
-        return;
-      }
-      let key2 = "custom-" + Date.now().toString(36);
-      while (Object.hasOwn(all, key2)) key2 += "x";
-      all[key2] = { name, mode: this.appearanceMode, base: basePalette(settings, palette) };
-      settings.customPalettes = JSON.stringify(all);
-      const overrides = paletteOverrides(settings);
-      overrides[key2] = structuredClone(overrides[palette] || {});
-      settings.paletteAppearance = JSON.stringify(overrides);
-      if (this.appearanceMode === "dark") settings.darkPalette = key2;
-      else settings.lightPalette = key2;
-      await this.plugin.saveSettings();
-      redraw();
-    }));
-    const customPalette = customPalettes(settings.customPalettes)[palette];
-    if (customPalette) new import_obsidian5.Setting(root).setName(t("\u5220\u9664\u5F53\u524D\u81EA\u5B9A\u4E49\u8272\u677F")).addButton((b) => b.setButtonText(t("\u5220\u9664\u8272\u677F")).onClick(async () => {
-      const all = customPalettes(settings.customPalettes), overrides = paletteOverrides(settings);
-      delete all[palette];
-      delete overrides[palette];
-      settings.customPalettes = JSON.stringify(all);
-      settings.paletteAppearance = JSON.stringify(overrides);
-      if (this.appearanceMode === "dark") settings.darkPalette = customPalette.base;
-      else settings.lightPalette = customPalette.base;
-      await this.plugin.saveSettings();
-      redraw();
-    }));
     root.createEl("p", { text: t("\u8FB9\u6846\u7C97\u7EC6\u3001\u5706\u89D2\u3001\u89D2\u6807\u5927\u5C0F\u4E0E\u900F\u660E\u5EA6\u53EF\u5728 Style Settings \u2192 Academic Notes \u8C03\u6574\uFF1B\u5706\u89D2 0 \u4E3A\u76F4\u89D2\u3002") });
   }
-  getSettingDefinitions() {
+  buildSettingRows() {
     let group = "typography";
     const definitions = [];
     const p = this.plugin, s = p.settings;
@@ -61956,8 +62082,9 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     } });
     const description = (desc) => definitions.push({ group, name: "", desc, render: () => {
     } });
-    heading(t("\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09"));
+    heading(t("\u6BB5\u843D\u6392\u7248"));
     toggle("paragraphIndent", t("\u6B63\u6587\u9996\u884C\u7F29\u8FDB\u4E24\u4E2A\u6C49\u5B57"), t("\u9605\u8BFB\u3001\u5B9E\u65F6\u9884\u89C8\u53CA\u5BFC\u51FA\u4E2D\u7684\u6587\u5B57\u6BB5\u843D\u9996\u884C\u7F29\u8FDB 2em\uFF1B\u4E0D\u5199\u5165\u7A7A\u683C\uFF0C\u9ED8\u8BA4\u5173\u95ED\u3002\u6807\u9898\u3001\u5217\u8868\u3001\u4EE3\u7801\u3001\u56FE\u6CE8\u548C\u8868\u683C\u4E0D\u7F29\u8FDB\u3002"));
+    heading(t("Knuth\u2013Plass \u65AD\u884C\uFF08Beta\uFF09"));
     toggle("kpReading", t("\u9605\u8BFB\u89C6\u56FE\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u6574\u6BB5\u4F18\u5316\u6B63\u6587\u53CA\u6570\u5B66\u73AF\u5883\u7684\u65AD\u884C\u548C\u95F4\u8DDD\uFF1B\u7A97\u53E3\u5BBD\u5EA6\u53D8\u5316\u540E\u91CD\u65B0\u6392\u7248\u3002\u9ED8\u8BA4\u5173\u95ED\uFF0C\u5B9E\u65F6\u9884\u89C8\u4E0E\u6E90\u7801\u4E0D\u53D7\u5F71\u54CD\u3002"));
     toggle("kpLivePreview", t("\u5B9E\u65F6\u9884\u89C8\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u4F18\u5316\u672A\u7F16\u8F91\u7684\u5355\u884C\u666E\u901A\u6BB5\u843D\u548C\u53EA\u8BFB\u6570\u5B66\u73AF\u5883\u6B63\u6587\uFF1B\u73AF\u5883\u5185\u652F\u6301\u516C\u5F0F\u548C\u94FE\u63A5\u3002\u5149\u6807\u6216\u9009\u533A\u8FDB\u5165\u65F6\u6062\u590D\u539F\u751F\u6392\u7248\uFF0C\u7F16\u8F91\u6807\u9898\u65F6\u4FDD\u6301\u539F\u751F\u3002\u9ED8\u8BA4\u5173\u95ED\u3002"));
     if (import_obsidian5.Platform.isDesktopApp) toggle("kpPdf", t("PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u6B63\u6587\u53CA\u6570\u5B66\u73AF\u5883\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002"));
@@ -61973,7 +62100,6 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     toggle("sharedCounter", t("\u4E0D\u540C\u5B9A\u7406\u7C7B\u578B\u5171\u4EAB\u8BA1\u6570\u5668"), t("\u5173\u95ED\u65F6 Definition\u3001Theorem \u7B49\u5404\u81EA\u8BA1\u6570\u3002\u516C\u5F0F\u59CB\u7EC8\u72EC\u7ACB\u3002"));
     toggle("algorithmNumbered", t("\u7B97\u6CD5\u81EA\u52A8\u7F16\u53F7"), t("\u4EE3\u7801\u5757\u4E0E Callout \u5171\u7528\u72EC\u7ACB\u8BA1\u6570\u5668\uFF0C\u9075\u5FAA\u5F53\u524D\u5206\u8282\u6216\u6574\u7BC7\u7F16\u53F7\u8BBE\u7F6E\u3002"));
     toggle("algorithmLineNumbers", t("\u663E\u793A\u7B97\u6CD5\u884C\u53F7"), t("\u884C\u53F7\u4E0E\u7B97\u6CD5\u7F16\u53F7\u4E92\u76F8\u72EC\u7ACB\uFF1B\u8F93\u5165\u3001\u8F93\u51FA\u548C\u6CE8\u91CA\u4E0D\u8BA1\u884C\u53F7\u3002"));
-    group = "references";
     group = "numbering";
     text("numberPrefix", t("\u7F16\u53F7\u524D\u7F00"), t("\u7559\u7A7A\u4E0D\u4F1A\u4ECE\u65E5\u671F\u6587\u4EF6\u540D\u63A8\u65AD\u7AE0\u8282\u53F7\u3002"));
     group = "references";
@@ -63106,10 +63232,10 @@ var diagrams_default = '.an-diagram-modal {\n  width: min(850px, 96vw);\n}\n.an-
 var typography_default = 'body.an-active p.an-kp-paragraph,\nbody.phb-export p.an-kp-paragraph {\n  text-indent: 0 !important;\n}\n.an-kp-math-end {\n  display: inline-block;\n}\n.an-kp-math-end > :is(.math, .phb-math, mjx-container),\n.an-kp-math-end > :is(.math, .phb-math) > mjx-container {\n  margin-inline-end: 0 !important;\n}\nbody.an-active.an-prose-indent .markdown-rendered p,\nbody.an-active.an-prose-indent .markdown-rendered .callout > .callout-content p,\nbody.phb-export.an-prose-indent .markdown-rendered p {\n  text-indent: 2em;\n}\nbody.an-prose-indent :is(li, table, figcaption, .callout-title, .an-diagram-caption, .an-media, .phb-toc, .phb-frontmatter, .an-diagram-block) p {\n  text-indent: 0 !important;\n}\nbody.an-prose-indent p:has(> img, > .image-embed, > .math-block) {\n  text-indent: 0 !important;\n}\n.an-kp-native-justify .cm-line.an-prose-line:not(:has(.an-kp-live-break)),\n.an-kp-native-justify .callout-content > p:not(.an-kp-paragraph) {\n  text-align: justify;\n  text-align-last: start;\n}\n.an-prose-indent-enabled .cm-line.an-prose-start {\n  text-indent: 2em;\n}\n.an-prose-indent-enabled .cm-line.an-prose-line:not(.an-prose-start) {\n  text-indent: 0;\n}\n.an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  text-indent: 0;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n.an-kp-live-line {\n  white-space: nowrap;\n}\n.an-kp-live-gap {\n  display: inline-block;\n  white-space: pre;\n  font-size: 0;\n  line-height: 0;\n  height: 0;\n  letter-spacing: 0;\n  word-spacing: 0;\n}\n.an-kp-qed > .an-kp-line:last-child::after {\n  content: "\\25a1";\n  float: right;\n  margin-inline-start: .75em;\n  font-style: normal;\n  font-weight: 400;\n  color: inherit;\n}\n.an-kp-qed-probe {\n  font-style: normal;\n  font-weight: 400;\n  margin-inline-start: .75em;\n}\nbody.an-active.an-prose-indent .markdown-rendered p.an-prose-continuation,\nbody.an-active.an-prose-indent .callout-content p.an-prose-continuation,\nbody.phb-export.an-prose-indent p.an-prose-continuation {\n  text-indent: 0 !important;\n}\n';
 
 // src/styles/callouts.css
-var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def:#a63c67;\n  --phb-thm:#903c62;\n  --phb-lem:#a14b68;\n  --phb-prop:#9d406e;\n  --phb-cor:#953f5a;\n  --phb-claim:#914868;\n  --phb-example:#9f556f;\n  --phb-proof:#7f5768;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def:#227c77;\n  --phb-thm:#236b63;\n  --phb-lem:#2e7677;\n  --phb-prop:#26756a;\n  --phb-cor:#266b6f;\n  --phb-claim:#2d6b65;\n  --phb-example:#367575;\n  --phb-proof:#3a5c5a;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def:#2e729e;\n  --phb-thm:#2f6a88;\n  --phb-lem:#3d6e98;\n  --phb-prop:#337795;\n  --phb-cor:#33618d;\n  --phb-claim:#3b6d89;\n  --phb-example:#477395;\n  --phb-proof:#4c6576;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def:#247651;\n  --phb-thm:#256645;\n  --phb-lem:#2f7158;\n  --phb-prop:#277049;\n  --phb-cor:#276a52;\n  --phb-claim:#2e664b;\n  --phb-example:#367059;\n  --phb-proof:#3a594b;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def:#776085;\n  --phb-thm:#695876;\n  --phb-lem:#7d6886;\n  --phb-prop:#716081;\n  --phb-cor:#725d7b;\n  --phb-claim:#70617b;\n  --phb-example:#806f89;\n  --phb-proof:#6e6674;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def:#88712e;\n  --phb-thm:#76602e;\n  --phb-lem:#83753a;\n  --phb-prop:#816631;\n  --phb-cor:#7a6f31;\n  --phb-claim:#766438;\n  --phb-example:#827543;\n  --phb-proof:#685f45;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def:#9c3a55;\n  --phb-thm:#873953;\n  --phb-lem:#974858;\n  --phb-prop:#943e5d;\n  --phb-cor:#8c3d4b;\n  --phb-claim:#89455a;\n  --phb-example:#965161;\n  --phb-proof:#78535d;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def:#28558a;\n  --phb-thm:#295177;\n  --phb-lem:#355484;\n  --phb-prop:#2c5b82;\n  --phb-cor:#2c497b;\n  --phb-claim:#345577;\n  --phb-example:#3e5a83;\n  --phb-proof:#425367;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def:#df939e;\n  --phb-thm:#d17c8d;\n  --phb-lem:#dba6aa;\n  --phb-prop:#d991a2;\n  --phb-cor:#d4888b;\n  --phb-claim:#d0939e;\n  --phb-example:#dbb4b8;\n  --phb-proof:#c19fa4;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def:#82b6df;\n  --phb-thm:#6daad1;\n  --phb-lem:#97b7d9;\n  --phb-prop:#81b9d9;\n  --phb-cor:#79a2d3;\n  --phb-claim:#85b0ce;\n  --phb-example:#a6bfd7;\n  --phb-proof:#93aabc;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def:#b8ce86;\n  --phb-thm:#acbf73;\n  --phb-lem:#b7cb97;\n  --phb-prop:#b9c885;\n  --phb-cor:#a6c27d;\n  --phb-claim:#b0bf87;\n  --phb-example:#bdcba4;\n  --phb-proof:#a8b192;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout.an-custom-environment,\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk], [data-an-style=remark]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child:not(.an-kp-qed)::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\nbody .callout.an-custom-environment {\n  --an-custom-fallback: var(--an-color-thm, var(--phb-thm));\n  --phb-motif-color: var(--an-custom-palette-motif-color, var(--phb-accent));\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-light, var(--an-custom-default-ink, #fff)));\n  --phb-symbol: var(--an-custom-palette-symbol, none);\n  --an-motif-display: var(--an-custom-palette-motif-display, none);\n}\nbody .callout.an-custom-environment[data-an-style=def] {\n  --an-custom-fallback: var(--an-color-def, var(--phb-def));\n}\nbody .callout.an-custom-environment[data-an-style=lem] {\n  --an-custom-fallback: var(--an-color-lem, var(--phb-lem));\n}\nbody .callout.an-custom-environment[data-an-style=prop] {\n  --an-custom-fallback: var(--an-color-prop, var(--phb-prop));\n}\nbody .callout.an-custom-environment[data-an-style=cor] {\n  --an-custom-fallback: var(--an-color-cor, var(--phb-cor));\n}\nbody .callout.an-custom-environment[data-an-style=claim] {\n  --an-custom-fallback: var(--an-color-claim, var(--phb-claim));\n}\nbody .callout.an-custom-environment[data-an-style=example] {\n  --an-custom-fallback: var(--an-color-example, var(--phb-example));\n}\nbody .callout.an-custom-environment[data-an-style=remark] {\n  --an-custom-fallback: var(--phb-remark, var(--phb-def));\n}\nbody.theme-dark .callout.an-custom-environment {\n  --an-custom-default-ink: #18181b;\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff)));\n}\nbody .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\nbody.theme-dark .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\n';
+var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 82%, #3e594c);\n  --phb-thm: color-mix(in srgb, var(--text-accent, #247651) 77%, #354d68);\n  --phb-lem: color-mix(in srgb, var(--text-accent, #247651) 80%, #605268);\n  --phb-prop: color-mix(in srgb, var(--text-accent, #247651) 75%, #686340);\n  --phb-cor: color-mix(in srgb, var(--text-accent, #247651) 85%, #3e645a);\n  --phb-claim: color-mix(in srgb, var(--text-accent, #247651) 79%, #495d73);\n  --phb-example: color-mix(in srgb, var(--text-accent, #247651) 70%, #886b45);\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-accent, #247651) 65%, #606862);\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 66%, #e0e5df);\n  --phb-thm: color-mix(in srgb, var(--text-accent, #247651) 61%, #e0e5df);\n  --phb-lem: color-mix(in srgb, var(--text-accent, #247651) 64%, #e0e5df);\n  --phb-prop: color-mix(in srgb, var(--text-accent, #247651) 59%, #e0e5df);\n  --phb-cor: color-mix(in srgb, var(--text-accent, #247651) 69%, #e0e5df);\n  --phb-claim: color-mix(in srgb, var(--text-accent, #247651) 63%, #e0e5df);\n  --phb-example: color-mix(in srgb, var(--text-accent, #247651) 54%, #e0e5df);\n  --phb-proof: color-mix(in srgb, var(--text-accent, #247651) 49%, #e0e5df);\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def:#a94d70;\n  --phb-thm:#83507f;\n  --phb-lem:#ad5d79;\n  --phb-prop:#8d657a;\n  --phb-cor:#a8616f;\n  --phb-claim:#965b8f;\n  --phb-example:#a26756;\n  --phb-proof:#806771;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def:#23786b;\n  --phb-thm:#2d6a79;\n  --phb-lem:#507d70;\n  --phb-prop:#657b59;\n  --phb-cor:#32827e;\n  --phb-claim:#527988;\n  --phb-example:#647e57;\n  --phb-proof:#536c67;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def:#326d99;\n  --phb-thm:#475f95;\n  --phb-lem:#586faa;\n  --phb-prop:#467e90;\n  --phb-cor:#527b97;\n  --phb-claim:#6c719a;\n  --phb-example:#637b78;\n  --phb-proof:#5e6c7b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def:#2e7055;\n  --phb-thm:#296a70;\n  --phb-lem:#537354;\n  --phb-prop:#73723d;\n  --phb-cor:#367d69;\n  --phb-claim:#477486;\n  --phb-example:#87653e;\n  --phb-proof:#5c6d61;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def:#7c588c;\n  --phb-thm:#615b8d;\n  --phb-lem:#8f6a90;\n  --phb-prop:#7f6a80;\n  --phb-cor:#766283;\n  --phb-claim:#6b6c94;\n  --phb-example:#946a7f;\n  --phb-proof:#726574;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def:#88712e;\n  --phb-thm:#8a603d;\n  --phb-lem:#89744a;\n  --phb-prop:#727039;\n  --phb-cor:#8c733f;\n  --phb-claim:#806344;\n  --phb-example:#9f6b41;\n  --phb-proof:#70644c;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def:#9c3a55;\n  --phb-thm:#873950;\n  --phb-lem:#a94d59;\n  --phb-prop:#905466;\n  --phb-cor:#a95e64;\n  --phb-claim:#865275;\n  --phb-example:#a56650;\n  --phb-proof:#7e5d65;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def:#28558a;\n  --phb-thm:#324775;\n  --phb-lem:#456a91;\n  --phb-prop:#356876;\n  --phb-cor:#465c86;\n  --phb-claim:#5b5b83;\n  --phb-example:#5d756e;\n  --phb-proof:#4e6073;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def:#df939e;\n  --phb-thm:#c897ba;\n  --phb-lem:#e6a7ab;\n  --phb-prop:#cba2b2;\n  --phb-cor:#e4b2ae;\n  --phb-claim:#b8a3ce;\n  --phb-example:#e0b995;\n  --phb-proof:#bfa8b0;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def:#82b6df;\n  --phb-thm:#8aa0d8;\n  --phb-lem:#9ab7dd;\n  --phb-prop:#87c3ca;\n  --phb-cor:#9dc9d6;\n  --phb-claim:#b0b1d7;\n  --phb-example:#a9c8bc;\n  --phb-proof:#9daebc;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def:#b8ce86;\n  --phb-thm:#9dc7b8;\n  --phb-lem:#afcf9b;\n  --phb-prop:#cfca89;\n  --phb-cor:#a6c99b;\n  --phb-claim:#9abfbf;\n  --phb-example:#d4bd8f;\n  --phb-proof:#acb7a0;\n}\nbody.theme-light[data-an-palette=colorful] {\n  --phb-def:#247651;\n  --phb-thm:#286b76;\n  --phb-lem:#71628c;\n  --phb-prop:#62752e;\n  --phb-cor:#42786b;\n  --phb-claim:#44698c;\n  --phb-example:#946b2f;\n  --phb-proof:#687252;\n}\nbody.theme-dark[data-an-palette=colorful-dark] {\n  --phb-def:#86ca98;\n  --phb-thm:#83bbce;\n  --phb-lem:#b7a7ca;\n  --phb-prop:#b8c984;\n  --phb-cor:#8dcbb4;\n  --phb-claim:#9baed0;\n  --phb-example:#dec178;\n  --phb-proof:#a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout.an-custom-environment,\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk], [data-an-style=remark]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child:not(.an-kp-qed)::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\nbody .callout.an-custom-environment {\n  --an-custom-fallback: var(--an-color-thm, var(--phb-thm));\n  --phb-motif-color: var(--an-custom-palette-motif-color, var(--phb-accent));\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-light, var(--an-custom-default-ink, #fff)));\n  --phb-symbol: var(--an-custom-palette-symbol, none);\n  --an-motif-display: var(--an-custom-palette-motif-display, none);\n}\nbody .callout.an-custom-environment[data-an-style=def] {\n  --an-custom-fallback: var(--an-color-def, var(--phb-def));\n}\nbody .callout.an-custom-environment[data-an-style=lem] {\n  --an-custom-fallback: var(--an-color-lem, var(--phb-lem));\n}\nbody .callout.an-custom-environment[data-an-style=prop] {\n  --an-custom-fallback: var(--an-color-prop, var(--phb-prop));\n}\nbody .callout.an-custom-environment[data-an-style=cor] {\n  --an-custom-fallback: var(--an-color-cor, var(--phb-cor));\n}\nbody .callout.an-custom-environment[data-an-style=claim] {\n  --an-custom-fallback: var(--an-color-claim, var(--phb-claim));\n}\nbody .callout.an-custom-environment[data-an-style=example] {\n  --an-custom-fallback: var(--an-color-example, var(--phb-example));\n}\nbody .callout.an-custom-environment[data-an-style=remark] {\n  --an-custom-fallback: var(--phb-remark, var(--phb-def));\n}\nbody.theme-dark .callout.an-custom-environment {\n  --an-custom-default-ink: #18181b;\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff)));\n}\nbody .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\nbody.theme-dark .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\n';
 
 // snippets/academic-layout.css
-var academic_layout_default = 'body {\n  --an-layout-caption-size: .9em;\n  --an-layout-caption-gap: .55em;\n  --an-layout-image-gap: 1.25em;\n  --an-layout-subfigure-min: 12rem;\n  --an-layout-rule: var(--text-normal, #26352c);\n  --an-layout-rule-heavy: 1.6px;\n  --an-layout-rule-light: 1px;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) {\n  border-collapse: collapse !important;\n  border-spacing: 0 !important;\n  border-radius: 0;\n  border: 0 !important;\n  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  background: transparent !important;\n  box-shadow: none;\n  width: auto;\n  min-width: min(100%, 22rem);\n  max-width: 100%;\n  margin: 1.25em auto;\n  font-variant-numeric: tabular-nums;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td, tr, thead, tbody, tfoot) {\n  border: 0 !important;\n  border-radius: 0;\n  background: transparent !important;\n  box-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) thead {\n  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td) {\n  padding: .5em .85em;\n  line-height: 1.5;\n  color: var(--text-normal, inherit) !important;\n  text-indent: 0;\n  overflow-wrap: anywhere;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) th {\n  font-weight: 650;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td):hover {\n  box-shadow: none !important;\n  background: transparent !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) {\n  --callout-blend-mode: normal;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: visible !important;\n  width: auto;\n  min-width: 0;\n  max-width: 100%;\n  margin: 1.5em 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit);\n  transform: none;\n  filter: none;\n  isolation: auto;\n  mix-blend-mode: normal;\n  box-sizing: border-box;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::before,\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::after {\n  content: none;\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {\n  position: static;\n  inset: auto;\n  display: var(--an-caption-display, flex) !important;\n  align-items: baseline;\n  justify-content: center;\n  order: 2;\n  width: auto;\n  max-width: 100%;\n  margin: var(--an-layout-caption-gap) 0 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit) !important;\n  text-align: center;\n  font: inherit;\n  font-size: var(--an-layout-caption-size);\n  line-height: 1.55;\n  white-space: normal;\n  overflow-wrap: anywhere;\n  transform: none;\n  text-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-icon {\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-title-inner {\n  display: block;\n  color: inherit;\n  font: inherit;\n  white-space: normal;\n  text-indent: 0;\n  padding: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content {\n  order: 1;\n  position: static;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--text-normal, inherit);\n  overflow: visible;\n  min-width: 0;\n  text-align: center;\n}\nbody .an-caption-label {\n  font-weight: 650;\n}\nbody .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {\n  content: "\\2002";\n}\nbody .an-caption-text {\n  font-weight: 400;\n}\nbody .callout.an-captionless:not(.is-collapsible) > .callout-title,\nbody.phb-export .callout.an-captionless > .callout-title {\n  --an-caption-display: none;\n}\nbody :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {\n  margin: .35em 0;\n  text-indent: 0;\n  text-align: center !important;\n}\nbody .an-media .image-embed,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  display: inline-block !important;\n  margin: 0 auto;\n  padding: 0;\n  min-width: 0;\n  max-width: 100%;\n  float: none !important;\n  background: transparent;\n  border: 0;\n  box-shadow: none;\n  vertical-align: top;\n}\nbody .an-media img,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n  margin: 0 auto;\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n  object-fit: contain;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=table], [data-callout=tbl]) > .callout-title {\n  order: 0;\n  margin: 0 0 var(--an-layout-caption-gap) !important;\n}\nbody .callout:is([data-callout=table], [data-callout=tbl]) table {\n  margin: 0 auto !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig]) > .callout-content.an-figure-grid {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: flex-start;\n  gap: var(--an-layout-image-gap);\n}\nbody .an-figure-grid > :not(.an-subfigure-cell) {\n  flex: 0 0 100%;\n}\nbody .an-figure-grid > .an-subfigure-cell {\n  flex: 1 1 calc(50% - var(--an-layout-image-gap));\n  min-width: min(100%, var(--an-layout-subfigure-min));\n  max-width: 100%;\n  margin: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) {\n  margin: 0 !important;\n}\nbody .an-figure-grid > .an-empty-anchor {\n  display: none;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig]) {\n  container: an-figure / inline-size;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n  --an-columns: 1;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid > .an-subfigure-cell {\n  flex: 0 0 calc((100% - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns));\n  min-width: 0;\n}\n@container an-figure (min-width: 26rem) {\n  body .callout:is(.an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n    --an-columns: 2;\n  }\n}\n@container an-figure (min-width: 39rem) {\n  body .callout.an-columns-3 > .an-figure-grid {\n    --an-columns: 3;\n  }\n}\n@container an-figure (min-width: 52rem) {\n  body .callout.an-columns-4 > .an-figure-grid {\n    --an-columns: 4;\n  }\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  width: 100% !important;\n  max-width: 100%;\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) img {\n  width: auto !important;\n  height: min(var(--an-subfigure-height), calc((100cqw - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns) / var(--an-max-image-ratio, 1))) !important;\n  max-height: none;\n  object-fit: contain;\n  object-position: center;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {\n  text-indent: 2em;\n}\nbody .academic-indent :is(.callout, blockquote, li, td, th, figcaption, .phb-toc) p {\n  text-indent: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-serif {\n  font-family:\n    "Latin Modern Roman",\n    "Times New Roman",\n    "Noto Serif CJK SC",\n    "Source Han Serif SC",\n    "Songti SC",\n    "SimSun",\n    serif;\n}\n@media print {\n  body .an-media {\n    break-inside: avoid;\n  }\n  body .an-media > .callout-title {\n    break-before: avoid;\n    break-after: auto;\n  }\n  body .an-table {\n    display: block !important;\n    break-inside: auto;\n  }\n  body .an-table > .callout-title {\n    break-before: auto;\n    break-after: avoid;\n  }\n  body .callout.an-media img {\n    max-height: 155mm;\n  }\n  body .an-figure-grid {\n    --an-layout-image-gap: 4mm;\n    gap: var(--an-layout-image-gap);\n  }\n  body .an-figure-grid > .an-subfigure-cell {\n    min-width: 0;\n    flex-basis: calc(50% - 4mm);\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) table {\n    break-inside: auto;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) thead {\n    display: table-header-group;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) tr {\n    break-inside: avoid;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) :is(table, .an-media) {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n  }\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content:not(.an-figure-grid),\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content > p {\n  text-align: center !important;\n  text-indent: 0 !important;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  justify-content: center;\n  text-align: center;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=\\56fe], [data-callout=subfigure], [data-callout=subfig], [data-callout=\\5b50\\56fe]) > .callout-content :is(.cm-line, .cm-embed-block):has(.image-embed) {\n  text-align: center !important;\n  text-indent: 0 !important;\n  padding-inline: 0 !important;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=\\56fe], [data-callout=subfigure], [data-callout=subfig], [data-callout=\\5b50\\56fe]) .image-embed {\n  float: none !important;\n  margin-inline: auto !important;\n  vertical-align: middle;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=\\56fe], [data-callout=subfigure], [data-callout=subfig], [data-callout=\\5b50\\56fe]) .image-embed img {\n  margin-inline: auto !important;\n}\n';
+var academic_layout_default = 'body {\n  --an-layout-caption-size: .9em;\n  --an-layout-caption-gap: .55em;\n  --an-layout-image-gap: 1.25em;\n  --an-layout-subfigure-min: 12rem;\n  --an-layout-rule: var(--text-normal, #26352c);\n  --an-layout-rule-heavy: 1.6px;\n  --an-layout-rule-light: 1px;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) {\n  border-collapse: collapse !important;\n  border-spacing: 0 !important;\n  border-radius: 0;\n  border: 0 !important;\n  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  background: transparent !important;\n  box-shadow: none;\n  width: auto;\n  min-width: min(100%, 22rem);\n  max-width: 100%;\n  margin: 1.25em auto;\n  font-variant-numeric: tabular-nums;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td, tr, thead, tbody, tfoot) {\n  border: 0 !important;\n  border-radius: 0;\n  background: transparent !important;\n  box-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) thead {\n  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td) {\n  padding: .5em .85em;\n  line-height: 1.5;\n  color: var(--text-normal, inherit) !important;\n  text-indent: 0;\n  overflow-wrap: anywhere;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) th {\n  font-weight: 650;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td):hover {\n  box-shadow: none !important;\n  background: transparent !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) {\n  --callout-blend-mode: normal;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: visible !important;\n  width: auto;\n  min-width: 0;\n  max-width: 100%;\n  margin: 1.5em 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit);\n  transform: none;\n  filter: none;\n  isolation: auto;\n  mix-blend-mode: normal;\n  box-sizing: border-box;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::before,\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::after {\n  content: none;\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {\n  position: static;\n  inset: auto;\n  display: var(--an-caption-display, flex) !important;\n  align-items: baseline;\n  justify-content: center;\n  order: 2;\n  width: auto;\n  max-width: 100%;\n  margin: var(--an-layout-caption-gap) 0 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit) !important;\n  text-align: center;\n  font: inherit;\n  font-size: var(--an-layout-caption-size);\n  line-height: 1.55;\n  white-space: normal;\n  overflow-wrap: anywhere;\n  transform: none;\n  text-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-icon {\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-title-inner {\n  display: block;\n  color: inherit;\n  font: inherit;\n  white-space: normal;\n  text-indent: 0;\n  padding: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content {\n  order: 1;\n  position: static;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--text-normal, inherit);\n  overflow: visible;\n  min-width: 0;\n  text-align: center;\n}\nbody .an-caption-label {\n  font-weight: 650;\n}\nbody .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {\n  content: "\\2002";\n}\nbody .an-caption-text {\n  font-weight: 400;\n}\nbody .callout.an-captionless:not(.is-collapsible) > .callout-title,\nbody.phb-export .callout.an-captionless > .callout-title {\n  --an-caption-display: none;\n}\nbody :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {\n  margin: .35em 0;\n  text-indent: 0;\n  text-align: center !important;\n}\nbody .an-media .image-embed,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  display: inline-block !important;\n  margin: 0 auto !important;\n  padding: 0;\n  min-width: 0;\n  max-width: 100%;\n  float: none !important;\n  background: transparent;\n  border: 0;\n  box-shadow: none;\n  vertical-align: top;\n}\nbody .an-media img,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n  margin: 0 auto !important;\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n  object-fit: contain;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=table], [data-callout=tbl]) > .callout-title {\n  order: 0;\n  margin: 0 0 var(--an-layout-caption-gap) !important;\n}\nbody .callout:is([data-callout=table], [data-callout=tbl]) table {\n  margin: 0 auto !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig]) > .callout-content.an-figure-grid {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: flex-start;\n  gap: var(--an-layout-image-gap);\n}\nbody .an-figure-grid > :not(.an-subfigure-cell) {\n  flex: 0 0 100%;\n}\nbody .an-figure-grid > .an-subfigure-cell {\n  flex: 1 1 calc(50% - var(--an-layout-image-gap));\n  min-width: min(100%, var(--an-layout-subfigure-min));\n  max-width: 100%;\n  margin: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) {\n  margin: 0 !important;\n}\nbody .an-figure-grid > .an-empty-anchor {\n  display: none;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig]) {\n  container: an-figure / inline-size;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n  --an-columns: 1;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid > .an-subfigure-cell {\n  flex: 0 0 calc((100% - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns));\n  min-width: 0;\n}\n@container an-figure (min-width: 26rem) {\n  body .callout:is(.an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n    --an-columns: 2;\n  }\n}\n@container an-figure (min-width: 39rem) {\n  body .callout.an-columns-3 > .an-figure-grid {\n    --an-columns: 3;\n  }\n}\n@container an-figure (min-width: 52rem) {\n  body .callout.an-columns-4 > .an-figure-grid {\n    --an-columns: 4;\n  }\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  width: 100% !important;\n  max-width: 100%;\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) img {\n  width: auto !important;\n  height: min(var(--an-subfigure-height), calc((100cqw - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns) / var(--an-max-image-ratio, 1))) !important;\n  max-height: none;\n  object-fit: contain;\n  object-position: center;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {\n  text-indent: 2em;\n}\nbody .academic-indent :is(.callout, blockquote, li, td, th, figcaption, .phb-toc) p {\n  text-indent: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-serif {\n  font-family:\n    "Latin Modern Roman",\n    "Times New Roman",\n    "Noto Serif CJK SC",\n    "Source Han Serif SC",\n    "Songti SC",\n    "SimSun",\n    serif;\n}\n@media print {\n  body .an-media {\n    break-inside: avoid;\n  }\n  body .an-media > .callout-title {\n    break-before: avoid;\n    break-after: auto;\n  }\n  body .an-table {\n    display: block !important;\n    break-inside: auto;\n  }\n  body .an-table > .callout-title {\n    break-before: auto;\n    break-after: avoid;\n  }\n  body .callout.an-media img {\n    max-height: 155mm;\n  }\n  body .an-figure-grid {\n    --an-layout-image-gap: 4mm;\n    gap: var(--an-layout-image-gap);\n  }\n  body .an-figure-grid > .an-subfigure-cell {\n    min-width: 0;\n    flex-basis: calc(50% - 4mm);\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) table {\n    break-inside: auto;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) thead {\n    display: table-header-group;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) tr {\n    break-inside: avoid;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) :is(table, .an-media) {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n  }\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content:not(.an-figure-grid),\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content > p {\n  text-align: center !important;\n  text-indent: 0 !important;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  justify-content: center;\n  text-align: center;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=\\56fe], [data-callout=subfigure], [data-callout=subfig], [data-callout=\\5b50\\56fe]) > .callout-content :is(.cm-line, .cm-embed-block):has(.image-embed) {\n  text-align: center !important;\n  text-indent: 0 !important;\n  padding-inline: 0 !important;\n}\nbody .markdown-source-view.mod-cm6 .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content {\n  text-align: center !important;\n}\nbody .markdown-source-view.mod-cm6 .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .cm-content > .image-embed {\n  display: flex !important;\n  width: fit-content;\n  max-width: 100%;\n  margin-inline: auto !important;\n  justify-content: center;\n}\nbody .markdown-source-view.mod-cm6 .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-wrapper {\n  position: relative;\n  max-width: 100%;\n  margin-inline: auto !important;\n}\n';
 
 // src/styles/document.css
 var document_default2 = 'html {\n  font-size: 16px;\n  background: var(--phb-page-background, white);\n}\nbody.phb-export {\n  display: block !important;\n  position: static !important;\n  width: auto !important;\n  height: auto !important;\n  min-height: 0 !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  overflow: visible !important;\n  background: var(--phb-surface, #fff) !important;\n  color: var(--phb-text, #24372e) !important;\n  font-family: var(--font-text, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif);\n  font-size: 11pt;\n  line-height: 1.7;\n  -webkit-print-color-adjust: exact;\n  print-color-adjust: exact;\n}\nbody.phb-export *,\nbody.phb-export *::before,\nbody.phb-export *::after {\n  animation: none !important;\n  transition: none !important;\n  caret-color: transparent !important;\n}\nbody.phb-export #phb-document {\n  display: block !important;\n  position: static !important;\n  width: 174mm !important;\n  max-width: none !important;\n  height: auto !important;\n  padding: 0 !important;\n  margin: 0 auto !important;\n  overflow: visible !important;\n  font-size: inherit;\n  line-height: inherit;\n}\nbody.phb-export :is(.markdown-preview-view, .markdown-preview-sizer, .markdown-rendered, .phb-chapter) {\n  min-height: 0 !important;\n  max-height: none !important;\n  height: auto !important;\n  overflow: visible !important;\n  contain: none !important;\n  content-visibility: visible !important;\n}\nbody.phb-export .phb-chapter {\n  display: block;\n}\nbody.phb-export :is(p, li) {\n  line-height: 1.7;\n}\nbody.phb-export p {\n  margin: .65em 0;\n}\nbody.phb-export :is(h1, h2, h3, h4, h5, h6) {\n  position: relative !important;\n  break-after: avoid !important;\n  text-shadow: none !important;\n  transform: none !important;\n}\nbody.phb-export h1 {\n  font-size: 1.9em;\n  line-height: 1.4;\n  margin: 1.1em 0 .8em;\n}\nbody.phb-export h2 {\n  font-size: 1.4em;\n  margin: 1.1em 0 .7em;\n}\nbody.phb-export h3 {\n  font-size: 1.16em;\n  margin: 1em 0 .5em;\n}\nbody.phb-export pre {\n  white-space: pre-wrap !important;\n  overflow-wrap: anywhere;\n}\nbody.phb-export :is(.math-block, .phb-math[data-display=true]) {\n  display: block;\n  text-align: center;\n  margin: .7em 0;\n  text-indent: 0;\n}\nbody.phb-export .phb-math mjx-container {\n  margin: 0 !important;\n}\nbody.phb-export mjx-container[display=true] {\n  display: block !important;\n  max-width: 100%;\n  overflow: visible !important;\n}\nbody.phb-export :is(.math-block, .phb-math) {\n  overflow: visible !important;\n}\nbody.phb-export .phb-math-error {\n  border: 2px solid #c00;\n  padding: .5em;\n}\nbody.phb-export .phb-chapter-kicker {\n  font-size: 9pt;\n  font-weight: 600;\n  letter-spacing: .16em;\n  color: var(--phb-thm);\n  margin: 1em 0;\n}\nbody.phb-export .phb-book-title {\n  text-align: center;\n  margin-top: 1.5em;\n}\nbody.phb-export .phb-book-subtitle {\n  text-align: center;\n  color: var(--text-muted,#66776c);\n}\nbody.phb-export .phb-frontmatter {\n  padding-top: 5mm;\n}\nbody.phb-export #phb-document .phb-probe {\n  position: absolute;\n  top: 0;\n  left: 0;\n  display: block;\n  width: 2px;\n  height: 2px;\n  font-size: 1px;\n  line-height: 1px;\n  padding: 0;\n  margin: 0;\n  border: 0;\n  opacity: 1;\n  color: var(--phb-surface, #fff);\n  background: none;\n  z-index: 1;\n}\nbody.phb-export #phb-document .phb-probe::before,\nbody.phb-export #phb-document .phb-probe::after {\n  content: none;\n}\nbody.phb-export .heading-collapse-indicator,\nbody.phb-export .callout-fold {\n  display: none !important;\n}\nbody.phb-export .callout-title {\n  max-width: 100% !important;\n}\nbody.phb-export .callout-content:not(.an-figure-grid) {\n  display: block !important;\n}\nbody.phb-export .callout-content li::before {\n  display: none !important;\n}\nbody.phb-export .callout-content ul,\nbody.phb-export .callout-content ol {\n  padding-left: 1.6em;\n}\nbody.phb-export img {\n  max-width: 100%;\n  max-height: 220mm;\n  object-fit: contain;\n}\nbody.phb-export .phb-toc {\n  font-size: 10.5pt;\n}\n@media screen {\n  body.phb-export {\n    padding: 12mm !important;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    margin-top: 3em;\n  }\n}\n@media print {\n  @page {\n    size: A4;\n    margin: 18mm 18mm 20mm;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    break-before: page;\n  }\n  body.phb-export .phb-chapter > :first-child {\n    margin-top: 0 !important;\n  }\n  body.phb-export .callout:not(.an-media) {\n    break-inside: auto;\n  }\n  body.phb-export .callout[data-phb-keep=true] {\n    break-inside: avoid !important;\n  }\n  body.phb-export .callout[data-phb-long=true] {\n    break-inside: auto !important;\n  }\n  body.phb-export .callout[data-phb-long=true]::after {\n    display: none !important;\n  }\n  body.phb-export :is(p, li) {\n    orphans: 2;\n    widows: 2;\n  }\n  body.phb-export .phb-toc-title {\n    break-after: avoid;\n  }\n  body.phb-export .phb-toc {\n    break-after: page;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=true] {\n    break-inside: avoid;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=false] {\n    break-inside: auto;\n  }\n  body.phb-export :is(.math-block, .phb-math[data-display=true], mjx-container[display=true]) {\n    break-inside: avoid !important;\n  }\n  body.phb-export tr {\n    break-inside: avoid;\n  }\n  body.phb-export .callout.an-print-figure {\n    display: block !important;\n  }\n  body.phb-export :is(.an-print-figure, .an-print-image, img) {\n    break-inside: avoid;\n  }\n  body.phb-export .an-print-figure > :is(.callout-title, .an-diagram-caption) {\n    break-before: avoid;\n  }\n  body.phb-export .an-print-figure.an-print-oversized {\n    break-inside: auto;\n  }\n}\nbody.phb-export mjx-assistive-mml {\n  display: none !important;\n}\nbody.phb-export .phb-callout-wrap {\n  display: block;\n  padding-top: .95em;\n  margin: .85em 0 1.25em;\n  break-inside: auto;\n  box-sizing: border-box;\n}\nbody.phb-export .phb-callout-wrap > .callout[data-callout] {\n  margin: 0 !important;\n}\n@page {\n  size: A4;\n  margin: 18mm 18mm 20mm;\n  background: var(--phb-page-background, white);\n}\n.phb-glyph-cache {\n  position: absolute;\n  width: 0;\n  height: 0;\n  overflow: hidden;\n}\nbody.phb-export #phb-document .an-float-block {\n  position: relative;\n}\nbody.phb-export #phb-document p.an-float-block > .phb-probe.an-float-end {\n  position: relative;\n  display: inline-block;\n  top: auto;\n  left: auto;\n  width: 1px;\n  height: 1px;\n  margin-left: -1px;\n  vertical-align: baseline;\n}\nbody.phb-export #phb-document .an-float-figure > .phb-probe.an-float-end {\n  top: auto;\n  bottom: 0;\n}\n';

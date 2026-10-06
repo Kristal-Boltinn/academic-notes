@@ -4,7 +4,9 @@ Fresh-editor boundary regressions verify synchronous paragraph decorations witho
 
 Palette definitions and overrides remain validated local settings (fixed appearance roles, six-digit hex colors, bounded counts and JSON size). Legacy global colors migrate only to the selected light/dark palettes. No new permission, external resource or network access is introduced. CSS presets and UI defaults share one catalog; custom palette copies retain a validated built-in/theme base. Environment IDs and source references do not change.
 
-Validation includes 38 Node regressions; real settings controls for palette isolation, copying and reset; custom environment accents; native CodeMirror image wrappers at 320/720px; blank-source-line indentation boundaries after display math in native reading, KP and serialized exports; tracked Latin/CJK KP prose and simulated legacy canvas without tracking properties; exact source, selection, IME and idle-scroll preservation. Actual Phycat light/dark and default-theme browser fixtures, cross-file PDF links, paragraph pagination, and mobile-bundle loading are covered. Physical iPad/WKWebView acceptance remains outstanding; this release does not claim to resolve the reported device scrolling freeze.
+Settings now enter through the host’s 1.13/1.14 settings contract; the private local 1.14.4 stylesheet is used for additional settings/image geometry checks and is not bundled. Overall palette selection remains visible, with a single environment editor for names, references, colors and motifs. Theme-accent changes propagate without saved fixed colors. Curated heading contrast is checked.
+
+Validation includes 40 Node regressions; real settings controls for palette isolation, copying and reset; custom environment accents; native CodeMirror image wrappers at 320/720px; blank-source-line indentation boundaries after display math in native reading, KP and serialized exports; tracked Latin/CJK KP prose and simulated legacy canvas without tracking properties; exact source, selection, IME and idle-scroll preservation. Actual Phycat light/dark and default-theme browser fixtures, cross-file PDF links, paragraph pagination, and mobile-bundle loading are covered. Physical iPad/WKWebView acceptance remains outstanding; this release does not claim to resolve the reported device scrolling freeze.
 
 This release addresses native theme overrides affecting algorithm rules and justified image paragraphs. New environment definitions are local validated data: reserved IDs are rejected, names/references are inserted as text, styles come from a fixed set, and colors accept only six-digit hex. No new filesystem or network capability is introduced. Original note syntax and block destinations remain unchanged. Native active editing guards remain in place.
 
@@ -16,7 +18,7 @@ Validation covers 32 Node regressions, actual Phycat light/dark algorithm border
 - TypeScript, mobile bundle loading without Node/Electron and three-file release checks pass. ESLint has zero errors and the two pre-existing isolated-print/helper recommendations. Production dependency audit reports no known advisories; unused transitive KaTeX is pinned to its patched release and excluded from the bundle.
 - Chromium/CodeMirror fixtures do not replace physical iPad/WKWebView acceptance; the previously reported device scrolling issue is not claimed fixed by this feature.
 
-Additional regressions verify same-hue preset families, the shared reference-format resolver, actual Lemma/Proposition switching in the presence of a later legacy stylesheet, and removal of fixed colors in theme mode.
+Additional regressions verify curated hue ranges and heading contrast, the shared reference-format resolver, actual Lemma/Proposition switching despite a later legacy stylesheet, and live propagation of the host accent in theme mode.
 
 # 2.14.1 First-line indentation geometry
 

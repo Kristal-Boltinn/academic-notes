@@ -27,6 +27,7 @@ export class MockElement {
   dataset: Record<string,string> = {};
   style = { setProperty() {} };
   addClass() {} empty() {} addEventListener() {}
+  querySelector() { return new MockElement(); }
   createDiv() { return new MockElement(); } createEl() { return new MockElement(); } createSpan() { return new MockElement(); }
 }
 export class Setting {

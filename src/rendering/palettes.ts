@@ -42,16 +42,38 @@ export function paletteOverrides(settings: PaletteSettings): Record<string,Custo
     } catch { /* Invalid overrides use each palette's own defaults. */ }
     return result;
 }
+// Theme palettes stay as CSS expressions, so changing the host accent updates
+// every environment without storing or freezing a sampled theme color.
+const themeMix: Record<string,[number,string]> = {
+    def:[82,'#3e594c'], thm:[77,'#354d68'], lem:[80,'#605268'],
+    prop:[75,'#686340'], cor:[85,'#3e645a'], claim:[79,'#495d73'],
+    example:[70,'#886b45'], proof:[65,'#606862']
+};
+export function themeRoleValue(role: string, mode: PaletteMode) {
+    const [weight,neutral]=themeMix[role] || themeMix.def;
+    return `color-mix(in srgb, var(--text-accent, #247651) ${mode==='dark'?weight-16:weight}%, ${mode==='dark'?'#e0e5df':neutral})`;
+}
+export function defaultRoleValue(settings: PaletteSettings, palette: string, key: string, mode: PaletteMode) {
+    const env=Engine.environments(settings)[key], role=roleBase[env?.style || key] || env?.style || key;
+    return PRESETS[basePalette(settings,palette)]?.colors[role] || themeRoleValue(role,mode);
+}
 export function paletteValues(settings: PaletteSettings, mode: PaletteMode) {
     const palette=selectedPalette(settings,mode), overrides=paletteOverrides(settings)[palette] || {};
-    // Resolve the active preset at runtime too: a later theme/snippet stylesheet
-    // must not silently replace the selected palette with an old color catalog.
-    const defaults=Object.fromEntries(Object.entries(PRESETS[basePalette(settings,palette)]?.colors || {}).map(([role,color])=>[`--phb-${role}`,color]));
+    // Inline defaults also protect the current selection from stale snippets.
+    const colors=PRESETS[basePalette(settings,palette)]?.colors || Object.fromEntries(Object.keys(themeMix).map(role=>[role,themeRoleValue(role,mode)]));
+    const defaults=Object.fromEntries(Object.entries(colors).map(([role,color])=>[`--phb-${role}`,color]));
     return {...defaults,...appearanceValues(JSON.stringify(overrides),mode==='dark',Object.keys(appearanceRoles(settings)))};
 }
-export function defaultRoleColor(settings: PaletteSettings, palette: string, key: string) {
-    const env=Engine.environments(settings)[key], role=roleBase[env?.style || key] || env?.style || key;
-    return PRESETS[basePalette(settings,palette)]?.colors[role] || '#286b76';
+export function defaultRoleColor(settings: PaletteSettings, palette: string, key: string, mode: PaletteMode = PRESETS[basePalette(settings,palette)]?.mode === 'dark' ? 'dark' : 'light') {
+    const value=defaultRoleValue(settings,palette,key,mode);
+    if (value.startsWith('#')) return value;
+    if (typeof document === 'undefined' || !document.body?.appendChild) return mode==='dark'?'#acc5b6':'#286b76';
+    const probe=document.body.createSpan({attr:{hidden:''}}); probe.style.color=value;
+    const resolved=probe.ownerDocument.defaultView!.getComputedStyle(probe).color; probe.remove();
+    const context=document.win.createEl('canvas').getContext('2d');
+    if (!context) return '#286b76';
+    context.fillStyle=resolved; context.fillRect(0,0,1,1);
+    return '#'+Array.from(context.getImageData(0,0,1,1).data).slice(0,3).map(n=>n.toString(16).padStart(2,'0')).join('');
 }
 /** One-time migration attaches global colors only to the currently selected palettes. */
 export function migratePaletteSettings(settings: AcademicSettingsData) {

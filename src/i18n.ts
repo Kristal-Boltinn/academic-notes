@@ -1,6 +1,26 @@
 // Application language is set from Obsidian's public getLanguage() API on load.
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
+  "新建自定义色板…": "Create custom palette…",
+  "环境": "Environments",
+  "编号与引用默认值": "Numbering and reference defaults",
+  "通用外观选项": "General appearance",
+  "跟随主题主色": "Follow theme accent",
+  "彩色": "Colorful",
+  "整体配色": "Overall palette",
+  "先选整套配色，再在环境中调整引用、颜色和图标。浅色和深色各保存一套，随 Obsidian 明暗模式切换。": "Choose a palette first, then edit each environment’s references, colors and motifs. Light and dark palettes switch with Obsidian’s appearance mode.",
+  "浅色配色": "Light palette",
+  "深色配色": "Dark palette",
+  "当前编辑的色板": "Palette mode to edit",
+  "自定义色板与恢复默认": "Custom palettes and reset",
+  "颜色与图标": "Colors and motifs",
+  "名称与引用": "Names and references",
+  "默认": "Default",
+  "颜色可直接修改，自动保存到当前色板。名称与引用修改后点击保存。": "Change colors directly; they save automatically to this palette. Click Save after editing names or references.",
+  "此环境保持图表或公式的原生排版；引用名称和格式可在上方调整。": "This environment keeps its figure, table or equation layout. Edit its reference name and format above.",
+  "保存新环境后，可在本页调整颜色和图标；编号规则在独立的编号设置中。": "Save the new environment to edit its colors and motifs here. Counter rules are on the Numbering tab.",
+  "Knuth–Plass 断行（Beta）": "Knuth–Plass line breaking (Beta)",
+
   "正在编辑：{0} · {1}。笔记当前使用：{2} · {3}。": "Editing: {0} \u00b7 {1}. Notes currently use: {2} \u00b7 {3}.",
   "定理类环境的默认引用格式": "Default reference format for theorem environments",
   "仅用于未单独设置格式的定理、定义、引理等环境；图、表、算法和公式请在上方选择环境后设置。": "Applies to theorems, definitions and lemmas without their own format. Select figures, tables, algorithms or equations above to edit their formats.",

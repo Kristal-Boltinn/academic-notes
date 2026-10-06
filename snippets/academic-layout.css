@@ -172,7 +172,7 @@ body :is(.an-media,[data-callout="figure"],[data-callout="fig"],[data-callout="s
 body .an-media .image-embed,
 body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) .image-embed {
   display: inline-block !important;
-  margin: 0 auto;
+  margin: 0 auto !important;
   padding: 0;
   min-width: 0;
   max-width: 100%;
@@ -187,7 +187,7 @@ body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="sub
   display: block;
   max-width: 100%;
   height: auto;
-  margin: 0 auto;
+  margin: 0 auto !important;
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -299,9 +299,21 @@ body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="图
   text-indent:0 !important;
   padding-inline:0 !important;
 }
-body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="图"],[data-callout="subfigure"],[data-callout="subfig"],[data-callout="子图"]) .image-embed {
-  float:none !important;
-  margin-inline:auto !important;
-  vertical-align:middle;
+/* Native Live Preview (including 1.14 resize widgets). A direct child of
+ * .cm-content is a block, even when an older theme makes image embeds inline.
+ * Center the sized embed itself and retain its relative resize/action wrapper. */
+body .markdown-source-view.mod-cm6 .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) > .callout-content {
+  text-align: center !important;
 }
-body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="图"],[data-callout="subfigure"],[data-callout="subfig"],[data-callout="子图"]) .image-embed img { margin-inline:auto !important; }
+body .markdown-source-view.mod-cm6 .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) .cm-content > .image-embed {
+  display: flex !important;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto !important;
+  justify-content: center;
+}
+body .markdown-source-view.mod-cm6 .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="subfigure"],[data-callout="subfig"]) .image-wrapper {
+  position: relative;
+  max-width: 100%;
+  margin-inline: auto !important;
+}

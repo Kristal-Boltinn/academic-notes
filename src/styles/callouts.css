@@ -48,19 +48,28 @@ body {
   --phb-font: var(--font-text, var(--font-interface, sans-serif));
   --phb-badge-ink: #fff;
   --phb-tint: 6%;
-  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));
-  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));
-  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));
-  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));
-  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));
-  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));
-  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));
+  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 82%, #3e594c);
+  --phb-thm: color-mix(in srgb, var(--text-accent, #247651) 77%, #354d68);
+  --phb-lem: color-mix(in srgb, var(--text-accent, #247651) 80%, #605268);
+  --phb-prop: color-mix(in srgb, var(--text-accent, #247651) 75%, #686340);
+  --phb-cor: color-mix(in srgb, var(--text-accent, #247651) 85%, #3e645a);
+  --phb-claim: color-mix(in srgb, var(--text-accent, #247651) 79%, #495d73);
+  --phb-example: color-mix(in srgb, var(--text-accent, #247651) 70%, #886b45);
   /* A brighter tone of the selected palette's main hue, with a small lift in
    * light mode to keep text contrast; dark mode can use a stronger lift. */
   --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);
-  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));
+  --phb-proof: color-mix(in srgb, var(--text-accent, #247651) 65%, #606862);
 }
-body.theme-dark { --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white); --phb-surface:#18181b; --phb-badge-ink:#18181b; --phb-tint:8%; }
+body.theme-dark { --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white); --phb-surface:#18181b; --phb-badge-ink:#18181b; --phb-tint:8%;
+  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 66%, #e0e5df);
+  --phb-thm: color-mix(in srgb, var(--text-accent, #247651) 61%, #e0e5df);
+  --phb-lem: color-mix(in srgb, var(--text-accent, #247651) 64%, #e0e5df);
+  --phb-prop: color-mix(in srgb, var(--text-accent, #247651) 59%, #e0e5df);
+  --phb-cor: color-mix(in srgb, var(--text-accent, #247651) 69%, #e0e5df);
+  --phb-claim: color-mix(in srgb, var(--text-accent, #247651) 63%, #e0e5df);
+  --phb-example: color-mix(in srgb, var(--text-accent, #247651) 54%, #e0e5df);
+  --phb-proof: color-mix(in srgb, var(--text-accent, #247651) 49%, #e0e5df);
+}
 
 /* Built-in presets are generated from palettes.json for the plugin and PDF. */
 /* @academic-palette-presets */

@@ -169,7 +169,7 @@ Type `\ref`, `\tref`, or `\eqref` for reference suggestions. The latter two filt
 
 ## Settings overview
 
-Settings are grouped into four tabs: **Environments and references** (one editor for names, references and new environments, with expandable numbering/shared-theorem-default/index options), **Palettes and appearance**, **Paragraph typography**, and **Contents and export**. Editing an appearance control keeps the current scroll position; native dropdown pickers close after selection.
+**Overall palette** stays at the top of every settings page. Below it are four tabs: **Environments** (select or create an environment, then edit its name, reference, colors and motifs in one place), **Numbering and reference defaults**, **Paragraph typography**, and **Contents and export**. Only the Knuth–Plass subsection is marked Beta. Appearance edits keep the current scroll position; native dropdown pickers close after selection. The grouped interface uses the compatible settings-display path on Obsidian 1.13 and 1.14.
 
 ## Numbering settings
 
@@ -189,19 +189,19 @@ Equation references default to `eq:{number}`; mathematical callouts use `{type} 
 
 ## Custom environment names and references
 
-In **Settings → Academic Notes → Environments and references**, select any environment and set:
+In **Settings → Academic Notes → Environments**, select any environment and set:
 
 - **Display name**: the name in its heading and full-name references, in any language (for example, `Satz`, `算法`, or `Observación`).
 - **Reference abbreviation**: for example, `S.`, `算`, or `obs`. The default algorithm/figure/table/equation reference prefixes also respect this field.
 - **Reference format for this environment**: an optional override such as `{abbr} {number}`, `{name} {number}`, or `算法 {number}`. Available placeholders: `{type}`, `{abbr}`, `{name}`, `{number}`, `{title}`, `{file}`.
 
-Figures, tables, algorithms and equations have one format editor here. The field shows its inherited default as a placeholder; existing saved formats continue to apply. The expandable **Default reference format for theorem environments** only supplies the shared fallback for theorems, definitions and lemmas. A format entered for one environment takes priority over that fallback.
+Figures, tables, algorithms and equations have one format editor here. The field shows its inherited default as a placeholder; existing saved formats continue to apply. **Numbering and reference defaults → Default reference format for theorem environments** only supplies the shared fallback for theorems, definitions and lemmas. A format entered for one environment takes priority over that fallback.
 
 Click **Save**. Empty fields use defaults; **Reset to default** clears only the selected environment’s overrides. Explicit link aliases remain unchanged when **Respect handwritten link aliases** is enabled. These settings change displayed text; existing `^block-ids` and wikilink destinations stay valid.
 
 ### Add a new Markdown environment
 
-In the same environment selector, choose **New environment**. For example, set ID `observation`, display name `Observation`, abbreviation `obs`, base appearance `Lemma`, and enable automatic numbering. Colors are configured per palette under **Palettes and appearance**; without an override, the environment follows its base appearance. Click **Save**, then write:
+In the same environment selector, choose **New environment**. For example, set ID `observation`, display name `Observation`, abbreviation `obs`, base appearance `Lemma`, and enable automatic numbering. After saving, its colors and motifs appear in the same editor. Changes belong to the palette selected above; without an override, the environment follows its base appearance. Click **Save**, then write:
 
 ```markdown
 > [!observation] Compactness
@@ -277,7 +277,7 @@ Commands are case-insensitive, except the usual case-sensitive LaTeX font sizes.
 - **Automatically number algorithms** follows the current section/whole-note scope; theorems, equations and figures have separate counters. Book export re-numbers algorithms with the selected chapter scheme and resolves links across selected chapters.
 - **Show algorithm line numbers** is independent of caption numbering. Input/output declarations and comments do not consume a line number. Override a callout with `[!algorithm|lines=true]` or `lines=false`; `\begin{algorithmic}[1]` / `[0]` overrides a fence. `[!algorithm|*]` suppresses the caption number; `[!algorithm|A]` supplies a manual number.
 - **Algorithm reference format** defaults to `alg {number}` and supports the same placeholders as theorem references. References use `[[#^alg-euclid]]` or `[[Other note#^alg-euclid]]`.
-- **Palettes and appearance → Algorithm** changes the rule and caption accent. Body/formula text stays neutral, keywords are bold, and line numbers/comments use muted text. Traditional heavy–thin–heavy rules match the three-line table style.
+- **Environments → Algorithm** changes the rule and caption accent. Body/formula text stays neutral, keywords are bold, and line numbers/comments use muted text. Traditional heavy–thin–heavy rules match the three-line table style.
 - Reading view and inactive Live Preview callouts render algorithms. Native editing remains available when entering the source/title; no note text is rewritten. Algorithm rows are excluded from prose KP and first-line indentation.
 - Desktop PDF export keeps short algorithms together; blocks exceeding the printable height split between complete rows. HTML snapshots include static formulas and styles. Syntax errors are displayed locally and stop export, avoiding a silently incomplete PDF. Formula layout remains subject to the available page width.
 
@@ -400,29 +400,34 @@ TikZJax also offers `tikz-cd` for handwritten commutative-diagram source; follow
 
 ## Appearance
 
-Built-in presets use coordinated variations of one main hue: Forest greens, Sakura pinks, Sky/Prussian blues, Mauve purples, Golden ochres, Cherry/Vampire reds, Mint teals, Abyss blues and Radiation yellow-greens. **Palettes and appearance** shows all environment colors together and states both the edited mode and the mode currently used by notes. Editing a dark preset while notes are light does not change the light notes. Custom overrides are independent in each preset.
+Start with **Overall palette** at the top of Settings:
 
-Light palettes: Forest (default), Sakura, Mint, Sky, Mauve, Golden, Cherry, and Prussian. Dark palettes: Radiation (default), Vampire, and Abyss. Each palette assigns colors by environment type. Light/dark mode follows **Obsidian's current mode**, which can itself follow the operating system.
+- **Curated presets:** Forest combines leafy greens, teal and muted earth tones; Sakura combines rose, plum and dusty pink. Mint, Sky, Mauve, Golden, Cherry, Prussian, Radiation, Vampire and Abyss offer other coordinated ranges. Colors vary by environment within each palette.
+- **Colorful:** the original distinct role colors, including purple lemmas and green propositions. Available in light and dark modes.
+- **Follow theme accent:** every role derives from Obsidian’s public `--text-accent`, with lighter/darker and neighbouring tonal variations. Changing the host accent updates the palette automatically. This does not guess a named preset or read the operating system’s accent directly.
+- **Custom palettes:** expand **Custom palettes and reset**, name a copy and click **Create palette**. It starts from the selected preset and its overrides; edit each environment freely and independently.
 
-The **follow Obsidian theme colors** option uses the theme's public accent for definitions, blue for theorems/claims, purple for lemmas, green for propositions, cyan for corollaries, orange for examples, and secondary text color for solutions, mixed with normal text color. Remark titles use a brighter tone of the definition color; proof titles use normal text color. It does not choose a preset automatically or read the operating system's accent directly. Select a fixed palette to control border and fill colors independently of the theme.
+Light and dark palettes are selected separately and switch with **Obsidian’s current appearance mode**. The **Palette mode to edit** selector chooses which one you are modifying; the status line identifies both the edited palette and the palette currently used by notes. Forest is the light default and Radiation the dark default. The color overview shows the complete selected palette. Fixed presets remain independent of the host accent.
 
-**Use normal text color inside callouts** makes framed callout text match ordinary note text. When disabled, 36% of the callout color is mixed in. Proof and remark content always uses normal text color. Links and code keep their own styles.
+**Neutral callout body text** keeps framed environment prose the same color as ordinary notes. Disabling it mixes in 36% of the current frame color. Proof and Remark bodies remain neutral. This changes neither the font nor headings, borders or fills; links and code retain their own styles.
+
+![Curated Forest and Sakura compared with Colorful](screenshots/palettes.png)
 
 Framed callouts mix 6% callout color with 94% white in light mode, or 8% callout color with 92% neutral dark gray in dark mode. Nested callouts use their own colors. The corner decoration can be hidden; this does not hide a proof's QED square. The optional Style Settings plugin can adjust border width, corner radius (0 means square corners), motif size and opacity.
 
-Open **Settings → Academic Notes → Palettes and appearance**:
+Open **Settings → Academic Notes**, select the overall palette, then use **Environments**:
 
-1. Select your light and dark palettes, then choose the **Edit palette mode**. The editor operates on the palette selected for that mode; the preview shows that palette even if Obsidian currently uses the other mode.
-2. Choose a built-in or custom environment. Enable **Environment accent** and choose its color. Changes are stored **only in this palette**: a Forest override does not affect Sakura, and returning to Forest restores its saved override. The accent controls the border, title background and same-hue fill; title text uses black or white for contrast. Proof/Remark remain unframed, with only their title color changing. Algorithm rules and captions default to the palette's primary/definition hue, with neutral body text.
+1. Select your light and dark palettes, then choose the **Palette mode to edit**. The editor operates on the palette selected for that mode; the preview shows that palette even if Obsidian currently uses the other mode.
+2. Choose a built-in or custom environment. Change **Environment accent** directly with the color picker; no enabling toggle is required. Use its **Default** button to clear just that color override. Changes are stored **only in this palette**: a Forest override does not affect Sakura, and returning to Forest restores its saved override. The accent controls the border, title background and same-hue fill; title text uses black or white for contrast. Proof/Remark remain unframed, with only their title color changing. Algorithm rules and captions default to the palette's primary/definition hue, with neutral body text.
 3. For a framed environment, choose a motif and an optional motif color. The gallery contains nine fine-line vector drawings. The global hide-decoration option takes precedence; it never hides the proof's QED square.
 4. **Reset this environment** clears its overrides in the edited palette. **Reset this palette** clears all environment overrides in that palette; other palettes remain untouched.
-5. Enter a name and use **Copy to a custom palette → Create palette** to copy the selected preset and its current overrides. The copy is independently editable. Resetting it returns to its underlying built-in preset (or theme colors); **Delete palette** removes the copy and selects its base.
+5. Expand **Custom palettes and reset**, enter a name and use **Copy to a custom palette → Create palette** to copy the selected preset and its current overrides. The copy is independently editable. Resetting it returns to its underlying built-in preset (or theme colors); **Delete palette** removes the copy and selects its base.
 
 On upgrade, previous global overrides, including custom-environment colors, migrate to the light and dark palettes selected at the time of upgrading. This preserves the current appearance and lets other presets use their own defaults. Custom colors and motifs are preserved in PDF exports, including when theme capture is disabled.
 
 ![Nine original corner motifs, enlarged and at actual size](screenshots/motifs.png)
 
-## Paragraph typography (Beta)
+## Paragraph typography and Knuth–Plass (Beta)
 
 ![Browser justification and optional Knuth–Plass paragraph layout](screenshots/typography.png)
 
