@@ -1,3 +1,7 @@
+# 2.15.1 Patch release
+
+This release gives the previously validated consolidated fixes a distinct version for updates and Community Directory review. Runtime source and permissions are unchanged. Manifest, npm package/lockfile, compatibility metadata and generated bundle identify 2.15.1. The existing regression coverage and device-verification limits below continue to apply.
+
 # 2.15.0 Consolidated algorithms, environments and palettes
 
 Fresh-editor boundary regressions verify synchronous paragraph decorations without relying on asynchronous measurement transactions.

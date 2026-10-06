@@ -1,3 +1,9 @@
+# 2.15.1
+
+- Publish the consolidated fixes as a distinct patch release so the Community Directory can review a new version and installations on 2.15.0 can receive an update.
+- Include the validated Obsidian 1.14 settings/palette fixes, centered Live Preview figures with KP enabled, authoritative algorithm line-number switching, aligned baselines and complete-caption accents.
+- Synchronize manifest, npm/lockfile and compatibility metadata; retain the existing minimum Obsidian version and mobile support.
+
 # 2.15.0
 
 - Fix the Live Preview image alignment conflict with KP native fallback: prose-only last-line justification no longer affects figure callouts; image rows explicitly center their last line. Verify a 300px figure in running Obsidian 1.14.4.
