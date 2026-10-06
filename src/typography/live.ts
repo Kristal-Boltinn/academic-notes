@@ -95,16 +95,19 @@ function planParagraph(text: string, offset: number, width: number, context: Can
 /** All editable nodes remain owned by CodeMirror; layout never changes document text. */
 export function createLiveParagraphExtension(plugin: AcademicNotes) {
     const enabled = (state: EditorState) => plugin.settings.kpLivePreview && !!state.field(editorLivePreviewField, false);
+    const decorate = (state: EditorState, prose: ReturnType<typeof proseLines>, plans: Plan[], isComposing: boolean) => {
+        const ranges = enabled(state) && !isComposing ? plans.filter(plan => !active(state, plan)).flatMap(plan => plan.decorations) : [];
+        if ((enabled(state) || plugin.settings.paragraphIndent) && state.field(editorLivePreviewField, false))
+            for (const line of prose) ranges.push(Decoration.line({ class: 'an-prose-line' + (line.start ? ' an-prose-start' : '') }).range(line.from));
+        return Decoration.set(ranges, true);
+    };
     const field = StateField.define<{ plans: Plan[]; composing: boolean; decorations: DecorationSet; prose: ReturnType<typeof proseLines> }>({
-        create: state => ({ plans: [], composing: false, decorations: Decoration.none, prose: proseLines(state) }),
+        create: state => { const prose = proseLines(state); return { plans: [], composing: false, decorations: decorate(state, prose, [], false), prose }; },
         update(value, tr) {
             let plans = tr.docChanged ? [] : value.plans, isComposing = value.composing;
             const prose = tr.docChanged ? proseLines(tr.state) : value.prose;
             for (const effect of tr.effects) { if (effect.is(measured)) plans = effect.value; if (effect.is(composing)) isComposing = effect.value; }
-            const ranges = enabled(tr.state) && !isComposing ? plans.filter(plan => !active(tr.state, plan)).flatMap(plan => plan.decorations) : [];
-            if ((enabled(tr.state) || plugin.settings.paragraphIndent) && tr.state.field(editorLivePreviewField, false))
-                for (const line of prose) ranges.push(Decoration.line({ class: 'an-prose-line' + (line.start ? ' an-prose-start' : '') }).range(line.from));
-            return { plans, composing: isComposing, decorations: Decoration.set(ranges, true), prose };
+            return { plans, composing: isComposing, decorations: decorate(tr.state, prose, plans, isComposing), prose };
         },
         provide: field => EditorView.decorations.from(field, value => value.decorations)
     });

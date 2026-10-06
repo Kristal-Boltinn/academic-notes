@@ -61219,8 +61219,17 @@ function planParagraph(text, offset, width, context, em, indent, letterSpacing =
 }
 function createLiveParagraphExtension(plugin) {
   const enabled = (state) => plugin.settings.kpLivePreview && !!state.field(import_obsidian2.editorLivePreviewField, false);
+  const decorate = (state, prose, plans, isComposing) => {
+    const ranges = enabled(state) && !isComposing ? plans.filter((plan) => !active2(state, plan)).flatMap((plan) => plan.decorations) : [];
+    if ((enabled(state) || plugin.settings.paragraphIndent) && state.field(import_obsidian2.editorLivePreviewField, false))
+      for (const line of prose) ranges.push(import_view2.Decoration.line({ class: "an-prose-line" + (line.start ? " an-prose-start" : "") }).range(line.from));
+    return import_view2.Decoration.set(ranges, true);
+  };
   const field = import_state2.StateField.define({
-    create: (state) => ({ plans: [], composing: false, decorations: import_view2.Decoration.none, prose: proseLines(state) }),
+    create: (state) => {
+      const prose = proseLines(state);
+      return { plans: [], composing: false, decorations: decorate(state, prose, [], false), prose };
+    },
     update(value, tr) {
       let plans = tr.docChanged ? [] : value.plans, isComposing = value.composing;
       const prose = tr.docChanged ? proseLines(tr.state) : value.prose;
@@ -61228,10 +61237,7 @@ function createLiveParagraphExtension(plugin) {
         if (effect.is(measured)) plans = effect.value;
         if (effect.is(composing)) isComposing = effect.value;
       }
-      const ranges = enabled(tr.state) && !isComposing ? plans.filter((plan) => !active2(tr.state, plan)).flatMap((plan) => plan.decorations) : [];
-      if ((enabled(tr.state) || plugin.settings.paragraphIndent) && tr.state.field(import_obsidian2.editorLivePreviewField, false))
-        for (const line of prose) ranges.push(import_view2.Decoration.line({ class: "an-prose-line" + (line.start ? " an-prose-start" : "") }).range(line.from));
-      return { plans, composing: isComposing, decorations: import_view2.Decoration.set(ranges, true), prose };
+      return { plans, composing: isComposing, decorations: decorate(tr.state, prose, plans, isComposing), prose };
     },
     provide: (field2) => import_view2.EditorView.decorations.from(field2, (value) => value.decorations)
   });

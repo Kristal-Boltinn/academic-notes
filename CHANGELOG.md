@@ -1,5 +1,7 @@
 # 2.15.0
 
+- Apply Live Preview paragraph-start/continuation decorations synchronously on editor creation, before any asynchronous layout measurement.
+
 - Add numbered algorithms with equivalent `algorithm` fences and `[!algorithm]` callouts using locally bundled pseudocode.js; share independent counters, block IDs, cross-file references and book renumbering. Add optional line numbers, bilingual settings and insertion templates.
 - Retain traditional three-rule pseudocode styling, neutral math/body text, and complete-row PDF pagination; keep algorithm callouts independent of Phycat theme frames.
 - Add multilingual environment names, abbreviations and formats, plus user-defined Markdown environments with existing box/Remark styles, numbering, templates and cross-file/PDF references.

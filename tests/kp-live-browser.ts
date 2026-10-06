@@ -126,9 +126,11 @@ export async function runKpLiveRegressions() {
     plugin.settings.paragraphIndent=true;plugin.settings.kpLivePreview=true;
     const boundaryView=new EditorView({parent:boundaryHost,state:EditorState.create({doc:boundarySource,extensions:[editorInfoField,editorLivePreviewField,EditorView.lineWrapping,createLiveParagraphExtension(plugin)]})});
     try {
+      const initialLines=[...boundaryView.dom.querySelectorAll<HTMLElement>('.cm-line')],initialContinuation=initialLines.find(line=>line.textContent?.startsWith('Continue without')),initialParagraph=initialLines.find(line=>line.textContent?.startsWith('New paragraph'));
+      check(initialContinuation?.classList.contains('an-prose-line') && !initialContinuation.classList.contains('an-prose-start') && initialParagraph?.classList.contains('an-prose-start'),'Initial source-boundary decorations must exist synchronously, without a measurement transaction');
       await settle();
       const paragraphs=[...boundaryView.dom.querySelectorAll<HTMLElement>('.cm-line')],continued=paragraphs.find(line=>line.textContent?.startsWith('Continue without'))!,newParagraph=paragraphs.find(line=>line.textContent?.startsWith('New paragraph'))!;
-      check(continued.classList.contains('an-prose-line') && !continued.classList.contains('an-prose-start') && parseFloat(getComputedStyle(continued).textIndent)===0,'Editable continuation after a display equation must not repeat indentation');
+      check(continued.classList.contains('an-prose-line') && !continued.classList.contains('an-prose-start') && parseFloat(getComputedStyle(continued).textIndent)===0,'Editable continuation after a display equation must not repeat indentation: '+JSON.stringify({classes:continued.className,indent:getComputedStyle(continued).textIndent,inView:boundaryView.inView}));
       check(newParagraph.classList.contains('an-prose-start') && parseFloat(getComputedStyle(newParagraph).textIndent)>0,'An empty source line must restart editable-prose indentation');
       check(boundaryView.state.doc.toString()===boundarySource,'Source-boundary decorations must preserve text');
     }finally{boundaryView.destroy();boundaryHost.remove();plugin.settings.paragraphIndent=false;}
