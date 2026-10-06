@@ -16,7 +16,7 @@ const licenseFiles = (await readdir('licenses')).sort();
 options.footer = { js: '/*! Bundled dependency licenses\n' +
   (await Promise.all(licenseFiles.map(async file => '\n' + file + '\n' + await readFile('licenses/' + file, 'utf8')))).join('\n') + '\n*/' };
 async function buildStyles() {
-  const files = ['src/styles/callouts.css', 'snippets/academic-layout.css', 'src/styles/ui.css', 'src/styles/diagrams.css', 'src/styles/typography.css'];
+  const files = ['src/styles/callouts.css', 'snippets/academic-layout.css', 'src/styles/ui.css', 'src/styles/diagrams.css', 'src/styles/typography.css', 'src/styles/algorithms.css'];
   await writeFile('styles.css', (await Promise.all(files.map(compileStyle))).join('\n'));
 }
 await buildStyles();

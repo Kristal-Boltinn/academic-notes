@@ -20,7 +20,7 @@ export function parseAppearance(raw: string): CustomAppearance {
     try {
         const parsed: unknown = JSON.parse(raw);
         if (!parsed || typeof parsed !== 'object') return result;
-        for (const key of Object.keys(Engine.TYPES)) {
+        for (const key of Object.keys(Engine.APPEARANCE_TYPES)) {
             const entry = (parsed as Record<string, unknown>)[key];
             if (!entry || typeof entry !== 'object') continue;
             const clean: AppearanceEntry = {};
@@ -41,7 +41,7 @@ export function titleInk(hex: string) {
     const luminance = rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
     return luminance > .179 ? '#000000' : '#ffffff';
 }
-export const appearanceVariables = Object.keys(Engine.TYPES).flatMap(key => ['color', 'ink', 'motif-color', 'symbol', 'motif-display'].map(part => `--an-${part}-${key}`));
+export const appearanceVariables = Object.keys(Engine.APPEARANCE_TYPES).flatMap(key => ['color', 'ink', 'motif-color', 'symbol', 'motif-display'].map(part => `--an-${part}-${key}`));
 export function appearanceValues(raw: string, dark: boolean): Record<string, string> {
     const values: Record<string, string> = {};
     for (const [key, entry] of Object.entries(parseAppearance(raw))) {

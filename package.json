@@ -1,6 +1,6 @@
 {
   "name": "academic-notes",
-  "version": "2.14.1",
+  "version": "2.15.0",
   "private": true,
   "description": "Local academic numbering and PDF export for Obsidian",
   "license": "MIT",
@@ -17,7 +17,8 @@
     "@codemirror/state": "6.5.0",
     "@codemirror/view": "6.38.6",
     "mathjax-full": "3.2.2",
-    "pdf-lib": "1.17.1"
+    "pdf-lib": "1.17.1",
+    "pseudocode": "2.4.1"
   },
   "devDependencies": {
     "@types/node": "22.19.15",
@@ -33,6 +34,7 @@
     "node": ">=22"
   },
   "overrides": {
-    "@xmldom/xmldom": "0.9.12"
+    "@xmldom/xmldom": "0.9.12",
+    "katex": "0.18.2"
   }
 }

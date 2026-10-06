@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { algorithmBlocks, parseAlgorithm } from '../src/algorithms/model';
 import './kp-solver';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -349,4 +350,41 @@ test('appearance settings persist changes independently and reset the selected e
   assert.equal(saves, 4);
   tab.appearanceType = 'proof'; Setting.controls = []; tab.renderAppearance(new MockElement() as any);
   assert.ok(!Setting.controls.some(c => c.options?.laurel));
+});
+
+
+test('algorithm callouts and fences normalize to the same grammar and independent numbering', () => {
+  const body = '\\INPUT $a,b\\in\\mathbb{N}$\n\\WHILE{$b\\ne 0$}\n  \\STATE $(a,b)\\gets(b,a\\bmod b)$\n\\ENDWHILE\n\\RETURN $a$';
+  const full = '\\begin{algorithm}\n\\caption{Euclid}\n\\begin{algorithmic}\n' + body + '\n\\end{algorithmic}\n\\end{algorithm}';
+  assert.deepEqual(parseAlgorithm(body, 'Euclid'), parseAlgorithm(full));
+  assert.equal(parseAlgorithm(body, '\\textbf{Euclid} $x$').title, 'Euclid x');
+  const callout = '> [!algorithm] Euclid\n' + body.split('\n').map(line => '> ' + line).join('\n');
+  const source = '## Algorithms\n\n> [!thm] Independent\n> Body\n\n^thm-first\n\n' + callout + '\n\n^alg-first\n\n```algorithm\n' + full + '\n```\n\n^alg-second\n\n> [!figure] Picture\n> ![[a.png]]\n\n^fig-first';
+  const note = Engine.parse('algorithms.md', source), refs = Engine.parse('refs.md','[[algorithms#^alg-second]]');
+  const graph = Engine.graph([note,refs]);
+  assert.equal(note.blocks.get('alg-first')?.number,'1.1'); assert.equal(note.blocks.get('alg-second')?.number,'1.2');
+  assert.equal(note.theorems[0].number,'1.1'); assert.equal(note.blocks.get('fig-first')?.number,'1.1');
+  assert.equal(Engine.refText(graph.resolve('algorithms#^alg-second','refs.md'),graph.settings),'alg 1.2');
+  Engine.graph([note, refs], {}, undefined, new Map([['algorithms.md',{chapter:2,mode:'chapter'}]]));
+  assert.equal(note.blocks.get('alg-second')?.number,'2.2');
+  const plugin = new AcademicNotes(); plugin.settings = { ...PluginDefaults };
+  assert.ok(plugin.exportSource(refs,graph).includes('alg 2.2'));
+  assert.equal(Engine.parse('bad.md','> [!algorithm] Broken\n> \\WHILE{$a$}\n\n^broken').records[0].suppress,true);
+});
+test('algorithm source adapters preserve nesting, math and IDs while ignoring code examples and comments', () => {
+  const body = '\\STATE $x\\gets 1$';
+  const callout = '> > [!algorithm|lines=true]+ Nested $x$\n> > '+body+'\n> >\n> > ^inside\n>\n> Following text';
+  const blocks=algorithmBlocks(callout); assert.equal(blocks.length,1); assert.equal(blocks[0].source,body+'\n');
+  const note=Engine.parse('nested.md',callout); const rec=note.blocks.get('inside'); assert.equal(rec?.title,'Nested x'); assert.equal(rec?.algorithm?.lineNumbers,true);
+  assert.equal(note.equations.length,0);
+  for(const wrapper of ['````markdown\n'+callout+'\n````','%%\n'+callout+'\n%%','<!--\n'+callout+'\n-->','---\nexample: text\n'+callout+'\n---','    ```algorithm\n    '+body+'\n    ```']) assert.equal(algorithmBlocks(wrapper).length,0);
+  const fence='~~~algorithm\n'+body+'\n~~~\n\n^alg-tilde'; assert.equal(Engine.parse('fence.md',fence).blocks.get('alg-tilde')?.kind,'algorithm');
+  const suppressed=Engine.parse('manual.md','> [!algorithm|* lines=false] No number\n> '+body); Engine.graph([suppressed]); assert.equal(suppressed.media[0].number,'');
+  assert.equal(suppressed.media[0].algorithm?.lineNumbers,false);
+  const numbered=Engine.parse('manual.md','> [!algorithm|A] Custom\n> '+body); Engine.graph([numbered]); assert.equal(numbered.media[0].number,'A');
+  assert.equal(parseAlgorithm('\\begin{algorithmic}[1]\n'+body+'\n\\end{algorithmic}').lineNumbers,true);
+  assert.throws(()=>parseAlgorithm(body.repeat(3000))); assert.throws(()=>parseAlgorithm('\\IF{$a$}\n'.repeat(90)+body+'\n\\ENDIF'.repeat(90)));
+  assert.throws(()=>parseAlgorithm('\\begin{algorithmic}'+body+'\\end{algorithmic}'.repeat(2)));
+  for(const kind of ['algorithm','algorithm-fence'] as const) { const template=environmentTemplate(kind,'^alg-1'); assert.match(template.text,/\^alg-2/); assert.equal(algorithmBlocks(template.text).length,1); assert.doesNotThrow(()=>parseAlgorithm(algorithmBlocks(template.text)[0].source)); }
+  const state=EditorState.create({doc:'> [!algorithm] Example\n> '+body+'\n\nPlain prose'}); assert.deepEqual(proseLines(state).map(l=>state.doc.lineAt(l.from).text),['Plain prose']);
 });

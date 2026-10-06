@@ -10,6 +10,7 @@ import { exportPdf } from '../src/export/pdf';
 import { PDFDocument, PDFName } from 'pdf-lib';
 import { setLanguage } from '../src/i18n';
 import { MOTIFS, motifMask, appearanceValues } from '../src/rendering/custom-appearance';
+import { runAlgorithmPdf } from './algorithm-pdf';
 import { runFloatRegressions } from './float-electron';
 import { runKpPdfRegressions } from './kp-pdf';
 
@@ -48,11 +49,14 @@ async function run() {
       await runFloatRegressions(win, html, print, floatClient); return;
     }
     console.log('Building browser UI regression fixture');
-    const uiClient = (await build({ stdin: { contents: "import { runUiRegressions } from './tests/browser-regression'; import { runFeatureRegressions } from './tests/feature-browser'; import { runKpBrowserRegressions } from './tests/kp-browser'; import { runKpLiveRegressions } from './tests/kp-live-browser'; import { runCalloutTypographyRegressions } from './tests/kp-callouts-browser'; import { runReadingOwnershipRegressions } from './tests/reading-ownership-browser'; import { runEditorIdleRegressions } from './tests/editor-idle-browser'; import { runLayoutDiagnosticRegressions } from './tests/layout-diagnostics-browser'; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions; globalThis.runKpBrowserRegressions = runKpBrowserRegressions; globalThis.runKpLiveRegressions = runKpLiveRegressions; globalThis.runCalloutTypographyRegressions = runCalloutTypographyRegressions; globalThis.runReadingOwnershipRegressions = runReadingOwnershipRegressions; globalThis.runEditorIdleRegressions = runEditorIdleRegressions; globalThis.runLayoutDiagnosticRegressions = runLayoutDiagnosticRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', plugins: [typographyClient], loader: { '.css': 'text' }, external: ['electron', '@electron/remote'], alias: { obsidian: resolve('tests/browser-host.ts') } })).outputFiles[0].text;
+    const uiClient = (await build({ stdin: { contents: "import { runAlgorithmRegressions } from './tests/algorithm-browser'; import { runUiRegressions } from './tests/browser-regression'; import { runFeatureRegressions } from './tests/feature-browser'; import { runKpBrowserRegressions } from './tests/kp-browser'; import { runKpLiveRegressions } from './tests/kp-live-browser'; import { runCalloutTypographyRegressions } from './tests/kp-callouts-browser'; import { runReadingOwnershipRegressions } from './tests/reading-ownership-browser'; import { runEditorIdleRegressions } from './tests/editor-idle-browser'; import { runLayoutDiagnosticRegressions } from './tests/layout-diagnostics-browser'; globalThis.runAlgorithmRegressions=runAlgorithmRegressions; globalThis.runUiRegressions = runUiRegressions; globalThis.runFeatureRegressions = runFeatureRegressions; globalThis.runKpBrowserRegressions = runKpBrowserRegressions; globalThis.runKpLiveRegressions = runKpLiveRegressions; globalThis.runCalloutTypographyRegressions = runCalloutTypographyRegressions; globalThis.runReadingOwnershipRegressions = runReadingOwnershipRegressions; globalThis.runEditorIdleRegressions = runEditorIdleRegressions; globalThis.runLayoutDiagnosticRegressions = runLayoutDiagnosticRegressions;", resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', platform: 'browser', plugins: [typographyClient], loader: { '.css': 'text' }, external: ['electron', '@electron/remote'], alias: { obsidian: resolve('tests/browser-host.ts') } })).outputFiles[0].text;
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('')));
     console.log('Running browser UI regression fixture');
     await wc.executeJavaScript(uiClient);
     console.log(await wc.executeJavaScript('runUiRegressions()'));
+    const algorithms = await wc.executeJavaScript('runAlgorithmRegressions()') as { message: string; markup: string; pdfMarkup: string };
+    console.log(algorithms.message);
+    if (process.env.ACADEMIC_TEST_ALGORITHM_ONLY === '1') { await runAlgorithmPdf(algorithms.pdfMarkup, html, print); return; }
     console.log(await wc.executeJavaScript('runKpLiveRegressions()'));
     const calloutTypography = await wc.executeJavaScript('runCalloutTypographyRegressions()') as { message: string; markup: string };
     console.log(calloutTypography.message);
@@ -70,6 +74,8 @@ async function run() {
     writeFileSync('screenshots/proof-typography.png', (await wc.capturePage({ x: 20, y: 20, width: 780, height: 500 })).toPNG());
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html(typography.markup)));
     writeFileSync('screenshots/typography.png', (await wc.capturePage({ x: 20, y: 20, width: 960, height: 400 })).toPNG());
+    await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered"><h2>Algorithm · Euclid</h2>' + algorithms.markup + '</main>')));
+    writeFileSync('screenshots/algorithm.png', (await wc.capturePage({ x: 20, y: 20, width: 960, height: 400 })).toPNG());
     console.log('Capturing diagram and Proof examples');
     await win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html('<main class="markdown-rendered"><h2>Commutative diagrams · Beta</h2>' + features.diagramMarkup + '</main>')));
     await wc.executeJavaScript('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
@@ -347,6 +353,7 @@ async function run() {
     const pdf = await PDFDocument.load(result.bytes);
     assert.ok(pdf.catalog.get(PDFName.of('Outlines')));
     console.log(JSON.stringify({ paletteCases: cases, pdf: result.report }));
+    await runAlgorithmPdf(algorithms.pdfMarkup, html, print);
     await runKpPdfRegressions(win, html, print, client);
     await runFloatRegressions(win, html, print, client);
   } finally { win.destroy(); }

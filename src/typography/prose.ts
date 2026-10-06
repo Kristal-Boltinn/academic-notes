@@ -4,10 +4,13 @@ import type { EditorState } from '@codemirror/state';
 export function proseLines(state: EditorState) {
     const lines: { from: number; start: boolean }[] = [];
     if (state.doc.length > 300000) return lines;
-    let frontmatter = state.doc.line(1).text.trim() === '---', fence = '', math = false, previousDepth = -1, previousProse = false, list = false, htmlEnd: RegExp | null = null;
+    let frontmatter = state.doc.line(1).text.trim() === '---', fence = '', math = false, previousDepth = -1, previousProse = false, algorithmDepth = 0, list = false, htmlEnd: RegExp | null = null;
     for (let n = 1; n <= state.doc.lines; n++) {
         const line = state.doc.line(n), quote = line.text.match(/^(?: {0,3}> ?)+/), depth = quote?.[0].match(/>/g)?.length || 0;
         const text = line.text.slice(quote?.[0].length || 0);
+        if (algorithmDepth && (depth < algorithmDepth || depth === algorithmDepth && /^\[![\w-]+/.test(text))) algorithmDepth = 0;
+        if (/^\[!algorithm(?:\||\])/i.test(text) && depth) algorithmDepth = depth;
+        if (algorithmDepth) { previousProse = false; previousDepth = depth; continue; }
         if (!text.trim() || depth !== previousDepth) list = false;
         if (/^\s*(?:[-+*]\s|\d+[.)]\s)/.test(text)) list = true;
         if (frontmatter) { if (n > 1 && /^(---|\.\.\.)\s*$/.test(text)) frontmatter = false; continue; }

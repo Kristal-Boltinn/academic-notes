@@ -1,3 +1,4 @@
+import { algorithmRecord } from '../algorithms/render';
 import { t } from '../i18n';
 import { applyFigureLayout } from './figure-layout';
 import { hasParagraphSelection, layoutReadOnlyCallout, restoreParagraphs } from '../typography/dom';
@@ -150,9 +151,14 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
         const key = Engine.mediaCanon(box.dataset.callout);
         if (!key)
             continue;
-        const r = pick(box, note.media.filter(r => r.key === key && !r.diagram));
+        const r = pick(box, note.media.filter(r => r.key === key && !r.diagram && r.kind !== 'algorithm'));
         if (r)
             mediaRecord(box, r);
+    }
+    used.clear();
+    for (const host of allNodes(el, '.callout[data-callout="algorithm"],.an-algorithm-fence')) {
+        const record = pick(host, note.media.filter(r => r.kind === 'algorithm'));
+        if (record) algorithmRecord(host, record, graph.settings.algorithmLineNumbers);
     }
     used.clear();
     let mathChanged = false;
@@ -283,6 +289,8 @@ function createLiveExtension(plugin: AcademicNotes) {
                 catch {
                     return null;
                 }
+                const algorithm = node.matches('.an-algorithm-fence') && note.media.find(r => r.kind === 'algorithm' && r.line <= line && r.endLine >= line);
+                if (algorithm) return { lineStart: algorithm.line, lineEnd: algorithm.endLine };
                 const diagram = node.matches('.an-diagram-block') && note.media.find(r => r.diagram && r.line <= line && r.endLine >= line);
                 if (diagram) return { lineStart: diagram.line, lineEnd: diagram.endLine };
                 const eq = note.equations.find(r => r.line <= line && r.endLine >= line);
@@ -297,6 +305,7 @@ function createLiveExtension(plugin: AcademicNotes) {
                 let attempted = 0;
                 this.deferredSelection = false;
                 for (const box of view.contentDOM.querySelectorAll<HTMLElement>('.callout')) {
+                    if (box.dataset.callout === 'algorithm') continue;
                     if (nativeCalloutBodyInteraction(box)) { traceLayout(box, 'live.native-skip'); this.deferredSelection = true; continue; }
                     if (!box.closest('[contenteditable="false"]')) continue;
                     if (hasParagraphSelection(box)) { this.deferredSelection = true; continue; }

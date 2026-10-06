@@ -2,6 +2,10 @@
 
 ## Bundled runtime dependencies
 
+- pseudocode 2.4.1 — MIT, copyright Saswat Padhi and Tate Tian. Its Lexer/Parser grammar is bundled; Academic Notes supplies its own DOM rendering, math, numbering and styles. https://github.com/SaswatPadhi/pseudocode.js
+
+KaTeX and the upstream HTML renderer are not bundled; formulas use Obsidian and the existing local MathJax fallback.
+
 - mathjax-full 3.2.2 — Apache-2.0, MathJax Consortium. A private TeX/AMS input and SVG output fallback, including its TeX glyph data, is bundled for commutative diagrams. https://github.com/mathjax/MathJax-src
 - pdf-lib 1.17.1 — MIT, copyright Andrew Dillon. https://github.com/Hopding/pdf-lib
 - @pdf-lib/standard-fonts 1.0.0 — MIT. https://github.com/Hopding/standard-fonts

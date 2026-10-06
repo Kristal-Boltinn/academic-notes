@@ -1,14 +1,17 @@
 import type { FigureLayout } from '../rendering/figure-layout';
 import { t } from '../i18n';
 
-export type EnvironmentKind = 'thm' | 'def' | 'proof' | 'remark' | 'figure' | 'subfigures' | 'table' | 'tikz';
+export type EnvironmentKind = 'thm' | 'def' | 'proof' | 'remark' | 'figure' | 'subfigures' | 'table' | 'tikz' | 'algorithm' | 'algorithm-fence';
 export function environmentTemplate(kind: EnvironmentKind, source: string, count = 2, columns: FigureLayout['columns'] = 'auto', height?: number) {
     const used = new Set([...source.matchAll(/\^([A-Za-z0-9-]+)/g)].map(m => m[1]));
     const id = (prefix: string) => { let n = 1; while (used.has(prefix + '-' + n)) n++; const value = prefix + '-' + n; used.add(value); return value; };
     const title = t('在此填写标题');
     const body = t('在此填写正文');
     let text: string;
-    if (kind === 'tikz') {
+    if (kind === 'algorithm' || kind === 'algorithm-fence') {
+        const body = '\\INPUT $a,b\\in\\mathbb{N}$\n\\WHILE{$b\\ne 0$}\n  \\STATE $(a,b)\\gets(b,a\\bmod b)$\n\\ENDWHILE\n\\RETURN $a$';
+        text = kind === 'algorithm' ? `> [!algorithm] ${title}\n${body.split('\n').map(line => '> ' + line).join('\n')}\n\n^${id('alg')}` : '```algorithm\n\\begin{algorithm}\n\\caption{' + title + '}\n\\begin{algorithmic}\n' + body + '\n\\end{algorithmic}\n\\end{algorithm}\n```\n\n^' + id('alg');
+    } else if (kind === 'tikz') {
         text = '```tikz\n\\usepackage{tikz}\n\\begin{document}\n\\begin{tikzpicture}\n  \\node (A) at (0,0) {$A$};\n  \\node (B) at (3,0) {$B$};\n  \\draw[->] (A) -- (B) node[midway,above] {$f$};\n\\end{tikzpicture}\n\\end{document}\n```';
     } else if (kind === 'subfigures') {
         if (!Number.isInteger(count) || count < 2 || count > 12) throw new Error(t('子图数量须为 2–12。'));

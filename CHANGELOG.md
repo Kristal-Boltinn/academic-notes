@@ -1,3 +1,11 @@
+# 2.15.0
+
+- Add numbered algorithms with equivalent `algorithm` fences and `[!algorithm]` callouts, based on the locally bundled pseudocode.js parser.
+- Share one renderer, independent counters, block IDs, cross-file references and chapter renumbering. Add optional line numbers, bilingual settings and both insertion templates.
+- Match three-line tables with neutral body/math text, bold keywords, muted comments and customizable caption/rule colors. Use native math with the existing local fallback.
+- Preserve native editable callout titles and active selections, exclude algorithms from prose KP/indentation, and paginate long PDF algorithms between complete rows.
+- Document syntax, migration, settings and limitations in both READMEs; add synthetic examples, browser/CodeMirror regressions and real PDF row/link checks.
+
 # 2.14.1
 
 - Put first-line indentation inside the full outer width of a generated KP row. The solver reserves only its text area; explicit zero text-indent on owned rows prevents inherited indentation from adding another offset.

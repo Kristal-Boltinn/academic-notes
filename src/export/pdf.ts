@@ -202,7 +202,7 @@ async function preparePrint(messages: { image: string; math: string; font: strin
         throw new Error(messages.math);
     if ([...document.fonts].some(font => font.status === 'error'))
         throw new Error(messages.font);
-    document.querySelectorAll<HTMLElement>('.callout:not(.an-media)').forEach(box => {
+    document.querySelectorAll<HTMLElement>('.callout:not(.an-media),.an-algorithm-fence').forEach(box => {
         // Plain proof/remark paragraphs need no floating-title padding. They can
         // span pages naturally, with the QED attached only to the proof ending.
         if (['proof', 'pf', 'remark', 'rem', 'rmk'].includes(box.dataset.callout || ''))
@@ -237,7 +237,7 @@ function findOverflow() {
 }
 // Recheck keep-together thresholds after optional paragraph reflow changes height.
 function refreshCalloutPrintSizes() {
-    document.querySelectorAll<HTMLElement>('.phb-callout-wrap > .callout').forEach(box => {
+    document.querySelectorAll<HTMLElement>('.phb-callout-wrap > :is(.callout,.an-algorithm-fence)').forEach(box => {
         const height = box.getBoundingClientRect().height;
         box.parentElement!.dataset.phbKeep = box.dataset.phbKeep = String(height < 390);
         box.dataset.phbLong = String(height > 870);

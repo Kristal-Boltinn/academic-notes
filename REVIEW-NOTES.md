@@ -1,3 +1,7 @@
+# Community review follow-up: 2.15.0
+
+Algorithms use the locally bundled MIT pseudocode.js Lexer/Parser. The upstream HTML renderer, KaTeX and optional MathJax package are excluded from the plugin bundle; formulas reuse the existing host math renderer and bundled local fallback. User text is inserted as text nodes, not HTML. No TeX engine, external service, runtime installation, new network access or filesystem permission is introduced. Source/caption length and recursion limits bound parsing. Traditional algorithm styles are scoped to plugin-owned output. The unused transitive KaTeX build dependency is pinned to its patched release.
+
 # Community review follow-up: 2.14.1
 
 The indentation adjustment affects only owned KP presentation spans and the optional prose-indent CSS. The first row retains its outer width and contains the indentation as padding. It introduces no permissions, storage or network access; note text and original nodes remain restorable.

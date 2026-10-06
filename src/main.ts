@@ -1,3 +1,5 @@
+import { algorithmProcessor, algorithmRecord, finishAlgorithms } from './algorithms/render';
+import algorithmCss from './styles/algorithms.css';
 import { t, setLanguage, language } from './i18n';
 import type { EditorView } from '@codemirror/view';
 import type { StateEffectType } from '@codemirror/state';
@@ -105,6 +107,7 @@ export default class AcademicNotes extends Plugin {
         this.addCommand({ id: 'insert-environment', name: t('插入学术环境'), editorCallback: editor => new EnvironmentModal(this.app, editor).open() });
         this.addCommand({ id: 'edit-diagram', name: t('插入或编辑交换图（Beta）'), editorCallback: editor => { try { openDiagramEditor(this.app, editor); } catch (error) { this.fail(t('编辑交换图'), error); } } });
         this.registerMarkdownCodeBlockProcessor('academic-diagram', (source, el, ctx) => diagramProcessor(this.app, source, el, ctx));
+        this.registerMarkdownCodeBlockProcessor('algorithm', (source, el) => algorithmProcessor(source, el, this.settings.algorithmLineNumbers));
         this.addSettingTab(new AcademicSettings(this.app, this));
         this.registerMarkdownPostProcessor((el, ctx) => this.postprocess(el, ctx), 110);
         const tocProcessor = (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -608,12 +611,19 @@ export default class AcademicNotes extends Plugin {
                     const caption = box.querySelector<HTMLElement>('.an-diagram-caption'); if (caption) caption.hidden = false;
                     mediaRecord(box, record); if (record.id) box.dataset.phbBlock = record.id; box.dataset.phbBlocks = JSON.stringify(record.ids);
                 }
+                const algorithmFences = [...section.querySelectorAll<HTMLElement>('.an-algorithm-fence')];
+                for (const [index, record] of note.media.filter(r => r.kind === 'algorithm' && !note.callouts.includes(r)).entries()) {
+                    const host = algorithmFences[index]; if (!host) continue;
+                    algorithmRecord(host, record, this.settings.algorithmLineNumbers);
+                    if (record.id) host.dataset.phbBlock = record.id; host.dataset.phbBlocks = JSON.stringify(record.ids);
+                }
                 const consumed = new Set();
                 for (const rec of note.callouts) {
                     const box = boxes.find(b => !consumed.has(b) && (Engine.canon(b.dataset.callout) || Engine.mediaCanon(b.dataset.callout)) === rec.key);
                     if (box) {
                         consumed.add(box);
-                        if (rec.kind === 'theorem')
+                        if (rec.kind === 'algorithm') algorithmRecord(box, rec, this.settings.algorithmLineNumbers);
+                        else if (rec.kind === 'theorem')
                             titleRecord(box, rec, graph);
                         else
                             mediaRecord(box, rec);
@@ -623,6 +633,8 @@ export default class AcademicNotes extends Plugin {
                             box.dataset.phbBlocks = JSON.stringify(rec.ids);
                     }
                 }
+                await finishAlgorithms(section);
+                if (section.querySelector('.an-algorithm-error')) throw new Error(t('算法语法错误，已停止导出。'));
                 if (math.length === note.equations.length)
                     note.equations.forEach((r, j) => { if (r.id) {
                         const node = math[j].parentElement || math[j];
@@ -671,7 +683,7 @@ export default class AcademicNotes extends Plugin {
                     copied.add(e.id);
                 }
             } });
-            const baseCss = calloutCss + '\n' + layoutCss + '\n' + diagramCss + '\n' + typographyCss, printCss = documentCss;
+            const baseCss = calloutCss + '\n' + layoutCss + '\n' + diagramCss + '\n' + typographyCss + '\n' + algorithmCss, printCss = documentCss;
             let css = this.settings.captureTheme ? await this.collectCss(doc, meta.warnings) : baseCss;
             const bodyStyle = doc.defaultView!.getComputedStyle(doc.body), variables = [...bodyStyle].filter(k => k.startsWith('--')).map(k => `${k}:${bodyStyle.getPropertyValue(k)};`).join('');
             const classes = [...doc.body.classList].filter(c => !['is-mobile', 'is-phone'].includes(c)).join(' ') + ' phb-export';

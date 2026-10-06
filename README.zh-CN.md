@@ -4,7 +4,7 @@
 
 **LaTeX-like numbering, cross-references and local PDF export for Obsidian.**
 
-数学环境、公式、图表与子图自动编号；跨文件块引用、目录和多篇笔记合订本。配色独立于特定主题，PDF 使用 Obsidian 自带的 Electron，安装后无需 Python、Chrome 或其他外部程序。
+数学环境、公式、图表、子图与算法自动编号；跨文件块引用、目录和多篇笔记合订本。配色独立于特定主题，PDF 使用 Obsidian 自带的 Electron，安装后无需 Python、Chrome 或其他外部程序。
 
 数学环境的视觉设计受到 [ElegantBook](https://github.com/ElegantLaTeX/ElegantBook) 启发：定理使用带标题的数学框，证明使用简洁的行内标题和结束方框，注记使用彩色行内标题。颜色随 Academic Notes 当前色板变化。
 
@@ -159,6 +159,73 @@ Markdown 链接：[复合映射定理](第一章.md#^thm-composition)
 有 H2 时，首个 H2 前属于第 0 节；完全没有 H2 时省略节号。代码块、公式、注释中的标题不计入分节。
 
 公式引用格式默认 `eq:{number}`；数学框默认 `{type} {number}`。`{type}` 受缩写开关控制，`{abbr}` 始终缩写，`{name}` 始终全称；还支持 `{title}`、`{file}`。图表默认 `fig {number}` / `tab {number}`。
+
+## 算法与伪代码
+
+沿用 [pseudocode.js](https://github.com/SaswatPadhi/pseudocode.js) / LaTeX `algorithmic` 语法，解析器已随插件内置，无需另装 Pseudocode 或调用外部服务。以下两种写法共用渲染、独立算法计数器、跨文件引用和 PDF 导出。
+
+### Callout 写法
+
+```markdown
+> [!algorithm] 欧几里得算法
+> \INPUT $a,b\in\mathbb{N}$
+> \WHILE{$b\ne 0$}
+>   \STATE $(a,b)\gets(b,a\bmod b)$
+> \ENDWHILE
+> \RETURN $a$
+
+^alg-euclid
+
+参见 [[#^alg-euclid]]。
+```
+
+标题就是题注，正文默认放在 `algorithmic` 环境中。每行保留 `>` 前缀；`[!algorithm]+` / `[!algorithm]-` 支持 Obsidian 原生折叠。正文按伪代码解析：公式写 `$...$` 或 `\(...\)`，粗体写 `\textbf{...}`，不按普通 Markdown 排版。如果正文使用完整环境，非空 Callout 标题优先于内部 `\caption`。
+
+### 代码块写法
+
+````markdown
+```algorithm
+\begin{algorithm}
+\caption{欧几里得算法}
+\begin{algorithmic}
+\INPUT $a,b\in\mathbb{N}$
+\WHILE{$b\ne 0$}
+  \STATE $(a,b)\gets(b,a\bmod b)$
+\ENDWHILE
+\RETURN $a$
+\end{algorithmic}
+\end{algorithm}
+```
+
+^alg-euclid
+
+参见 [[#^alg-euclid]]。
+````
+
+两个示例同时放在同一笔记时，请使用不同的块 ID。迁移现有 Pseudocode 内容时，把代码块语言 `pseudo` 改为 `algorithm`；插件不会接管现有 `pseudo` 块。本功能支持 pseudocode.js 语法，并不支持全部 `algorithm2e` 命令或任意 LaTeX 宏包。每块仅放一个 `algorithmic` 环境和至多一个题注，也可只写 `algorithmic` 环境或其正文。
+
+### 支持的命令与设置
+
+| 用途 | 命令 |
+| --- | --- |
+| 输入与输出 | `\INPUT`、`\OUTPUT`、`\REQUIRE`、`\ENSURE` |
+| 语句与注释 | `\STATE`、`\RETURN`、`\PRINT`、`\COMMENT{...}` |
+| 条件分支 | `\IF{...}`、`\ELIF{...}` / `\ELSIF{...}` / `\ELSEIF{...}`、`\ELSE`、`\ENDIF` |
+| 循环 | `\FOR{...}` / `\FORALL{...}` … `\ENDFOR`、`\WHILE{...}` … `\ENDWHILE`、`\REPEAT` … `\UNTIL{...}` |
+| 函数 | `\FUNCTION{name}{args}` … `\ENDFUNCTION`、`\PROCEDURE{name}{args}` … `\ENDPROCEDURE`、`\CALL{name}{args}` |
+| 其他控制 | `\BREAK`、`\CONTINUE`、`\UPON{...}` … `\ENDUPON` |
+| 行内逻辑 | `\AND`、`\OR`、`\NOT`、`\TRUE`、`\FALSE`、`\TO`、`\DOWNTO` |
+
+命令不区分大小写，LaTeX 字号命令按其原有大小写区分。输入、输出声明放在控制流程之前。在命令面板执行「插入学术环境」，选择「算法（Callout）」或「算法（代码块）」，即可插入带唯一 ID 的模板。
+
+- **算法自动编号**：遵循当前分节或整篇连续设置；与定理、公式、图的计数器分开。合订本按所选章节方案重新编号，并解析入选章节之间的引用。
+- **显示算法行号**：与算法编号独立，输入、输出和注释不消耗行号。可用 `[!algorithm|lines=true]` / `lines=false` 单独覆盖；代码块中用 `\begin{algorithmic}[1]` / `[0]`。`[!algorithm|*]` 不编号，`[!algorithm|A]` 使用手写编号。
+- **算法引用格式**：默认 `alg {number}`，支持与定理相同的占位符。使用 `[[#^alg-euclid]]` 或 `[[其他笔记#^alg-euclid]]` 引用。
+- **环境自定义 → Algorithm**：调整线条和题注主色，正文和公式保持中性色，关键字加粗，行号与注释使用次要文字色。采用与三线表呼应的「粗线—细线—粗线」。
+- 阅读视图和未编辑的实时预览 Callout 显示算法。进入源码或标题后保留原生编辑，不改写笔记。算法行不参与正文 KP 断行或首行缩进。
+- 桌面 PDF 中短算法保持整块；超过可打印高度的长算法在完整行之间分页。HTML 快照包含静态公式与样式。语法错误会显示并停止导出，避免无提示地漏掉算法。公式仍需适合当前页宽。
+
+![算法环境](screenshots/algorithm.png)
 
 ## 图、表与子图
 

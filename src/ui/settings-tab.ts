@@ -47,12 +47,12 @@ class AcademicSettings extends PluginSettingTab {
         const root = container.createDiv({ cls: 'an-appearance-settings' });
         const redraw = () => { if (root.parentElement) this.refreshAppearance(root.parentElement); };
         new Setting(root).setName(t('环境自定义')).setHeading();
-        new Setting(root).setName(t('选择环境')).setDesc(t('每类环境独立设置；关闭颜色开关即恢复当前色板。')).addDropdown(d => { d.selectEl.dataset.anControl = 'environment'; d.addOptions(Object.fromEntries(Object.entries(Engine.TYPES).map(([key, names]) => [key, names[0]]))).setValue(this.appearanceType).onChange(value => { this.appearanceType = value; redraw(); }); });
+        new Setting(root).setName(t('选择环境')).setDesc(t('每类环境独立设置；关闭颜色开关即恢复当前色板。')).addDropdown(d => { d.selectEl.dataset.anControl = 'environment'; d.addOptions(Object.fromEntries(Object.entries(Engine.APPEARANCE_TYPES).map(([key, names]) => [key, names[0]]))).setValue(this.appearanceType).onChange(value => { this.appearanceType = value; redraw(); }); });
         const entry = parseAppearance(this.plugin.settings.customAppearance)[this.appearanceType] || {};
         const colors: [keyof AppearanceEntry, string, string][] = [
             ['light', t('浅色模式主色'), '#286b76'], ['dark', t('深色模式主色'), '#8dc8d0']
         ];
-        const plain = ['proof', 'remark'].includes(this.appearanceType);
+        const plain = ['proof', 'remark', 'algorithm'].includes(this.appearanceType);
         if (!plain) colors.push(['motifLight', t('浅色模式角标颜色'), '#286b76'], ['motifDark', t('深色模式角标颜色'), '#8dc8d0']);
         for (const [field, name, fallback] of colors) {
             const row = new Setting(root).setName(name).setDesc(entry[field] || t('跟随默认配色'));
@@ -71,10 +71,10 @@ class AcademicSettings extends PluginSettingTab {
                 button.addEventListener('click', () => { void this.changeAppearance('motif', id).then(redraw); });
             }
         }
-        root.createEl('p', { text: plain ? t('Proof 与 Remark 保持无框段落；自定义主色只改变标题，Proof 的结束方框保持不变。') : t('主色同步用于标题底色、边框和浅色同色系背景；标题文字自动选择黑色或白色。角标默认跟随主色。') });
+        root.createEl('p', { text: this.appearanceType === 'algorithm' ? t('算法使用三线样式；主色改变线条和标题，正文保持中性色。') : plain ? t('Proof 与 Remark 保持无框段落；自定义主色只改变标题，Proof 的结束方框保持不变。') : t('主色同步用于标题底色、边框和浅色同色系背景；标题文字自动选择黑色或白色。角标默认跟随主色。') });
         const preview = root.createDiv({ cls: 'markdown-rendered an-appearance-preview' });
         const callout = preview.createDiv({ cls: 'callout', attr: { 'data-callout': this.appearanceType } });
-        callout.createDiv({ cls: 'callout-title' }).createDiv({ cls: 'callout-title-inner', text: Engine.TYPES[this.appearanceType][0] });
+        callout.createDiv({ cls: 'callout-title' }).createDiv({ cls: 'callout-title-inner', text: Engine.APPEARANCE_TYPES[this.appearanceType][0] });
         callout.createDiv({ cls: 'callout-content' }).createEl('p', { text: t('这是当前模式下的外观预览。') });
         new Setting(root).setName(t('恢复此环境默认外观')).addButton(b => { b.buttonEl.dataset.anControl = 'reset'; b.setButtonText(t('恢复默认')).onClick(async () => {
             const all = parseAppearance(this.plugin.settings.customAppearance); delete all[this.appearanceType];
@@ -105,6 +105,9 @@ class AcademicSettings extends PluginSettingTab {
         toggle('shortReferences', t("链接引用使用缩写"), t("标题仍为 Theorem / Definition；链接显示 thm 2.1 / def 2.1。"));
         toggle('mediaNumbered', t("图、表和子图自动编号"), t("用 [!figure] / [!table]；嵌套 [!subfigure] 得到 (a)、(b)。安装后即可使用内置图表样式。"));
         toggle('sharedCounter', t("不同定理类型共享计数器"), t("关闭时 Definition、Theorem 等各自计数。公式始终独立。"));
+        toggle('algorithmNumbered', t('算法自动编号'), t('代码块与 Callout 共用独立计数器，遵循当前分节或整篇编号设置。'));
+        toggle('algorithmLineNumbers', t('显示算法行号'), t('行号与算法编号互相独立；输入、输出和注释不计行号。'));
+        text('algorithmFormat', t('算法引用格式'), t('默认 alg {number}；支持与定理引用相同的占位符。'));
         text('numberPrefix', t("编号前缀"), t("留空不会从日期文件名推断章节号。"));
         text('eqFormat', t("公式引用格式"), t("支持 {number}、{file}；默认 eq:{number}，也可设 Eq. ({number})。"));
         text('theoremFormat', t("定理引用格式"), t("支持 {type}、{number}、{title}、{file}；{abbr} 始终缩写，{name} 始终全称。"));

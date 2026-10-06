@@ -1,3 +1,4 @@
+import { algorithmBlocks, parseAlgorithm, type AlgorithmData } from '../algorithms/model';
 import { t } from '../i18n';
 import { diagramBlocks, parseDiagram } from '../diagrams/model';
 import { figureMetadata, type FigureLayout } from '../rendering/figure-layout';
@@ -29,6 +30,8 @@ export interface SourceRecord {
     layout?: FigureLayout;
     proofOwnLine?: boolean;
     diagram?: boolean;
+    algorithm?: AlgorithmData;
+    algorithmError?: string;
 }
 export interface SourceReference {
     file: string;
@@ -74,15 +77,15 @@ const TYPES: Record<string, string[]> = {
     conjecture: ['Conjecture', 'conjecture', 'cnj'], hypothesis: ['Hypothesis', 'hypothesis', 'hyp'],
     solution: ['Solution', 'solution', 'sol']
 };
-const MEDIA: Record<string, string[]> = { figure: ['Figure', 'figure', 'fig'], subfigure: ['Subfigure', 'subfigure', 'subfig'], table: ['Table', 'table', 'tbl'] };
-const ABBR: Record<string, string> = { def: 'def', thm: 'thm', lem: 'lem', prop: 'prop', cor: 'cor', claim: 'clm', example: 'ex', proof: 'pf', remark: 'rem', axiom: 'ax', assumption: 'asm', exercise: 'exr', conjecture: 'conj', hypothesis: 'hyp', solution: 'sol', equation: 'eq', figure: 'fig', subfigure: 'fig', table: 'tab' };
+const MEDIA: Record<string, string[]> = { figure: ['Figure', 'figure', 'fig'], subfigure: ['Subfigure', 'subfigure', 'subfig'], table: ['Table', 'table', 'tbl'], algorithm: ['Algorithm', 'algorithm'] };
+const ABBR: Record<string, string> = { def: 'def', thm: 'thm', lem: 'lem', prop: 'prop', cor: 'cor', claim: 'clm', example: 'ex', proof: 'pf', remark: 'rem', axiom: 'ax', assumption: 'asm', exercise: 'exr', conjecture: 'conj', hypothesis: 'hyp', solution: 'sol', equation: 'eq', figure: 'fig', subfigure: 'fig', table: 'tab', algorithm: 'alg' };
 const mediaAliases = Object.fromEntries(Object.entries(MEDIA).flatMap(([k, v]) => v.slice(1).map(a => [a, k])));
 const mediaCanon = (s: string | null | undefined): string | null => mediaAliases[String(s || '').toLowerCase()] || null;
 const aliases = Object.fromEntries(Object.entries(TYPES).flatMap(([k, v]) => v.slice(1).map(a => [a, k])));
 const canon = (s: string | null | undefined): string | null => aliases[String(s || '').toLowerCase()] || null;
 const DEFAULTS = { numbered: true, equationMode: 'referenced', numbering: 'section', sharedCounter: false,
     eqFormat: 'eq:{number}', theoremFormat: '{type} {number}', respectAliases: true, numberPrefix: '',
-    sectionPrefix: true, sectionNumberSource: 'order', shortReferences: true, mediaNumbered: true, figureFormat: 'fig {number}', tableFormat: 'tab {number}' };
+    sectionPrefix: true, sectionNumberSource: 'order', shortReferences: true, mediaNumbered: true, figureFormat: 'fig {number}', tableFormat: 'tab {number}', algorithmFormat: 'alg {number}', algorithmNumbered: true, algorithmLineNumbers: false };
 const blank = (s: string) => s.replace(/[^\r\n]/g, ' ');
 const decode = (s: string) => { try {
     return decodeURIComponent(s);
@@ -138,6 +141,21 @@ function parse(path: string, source: string, cache: {
     lines.forEach(l => { starts.push(offset); offset += l.length + 1; });
     let mask = maskedSource(source);
     const records: SourceRecord[] = [], equations: SourceRecord[] = [], theorems: SourceRecord[] = [], media: SourceRecord[] = [], callouts: SourceRecord[] = [], warnings: string[] = [];
+    const algorithms = algorithmBlocks(source);
+    for (const block of algorithms) {
+        mask = mask.slice(0, block.from) + blank(mask.slice(block.from, block.to)) + mask.slice(block.to);
+        const meta = (block.metadata ?? 'auto').trim();
+        const numbering = meta.split(/\s+/).filter(part => !/^lines=(?:true|false)$/.test(part)).join(' ') || (meta ? 'auto' : '');
+        const rec: SourceRecord = { kind: 'algorithm', key: 'algorithm', path, line: block.line, endLine: block.endLine, from: block.from, to: block.to, depth: block.depth,
+            title: block.title || '', manual: numbering && !['auto','*','-'].includes(numbering) ? numbering : null, suppress: ['','*','-'].includes(numbering), number: '', id: null, ids: [] };
+        try {
+            rec.algorithm = parseAlgorithm(block.source, block.title);
+            const lineNumbers = meta.match(/(?:^|\s)lines=(true|false)(?:$|\s)/);
+            if (lineNumbers) rec.algorithm.lineNumbers = lineNumbers[1] === 'true';
+            rec.title = rec.algorithm.title;
+        } catch (error) { rec.suppress = true; rec.manual = null; rec.algorithmError = String(error instanceof Error ? error.message : error); warnings.push(`${path}:${block.line + 1}: ${rec.algorithmError}`); }
+        records.push(rec); media.push(rec); if (block.callout) callouts.push(rec);
+    }
     // All $$ pairs, including display expressions embedded in a quoted paragraph.
     const delimiters = [...mask.matchAll(/(?<!\\)\$\$/g)];
     for (let i = 0; i + 1 < delimiters.length; i += 2) {
@@ -235,6 +253,10 @@ function parse(path: string, source: string, cache: {
         if (eq)
             rec = eq;
         bind(rec, m[1]);
+    }
+    for (const block of algorithms) {
+        const rec = records.find(r => r.kind === 'algorithm' && r.from === block.from);
+        for (const id of block.ids) bind(rec, id);
     }
     // Cache supplements missing bindings; it must not overwrite an explicit nested subfigure ID.
     for (const [id, b] of Object.entries(cache.blocks || {})) {
@@ -343,7 +365,7 @@ function assign(note: ParsedNote, settings: typeof DEFAULTS, referenced: Set<str
             r.number = r.manual;
             continue;
         }
-        const should = r.kind === 'equation' ? (settings.equationMode === 'all' || settings.equationMode === 'referenced' && r.referenced) : r.kind === 'theorem' ? settings.numbered && !['proof', 'remark', 'solution'].includes(r.key) : settings.mediaNumbered;
+        const should = r.kind === 'algorithm' ? settings.algorithmNumbered : r.kind === 'equation' ? (settings.equationMode === 'all' || settings.equationMode === 'referenced' && r.referenced) : r.kind === 'theorem' ? settings.numbered && !['proof', 'remark', 'solution'].includes(r.key) : settings.mediaNumbered;
         if (!should || r.suppress || r.multiTag)
             continue;
         const k = bucket(r), taken = reserved.get(k) || new Set();
@@ -401,7 +423,7 @@ function refText(r: SourceRecord | null | undefined, settings = DEFAULTS) {
     const abbr = ABBR[r.key] || r.key, type = settings.shortReferences ? abbr : name;
     if (!r.number)
         return `${type}${r.title ? ' · ' + plain(r.title) : t("（未编号）")}`;
-    const format = r.kind === 'equation' ? settings.eqFormat : r.kind === 'table' ? settings.tableFormat : r.kind === 'figure' || r.kind === 'subfigure' ? settings.figureFormat : settings.theoremFormat;
+    const format = r.kind === 'algorithm' ? settings.algorithmFormat : r.kind === 'equation' ? settings.eqFormat : r.kind === 'table' ? settings.tableFormat : r.kind === 'figure' || r.kind === 'subfigure' ? settings.figureFormat : settings.theoremFormat;
     return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k: 'number' | 'type' | 'name' | 'abbr' | 'title' | 'file') => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, '').split('/').pop() || '' })[k]);
 }
 function taggedTex(eq: SourceRecord) {
@@ -413,4 +435,5 @@ function taggedTex(eq: SourceRecord) {
         tex += '\\tag{' + eq.number + '}';
     return tex;
 }
-export default { TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, resolvePath, cleanPath, lineOf, quote, plain };
+const APPEARANCE_TYPES: Record<string, string[]> = { ...TYPES, algorithm: MEDIA.algorithm };
+export default { TYPES, APPEARANCE_TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, resolvePath, cleanPath, lineOf, quote, plain };

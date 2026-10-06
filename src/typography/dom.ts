@@ -9,7 +9,7 @@ interface Token { item: KpItem; unit?: Unit }
 const saved = new WeakMap<HTMLElement, SavedParagraph>();
 const MAX_PARAGRAPHS = 120, MAX_CHARACTERS = 4000, MAX_ITEMS = 900, MAX_TOTAL_ITEMS = 12000;
 const EDITOR = '.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]';
-const EXCLUDED = 'table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media';
+const EXCLUDED = '.an-algorithm,.callout[data-callout="algorithm"],table,li,figcaption,.phb-toc,.phb-frontmatter,.an-diagram-block,.an-diagram-caption,.callout-title,.an-media';
 function editableContext(root: HTMLElement, readonlyCallout?: HTMLElement) {
     if (!root.closest(EDITOR)) return root.isContentEditable;
     return !readonlyCallout || !readonlyCallout.contains(root) || !readonlyCallout.closest('[contenteditable="false"]') || readonlyCallout.isContentEditable ||

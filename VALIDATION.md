@@ -1,3 +1,11 @@
+# 2.15.0 Algorithms
+
+- 30 Node regressions cover equivalent wrapper syntax, independent counters, section/chapter renumbering, cross-file references, original-source ranges/IDs, nesting, manual/suppressed numbering, line-number overrides, parser limits and insertion templates.
+- Browser and real CodeMirror tests cover native SVG/CommonHTML and local math fallback, captions, 320/720px panes, safe text-only HTML handling, visible parse failures, inactive editable-title ownership, active caret protection and mutation-free idle refreshes.
+- Actual PDF checks preserve a short algorithm on one page, split a 100-row algorithm between complete rows and retain a cross-chapter internal reference. Existing browser, math, diagram, paragraph, PDF and figure regressions remain covered.
+- TypeScript, mobile bundle loading without Node/Electron and three-file release checks pass. ESLint has zero errors and the two pre-existing isolated-print/helper recommendations. Production dependency audit reports no known advisories; unused transitive KaTeX is pinned to its patched release and excluded from the bundle.
+- Chromium/CodeMirror fixtures do not replace physical iPad/WKWebView acceptance; the previously reported device scrolling issue is not claimed fixed by this feature.
+
 # 2.14.1 First-line indentation geometry
 
 - New regressions compare visible first-line glyphs and non-final right edges, including inactive CodeMirror prose and globally indented Proof/Remark/theorem bodies.
