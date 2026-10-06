@@ -17,6 +17,9 @@ export function renderEnvironmentSettings(container: HTMLElement, plugin: Academ
         form.empty();
         const definitions = Engine.environments(plugin.settings), isNew = !selected, custom = definitions[selected];
         const reference = { ...Engine.referenceOverrides(plugin.settings)[selected] };
+        const inherited = Engine.referenceOverrides(plugin.settings);
+        if (inherited[selected]) { inherited[selected] = { ...inherited[selected] }; delete inherited[selected].format; }
+        const inheritedFormat = Engine.referenceFormat(selected, { ...plugin.settings, referenceOverrides: JSON.stringify(inherited) });
         const entry: CustomEnvironment = { ...(custom || { name: '', abbr: '', style: 'thm', numbered: true }) };
         let key = selected;
         const options = Object.fromEntries([...Object.keys(Engine.TYPES), ...Object.keys(Engine.MEDIA), 'equation', ...Object.keys(definitions)].map(key => [key, Engine.typeNames(key, plugin.settings)[0] + ` [${key}]`]));
@@ -24,7 +27,7 @@ export function renderEnvironmentSettings(container: HTMLElement, plugin: Academ
         if (isNew || custom) new Setting(form).setName(t('环境标识')).setDesc(t('如 observation，对应 [!observation]；使用小写英文字母、数字和连字符，以字母开头，不能占用已有类型。保存后不可改名。')).addText(c => c.setValue(key).setDisabled(!!selected).setPlaceholder(syntaxExamples.key).onChange(value => { key = value.trim(); }));
         new Setting(form).setName(t('显示名称')).setDesc(t('用于环境标题及引用的全称；可填写任意语言。')).addText(c => c.setValue(isNew ? entry.name : reference.name || custom?.name || '').setPlaceholder(isNew ? syntaxExamples.name : Engine.labelName(selected)).onChange(value => { reference.name = value; entry.name = value; }));
         new Setting(form).setName(t('引用缩写')).addText(c => c.setValue(isNew ? entry.abbr : reference.abbr || custom?.abbr || '').setPlaceholder(isNew ? 'obs' : Engine.ABBR[selected] || selected).onChange(value => { reference.abbr = value; entry.abbr = value; }));
-        new Setting(form).setName(t('此环境的引用格式')).setDesc(t('例如：{abbr} {number}、算法 {number}、Satz {number}。留空沿用对应的全局格式。')).addText(c => c.setValue(reference.format || '').setPlaceholder('{abbr} {number}').onChange(value => { reference.format = value; }));
+        new Setting(form).setName(t('此环境的引用格式')).setDesc(t('这是当前环境唯一的格式编辑处。留空沿用下方显示的默认值；填写后只覆盖此环境。')).addText(c => c.setValue(reference.format || '').setPlaceholder(isNew ? '{abbr} {number}' : inheritedFormat).onChange(value => { reference.format = value; }));
         if (isNew || custom) {
             new Setting(form).setName(t('基础外观')).addDropdown(d => d.addOptions(Object.fromEntries(ENVIRONMENT_STYLES.map(style => [style, Engine.TYPES[style][0]]))).setValue(entry.style).onChange(value => { entry.style = value as CustomEnvironment['style']; }));
             new Setting(form).setName(t('自动编号')).addToggle(c => c.setValue(entry.numbered).onChange(value => { entry.numbered = value; }));

@@ -1,6 +1,11 @@
 // Application language is set from Obsidian's public getLanguage() API on load.
 // Keep this module independent of Obsidian so isolated PDF code can receive text.
 export const ENGLISH = {
+  "正在编辑：{0} · {1}。笔记当前使用：{2} · {3}。": "Editing: {0} \u00b7 {1}. Notes currently use: {2} \u00b7 {3}.",
+  "定理类环境的默认引用格式": "Default reference format for theorem environments",
+  "仅用于未单独设置格式的定理、定义、引理等环境；图、表、算法和公式请在上方选择环境后设置。": "Applies to theorems, definitions and lemmas without their own format. Select figures, tables, algorithms or equations above to edit their formats.",
+  "这是当前环境唯一的格式编辑处。留空沿用下方显示的默认值；填写后只覆盖此环境。": "This is the single format editor for this environment. Leave empty to use the default shown in the field; enter a format to override only this environment.",
+
   "保存配色迁移": "Save palette migration",
   "插件设置": "Plugin settings",
   "环境与引用": "Environments and references",

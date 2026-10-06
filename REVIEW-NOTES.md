@@ -1,18 +1,16 @@
-# Community review follow-up: 2.17.0
+# 2.15.0 Consolidated algorithms, environments and palettes
 
 Palette definitions and overrides remain validated local settings (fixed appearance roles, six-digit hex colors, bounded counts and JSON size). Legacy global colors migrate only to the selected light/dark palettes. No new permission, external resource or network access is introduced. CSS presets and UI defaults share one catalog; custom palette copies retain a validated built-in/theme base. Environment IDs and source references do not change.
 
-Validation includes 35 Node regressions; real settings controls for palette isolation, copying and reset; custom environment accents; native CodeMirror image wrappers at 320/720px; blank-source-line indentation boundaries after display math in native reading, KP and serialized exports; tracked Latin/CJK KP prose and simulated legacy canvas without tracking properties; exact source, selection, IME and idle-scroll preservation. Actual Phycat light/dark and default-theme browser fixtures, cross-file PDF links, paragraph pagination, and mobile-bundle loading are covered. Physical iPad/WKWebView acceptance remains outstanding; this release does not claim to resolve the reported device scrolling freeze.
-
-# Community review follow-up: 2.16.0
+Validation includes 38 Node regressions; real settings controls for palette isolation, copying and reset; custom environment accents; native CodeMirror image wrappers at 320/720px; blank-source-line indentation boundaries after display math in native reading, KP and serialized exports; tracked Latin/CJK KP prose and simulated legacy canvas without tracking properties; exact source, selection, IME and idle-scroll preservation. Actual Phycat light/dark and default-theme browser fixtures, cross-file PDF links, paragraph pagination, and mobile-bundle loading are covered. Physical iPad/WKWebView acceptance remains outstanding; this release does not claim to resolve the reported device scrolling freeze.
 
 This release addresses native theme overrides affecting algorithm rules and justified image paragraphs. New environment definitions are local validated data: reserved IDs are rejected, names/references are inserted as text, styles come from a fixed set, and colors accept only six-digit hex. No new filesystem or network capability is introduced. Original note syntax and block destinations remain unchanged. Native active editing guards remain in place.
 
 Validation covers 32 Node regressions, actual Phycat light/dark algorithm border geometry, sized-image centering despite prose justification/indentation, settings persistence, custom colors/counters, mobile loading, and exported cross-file anchors. Physical iPad acceptance remains outstanding. Previous release validation follows.
 
-# Community review follow-up: 2.15.0
-
 Algorithms use the locally bundled MIT pseudocode.js Lexer/Parser. The upstream HTML renderer, KaTeX and optional MathJax package are excluded from the plugin bundle; formulas reuse the existing host math renderer and bundled local fallback. User text is inserted as text nodes, not HTML. No TeX engine, external service, runtime installation, new network access or filesystem permission is introduced. Source/caption length and recursion limits bound parsing. Traditional algorithm styles are scoped to plugin-owned output. The unused transitive KaTeX build dependency is pinned to its patched release.
+
+Additional regressions verify same-hue preset families, the shared reference-format resolver, actual Lemma/Proposition switching in the presence of a later legacy stylesheet, and removal of fixed colors in theme mode.
 
 # Community review follow-up: 2.14.1
 

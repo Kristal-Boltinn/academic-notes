@@ -43,8 +43,11 @@ export function paletteOverrides(settings: PaletteSettings): Record<string,Custo
     return result;
 }
 export function paletteValues(settings: PaletteSettings, mode: PaletteMode) {
-    const overrides=paletteOverrides(settings)[selectedPalette(settings,mode)] || {};
-    return appearanceValues(JSON.stringify(overrides),mode==='dark',Object.keys(appearanceRoles(settings)));
+    const palette=selectedPalette(settings,mode), overrides=paletteOverrides(settings)[palette] || {};
+    // Resolve the active preset at runtime too: a later theme/snippet stylesheet
+    // must not silently replace the selected palette with an old color catalog.
+    const defaults=Object.fromEntries(Object.entries(PRESETS[basePalette(settings,palette)]?.colors || {}).map(([role,color])=>[`--phb-${role}`,color]));
+    return {...defaults,...appearanceValues(JSON.stringify(overrides),mode==='dark',Object.keys(appearanceRoles(settings)))};
 }
 export function defaultRoleColor(settings: PaletteSettings, palette: string, key: string) {
     const env=Engine.environments(settings)[key], role=roleBase[env?.style || key] || env?.style || key;

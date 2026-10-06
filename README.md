@@ -169,7 +169,7 @@ Type `\ref`, `\tref`, or `\eqref` for reference suggestions. The latter two filt
 
 ## Settings overview
 
-Settings are grouped into four tabs: **Environments and references** (one editor for names, references and new environments, with expandable numbering/default/index options), **Palettes and appearance**, **Paragraph typography**, and **Contents and export**. Editing an appearance control keeps the current scroll position; native dropdown pickers close after selection.
+Settings are grouped into four tabs: **Environments and references** (one editor for names, references and new environments, with expandable numbering/shared-theorem-default/index options), **Palettes and appearance**, **Paragraph typography**, and **Contents and export**. Editing an appearance control keeps the current scroll position; native dropdown pickers close after selection.
 
 ## Numbering settings
 
@@ -194,6 +194,8 @@ In **Settings → Academic Notes → Environments and references**, select any e
 - **Display name**: the name in its heading and full-name references, in any language (for example, `Satz`, `算法`, or `Observación`).
 - **Reference abbreviation**: for example, `S.`, `算`, or `obs`. The default algorithm/figure/table/equation reference prefixes also respect this field.
 - **Reference format for this environment**: an optional override such as `{abbr} {number}`, `{name} {number}`, or `算法 {number}`. Available placeholders: `{type}`, `{abbr}`, `{name}`, `{number}`, `{title}`, `{file}`.
+
+Figures, tables, algorithms and equations have one format editor here. The field shows its inherited default as a placeholder; existing saved formats continue to apply. The expandable **Default reference format for theorem environments** only supplies the shared fallback for theorems, definitions and lemmas. A format entered for one environment takes priority over that fallback.
 
 Click **Save**. Empty fields use defaults; **Reset to default** clears only the selected environment’s overrides. Explicit link aliases remain unchanged when **Respect handwritten link aliases** is enabled. These settings change displayed text; existing `^block-ids` and wikilink destinations stay valid.
 
@@ -397,6 +399,8 @@ Install and enable [TikZJax](https://github.com/artisticat1/obsidian-tikzjax) fr
 TikZJax also offers `tikz-cd` for handwritten commutative-diagram source; follow its documentation for supported packages. Academic Notes waits up to 60 seconds for its SVG, preserves glyph references across multiple diagrams/chapters, and includes the completed drawing in HTML/PDF. If TikZJax is missing or rendering does not finish, export stops with an explanatory error. Put a `tikz` block inside a `figure` callout to add a numbered caption.
 
 ## Appearance
+
+Built-in presets use coordinated variations of one main hue: Forest greens, Sakura pinks, Sky/Prussian blues, Mauve purples, Golden ochres, Cherry/Vampire reds, Mint teals, Abyss blues and Radiation yellow-greens. **Palettes and appearance** shows all environment colors together and states both the edited mode and the mode currently used by notes. Editing a dark preset while notes are light does not change the light notes. Custom overrides are independent in each preset.
 
 Light palettes: Forest (default), Sakura, Mint, Sky, Mauve, Golden, Cherry, and Prussian. Dark palettes: Radiation (default), Vampire, and Abyss. Each palette assigns colors by environment type. Light/dark mode follows **Obsidian's current mode**, which can itself follow the operating system.
 

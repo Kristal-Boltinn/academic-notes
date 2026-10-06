@@ -425,6 +425,29 @@ function graph(notes: ParsedNote[], opts: Partial<typeof DEFAULTS> = {}, resolve
     return { notes: map, settings, warnings, referenced, resolve(raw: string, here: string) { const t = splitTarget(raw); if (!t)
             return null; const p = resolvePath(t.file, here, paths, resolver); return p ? map.get(p)!.blocks.get(t.block) || null : null; } };
 }
+/** Move exclusive legacy defaults into the single per-environment editor. */
+function migrateReferenceFormats(settings: typeof DEFAULTS) {
+    const overrides=referenceOverrides(settings);let changed=false;
+    for(const [field,keys] of [['algorithmFormat',['algorithm']],['figureFormat',['figure','subfigure']],['tableFormat',['table']],['eqFormat',['equation']]] as const) {
+        if(settings[field]===DEFAULTS[field]) continue;
+        const value=settings[field];
+        if(value) for(const key of keys) overrides[key]={...overrides[key],format:overrides[key]?.format || value};
+        settings[field]=DEFAULTS[field];changed=true;
+    }
+    if(changed) settings.referenceOverrides=JSON.stringify(overrides);
+    return changed;
+}
+function referenceFormat(key: string, opts: Partial<typeof DEFAULTS> = {}, kind = key) {
+    const settings = { ...DEFAULTS, ...opts }, override = referenceOverrides(settings)[key] || {};
+    let format = override.format || (kind === 'algorithm' ? settings.algorithmFormat : kind === 'equation' ? settings.eqFormat : kind === 'table' ? settings.tableFormat : kind === 'figure' || kind === 'subfigure' ? settings.figureFormat : settings.theoremFormat);
+    // Legacy defaults contain literal English prefixes; an abbreviation override
+    // must still take effect without making users replace those defaults first.
+    if (!override.format && override.abbr) {
+        const key = kind === 'algorithm' ? 'algorithmFormat' : kind === 'equation' ? 'eqFormat' : kind === 'table' ? 'tableFormat' : ['figure', 'subfigure'].includes(kind) ? 'figureFormat' : null;
+        if (key && format === DEFAULTS[key]) format = kind === 'equation' ? '{abbr}:{number}' : '{abbr} {number}';
+    }
+    return format;
+}
 function refText(r: SourceRecord | null | undefined, settings = DEFAULTS) {
     if (!r)
         return null;
@@ -434,13 +457,7 @@ function refText(r: SourceRecord | null | undefined, settings = DEFAULTS) {
     const abbr = override.abbr || r.environment?.abbr || ABBR[r.key] || r.key, type = settings.shortReferences ? abbr : name;
     if (!r.number)
         return `${type}${r.title ? ' · ' + plain(r.title) : t("（未编号）")}`;
-    let format = override.format || (r.kind === 'algorithm' ? settings.algorithmFormat : r.kind === 'equation' ? settings.eqFormat : r.kind === 'table' ? settings.tableFormat : r.kind === 'figure' || r.kind === 'subfigure' ? settings.figureFormat : settings.theoremFormat);
-    // Legacy defaults contain literal English prefixes; an abbreviation override
-    // must still take effect without making users replace those defaults first.
-    if (!override.format && override.abbr) {
-        const key = r.kind === 'algorithm' ? 'algorithmFormat' : r.kind === 'equation' ? 'eqFormat' : r.kind === 'table' ? 'tableFormat' : ['figure', 'subfigure'].includes(r.kind) ? 'figureFormat' : null;
-        if (key && format === DEFAULTS[key]) format = r.kind === 'equation' ? '{abbr}:{number}' : '{abbr} {number}';
-    }
+    const format = referenceFormat(r.key, settings, r.kind);
     return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k: 'number' | 'type' | 'name' | 'abbr' | 'title' | 'file') => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, '').split('/').pop() || '' })[k]);
 }
 function taggedTex(eq: SourceRecord) {
@@ -464,4 +481,4 @@ function labelName(key: string, opts: Partial<typeof DEFAULTS> = {}) {
 }
 const validCustomKey = (key: string) => validEnvironmentKey(key, reservedEnvironmentKeys);
 const APPEARANCE_TYPES: Record<string, string[]> = { ...TYPES, algorithm: MEDIA.algorithm };
-export default { environments, referenceOverrides, typeNames, labelName, validCustomKey, TYPES, APPEARANCE_TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, resolvePath, cleanPath, lineOf, quote, plain };
+export default { migrateReferenceFormats, referenceFormat, environments, referenceOverrides, typeNames, labelName, validCustomKey, TYPES, APPEARANCE_TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, resolvePath, cleanPath, lineOf, quote, plain };

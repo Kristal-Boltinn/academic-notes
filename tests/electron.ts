@@ -30,7 +30,7 @@ const shell = `body{--text-normal:#292929;--text-muted:#666;--text-accent:#24805
 const box = (type: string, title: string, content = '<p>中文正文 · A mathematical statement, with <strong>emphasis</strong>.</p>') =>
   `<div class="callout" data-callout="${type}"><div class="callout-title"><div class="callout-icon">◆</div><div class="callout-title-inner">${/^(Proof|Remark)$/.test(title) ? '<span class="phb-type-label">' + title + '</span>' : title}</div></div><div class="callout-content">${content}</div></div>`;
 const content = box('def', 'Definition 1.1 · Compactness') + box('thm', 'Theorem 1.1 · Finite spaces',
-  '<p>A finite space is compact.</p>' + box('lem', 'Lemma 1.1 · Nested', '<p>The nested box has its own purple tint.</p>')) +
+  '<p>A finite space is compact.</p>' + box('lem', 'Lemma 1.1 · Nested', '<p>The nested box keeps its own shade of the selected palette.</p>')) +
   box('prop', 'Proposition 1.1') + box('cor', 'Corollary 1.1') + box('example', 'Example 1.1') + box('proof', 'Proof') + box('remark', 'Remark');
 const html = (body: string, css = '') => `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; script-src 'none'"><style>${shell}\n${extra}\n${base}\n${css}</style></head><body class="theme-light an-active" data-an-palette="forest">${body}</body></html>`;
 

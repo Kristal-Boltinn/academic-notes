@@ -92,7 +92,10 @@ export default class AcademicNotes extends Plugin {
             this.settings = { ...DEFAULTS };
             this.recordError(t("读取 data.json（已回退默认值）"), e);
         }
-        try { if (migratePaletteSettings(this.settings)) await this.saveData(this.settings); }
+        try {
+            const referencesMigrated=Engine.migrateReferenceFormats(this.settings), palettesMigrated=migratePaletteSettings(this.settings);
+            if (referencesMigrated || palettesMigrated) await this.saveData(this.settings);
+        }
         catch (error) { this.recordError(t('保存配色迁移'), error); }
         // Registration does not depend on the PDF runtime or other plugins.
         if (Obs.Platform.isDesktopApp) {
@@ -208,7 +211,7 @@ export default class AcademicNotes extends Plugin {
         set('phb-neutral-body', !!this.settings.neutralBody);
         set('phb-no-motif', !!this.settings.hideMotif);
         const values = paletteValues(this.settings, dark ? 'dark' : 'light');
-        const keys = new Set([...appearanceVariables, ...Object.keys(this.appearanceBefore.variables), ...Object.keys(appearanceRoles(this.settings)).flatMap(role => ['color','ink','motif-color','symbol','motif-display'].map(part=>`--an-${part}-${role}`))]);
+        const keys = new Set([...appearanceVariables, ...Object.keys(values), ...Object.keys(this.appearanceBefore.variables), ...Object.keys(appearanceRoles(this.settings)).flatMap(role => ['color','ink','motif-color','symbol','motif-display'].map(part=>`--an-${part}-${role}`))]);
         for (const key of keys) {
             if (!Object.hasOwn(this.appearanceBefore.variables,key)) this.appearanceBefore.variables[key] = [b.style.getPropertyValue(key), b.style.getPropertyPriority(key)];
             if (values[key]) { if (b.style.getPropertyValue(key) !== values[key]) b.style.setProperty(key,values[key]); }

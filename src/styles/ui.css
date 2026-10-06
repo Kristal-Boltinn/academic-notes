@@ -27,3 +27,7 @@
 .an-settings-tabs button[aria-selected="true"] { color:var(--text-on-accent); background:var(--interactive-accent); }
 .an-settings-details { margin:12px 0; border-top:1px solid var(--background-modifier-border); }
 .an-settings-details > summary { cursor:pointer; padding:12px 0; font-weight:600; }
+
+.an-palette-overview { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 20px; }
+.an-palette-swatch { border-inline-start:5px solid var(--an-swatch-color); border-radius:4px; padding:6px 10px; color:var(--text-normal); background:color-mix(in srgb,var(--an-swatch-color) 10%,var(--background-primary)); }
+.an-palette-status { color:var(--text-muted); font-size:var(--font-ui-small); }

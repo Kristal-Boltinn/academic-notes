@@ -457,3 +457,42 @@ test('display equations continue prose until an empty source line, including cal
   assert.deepEqual([...mathContinuationLines(note)],[4,13,18]);
   const separated=Engine.parse('blank.md','$$x$$\n\nNew paragraph');assert.equal(mathContinuationLines(separated).size,0);
 });
+
+
+test('preset colors resolve at runtime and every environment belongs to its palette hue family', () => {
+  const hue=(hex:string)=>{const [r,g,b]=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255),max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;return d?(((max===r?(g-b)/d:max===g?(b-r)/d+2:(r-g)/d+4)*60)+360)%360:0;};
+  for(const [key,preset] of Object.entries(PRESETS)) {
+    const settings={...PluginDefaults,...(preset.mode==='light'?{lightPalette:key}:{darkPalette:key})};
+    const values=paletteValues(settings,preset.mode as 'light'|'dark'),base=hue(preset.colors.def);
+    for(const [role,color] of Object.entries(preset.colors)) {
+      assert.equal(values['--phb-'+role],color);
+      const difference=Math.abs(hue(color)-base);assert.ok(Math.min(difference,360-difference)<10,key+'/'+role+' must retain the main hue');
+    }
+  }
+  assert.equal(paletteValues({...PluginDefaults,lightPalette:'theme'},'light')['--phb-lem'],undefined);
+});
+
+test('one reference-format resolver preserves existing defaults and per-environment priority', () => {
+  const settings={...Engine.DEFAULTS,algorithmFormat:'Algorithm ({number})',figureFormat:'Figure {number}',referenceOverrides:JSON.stringify({algorithm:{format:'算法 {number}'}})};
+  assert.equal(Engine.referenceFormat('algorithm',settings),'算法 {number}');
+  assert.equal(Engine.referenceFormat('figure',settings),'Figure {number}');
+  assert.equal(Engine.referenceFormat('subfigure',settings),'Figure {number}');
+  assert.equal(Engine.referenceFormat('lem',settings),settings.theoremFormat);
+  assert.equal(Engine.referenceFormat('algorithm',{...settings,referenceOverrides:'{}'}),'Algorithm ({number})');
+});
+
+
+test('exclusive legacy reference defaults migrate to individual editors without losing overrides', () => {
+  const settings={...Engine.DEFAULTS,figureFormat:'图 {number}',algorithmFormat:'算法 ({number})',referenceOverrides:JSON.stringify({figure:{abbr:'图'},subfigure:{format:'子图 {number}'}})};
+  assert.equal(Engine.migrateReferenceFormats(settings),true);
+  assert.equal(settings.figureFormat,Engine.DEFAULTS.figureFormat);
+  assert.equal(settings.algorithmFormat,Engine.DEFAULTS.algorithmFormat);
+  assert.equal(Engine.referenceFormat('figure',settings),'图 {number}');
+  assert.equal(Engine.referenceFormat('subfigure',settings),'子图 {number}');
+  assert.equal(Engine.referenceFormat('algorithm',settings),'算法 ({number})');
+  assert.equal(Engine.referenceOverrides(settings).figure.abbr,'图');
+  assert.equal(Engine.migrateReferenceFormats(settings),false);
+  const overrides=Engine.referenceOverrides(settings);delete overrides.figure;settings.referenceOverrides=JSON.stringify(overrides);
+  assert.equal(Engine.referenceFormat('figure',settings),Engine.DEFAULTS.figureFormat);
+  assert.equal(Engine.referenceFormat('subfigure',settings),'子图 {number}');
+});

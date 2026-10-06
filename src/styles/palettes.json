@@ -4,13 +4,13 @@
     "mode": "light",
     "colors": {
       "def": "#a63c67",
-      "thm": "#6952a0",
-      "lem": "#8a4e8d",
-      "prop": "#406e68",
-      "cor": "#536c9a",
-      "claim": "#996040",
-      "example": "#8f6c25",
-      "proof": "#697455"
+      "thm": "#903c62",
+      "lem": "#a14b68",
+      "prop": "#9d406e",
+      "cor": "#953f5a",
+      "claim": "#914868",
+      "example": "#9f556f",
+      "proof": "#7f5768"
     }
   },
   "mint": {
@@ -18,27 +18,27 @@
     "mode": "light",
     "colors": {
       "def": "#227c77",
-      "thm": "#326694",
-      "lem": "#65709d",
-      "prop": "#457d5b",
-      "cor": "#6b7552",
-      "claim": "#4c7192",
-      "example": "#916b35",
-      "proof": "#647267"
+      "thm": "#236b63",
+      "lem": "#2e7677",
+      "prop": "#26756a",
+      "cor": "#266b6f",
+      "claim": "#2d6b65",
+      "example": "#367575",
+      "proof": "#3a5c5a"
     }
   },
   "sky": {
     "name": "Sky",
     "mode": "light",
     "colors": {
-      "def": "#256f83",
-      "thm": "#2f609c",
-      "lem": "#665d98",
-      "prop": "#3d7a70",
-      "cor": "#536d86",
-      "claim": "#7f668d",
-      "example": "#956b35",
-      "proof": "#5c6d5b"
+      "def": "#2e729e",
+      "thm": "#2f6a88",
+      "lem": "#3d6e98",
+      "prop": "#337795",
+      "cor": "#33618d",
+      "claim": "#3b6d89",
+      "example": "#477395",
+      "proof": "#4c6576"
     }
   },
   "forest": {
@@ -46,13 +46,13 @@
     "mode": "light",
     "colors": {
       "def": "#247651",
-      "thm": "#286b76",
-      "lem": "#71628c",
-      "prop": "#62752e",
-      "cor": "#42786b",
-      "claim": "#44698c",
-      "example": "#946b2f",
-      "proof": "#687252"
+      "thm": "#256645",
+      "lem": "#2f7158",
+      "prop": "#277049",
+      "cor": "#276a52",
+      "claim": "#2e664b",
+      "example": "#367059",
+      "proof": "#3a594b"
     }
   },
   "mauve": {
@@ -60,13 +60,13 @@
     "mode": "light",
     "colors": {
       "def": "#776085",
-      "thm": "#674386",
-      "lem": "#925d86",
-      "prop": "#5d7767",
-      "cor": "#646998",
-      "claim": "#896440",
-      "example": "#936c3f",
-      "proof": "#72736c"
+      "thm": "#695876",
+      "lem": "#7d6886",
+      "prop": "#716081",
+      "cor": "#725d7b",
+      "claim": "#70617b",
+      "example": "#806f89",
+      "proof": "#6e6674"
     }
   },
   "golden": {
@@ -74,13 +74,13 @@
     "mode": "light",
     "colors": {
       "def": "#88712e",
-      "thm": "#9c582d",
-      "lem": "#826489",
-      "prop": "#617542",
-      "cor": "#946640",
-      "claim": "#587a7b",
-      "example": "#a75c3c",
-      "proof": "#77705b"
+      "thm": "#76602e",
+      "lem": "#83753a",
+      "prop": "#816631",
+      "cor": "#7a6f31",
+      "claim": "#766438",
+      "example": "#827543",
+      "proof": "#685f45"
     }
   },
   "cherry": {
@@ -88,69 +88,69 @@
     "mode": "light",
     "colors": {
       "def": "#9c3a55",
-      "thm": "#7f3f65",
-      "lem": "#845786",
-      "prop": "#3e756b",
-      "cor": "#626987",
-      "claim": "#9c5e36",
-      "example": "#906c32",
-      "proof": "#69725b"
+      "thm": "#873953",
+      "lem": "#974858",
+      "prop": "#943e5d",
+      "cor": "#8c3d4b",
+      "claim": "#89455a",
+      "example": "#965161",
+      "proof": "#78535d"
     }
   },
   "prussian": {
     "name": "Prussian",
     "mode": "light",
     "colors": {
-      "def": "#2a6c76",
-      "thm": "#28558a",
-      "lem": "#6c608c",
-      "prop": "#477966",
-      "cor": "#526d94",
-      "claim": "#887052",
-      "example": "#926938",
-      "proof": "#5b7172"
+      "def": "#28558a",
+      "thm": "#295177",
+      "lem": "#355484",
+      "prop": "#2c5b82",
+      "cor": "#2c497b",
+      "claim": "#345577",
+      "example": "#3e5a83",
+      "proof": "#425367"
     }
   },
   "vampire": {
     "name": "Vampire",
     "mode": "dark",
     "colors": {
-      "def": "#82d6ac",
-      "thm": "#bca1e2",
-      "lem": "#db9bc4",
-      "prop": "#afd294",
-      "cor": "#83c7d1",
-      "claim": "#e5b78f",
-      "example": "#dfc67d",
-      "proof": "#a4b9a5"
+      "def": "#df939e",
+      "thm": "#d17c8d",
+      "lem": "#dba6aa",
+      "prop": "#d991a2",
+      "cor": "#d4888b",
+      "claim": "#d0939e",
+      "example": "#dbb4b8",
+      "proof": "#c19fa4"
     }
   },
   "abyss": {
     "name": "Abyss",
     "mode": "dark",
     "colors": {
-      "def": "#73c9bc",
-      "thm": "#82b6df",
-      "lem": "#b4a1e0",
-      "prop": "#9bcba7",
-      "cor": "#78ccd2",
-      "claim": "#d0ac8e",
-      "example": "#d6c07c",
-      "proof": "#a1b7b6"
+      "def": "#82b6df",
+      "thm": "#6daad1",
+      "lem": "#97b7d9",
+      "prop": "#81b9d9",
+      "cor": "#79a2d3",
+      "claim": "#85b0ce",
+      "example": "#a6bfd7",
+      "proof": "#93aabc"
     }
   },
   "radiation": {
     "name": "Radiation",
     "mode": "dark",
     "colors": {
-      "def": "#86ca98",
-      "thm": "#83bbce",
-      "lem": "#b7a7ca",
-      "prop": "#b8c984",
-      "cor": "#8dcbb4",
-      "claim": "#9baed0",
-      "example": "#dec178",
-      "proof": "#a8b898"
+      "def": "#b8ce86",
+      "thm": "#acbf73",
+      "lem": "#b7cb97",
+      "prop": "#b9c885",
+      "cor": "#a6c27d",
+      "claim": "#b0bf87",
+      "example": "#bdcba4",
+      "proof": "#a8b192"
     }
   }
 }

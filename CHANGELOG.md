@@ -1,29 +1,16 @@
-# 2.17.0
-
-- Store environment colors and motifs per palette; switching Forest/Sakura or dark presets restores their individual values. Migrate former global/custom-environment colors to the currently selected light/dark presets.
-- Add independently editable custom palette copies, per-environment resets and whole-palette resets. Generate CSS and editor defaults from one palette catalog.
-- Consolidate settings into four tabs and a single environment/reference editor, with expandable numbering and advanced defaults. Preserve appearance-control scrolling and native selector behavior.
-- Center sized images in native Live Preview image wrappers as well as Reading view, clearing asymmetric image-line padding without changing editor source.
-- Match default algorithm rules/captions to each palette's primary accent; retain neutral pseudocode body text.
-- Treat prose immediately following a display equation as a continuation, without another first-line indent; an empty source line starts a new paragraph in Reading, Live Preview and exports.
-- Include theme letter/word spacing in editable-prose KP measurements, including a bounded older-WebKit canvas fallback; retain native active editing/selection/IME guards.
-- Update English and Chinese usage guides and add migration, palette isolation, real control, image-widget and tracking regressions.
-
-# 2.16.0
-
-- Restore centered fixed-width figure images when themes justify or indent native image paragraphs.
-- Keep algorithm callouts in traditional three-rule form under Phycat, including full-width caption separators and hidden native icons.
-- Add per-environment names, reference abbreviations and reference formats in any language, including figure/table format settings.
-- Add configurable Markdown environments with boxed or Remark appearance, optional numbering, light/dark accents, insertion templates and cross-file/book references.
-- Preserve existing block IDs, handwritten aliases and active native editor ownership. Update both usage guides.
-
 # 2.15.0
 
-- Add numbered algorithms with equivalent `algorithm` fences and `[!algorithm]` callouts, based on the locally bundled pseudocode.js parser.
-- Share one renderer, independent counters, block IDs, cross-file references and chapter renumbering. Add optional line numbers, bilingual settings and both insertion templates.
-- Match three-line tables with neutral body/math text, bold keywords, muted comments and customizable caption/rule colors. Use native math with the existing local fallback.
-- Preserve native editable callout titles and active selections, exclude algorithms from prose KP/indentation, and paginate long PDF algorithms between complete rows.
-- Document syntax, migration, settings and limitations in both READMEs; add synthetic examples, browser/CodeMirror regressions and real PDF row/link checks.
+- Add numbered algorithms with equivalent `algorithm` fences and `[!algorithm]` callouts using locally bundled pseudocode.js; share independent counters, block IDs, cross-file references and book renumbering. Add optional line numbers, bilingual settings and insertion templates.
+- Retain traditional three-rule pseudocode styling, neutral math/body text, and complete-row PDF pagination; keep algorithm callouts independent of Phycat theme frames.
+- Add multilingual environment names, abbreviations and formats, plus user-defined Markdown environments with existing box/Remark styles, numbering, templates and cross-file/PDF references.
+- Group settings into four tabs and one environment/reference editor. Remove duplicate figure/table/algorithm/equation format controls, preserve saved formats, and show their inherited defaults. Preserve control scrolling and native picker behavior.
+- Store colors and motifs independently per palette, migrate earlier overrides to the selected presets, and add custom copies, single-environment reset and whole-palette reset.
+- Give each built-in preset a coherent family of its named hue. Apply preset colors at runtime as well as in CSS to protect against later legacy/theme color rules; show the complete palette and the current light/dark mode.
+- Match algorithm rules and captions to the palette’s primary accent, retaining neutral body text.
+- Center sized figure images in Reading and native Live Preview wrappers, including asymmetric CodeMirror padding, without changing source text.
+- Treat prose immediately after display math as a continuation; require an empty source line to restart the optional first-line indent, including Proof and equation block IDs.
+- Include theme letter/word spacing in Live Preview KP measurements, with a bounded fallback for older WebKit. Preserve active typing, selection, IME and editor ownership.
+- Update English and Chinese usage guides, synthetic examples, screenshots and tests. Consolidate the previously separate 2.15/2.16/2.17 releases under 2.15.0 at the maintainer’s request. Install this consolidated release manually if a device already has 2.16/2.17, because automatic updates do not downgrade versions.
 
 # 2.14.1
 

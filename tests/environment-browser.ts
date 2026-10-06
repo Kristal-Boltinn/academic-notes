@@ -63,6 +63,24 @@ export async function runEnvironmentRegressions() {
     paletteControl('resetPalette').click();await wait();check(getComputedStyle(custom).borderTopColor!=='rgb(170, 51, 85)','Reset must use the custom palette base defaults');
     choose('lightPalette','sakura');await wait();check(getComputedStyle(custom).borderTopColor==='rgb(170, 51, 85)','Reset of a clone must not affect its original');
     paletteHost.remove();
+    // Later legacy/theme rules must not win over the chosen runtime palette.
+    const legacyStyle=host.createEl('style',{text:'body.theme-light.an-active[data-an-palette] { --phb-lem:#8855aa; --phb-prop:#44aa55; }'});
+    const lemma=callout(host,'lemma','Lemma'), proposition=callout(host,'proposition','Proposition');
+    for(const palette of ['forest','sakura','forest']) {
+      plugin.settings.lightPalette=palette;await plugin.saveSettings();
+      for(const [box,role] of [[lemma,'lem'],[proposition,'prop']] as const) {
+        const swatch=host.createSpan();swatch.style.color=PRESETS[palette].colors[role];
+        check(getComputedStyle(box).borderTopColor===getComputedStyle(swatch).color,'Actual boxed '+role+' must switch with '+palette+' despite legacy stylesheet');swatch.remove();
+      }
+    }
+    document.body.classList.replace('theme-light','theme-dark');await plugin.saveSettings();
+    check(document.body.style.getPropertyValue('--phb-lem')===PRESETS.radiation.colors.lem,'Switching light/dark must select that mode’s own preset');
+    plugin.settings.darkPalette='theme';await plugin.saveSettings();check(!document.body.style.getPropertyValue('--phb-lem'),'Theme mode must clear the fixed preset color');
+    document.body.classList.replace('theme-dark','theme-light');await plugin.saveSettings();legacyStyle.remove();lemma.remove();proposition.remove();
+    // Reference formats have one editor; the field displays its inherited fallback.
+    const settingsHost=host.createDiv();const unifiedTab=new AcademicSettings({} as any,plugin);settingsHost.appendChild(unifiedTab.containerEl);unifiedTab.display();
+    check(![...unifiedTab.containerEl.querySelectorAll('.setting-item')].some(el=>['Algorithm reference format','Figure reference format','Table reference format','Equation reference format'].includes(el.firstElementChild?.textContent || '')),'Exclusive environments must not have duplicate global format controls');
+    check(unifiedTab.containerEl.querySelector('input[placeholder="{abbr} {number}"]'),'Algorithm field must reflect the inherited abbreviation-aware format');settingsHost.remove();
     // Every native image wrapper, including readonly CodeMirror widgets, must center.
     const fixtureStyle=host.createEl('style',{text:'body.an-active .markdown-rendered p,body.an-active .markdown-source-view .cm-line,body.an-active .markdown-source-view .cm-embed-block{text-align:justify!important;text-indent:2em} body.an-active .image-embed img{margin-left:0!important}'});
     const imageSource='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="200" height="120" fill="#4488aa"/></svg>');
@@ -81,7 +99,7 @@ export async function runEnvironmentRegressions() {
       for(const width of [320,720]){host.style.width=width+'px';view.requestMeasure();await wait();for(const {fig,img} of fixtures){const f=fig.getBoundingClientRect(),i=img.getBoundingClientRect();check(Math.abs((f.left+f.right)-(i.left+i.right))<2,'Sized image must center in reading and every native Live Preview wrapper: '+JSON.stringify({width,wrapper:img.parentElement?.parentElement?.className,fig:f.toJSON(),img:i.toJSON()}));}}
     }finally{view.destroy();fixtureStyle.remove();}
     // The algorithm rule hue comes from the palette's primary accent.
-    for(const palette of ['forest','sakura']){document.body.dataset.anPalette=palette;document.body.style.removeProperty('--an-color-algorithm');const algorithm=callout(host,'algorithm','Palette algorithm');const expected=document.createElement('span');expected.style.color=PRESETS[palette].colors.def;host.appendChild(expected);check(getComputedStyle(algorithm).borderTopColor===getComputedStyle(expected).color,'Algorithm rules must follow '+palette+' primary hue');algorithm.remove();expected.remove();}
+    for(const palette of ['forest','sakura']){plugin.settings.lightPalette=palette;await plugin.saveSettings();document.body.style.removeProperty('--an-color-algorithm');const algorithm=callout(host,'algorithm','Palette algorithm');const expected=document.createElement('span');expected.style.color=PRESETS[palette].colors.def;host.appendChild(expected);check(getComputedStyle(algorithm).borderTopColor===getComputedStyle(expected).color,'Algorithm rules must follow '+palette+' primary hue');algorithm.remove();expected.remove();}
     // Export links target the rendered custom environment, without a second counter.
     const root=document.body.createEl('main');root.id='phb-document';const first=root.createEl('section',{cls:'phb-chapter',attr:{'data-path':'one.md','data-title':'One'}}),second=root.createEl('section',{cls:'phb-chapter',attr:{'data-path':'two.md','data-title':'Two'}});
     first.appendChild(custom);custom.dataset.phbBlock='obs-one';const link=second.createEl('a',{cls:'internal-link',text:'obs 1',attr:{href:'one#^obs-one'}});

@@ -74,11 +74,24 @@ class AcademicSettings extends PluginSettingTab {
     renderAppearance(container: HTMLElement) {
         const root = container.createDiv({ cls: 'an-appearance-settings' }), settings = this.plugin.settings;
         const redraw = () => { if (root.parentElement) this.refreshAppearance(root.parentElement); };
-        const options = (mode: PaletteMode) => ({ ...paletteOptions(settings, mode), theme: t('跟随 Obsidian 主题配色') });
+        const options = (mode: PaletteMode): Record<string,string> => ({ ...paletteOptions(settings, mode), theme: t('跟随 Obsidian 主题配色') });
         new Setting(root).setName(t('浅色数学框配色')).addDropdown(d => { d.selectEl.dataset.anControl = 'lightPalette'; d.addOptions(options('light')).setValue(settings.lightPalette).onChange(async value => { d.selectEl.blur(); settings.lightPalette = value; this.appearanceMode = 'light'; await this.plugin.saveSettings(); redraw(); }); });
         new Setting(root).setName(t('深色数学框配色')).addDropdown(d => { d.selectEl.dataset.anControl = 'darkPalette'; d.addOptions(options('dark')).setValue(settings.darkPalette).onChange(async value => { d.selectEl.blur(); settings.darkPalette = value; this.appearanceMode = 'dark'; await this.plugin.saveSettings(); redraw(); }); });
         new Setting(root).setName(t('编辑色板模式')).addDropdown(d => { d.selectEl.dataset.anControl = 'mode'; d.addOptions({ light: t('浅色'), dark: t('深色') }).setValue(this.appearanceMode).onChange(value => { this.appearanceMode = value as PaletteMode; redraw(); }); });
         const palette = selectedPalette(settings, this.appearanceMode), profiles = paletteOverrides(settings), roles = appearanceRoles(settings);
+        const activeMode: PaletteMode = typeof document !== 'undefined' && document.body.classList.contains('theme-dark') ? 'dark' : 'light';
+        root.createEl('p', { cls: 'an-palette-status', text: t('正在编辑：{0} · {1}。笔记当前使用：{2} · {3}。', t(this.appearanceMode === 'light' ? '浅色' : '深色'), options(this.appearanceMode)[palette], t(activeMode === 'light' ? '浅色' : '深色'), options(activeMode)[selectedPalette(settings, activeMode)]) });
+        const overview = root.createDiv({ cls: 'an-palette-overview' });
+        const updateOverview = () => {
+            overview.empty();
+            const profile = paletteOverrides(settings)[palette] || {};
+            for (const role of ['def','thm','lem','prop','cor','claim','example','algorithm']) {
+                const swatch = overview.createDiv({ cls: 'an-palette-swatch', attr: { 'data-an-swatch': role } });
+                swatch.style.setProperty('--an-swatch-color', profile[role]?.[this.appearanceMode] || defaultRoleColor(settings,palette,role));
+                swatch.createSpan({ text: Engine.labelName(role,settings) });
+            }
+        };
+        updateOverview();
         if (!Object.hasOwn(roles, this.appearanceType)) this.appearanceType = 'thm';
         new Setting(root).setName(t('选择环境')).setDesc(t('修改只应用于当前色板；切换色板时恢复该色板自己的颜色。')).addDropdown(d => { d.selectEl.dataset.anControl = 'environment'; d.addOptions(Object.fromEntries(Object.entries(roles).map(([key,names])=>[key,Engine.typeNames(key,settings)[0] || names[0]]))).setValue(this.appearanceType).onChange(value => { this.appearanceType = value; redraw(); }); });
         const entry = profiles[palette]?.[this.appearanceType] || {};
@@ -90,7 +103,7 @@ class AcademicSettings extends PluginSettingTab {
         for (const [colorField,name,defaultColor] of colors) {
             const row = new Setting(root).setName(name).setDesc(entry[colorField] || t('跟随当前色板默认值'));
             row.addToggle(c => { c.toggleEl.dataset.anControl = colorField; c.setValue(!!entry[colorField]).onChange(async enabled => { await this.changeAppearance(colorField, enabled ? defaultColor : ''); redraw(); }); });
-            row.addColorPicker(c => c.setValue(entry[colorField] || defaultColor).setDisabled(!entry[colorField]).onChange(async value => { await this.changeAppearance(colorField,value); row.setDesc(value); updatePreview(); }));
+            row.addColorPicker(c => c.setValue(entry[colorField] || defaultColor).setDisabled(!entry[colorField]).onChange(async value => { await this.changeAppearance(colorField,value); row.setDesc(value); updatePreview(); updateOverview(); }));
         }
         const names = { laurel:t('月桂'), compass:t('罗盘'), rosette:t('花章'), orbit:t('轨道'), lattice:t('晶格'), knot:t('编结'), arch:t('拱廊'), quill:t('羽笔'), folio:t('书页') };
         if (!plain) {
@@ -175,14 +188,10 @@ class AcademicSettings extends PluginSettingTab {
         toggle('algorithmNumbered', t('算法自动编号'), t('代码块与 Callout 共用独立计数器，遵循当前分节或整篇编号设置。'));
         toggle('algorithmLineNumbers', t('显示算法行号'), t('行号与算法编号互相独立；输入、输出和注释不计行号。'));
         group = 'references';
-        text('algorithmFormat', t('算法引用格式'), t('默认 alg {number}；支持与定理引用相同的占位符。'));
         group = 'numbering';
         text('numberPrefix', t("编号前缀"), t("留空不会从日期文件名推断章节号。"));
         group = 'references';
-        text('figureFormat', t('图片引用格式'), t('支持 {type}、{abbr}、{name}、{number}、{title}、{file}。'));
-        text('tableFormat', t('表格引用格式'), t('支持 {type}、{abbr}、{name}、{number}、{title}、{file}。'));
-        text('eqFormat', t("公式引用格式"), t("支持 {number}、{file}；默认 eq:{number}，也可设 Eq. ({number})。"));
-        text('theoremFormat', t("定理引用格式"), t("支持 {type}、{number}、{title}、{file}；{abbr} 始终缩写，{name} 始终全称。"));
+        text('theoremFormat', t('定理类环境的默认引用格式'), t('仅用于未单独设置格式的定理、定义、引理等环境；图、表、算法和公式请在上方选择环境后设置。'));
         toggle('respectAliases', t("保留手写链接别名"), t("[[#^id|自己的文字]] 不被自动编号替换，但仍算引用。"));
         toggle('livePreview', t("在实时预览中转换链接与编号"), t("光标进入链接时恢复源码。源码模式不进行显示替换。"));
         text('excludedFolders', t("排除索引的路径"), t("多个目录/文件请用换行分隔；也可直接编辑本插件 data.json。"));
