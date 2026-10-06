@@ -1,3 +1,14 @@
+# 2.17.0
+
+- Store environment colors and motifs per palette; switching Forest/Sakura or dark presets restores their individual values. Migrate former global/custom-environment colors to the currently selected light/dark presets.
+- Add independently editable custom palette copies, per-environment resets and whole-palette resets. Generate CSS and editor defaults from one palette catalog.
+- Consolidate settings into four tabs and a single environment/reference editor, with expandable numbering and advanced defaults. Preserve appearance-control scrolling and native selector behavior.
+- Center sized images in native Live Preview image wrappers as well as Reading view, clearing asymmetric image-line padding without changing editor source.
+- Match default algorithm rules/captions to each palette's primary accent; retain neutral pseudocode body text.
+- Treat prose immediately following a display equation as a continuation, without another first-line indent; an empty source line starts a new paragraph in Reading, Live Preview and exports.
+- Include theme letter/word spacing in editable-prose KP measurements, including a bounded older-WebKit canvas fallback; retain native active editing/selection/IME guards.
+- Update English and Chinese usage guides and add migration, palette isolation, real control, image-widget and tracking regressions.
+
 # 2.16.0
 
 - Restore centered fixed-width figure images when themes justify or indent native image paragraphs.

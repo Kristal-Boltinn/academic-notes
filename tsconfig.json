@@ -16,7 +16,8 @@
     "strictNullChecks": true,
     "noImplicitAny": true,
     "useDefineForClassFields": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*.ts"

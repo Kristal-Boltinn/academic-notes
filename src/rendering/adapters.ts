@@ -1,3 +1,4 @@
+import { markMathContinuations } from '../typography/continuations';
 import { titleInk } from './custom-appearance';
 import { algorithmRecord } from '../algorithms/render';
 import { t } from '../i18n';
@@ -32,11 +33,15 @@ function titleRecord(box: HTMLElement, r: SourceRecord | null | undefined, graph
     setClass(box, 'an-custom-environment', !!r.environment);
     if (r.environment) {
         setAttribute(box, 'data-an-style', r.environment.style);
+        for (const part of ['color', 'ink', 'symbol', 'motif-color', 'motif-display']) {
+            const property = `--an-custom-palette-${part}`, value = `var(--an-${part}-${r.key})`;
+            if (box.style.getPropertyValue(property) !== value) box.style.setProperty(property, value);
+        }
         for (const mode of ['light', 'dark'] as const) {
             const color = r.environment[mode];
             for (const [part, value] of [['color', color], ['ink', color && titleInk(color)]]) {
                 const property = `--an-custom-${part}-${mode}`;
-                if (value) { if (box.style.getPropertyValue(property) !== value) box.style.setProperty(property, value); } else box.style.removeProperty(property);
+                if (value) { if (box.style.getPropertyValue(property) !== value) box.style.setProperty(property, value); } else if (box.style.getPropertyValue(property)) box.style.removeProperty(property);
             }
         }
     }
@@ -186,6 +191,7 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
         if (r)
             mathChanged = mathRecord(mjx, r) || mathChanged;
     }
+    markMathContinuations(el, note, infoFor);
     if (mathChanged)
         Promise.resolve(Obs.finishRenderMath()).catch(console.error);
     const usedRefs = new Set<SourceReference>();
@@ -331,12 +337,13 @@ function createLiveExtension(plugin: AcademicNotes) {
                     const content = box.querySelector<HTMLElement>(':scope > .callout-content'); if (!content) continue;
                     const title = box.querySelector<HTMLElement>(':scope > .callout-title'), win = box.ownerDocument.defaultView!;
                     const style = win.getComputedStyle(content), titleStyle = title && win.getComputedStyle(title);
-                    const key = enabled ? [note.source.slice(from, to), content.getBoundingClientRect().width, style.font, style.lineHeight, style.letterSpacing, style.wordSpacing,
+                    const key = [enabled, plugin.settings.paragraphIndent, note.source.slice(from, to), content.getBoundingClientRect().width, style.font, style.lineHeight, style.letterSpacing, style.wordSpacing,
                         content.textContent, ...[...content.querySelectorAll<HTMLElement>('.math,mjx-container')].map(math => math.getBoundingClientRect().width),
-                        title?.textContent, title?.getBoundingClientRect().width, titleStyle?.cssFloat, titleStyle?.font].join('|') : '';
+                        title?.textContent, title?.getBoundingClientRect().width, titleStyle?.cssFloat, titleStyle?.font].join('|');
                     const previous = this.layouts.get(box);
                     if (previous?.key === key && previous.nodes.length === content.childNodes.length && previous.nodes.every((node, index) => content.childNodes[index] === node)) continue;
                     restoreParagraphs(box);
+                    markMathContinuations(box, note, infoFor);
                     traceLayout(box, 'live.layout', { enabled });
                     if (enabled) layoutReadOnlyCallout(box);
                     this.layouts.set(box, { key, nodes: [...content.childNodes] });

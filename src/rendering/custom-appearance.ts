@@ -15,12 +15,13 @@ export const MOTIFS = {
 };
 export type AppearanceEntry = { light?: string; dark?: string; motifLight?: string; motifDark?: string; motif?: string };
 export type CustomAppearance = Record<string, AppearanceEntry>;
-export function parseAppearance(raw: string): CustomAppearance {
+export function parseAppearance(raw: string, roles = Object.keys(Engine.APPEARANCE_TYPES)): CustomAppearance {
     const result: CustomAppearance = {};
     try {
+        if (raw.length > 20000) return result;
         const parsed: unknown = JSON.parse(raw);
         if (!parsed || typeof parsed !== 'object') return result;
-        for (const key of Object.keys(Engine.APPEARANCE_TYPES)) {
+        for (const key of roles) {
             const entry = (parsed as Record<string, unknown>)[key];
             if (!entry || typeof entry !== 'object') continue;
             const clean: AppearanceEntry = {};
@@ -42,9 +43,9 @@ export function titleInk(hex: string) {
     return luminance > .179 ? '#000000' : '#ffffff';
 }
 export const appearanceVariables = Object.keys(Engine.APPEARANCE_TYPES).flatMap(key => ['color', 'ink', 'motif-color', 'symbol', 'motif-display'].map(part => `--an-${part}-${key}`));
-export function appearanceValues(raw: string, dark: boolean): Record<string, string> {
+export function appearanceValues(raw: string, dark: boolean, roles = Object.keys(Engine.APPEARANCE_TYPES)): Record<string, string> {
     const values: Record<string, string> = {};
-    for (const [key, entry] of Object.entries(parseAppearance(raw))) {
+    for (const [key, entry] of Object.entries(parseAppearance(raw, roles))) {
         const color = dark ? entry.dark : entry.light, motifColor = dark ? entry.motifDark : entry.motifLight;
         if (color) { values[`--an-color-${key}`] = color; values[`--an-ink-${key}`] = titleInk(color); }
         if (motifColor) values[`--an-motif-color-${key}`] = motifColor;

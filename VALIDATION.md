@@ -1,3 +1,9 @@
+# 2.17.0 Palettes, settings and Live Preview
+
+Palette definitions and overrides remain validated local settings (fixed appearance roles, six-digit hex colors, bounded counts and JSON size). Legacy global colors migrate only to the selected light/dark palettes. No new permission, external resource or network access is introduced. CSS presets and UI defaults share one catalog; custom palette copies retain a validated built-in/theme base. Environment IDs and source references do not change.
+
+Validation includes 35 Node regressions; real settings controls for palette isolation, copying and reset; custom environment accents; native CodeMirror image wrappers at 320/720px; blank-source-line indentation boundaries after display math in native reading, KP and serialized exports; tracked Latin/CJK KP prose and simulated legacy canvas without tracking properties; exact source, selection, IME and idle-scroll preservation. Actual Phycat light/dark and default-theme browser fixtures, cross-file PDF links, paragraph pagination, and mobile-bundle loading are covered. Physical iPad/WKWebView acceptance remains outstanding; this release does not claim to resolve the reported device scrolling freeze.
+
 # 2.16.0 Environment customization
 
 This release addresses native theme overrides affecting algorithm rules and justified image paragraphs. New environment definitions are local validated data: reserved IDs are rejected, names/references are inserted as text, styles come from a fixed set, and colors accept only six-digit hex. No new filesystem or network capability is introduced. Original note syntax and block destinations remain unchanged. Native active editing guards remain in place.

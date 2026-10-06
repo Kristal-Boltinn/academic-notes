@@ -24,6 +24,7 @@ export class Component {}
 export class TFile {}
 export class Notice {}
 export class MockElement {
+  dataset: Record<string,string> = {};
   style = { setProperty() {} };
   addClass() {} empty() {} addEventListener() {}
   createDiv() { return new MockElement(); } createEl() { return new MockElement(); } createSpan() { return new MockElement(); }

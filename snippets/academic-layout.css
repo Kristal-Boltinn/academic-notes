@@ -293,3 +293,15 @@ body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="sub
   justify-content: center;
   text-align: center;
 }
+
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="图"],[data-callout="subfigure"],[data-callout="subfig"],[data-callout="子图"]) > .callout-content :is(.cm-line,.cm-embed-block):has(.image-embed) {
+  text-align:center !important;
+  text-indent:0 !important;
+  padding-inline:0 !important;
+}
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="图"],[data-callout="subfigure"],[data-callout="subfig"],[data-callout="子图"]) .image-embed {
+  float:none !important;
+  margin-inline:auto !important;
+  vertical-align:middle;
+}
+body .callout:is([data-callout="figure"],[data-callout="fig"],[data-callout="图"],[data-callout="subfigure"],[data-callout="subfig"],[data-callout="子图"]) .image-embed img { margin-inline:auto !important; }

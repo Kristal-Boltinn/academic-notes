@@ -49,7 +49,7 @@ function candidates(state: EditorState) {
 function active(state: EditorState, plan: { from: number; to: number }) {
     return state.selection.ranges.some(range => range.from <= plan.to && range.to >= plan.from);
 }
-function planParagraph(text: string, offset: number, width: number, context: CanvasRenderingContext2D, em: number, indent: number): Plan | null {
+function planParagraph(text: string, offset: number, width: number, context: CanvasRenderingContext2D, em: number, indent: number, letterSpacing = 0, wordSpacing = 0): Plan | null {
     if (!Intl.Segmenter) return null;
     const parts: { text: string; from: number; to: number; kind: string }[] = [];
     for (const part of new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text)) {
@@ -63,7 +63,11 @@ function planParagraph(text: string, offset: number, width: number, context: Can
         const part = parts[i], previous = parts[i - 1], next = parts[i + 1];
         if (previous && previous.kind !== 'space' && part.kind !== 'space' && (previous.kind === 'cjk' || part.kind === 'cjk') && !opening.test(previous.text) && !closing.test(part.text))
             tokens.push({ from: part.from, to: part.from, item: { type: 'glue', width: 0, stretch: em * .12, shrink: 0 } });
-        const natural = context.measureText(part.text).width;
+        // Older WebKit canvas implementations omit tracking properties. Count
+        // graphemes rather than UTF-16 code units for that bounded fallback.
+        const natural = context.measureText(part.text).width
+            + (!('letterSpacing' in context) ? [...new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(part.text)].length * letterSpacing : 0)
+            + (!('wordSpacing' in context) && part.kind === 'space' ? part.text.length * wordSpacing : 0);
         tokens.push({ from: part.from, to: part.to, item: part.kind === 'space' && !opening.test(previous?.text || '') && !closing.test(next?.text || '') ? { type: 'glue', width: natural, stretch: Math.max(natural * .65, em * .12), shrink: natural * .4 } : { type: 'box', width: natural } });
     }
     if (tokens.length > 900) return null;
@@ -148,11 +152,16 @@ export function createLiveParagraphExtension(plugin: AcademicNotes) {
                 if (!element) continue;
                 const style = view.dom.ownerDocument.defaultView!.getComputedStyle(element);
                 const indent = parseFloat(style.textIndent) || 0;
-                if (style.direction !== 'ltr' || style.writingMode !== 'horizontal-tb' || indent < 0 || !style.textIndent.endsWith('px') || parseFloat(style.letterSpacing) || parseFloat(style.wordSpacing) || style.fontVariantCaps !== 'normal' || style.textAlign === 'center' || style.textAlign === 'right') continue;
+                if (style.direction !== 'ltr' || style.writingMode !== 'horizontal-tb' || indent < 0 || !style.textIndent.endsWith('px') || style.fontVariantCaps !== 'normal' || style.textAlign === 'center' || style.textAlign === 'right') continue;
+                const letterSpacing = parseFloat(style.letterSpacing) || 0, wordSpacing = parseFloat(style.wordSpacing) || 0;
+                if (!Number.isFinite(letterSpacing + wordSpacing) || Math.abs(letterSpacing) > 4 || Math.abs(wordSpacing) > 20) continue;
+                if ('letterSpacing' in context) context.letterSpacing = letterSpacing + 'px';
+                if ('wordSpacing' in context) context.wordSpacing = wordSpacing + 'px';
+                if (['auto','normal','none'].includes(style.fontKerning)) context.fontKerning = style.fontKerning as CanvasFontKerning;
                 context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
                 const width = element.getBoundingClientRect().width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
                 if (width < 100) continue;
-                const plan = planParagraph(paragraph.text, paragraph.from, width, context, parseFloat(style.fontSize) || 16, indent);
+                const plan = planParagraph(paragraph.text, paragraph.from, width, context, parseFloat(style.fontSize) || 16, indent, letterSpacing, wordSpacing);
                 if (plan) plans.push(plan);
                 if (plans.length >= 40) break;
             }

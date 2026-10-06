@@ -40,6 +40,8 @@ export async function runUiRegressions() {
   const scroll = host.createDiv({ cls: 'ui-test-scroll' });
   const plugin: any = { settings: { ...DEFAULTS }, saveSettings: async () => {} };
   const tab = new AcademicSettings({} as any, plugin); scroll.appendChild(tab.containerEl); tab.display();
+  tab.containerEl.querySelector<HTMLButtonElement>('[data-an-section=appearance]')!.click();
+  tab.containerEl.querySelector('.an-settings-panel')!.prepend(Object.assign(document.createElement('div'), {style:'height:600px'}));
   scroll.createDiv({ attr: { style: 'height:400px' } });
   const firstRow = tab.containerEl.firstElementChild;
   const section = tab.containerEl.querySelector<HTMLElement>('.an-custom-appearance-row')!;

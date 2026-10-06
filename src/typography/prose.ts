@@ -18,11 +18,12 @@ export function proseLines(state: EditorState) {
         const marker = /^\s{0,3}(`{3,}|~{3,})/.exec(text);
         if (marker) { if (!fence) fence = marker[1]; else if (marker[1][0] === fence[0] && marker[1].length >= fence.length) fence = ''; previousProse = false; continue; }
         if (fence) continue;
-        if (/^\s*\$\$/.test(text)) { if (!/^\s*\$\$.+\$\$\s*$/.test(text)) math = !math; previousProse = false; continue; }
+        if (/^\s*\$\$/.test(text)) { if (!/^\s*\$\$.+\$\$\s*$/.test(text)) math = !math; previousProse = !math; previousDepth = depth; continue; }
         if (math) continue;
         if (/^\s*<!--/.test(text)) { if (!text.includes('-->')) htmlEnd = /-->/; previousProse = false; continue; }
         const html = /^\s*<(script|style|pre|textarea|div|table|section|details)\b/i.exec(text);
         if (html) { const end = new RegExp(`</${html[1]}\\s*>`, 'i'); if (!end.test(text)) htmlEnd = end; previousProse = false; continue; }
+        if (/^\^[\w-]+\s*$/.test(text) && previousDepth === depth) continue;
         if (list || !text.trim() || /^\s|^(?:#{1,6}\s|\[!|\^[\w-]+\s*$|[-+*]\s|\d+[.)]\s|[-=_*]{3,}\s*$|!\[)/.test(text) || /\|/.test(text.replace(/\[\[[^\]]+\]\]/g, ''))) { previousProse = false; previousDepth = depth; continue; }
         if (n < state.doc.lines && /^\s*(?:=+|-+)\s*$/.test(state.doc.line(n + 1).text)) { previousProse = false; continue; }
         lines.push({ from: line.from, start: !previousProse || depth !== previousDepth });

@@ -1,4 +1,4 @@
-/* Academic Notes 2.16.0 | MIT | generated from src/main.ts */
+/* Academic Notes 2.17.0 | MIT | generated from src/main.ts */
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -32,6 +32,592 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// node_modules/pseudocode/src/utils.js
+var require_utils = __commonJS({
+  "node_modules/pseudocode/src/utils.js"(exports2, module2) {
+    function isString(str) {
+      return typeof str === "string" || str instanceof String;
+    }
+    function isObject(obj) {
+      return typeof obj === "object" && obj instanceof Object;
+    }
+    function toString(obj) {
+      if (!isObject(obj))
+        return `${obj}`;
+      var parts = [];
+      for (var member in obj)
+        parts.push(`${member}: ${toString(obj[member])}`);
+      return parts.join(", ");
+    }
+    module2.exports = {
+      isString,
+      isObject,
+      toString
+    };
+  }
+});
+
+// node_modules/pseudocode/src/ParseError.js
+var require_ParseError = __commonJS({
+  "node_modules/pseudocode/src/ParseError.js"(exports2, module2) {
+    function ParseError(message, pos, input) {
+      var error = `Error: ${message}`;
+      if (pos !== void 0 && input !== void 0) {
+        error += ` at position ${pos}: \``;
+        input = `${input.slice(0, pos)}\u21B1${input.slice(pos)}`;
+        var begin = Math.max(0, pos - 15);
+        var end = pos + 15;
+        error += `${input.slice(begin, end)}\``;
+      }
+      this.message = error;
+    }
+    ParseError.prototype = Object.create(Error.prototype);
+    ParseError.prototype.constructor = ParseError;
+    module2.exports = ParseError;
+  }
+});
+
+// node_modules/pseudocode/src/Lexer.js
+var require_Lexer = __commonJS({
+  "node_modules/pseudocode/src/Lexer.js"(exports2, module2) {
+    var utils = require_utils();
+    var ParseError = require_ParseError();
+    var Lexer2 = function(input) {
+      this._input = input;
+      this._remain = input;
+      this._pos = 0;
+      this._nextAtom = this._currentAtom = null;
+      this._next();
+    };
+    Lexer2.prototype.accept = function(type, text) {
+      if (this._nextAtom.type === type && this._matchText(text)) {
+        this._next();
+        return this._currentAtom.text;
+      }
+      return null;
+    };
+    Lexer2.prototype.expect = function(type, text) {
+      var nextAtom = this._nextAtom;
+      if (nextAtom.type !== type) {
+        throw new ParseError(
+          `Expected an atom of ${type} but received ${nextAtom.type}`,
+          this._pos,
+          this._input
+        );
+      }
+      if (!this._matchText(text)) {
+        throw new ParseError(
+          `Expected \`${text}\` but received \`${nextAtom.text}\``,
+          this._pos,
+          this._input
+        );
+      }
+      this._next();
+      return this._currentAtom.text;
+    };
+    Lexer2.prototype.get = function() {
+      return this._currentAtom;
+    };
+    var mathPattern = {
+      exec: function(str) {
+        var delimiters = [
+          { start: "$", end: "$" },
+          { start: "\\(", end: "\\)" }
+        ];
+        var totalLen = str.length;
+        for (var di = 0; di < delimiters.length; di++) {
+          var startDel = delimiters[di].start;
+          if (str.indexOf(startDel) !== 0) continue;
+          var endDel = delimiters[di].end;
+          var endPos = startDel.length;
+          var remain = str.slice(endPos);
+          while (endPos < totalLen) {
+            var pos = remain.indexOf(endDel);
+            if (pos < 0) {
+              throw new ParseError(
+                "Math environment is not closed",
+                this._pos,
+                this._input
+              );
+            }
+            if (pos > 0 && remain[pos - 1] === "\\") {
+              var skipLen = pos + endDel.length;
+              remain = remain.slice(skipLen);
+              endPos += skipLen;
+              continue;
+            }
+            var res = [
+              str.slice(0, endPos + pos + endDel.length),
+              str.slice(startDel.length, endPos + pos)
+            ];
+            return res;
+          }
+        }
+        return null;
+      }
+    };
+    var atomRegex = {
+      // TODO: which is correct? func: /^\\(?:[a-zA-Z]+|.)/,
+      special: /^(\\\\|\\{|\\}|\\\$|\\&|\\#|\\%|\\_)/,
+      math: mathPattern,
+      ///^\$.*\$/
+      func: /^\\([a-zA-Z]+)/,
+      open: /^\{/,
+      close: /^\}/,
+      quote: /^(`|``|'|'')/,
+      ordinary: /^[^\\{}$&#%_\s]+/
+    };
+    var commentRegex = /^%.*/;
+    var whitespaceRegex = /^\s+/;
+    Lexer2.prototype._skip = function(len) {
+      this._pos += len;
+      this._remain = this._remain.slice(len);
+    };
+    Lexer2.prototype._next = function() {
+      var anyWhitespace = false;
+      while (1) {
+        var whitespaceMatch = whitespaceRegex.exec(this._remain);
+        if (whitespaceMatch) {
+          anyWhitespace = true;
+          var whitespaceLen = whitespaceMatch[0].length;
+          this._skip(whitespaceLen);
+        }
+        var commentMatch = commentRegex.exec(this._remain);
+        if (!commentMatch) break;
+        var commentLen = commentMatch[0].length;
+        this._skip(commentLen);
+      }
+      this._currentAtom = this._nextAtom;
+      if (this._remain === "") {
+        this._nextAtom = {
+          type: "EOF",
+          text: null,
+          whitespace: false
+        };
+        return false;
+      }
+      for (var type in atomRegex) {
+        var regex = atomRegex[type];
+        var match = regex.exec(this._remain);
+        if (!match) continue;
+        var matchText = match[0];
+        var usefulText = match[1] ? match[1] : matchText;
+        this._nextAtom = {
+          type,
+          /* special, func, open, close, ordinary, math */
+          text: usefulText,
+          /* the text value of the atom */
+          whitespace: anyWhitespace
+          /* any whitespace before the atom */
+        };
+        this._pos += matchText.length;
+        this._remain = this._remain.slice(match[0].length);
+        return true;
+      }
+      throw new ParseError("Unrecoganizable atom", this._pos, this._input);
+    };
+    Lexer2.prototype._matchText = function(text) {
+      if (text === null || text === void 0) return true;
+      if (utils.isString(text))
+        return text.toLowerCase() === this._nextAtom.text.toLowerCase();
+      else
+        return text.some((str) => str.toLowerCase() === this._nextAtom.text.toLowerCase());
+    };
+    module2.exports = Lexer2;
+  }
+});
+
+// node_modules/pseudocode/src/Parser.js
+var require_Parser = __commonJS({
+  "node_modules/pseudocode/src/Parser.js"(exports2, module2) {
+    var utils = require_utils();
+    var ParseError = require_ParseError();
+    var ParseNode = function(type, val) {
+      this.type = type;
+      this.value = val;
+      this.children = [];
+    };
+    ParseNode.prototype.toString = function(level) {
+      if (!level) level = 0;
+      var indent = "";
+      for (var i = 0; i < level; i++) indent += "  ";
+      var res = `${indent}<${this.type}>`;
+      if (this.value) res += ` (${utils.toString(this.value)})`;
+      res += "\n";
+      if (this.children) {
+        for (var ci = 0; ci < this.children.length; ci++) {
+          var child = this.children[ci];
+          res += child.toString(level + 1);
+        }
+      }
+      return res;
+    };
+    ParseNode.prototype.addChild = function(childNode) {
+      if (!childNode)
+        throw new Error("Argument must not be null");
+      this.children.push(childNode);
+    };
+    var AtomNode = function(type, value, whitespace) {
+      this.type = type;
+      this.value = value;
+      this.children = null;
+      this.whitespace = !!whitespace;
+    };
+    AtomNode.prototype = ParseNode.prototype;
+    var Parser2 = function(lexer) {
+      this._lexer = lexer;
+    };
+    Parser2.prototype.parse = function() {
+      var root = new ParseNode("root");
+      while (true) {
+        var envName = this._acceptEnvironment();
+        if (envName === null) break;
+        var envNode;
+        if (envName === "algorithm")
+          envNode = this._parseAlgorithmInner();
+        else if (envName === "algorithmic")
+          envNode = this._parseAlgorithmicInner();
+        else
+          throw new ParseError(`Unexpected environment ${envName}`);
+        this._closeEnvironment(envName);
+        root.addChild(envNode);
+      }
+      this._lexer.expect("EOF");
+      return root;
+    };
+    Parser2.prototype._acceptEnvironment = function() {
+      var lexer = this._lexer;
+      if (!lexer.accept("func", "begin")) return null;
+      lexer.expect("open");
+      var envName = lexer.expect("ordinary");
+      lexer.expect("close");
+      return envName;
+    };
+    Parser2.prototype._closeEnvironment = function(envName) {
+      var lexer = this._lexer;
+      lexer.expect("func", "end");
+      lexer.expect("open");
+      lexer.expect("ordinary", envName);
+      lexer.expect("close");
+    };
+    Parser2.prototype._parseAlgorithmInner = function() {
+      var algNode = new ParseNode("algorithm");
+      while (true) {
+        var envName = this._acceptEnvironment();
+        if (envName !== null) {
+          if (envName !== "algorithmic")
+            throw new ParseError(`Unexpected environment ${envName}`);
+          var algmicNode = this._parseAlgorithmicInner();
+          this._closeEnvironment();
+          algNode.addChild(algmicNode);
+          continue;
+        }
+        var captionNode = this._parseCaption();
+        if (captionNode) {
+          algNode.addChild(captionNode);
+          continue;
+        }
+        break;
+      }
+      return algNode;
+    };
+    Parser2.prototype._parseAlgorithmicInner = function() {
+      var algmicNode = new ParseNode("algorithmic");
+      var node;
+      while (true) {
+        node = this._parseStatement(IO_STATEMENTS);
+        if (node) {
+          algmicNode.addChild(node);
+          continue;
+        }
+        node = this._parseBlock();
+        if (node.children.length > 0) {
+          algmicNode.addChild(node);
+          continue;
+        }
+        break;
+      }
+      return algmicNode;
+    };
+    Parser2.prototype._parseCaption = function() {
+      var lexer = this._lexer;
+      if (!lexer.accept("func", "caption")) return null;
+      var captionNode = new ParseNode("caption");
+      lexer.expect("open");
+      captionNode.addChild(this._parseCloseText());
+      lexer.expect("close");
+      return captionNode;
+    };
+    Parser2.prototype._parseBlock = function() {
+      var blockNode = new ParseNode("block");
+      while (true) {
+        var controlNode = this._parseControl();
+        if (controlNode) {
+          blockNode.addChild(controlNode);
+          continue;
+        }
+        var functionNode = this._parseFunction();
+        if (functionNode) {
+          blockNode.addChild(functionNode);
+          continue;
+        }
+        var statementNode = this._parseStatement(STATEMENTS);
+        if (statementNode) {
+          blockNode.addChild(statementNode);
+          continue;
+        }
+        var commandNode = this._parseCommand(COMMANDS);
+        if (commandNode) {
+          blockNode.addChild(commandNode);
+          continue;
+        }
+        var commentNode = this._parseComment();
+        if (commentNode) {
+          blockNode.addChild(commentNode);
+          continue;
+        }
+        break;
+      }
+      return blockNode;
+    };
+    Parser2.prototype._parseControl = function() {
+      var controlNode;
+      if (controlNode = this._parseIf()) return controlNode;
+      if (controlNode = this._parseLoop()) return controlNode;
+      if (controlNode = this._parseRepeat()) return controlNode;
+      if (controlNode = this._parseUpon()) return controlNode;
+    };
+    Parser2.prototype._parseFunction = function() {
+      var lexer = this._lexer;
+      if (!lexer.accept("func", ["function", "procedure"])) return null;
+      var funcType = this._lexer.get().text;
+      lexer.expect("open");
+      var funcName = lexer.expect("ordinary");
+      lexer.expect("close");
+      lexer.expect("open");
+      var argsNode = this._parseCloseText();
+      lexer.expect("close");
+      var blockNode = this._parseBlock();
+      lexer.expect("func", `end${funcType}`);
+      var functionNode = new ParseNode(
+        "function",
+        { type: funcType, name: funcName }
+      );
+      functionNode.addChild(argsNode);
+      functionNode.addChild(blockNode);
+      return functionNode;
+    };
+    Parser2.prototype._parseIf = function() {
+      if (!this._lexer.accept("func", "if")) return null;
+      var ifNode = new ParseNode("if");
+      this._lexer.expect("open");
+      ifNode.addChild(this._parseCond());
+      this._lexer.expect("close");
+      ifNode.addChild(this._parseBlock());
+      var numElif = 0;
+      while (this._lexer.accept("func", ["elif", "elsif", "elseif"])) {
+        this._lexer.expect("open");
+        ifNode.addChild(this._parseCond());
+        this._lexer.expect("close");
+        ifNode.addChild(this._parseBlock());
+        numElif++;
+      }
+      var hasElse = false;
+      if (this._lexer.accept("func", "else")) {
+        hasElse = true;
+        ifNode.addChild(this._parseBlock());
+      }
+      this._lexer.expect("func", "endif");
+      ifNode.value = { numElif, hasElse };
+      return ifNode;
+    };
+    Parser2.prototype._parseLoop = function() {
+      if (!this._lexer.accept("func", ["FOR", "FORALL", "WHILE"])) return null;
+      var loopName = this._lexer.get().text.toLowerCase();
+      var loopNode = new ParseNode("loop", loopName);
+      this._lexer.expect("open");
+      loopNode.addChild(this._parseCond());
+      this._lexer.expect("close");
+      loopNode.addChild(this._parseBlock());
+      var endLoop = loopName !== "forall" ? `end${loopName}` : "endfor";
+      this._lexer.expect("func", endLoop);
+      return loopNode;
+    };
+    Parser2.prototype._parseRepeat = function() {
+      if (!this._lexer.accept("func", ["REPEAT"])) return null;
+      var repeatName = this._lexer.get().text.toLowerCase();
+      var repeatNode = new ParseNode("repeat", repeatName);
+      repeatNode.addChild(this._parseBlock());
+      this._lexer.expect("func", "until");
+      this._lexer.expect("open");
+      repeatNode.addChild(this._parseCond());
+      this._lexer.expect("close");
+      return repeatNode;
+    };
+    Parser2.prototype._parseUpon = function() {
+      if (!this._lexer.accept("func", "upon")) return null;
+      var uponNode = new ParseNode("upon");
+      this._lexer.expect("open");
+      uponNode.addChild(this._parseCond());
+      this._lexer.expect("close");
+      uponNode.addChild(this._parseBlock());
+      this._lexer.expect("func", "endupon");
+      return uponNode;
+    };
+    var IO_STATEMENTS = ["ensure", "require", "input", "output"];
+    var STATEMENTS = ["state", "print", "return"];
+    Parser2.prototype._parseStatement = function(acceptStatements) {
+      if (!this._lexer.accept("func", acceptStatements)) return null;
+      var stmtName = this._lexer.get().text.toLowerCase();
+      var stmtNode = new ParseNode("statement", stmtName);
+      stmtNode.addChild(this._parseOpenText());
+      return stmtNode;
+    };
+    var COMMANDS = ["break", "continue"];
+    Parser2.prototype._parseCommand = function(acceptCommands) {
+      if (!this._lexer.accept("func", acceptCommands)) return null;
+      var cmdName = this._lexer.get().text.toLowerCase();
+      var cmdNode = new ParseNode("command", cmdName);
+      return cmdNode;
+    };
+    Parser2.prototype._parseComment = function() {
+      if (!this._lexer.accept("func", "comment")) return null;
+      var commentNode = new ParseNode("comment");
+      this._lexer.expect("open");
+      commentNode.addChild(this._parseCloseText());
+      this._lexer.expect("close");
+      return commentNode;
+    };
+    Parser2.prototype._parseCall = function() {
+      var lexer = this._lexer;
+      if (!lexer.accept("func", "call")) return null;
+      var anyWhitespace = lexer.get().whitespace;
+      lexer.expect("open");
+      var funcName = lexer.expect("ordinary");
+      lexer.expect("close");
+      var callNode = new ParseNode("call");
+      callNode.whitespace = anyWhitespace;
+      callNode.value = funcName;
+      lexer.expect("open");
+      var argsNode = this._parseCloseText();
+      callNode.addChild(argsNode);
+      lexer.expect("close");
+      return callNode;
+    };
+    Parser2.prototype._parseCond = Parser2.prototype._parseCloseText = function() {
+      return this._parseText("close");
+    };
+    Parser2.prototype._parseOpenText = function() {
+      return this._parseText("open");
+    };
+    Parser2.prototype._parseText = function(openOrClose) {
+      var textNode = new ParseNode(`${openOrClose}-text`);
+      var anyWhitespace = false;
+      var subTextNode;
+      while (true) {
+        subTextNode = this._parseAtom() || this._parseCall();
+        if (subTextNode) {
+          if (anyWhitespace) subTextNode.whitespace |= anyWhitespace;
+          textNode.addChild(subTextNode);
+          continue;
+        }
+        if (this._lexer.accept("open")) {
+          subTextNode = this._parseCloseText();
+          anyWhitespace = this._lexer.get().whitespace;
+          subTextNode.whitespace = anyWhitespace;
+          textNode.addChild(subTextNode);
+          this._lexer.expect("close");
+          anyWhitespace = this._lexer.get().whitespace;
+          continue;
+        }
+        break;
+      }
+      return textNode;
+    };
+    var ACCEPTED_TOKEN_BY_ATOM = {
+      "ordinary": { tokenType: "ordinary" },
+      "math": { tokenType: "math" },
+      "special": { tokenType: "special" },
+      "cond-symbol": {
+        tokenType: "func",
+        tokenValues: ["and", "or", "not", "true", "false", "to", "downto"]
+      },
+      "quote-symbol": {
+        tokenType: "quote"
+      },
+      "sizing-dclr": {
+        tokenType: "func",
+        tokenValues: [
+          "tiny",
+          "scriptsize",
+          "footnotesize",
+          "small",
+          "normalsize",
+          "large",
+          "Large",
+          "LARGE",
+          "huge",
+          "Huge"
+        ]
+      },
+      "font-dclr": {
+        tokenType: "func",
+        tokenValues: [
+          "normalfont",
+          "rmfamily",
+          "sffamily",
+          "ttfamily",
+          "upshape",
+          "itshape",
+          "slshape",
+          "scshape",
+          "bfseries",
+          "mdseries",
+          "lfseries"
+        ]
+      },
+      "font-cmd": {
+        tokenType: "func",
+        tokenValues: [
+          "textnormal",
+          "textrm",
+          "textsf",
+          "texttt",
+          "textup",
+          "textit",
+          "textsl",
+          "textsc",
+          "uppercase",
+          "lowercase",
+          "textbf",
+          "textmd",
+          "textlf"
+        ]
+      },
+      "text-symbol": {
+        tokenType: "func",
+        tokenValues: ["textbackslash"]
+      }
+    };
+    Parser2.prototype._parseAtom = function() {
+      for (var atomType in ACCEPTED_TOKEN_BY_ATOM) {
+        var acceptToken = ACCEPTED_TOKEN_BY_ATOM[atomType];
+        var tokenText = this._lexer.accept(
+          acceptToken.tokenType,
+          acceptToken.tokenValues
+        );
+        if (tokenText === null) continue;
+        var anyWhitespace = this._lexer.get().whitespace;
+        if (atomType !== "ordinary" && atomType !== "math")
+          tokenText = tokenText.toLowerCase();
+        return new AtomNode(atomType, tokenText, anyWhitespace);
+      }
+      return null;
+    };
+    module2.exports = Parser2;
+  }
+});
 
 // node_modules/mathjax-full/js/core/DOMAdaptor.js
 var require_DOMAdaptor = __commonJS({
@@ -35034,592 +35620,6 @@ var init_svg_math = __esm({
   }
 });
 
-// node_modules/pseudocode/src/utils.js
-var require_utils = __commonJS({
-  "node_modules/pseudocode/src/utils.js"(exports2, module2) {
-    function isString(str) {
-      return typeof str === "string" || str instanceof String;
-    }
-    function isObject(obj) {
-      return typeof obj === "object" && obj instanceof Object;
-    }
-    function toString(obj) {
-      if (!isObject(obj))
-        return `${obj}`;
-      var parts = [];
-      for (var member in obj)
-        parts.push(`${member}: ${toString(obj[member])}`);
-      return parts.join(", ");
-    }
-    module2.exports = {
-      isString,
-      isObject,
-      toString
-    };
-  }
-});
-
-// node_modules/pseudocode/src/ParseError.js
-var require_ParseError = __commonJS({
-  "node_modules/pseudocode/src/ParseError.js"(exports2, module2) {
-    function ParseError(message, pos, input) {
-      var error = `Error: ${message}`;
-      if (pos !== void 0 && input !== void 0) {
-        error += ` at position ${pos}: \``;
-        input = `${input.slice(0, pos)}\u21B1${input.slice(pos)}`;
-        var begin = Math.max(0, pos - 15);
-        var end = pos + 15;
-        error += `${input.slice(begin, end)}\``;
-      }
-      this.message = error;
-    }
-    ParseError.prototype = Object.create(Error.prototype);
-    ParseError.prototype.constructor = ParseError;
-    module2.exports = ParseError;
-  }
-});
-
-// node_modules/pseudocode/src/Lexer.js
-var require_Lexer = __commonJS({
-  "node_modules/pseudocode/src/Lexer.js"(exports2, module2) {
-    var utils = require_utils();
-    var ParseError = require_ParseError();
-    var Lexer2 = function(input) {
-      this._input = input;
-      this._remain = input;
-      this._pos = 0;
-      this._nextAtom = this._currentAtom = null;
-      this._next();
-    };
-    Lexer2.prototype.accept = function(type, text) {
-      if (this._nextAtom.type === type && this._matchText(text)) {
-        this._next();
-        return this._currentAtom.text;
-      }
-      return null;
-    };
-    Lexer2.prototype.expect = function(type, text) {
-      var nextAtom = this._nextAtom;
-      if (nextAtom.type !== type) {
-        throw new ParseError(
-          `Expected an atom of ${type} but received ${nextAtom.type}`,
-          this._pos,
-          this._input
-        );
-      }
-      if (!this._matchText(text)) {
-        throw new ParseError(
-          `Expected \`${text}\` but received \`${nextAtom.text}\``,
-          this._pos,
-          this._input
-        );
-      }
-      this._next();
-      return this._currentAtom.text;
-    };
-    Lexer2.prototype.get = function() {
-      return this._currentAtom;
-    };
-    var mathPattern = {
-      exec: function(str) {
-        var delimiters = [
-          { start: "$", end: "$" },
-          { start: "\\(", end: "\\)" }
-        ];
-        var totalLen = str.length;
-        for (var di = 0; di < delimiters.length; di++) {
-          var startDel = delimiters[di].start;
-          if (str.indexOf(startDel) !== 0) continue;
-          var endDel = delimiters[di].end;
-          var endPos = startDel.length;
-          var remain = str.slice(endPos);
-          while (endPos < totalLen) {
-            var pos = remain.indexOf(endDel);
-            if (pos < 0) {
-              throw new ParseError(
-                "Math environment is not closed",
-                this._pos,
-                this._input
-              );
-            }
-            if (pos > 0 && remain[pos - 1] === "\\") {
-              var skipLen = pos + endDel.length;
-              remain = remain.slice(skipLen);
-              endPos += skipLen;
-              continue;
-            }
-            var res = [
-              str.slice(0, endPos + pos + endDel.length),
-              str.slice(startDel.length, endPos + pos)
-            ];
-            return res;
-          }
-        }
-        return null;
-      }
-    };
-    var atomRegex = {
-      // TODO: which is correct? func: /^\\(?:[a-zA-Z]+|.)/,
-      special: /^(\\\\|\\{|\\}|\\\$|\\&|\\#|\\%|\\_)/,
-      math: mathPattern,
-      ///^\$.*\$/
-      func: /^\\([a-zA-Z]+)/,
-      open: /^\{/,
-      close: /^\}/,
-      quote: /^(`|``|'|'')/,
-      ordinary: /^[^\\{}$&#%_\s]+/
-    };
-    var commentRegex = /^%.*/;
-    var whitespaceRegex = /^\s+/;
-    Lexer2.prototype._skip = function(len) {
-      this._pos += len;
-      this._remain = this._remain.slice(len);
-    };
-    Lexer2.prototype._next = function() {
-      var anyWhitespace = false;
-      while (1) {
-        var whitespaceMatch = whitespaceRegex.exec(this._remain);
-        if (whitespaceMatch) {
-          anyWhitespace = true;
-          var whitespaceLen = whitespaceMatch[0].length;
-          this._skip(whitespaceLen);
-        }
-        var commentMatch = commentRegex.exec(this._remain);
-        if (!commentMatch) break;
-        var commentLen = commentMatch[0].length;
-        this._skip(commentLen);
-      }
-      this._currentAtom = this._nextAtom;
-      if (this._remain === "") {
-        this._nextAtom = {
-          type: "EOF",
-          text: null,
-          whitespace: false
-        };
-        return false;
-      }
-      for (var type in atomRegex) {
-        var regex = atomRegex[type];
-        var match = regex.exec(this._remain);
-        if (!match) continue;
-        var matchText = match[0];
-        var usefulText = match[1] ? match[1] : matchText;
-        this._nextAtom = {
-          type,
-          /* special, func, open, close, ordinary, math */
-          text: usefulText,
-          /* the text value of the atom */
-          whitespace: anyWhitespace
-          /* any whitespace before the atom */
-        };
-        this._pos += matchText.length;
-        this._remain = this._remain.slice(match[0].length);
-        return true;
-      }
-      throw new ParseError("Unrecoganizable atom", this._pos, this._input);
-    };
-    Lexer2.prototype._matchText = function(text) {
-      if (text === null || text === void 0) return true;
-      if (utils.isString(text))
-        return text.toLowerCase() === this._nextAtom.text.toLowerCase();
-      else
-        return text.some((str) => str.toLowerCase() === this._nextAtom.text.toLowerCase());
-    };
-    module2.exports = Lexer2;
-  }
-});
-
-// node_modules/pseudocode/src/Parser.js
-var require_Parser = __commonJS({
-  "node_modules/pseudocode/src/Parser.js"(exports2, module2) {
-    var utils = require_utils();
-    var ParseError = require_ParseError();
-    var ParseNode = function(type, val) {
-      this.type = type;
-      this.value = val;
-      this.children = [];
-    };
-    ParseNode.prototype.toString = function(level) {
-      if (!level) level = 0;
-      var indent = "";
-      for (var i = 0; i < level; i++) indent += "  ";
-      var res = `${indent}<${this.type}>`;
-      if (this.value) res += ` (${utils.toString(this.value)})`;
-      res += "\n";
-      if (this.children) {
-        for (var ci = 0; ci < this.children.length; ci++) {
-          var child = this.children[ci];
-          res += child.toString(level + 1);
-        }
-      }
-      return res;
-    };
-    ParseNode.prototype.addChild = function(childNode) {
-      if (!childNode)
-        throw new Error("Argument must not be null");
-      this.children.push(childNode);
-    };
-    var AtomNode = function(type, value, whitespace) {
-      this.type = type;
-      this.value = value;
-      this.children = null;
-      this.whitespace = !!whitespace;
-    };
-    AtomNode.prototype = ParseNode.prototype;
-    var Parser2 = function(lexer) {
-      this._lexer = lexer;
-    };
-    Parser2.prototype.parse = function() {
-      var root = new ParseNode("root");
-      while (true) {
-        var envName = this._acceptEnvironment();
-        if (envName === null) break;
-        var envNode;
-        if (envName === "algorithm")
-          envNode = this._parseAlgorithmInner();
-        else if (envName === "algorithmic")
-          envNode = this._parseAlgorithmicInner();
-        else
-          throw new ParseError(`Unexpected environment ${envName}`);
-        this._closeEnvironment(envName);
-        root.addChild(envNode);
-      }
-      this._lexer.expect("EOF");
-      return root;
-    };
-    Parser2.prototype._acceptEnvironment = function() {
-      var lexer = this._lexer;
-      if (!lexer.accept("func", "begin")) return null;
-      lexer.expect("open");
-      var envName = lexer.expect("ordinary");
-      lexer.expect("close");
-      return envName;
-    };
-    Parser2.prototype._closeEnvironment = function(envName) {
-      var lexer = this._lexer;
-      lexer.expect("func", "end");
-      lexer.expect("open");
-      lexer.expect("ordinary", envName);
-      lexer.expect("close");
-    };
-    Parser2.prototype._parseAlgorithmInner = function() {
-      var algNode = new ParseNode("algorithm");
-      while (true) {
-        var envName = this._acceptEnvironment();
-        if (envName !== null) {
-          if (envName !== "algorithmic")
-            throw new ParseError(`Unexpected environment ${envName}`);
-          var algmicNode = this._parseAlgorithmicInner();
-          this._closeEnvironment();
-          algNode.addChild(algmicNode);
-          continue;
-        }
-        var captionNode = this._parseCaption();
-        if (captionNode) {
-          algNode.addChild(captionNode);
-          continue;
-        }
-        break;
-      }
-      return algNode;
-    };
-    Parser2.prototype._parseAlgorithmicInner = function() {
-      var algmicNode = new ParseNode("algorithmic");
-      var node;
-      while (true) {
-        node = this._parseStatement(IO_STATEMENTS);
-        if (node) {
-          algmicNode.addChild(node);
-          continue;
-        }
-        node = this._parseBlock();
-        if (node.children.length > 0) {
-          algmicNode.addChild(node);
-          continue;
-        }
-        break;
-      }
-      return algmicNode;
-    };
-    Parser2.prototype._parseCaption = function() {
-      var lexer = this._lexer;
-      if (!lexer.accept("func", "caption")) return null;
-      var captionNode = new ParseNode("caption");
-      lexer.expect("open");
-      captionNode.addChild(this._parseCloseText());
-      lexer.expect("close");
-      return captionNode;
-    };
-    Parser2.prototype._parseBlock = function() {
-      var blockNode = new ParseNode("block");
-      while (true) {
-        var controlNode = this._parseControl();
-        if (controlNode) {
-          blockNode.addChild(controlNode);
-          continue;
-        }
-        var functionNode = this._parseFunction();
-        if (functionNode) {
-          blockNode.addChild(functionNode);
-          continue;
-        }
-        var statementNode = this._parseStatement(STATEMENTS);
-        if (statementNode) {
-          blockNode.addChild(statementNode);
-          continue;
-        }
-        var commandNode = this._parseCommand(COMMANDS);
-        if (commandNode) {
-          blockNode.addChild(commandNode);
-          continue;
-        }
-        var commentNode = this._parseComment();
-        if (commentNode) {
-          blockNode.addChild(commentNode);
-          continue;
-        }
-        break;
-      }
-      return blockNode;
-    };
-    Parser2.prototype._parseControl = function() {
-      var controlNode;
-      if (controlNode = this._parseIf()) return controlNode;
-      if (controlNode = this._parseLoop()) return controlNode;
-      if (controlNode = this._parseRepeat()) return controlNode;
-      if (controlNode = this._parseUpon()) return controlNode;
-    };
-    Parser2.prototype._parseFunction = function() {
-      var lexer = this._lexer;
-      if (!lexer.accept("func", ["function", "procedure"])) return null;
-      var funcType = this._lexer.get().text;
-      lexer.expect("open");
-      var funcName = lexer.expect("ordinary");
-      lexer.expect("close");
-      lexer.expect("open");
-      var argsNode = this._parseCloseText();
-      lexer.expect("close");
-      var blockNode = this._parseBlock();
-      lexer.expect("func", `end${funcType}`);
-      var functionNode = new ParseNode(
-        "function",
-        { type: funcType, name: funcName }
-      );
-      functionNode.addChild(argsNode);
-      functionNode.addChild(blockNode);
-      return functionNode;
-    };
-    Parser2.prototype._parseIf = function() {
-      if (!this._lexer.accept("func", "if")) return null;
-      var ifNode = new ParseNode("if");
-      this._lexer.expect("open");
-      ifNode.addChild(this._parseCond());
-      this._lexer.expect("close");
-      ifNode.addChild(this._parseBlock());
-      var numElif = 0;
-      while (this._lexer.accept("func", ["elif", "elsif", "elseif"])) {
-        this._lexer.expect("open");
-        ifNode.addChild(this._parseCond());
-        this._lexer.expect("close");
-        ifNode.addChild(this._parseBlock());
-        numElif++;
-      }
-      var hasElse = false;
-      if (this._lexer.accept("func", "else")) {
-        hasElse = true;
-        ifNode.addChild(this._parseBlock());
-      }
-      this._lexer.expect("func", "endif");
-      ifNode.value = { numElif, hasElse };
-      return ifNode;
-    };
-    Parser2.prototype._parseLoop = function() {
-      if (!this._lexer.accept("func", ["FOR", "FORALL", "WHILE"])) return null;
-      var loopName = this._lexer.get().text.toLowerCase();
-      var loopNode = new ParseNode("loop", loopName);
-      this._lexer.expect("open");
-      loopNode.addChild(this._parseCond());
-      this._lexer.expect("close");
-      loopNode.addChild(this._parseBlock());
-      var endLoop = loopName !== "forall" ? `end${loopName}` : "endfor";
-      this._lexer.expect("func", endLoop);
-      return loopNode;
-    };
-    Parser2.prototype._parseRepeat = function() {
-      if (!this._lexer.accept("func", ["REPEAT"])) return null;
-      var repeatName = this._lexer.get().text.toLowerCase();
-      var repeatNode = new ParseNode("repeat", repeatName);
-      repeatNode.addChild(this._parseBlock());
-      this._lexer.expect("func", "until");
-      this._lexer.expect("open");
-      repeatNode.addChild(this._parseCond());
-      this._lexer.expect("close");
-      return repeatNode;
-    };
-    Parser2.prototype._parseUpon = function() {
-      if (!this._lexer.accept("func", "upon")) return null;
-      var uponNode = new ParseNode("upon");
-      this._lexer.expect("open");
-      uponNode.addChild(this._parseCond());
-      this._lexer.expect("close");
-      uponNode.addChild(this._parseBlock());
-      this._lexer.expect("func", "endupon");
-      return uponNode;
-    };
-    var IO_STATEMENTS = ["ensure", "require", "input", "output"];
-    var STATEMENTS = ["state", "print", "return"];
-    Parser2.prototype._parseStatement = function(acceptStatements) {
-      if (!this._lexer.accept("func", acceptStatements)) return null;
-      var stmtName = this._lexer.get().text.toLowerCase();
-      var stmtNode = new ParseNode("statement", stmtName);
-      stmtNode.addChild(this._parseOpenText());
-      return stmtNode;
-    };
-    var COMMANDS = ["break", "continue"];
-    Parser2.prototype._parseCommand = function(acceptCommands) {
-      if (!this._lexer.accept("func", acceptCommands)) return null;
-      var cmdName = this._lexer.get().text.toLowerCase();
-      var cmdNode = new ParseNode("command", cmdName);
-      return cmdNode;
-    };
-    Parser2.prototype._parseComment = function() {
-      if (!this._lexer.accept("func", "comment")) return null;
-      var commentNode = new ParseNode("comment");
-      this._lexer.expect("open");
-      commentNode.addChild(this._parseCloseText());
-      this._lexer.expect("close");
-      return commentNode;
-    };
-    Parser2.prototype._parseCall = function() {
-      var lexer = this._lexer;
-      if (!lexer.accept("func", "call")) return null;
-      var anyWhitespace = lexer.get().whitespace;
-      lexer.expect("open");
-      var funcName = lexer.expect("ordinary");
-      lexer.expect("close");
-      var callNode = new ParseNode("call");
-      callNode.whitespace = anyWhitespace;
-      callNode.value = funcName;
-      lexer.expect("open");
-      var argsNode = this._parseCloseText();
-      callNode.addChild(argsNode);
-      lexer.expect("close");
-      return callNode;
-    };
-    Parser2.prototype._parseCond = Parser2.prototype._parseCloseText = function() {
-      return this._parseText("close");
-    };
-    Parser2.prototype._parseOpenText = function() {
-      return this._parseText("open");
-    };
-    Parser2.prototype._parseText = function(openOrClose) {
-      var textNode = new ParseNode(`${openOrClose}-text`);
-      var anyWhitespace = false;
-      var subTextNode;
-      while (true) {
-        subTextNode = this._parseAtom() || this._parseCall();
-        if (subTextNode) {
-          if (anyWhitespace) subTextNode.whitespace |= anyWhitespace;
-          textNode.addChild(subTextNode);
-          continue;
-        }
-        if (this._lexer.accept("open")) {
-          subTextNode = this._parseCloseText();
-          anyWhitespace = this._lexer.get().whitespace;
-          subTextNode.whitespace = anyWhitespace;
-          textNode.addChild(subTextNode);
-          this._lexer.expect("close");
-          anyWhitespace = this._lexer.get().whitespace;
-          continue;
-        }
-        break;
-      }
-      return textNode;
-    };
-    var ACCEPTED_TOKEN_BY_ATOM = {
-      "ordinary": { tokenType: "ordinary" },
-      "math": { tokenType: "math" },
-      "special": { tokenType: "special" },
-      "cond-symbol": {
-        tokenType: "func",
-        tokenValues: ["and", "or", "not", "true", "false", "to", "downto"]
-      },
-      "quote-symbol": {
-        tokenType: "quote"
-      },
-      "sizing-dclr": {
-        tokenType: "func",
-        tokenValues: [
-          "tiny",
-          "scriptsize",
-          "footnotesize",
-          "small",
-          "normalsize",
-          "large",
-          "Large",
-          "LARGE",
-          "huge",
-          "Huge"
-        ]
-      },
-      "font-dclr": {
-        tokenType: "func",
-        tokenValues: [
-          "normalfont",
-          "rmfamily",
-          "sffamily",
-          "ttfamily",
-          "upshape",
-          "itshape",
-          "slshape",
-          "scshape",
-          "bfseries",
-          "mdseries",
-          "lfseries"
-        ]
-      },
-      "font-cmd": {
-        tokenType: "func",
-        tokenValues: [
-          "textnormal",
-          "textrm",
-          "textsf",
-          "texttt",
-          "textup",
-          "textit",
-          "textsl",
-          "textsc",
-          "uppercase",
-          "lowercase",
-          "textbf",
-          "textmd",
-          "textlf"
-        ]
-      },
-      "text-symbol": {
-        tokenType: "func",
-        tokenValues: ["textbackslash"]
-      }
-    };
-    Parser2.prototype._parseAtom = function() {
-      for (var atomType in ACCEPTED_TOKEN_BY_ATOM) {
-        var acceptToken = ACCEPTED_TOKEN_BY_ATOM[atomType];
-        var tokenText = this._lexer.accept(
-          acceptToken.tokenType,
-          acceptToken.tokenValues
-        );
-        if (tokenText === null) continue;
-        var anyWhitespace = this._lexer.get().whitespace;
-        if (atomType !== "ordinary" && atomType !== "math")
-          tokenText = tokenText.toLowerCase();
-        return new AtomNode(atomType, tokenText, anyWhitespace);
-      }
-      return null;
-    };
-    module2.exports = Parser2;
-  }
-});
-
 // node_modules/tslib/tslib.es6.js
 var tslib_es6_exports = {};
 __export(tslib_es6_exports, {
@@ -57608,11 +57608,503 @@ __export(main_exports, {
 });
 module.exports = __toCommonJS(main_exports);
 
-// src/algorithms/render.ts
-var import_obsidian = require("obsidian");
+// src/rendering/editor-dom.ts
+function editorFragment(node) {
+  return !!node.closest('.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]') || node.isContentEditable;
+}
+function nativeEditorInteraction(node) {
+  if (!editorFragment(node)) return false;
+  const scope = node.closest(".callout") || node;
+  if (scope.isContentEditable || scope.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]')) return true;
+  const active3 = node.ownerDocument.activeElement;
+  if (active3?.matches("input,textarea,select") && scope.contains(active3)) return true;
+  const selection = node.ownerDocument.getSelection();
+  return !!selection && !!(selection.anchorNode && scope.contains(selection.anchorNode) || selection.focusNode && scope.contains(selection.focusNode));
+}
+function nativeCalloutBodyInteraction(node) {
+  if (!editorFragment(node)) return false;
+  const scope = node.closest(".callout") || node;
+  if (scope.isContentEditable) return true;
+  const title = scope.querySelector(":scope > .callout-title");
+  for (const editable of scope.querySelectorAll('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea,select'))
+    if (!title?.contains(editable)) return true;
+  const active3 = scope.ownerDocument.activeElement;
+  if (active3 && scope.contains(active3) && (active3.matches("input,textarea,select") || active3.isContentEditable)) return true;
+  const selection = scope.ownerDocument.getSelection();
+  return !!selection && !!(selection.anchorNode && scope.contains(selection.anchorNode) || selection.focusNode && scope.contains(selection.focusNode));
+}
+function editorIdleScheduler(root, work, delay = 30) {
+  const doc = root.ownerDocument, win = doc.defaultView;
+  let timer, disposed = false, quietUntil = 0, touches = 0;
+  const pointers = /* @__PURE__ */ new Set();
+  const schedule = (wait = delay) => {
+    if (disposed) return;
+    win.clearTimeout(timer);
+    timer = win.setTimeout(() => {
+      timer = void 0;
+      if (disposed || pointers.size || touches) return;
+      const remaining = quietUntil - Date.now();
+      if (remaining > 0) {
+        schedule(remaining);
+        return;
+      }
+      work();
+    }, wait);
+  };
+  const down = (event) => {
+    if (event.pointerType === "touch" || event.pointerType === "pen") {
+      pointers.add(event.pointerId);
+      win.clearTimeout(timer);
+      timer = void 0;
+    }
+  };
+  const up = (event) => {
+    if (pointers.delete(event.pointerId) && !pointers.size) {
+      quietUntil = Date.now() + 180;
+      schedule(180);
+    }
+  };
+  const scroll = () => {
+    quietUntil = Date.now() + 180;
+    schedule(180);
+  };
+  const touch = (event) => {
+    if (event.type !== "touchstart" && !touches) return;
+    touches = event.touches.length;
+    if (touches) {
+      win.clearTimeout(timer);
+      timer = void 0;
+    } else {
+      quietUntil = Date.now() + 180;
+      schedule(180);
+    }
+  };
+  const blur = () => {
+    pointers.clear();
+    touches = 0;
+    schedule();
+  };
+  root.addEventListener("pointerdown", down, { passive: true, capture: true });
+  doc.addEventListener("pointerup", up, { passive: true, capture: true });
+  doc.addEventListener("pointercancel", up, { passive: true, capture: true });
+  root.addEventListener("scroll", scroll, { passive: true, capture: true });
+  root.addEventListener("touchstart", touch, { passive: true, capture: true });
+  doc.addEventListener("touchend", touch, { passive: true, capture: true });
+  doc.addEventListener("touchcancel", touch, { passive: true, capture: true });
+  win.addEventListener("blur", blur);
+  return { schedule, isIdle: () => !disposed && !pointers.size && !touches && Date.now() >= quietUntil, dispose() {
+    disposed = true;
+    win.clearTimeout(timer);
+    pointers.clear();
+    root.removeEventListener("pointerdown", down, true);
+    doc.removeEventListener("pointerup", up, true);
+    doc.removeEventListener("pointercancel", up, true);
+    root.removeEventListener("scroll", scroll, true);
+    win.removeEventListener("blur", blur);
+    root.removeEventListener("touchstart", touch, true);
+    doc.removeEventListener("touchend", touch, true);
+    doc.removeEventListener("touchcancel", touch, true);
+  } };
+}
+
+// src/typography/continuations.ts
+var quote = (line) => {
+  const prefix = line.match(/^(?: {0,3}> ?)+/)?.[0] || "";
+  return { depth: prefix.match(/>/g)?.length || 0, body: line.slice(prefix.length) };
+};
+function mathContinuationLines(note) {
+  const result = /* @__PURE__ */ new Set();
+  for (const equation of note.equations) for (let line = equation.endLine + 1; line < note.lines.length; line++) {
+    const value = quote(note.lines[line]);
+    if (value.depth !== equation.depth || !value.body.trim()) break;
+    if (/^\s*\^[\w-]+\s*$/.test(value.body)) continue;
+    result.add(line);
+    break;
+  }
+  return result;
+}
+function markMathContinuations(root, note, infoFor) {
+  if (note.equations.length > 1200) return;
+  const starts = mathContinuationLines(note), marked = /* @__PURE__ */ new Set();
+  const paragraphs2 = [...root.matches("p") ? [root] : [], ...root.querySelectorAll("p")];
+  if (paragraphs2.length > 1200) return;
+  const safe = (p) => !p.closest("table,li,pre,.callout-title,.an-media,.an-algorithm") && !p.isContentEditable && (!editorFragment(p) || !!p.closest('[contenteditable="false"]') && !nativeCalloutBodyInteraction(p));
+  if (infoFor) for (const p of paragraphs2) {
+    const info = infoFor(p);
+    if (safe(p) && info && starts.has(info.lineStart)) marked.add(p);
+  }
+  const blocks = [...new Set([...root.querySelectorAll('.math-block,mjx-container[display="true"]')].map((node) => node.closest(".math-block") || node))];
+  const groups = /* @__PURE__ */ new Map();
+  for (const block of blocks) {
+    const info = infoFor ? infoFor(block) : { lineStart: 0, lineEnd: note.lines.length - 1 };
+    if (!info || !Number.isInteger(info.lineStart) || !Number.isInteger(info.lineEnd)) continue;
+    const key2 = `${info.lineStart}:${info.lineEnd}`, group = groups.get(key2) || { info, blocks: [] };
+    group.blocks.push(block);
+    groups.set(key2, group);
+  }
+  for (const { info, blocks: blocks2 } of groups.values()) {
+    const equations = note.equations.filter((eq) => eq.line >= info.lineStart && eq.endLine <= info.lineEnd);
+    if (equations.length !== blocks2.length) continue;
+    for (let index = 0; index < blocks2.length; index++) {
+      const equation = equations[index];
+      let line = equation.endLine + 1;
+      while (line < note.lines.length && /^\s*\^[\w-]+\s*$/.test(quote(note.lines[line]).body)) line++;
+      if (!starts.has(line)) continue;
+      const block = blocks2[index];
+      const outer = block.parentElement?.matches("p") ? block.parentElement : block;
+      let next = outer.nextElementSibling;
+      while (next?.matches(".phb-anchor") || next?.matches("p") && !next.textContent?.trim() && !next.querySelector("img,mjx-container")) next = next.nextElementSibling;
+      if (next?.matches("p") && safe(next)) marked.add(next);
+    }
+  }
+  for (const p of paragraphs2) if (safe(p) && p.classList.contains("an-prose-continuation") !== marked.has(p)) p.classList.toggle("an-prose-continuation", marked.has(p));
+}
+
+// src/styles/palettes.json
+var palettes_default = {
+  sakura: {
+    name: "Sakura",
+    mode: "light",
+    colors: {
+      def: "#a63c67",
+      thm: "#6952a0",
+      lem: "#8a4e8d",
+      prop: "#406e68",
+      cor: "#536c9a",
+      claim: "#996040",
+      example: "#8f6c25",
+      proof: "#697455"
+    }
+  },
+  mint: {
+    name: "Mint",
+    mode: "light",
+    colors: {
+      def: "#227c77",
+      thm: "#326694",
+      lem: "#65709d",
+      prop: "#457d5b",
+      cor: "#6b7552",
+      claim: "#4c7192",
+      example: "#916b35",
+      proof: "#647267"
+    }
+  },
+  sky: {
+    name: "Sky",
+    mode: "light",
+    colors: {
+      def: "#256f83",
+      thm: "#2f609c",
+      lem: "#665d98",
+      prop: "#3d7a70",
+      cor: "#536d86",
+      claim: "#7f668d",
+      example: "#956b35",
+      proof: "#5c6d5b"
+    }
+  },
+  forest: {
+    name: "Forest",
+    mode: "light",
+    colors: {
+      def: "#247651",
+      thm: "#286b76",
+      lem: "#71628c",
+      prop: "#62752e",
+      cor: "#42786b",
+      claim: "#44698c",
+      example: "#946b2f",
+      proof: "#687252"
+    }
+  },
+  mauve: {
+    name: "Mauve",
+    mode: "light",
+    colors: {
+      def: "#776085",
+      thm: "#674386",
+      lem: "#925d86",
+      prop: "#5d7767",
+      cor: "#646998",
+      claim: "#896440",
+      example: "#936c3f",
+      proof: "#72736c"
+    }
+  },
+  golden: {
+    name: "Golden",
+    mode: "light",
+    colors: {
+      def: "#88712e",
+      thm: "#9c582d",
+      lem: "#826489",
+      prop: "#617542",
+      cor: "#946640",
+      claim: "#587a7b",
+      example: "#a75c3c",
+      proof: "#77705b"
+    }
+  },
+  cherry: {
+    name: "Cherry",
+    mode: "light",
+    colors: {
+      def: "#9c3a55",
+      thm: "#7f3f65",
+      lem: "#845786",
+      prop: "#3e756b",
+      cor: "#626987",
+      claim: "#9c5e36",
+      example: "#906c32",
+      proof: "#69725b"
+    }
+  },
+  prussian: {
+    name: "Prussian",
+    mode: "light",
+    colors: {
+      def: "#2a6c76",
+      thm: "#28558a",
+      lem: "#6c608c",
+      prop: "#477966",
+      cor: "#526d94",
+      claim: "#887052",
+      example: "#926938",
+      proof: "#5b7172"
+    }
+  },
+  vampire: {
+    name: "Vampire",
+    mode: "dark",
+    colors: {
+      def: "#82d6ac",
+      thm: "#bca1e2",
+      lem: "#db9bc4",
+      prop: "#afd294",
+      cor: "#83c7d1",
+      claim: "#e5b78f",
+      example: "#dfc67d",
+      proof: "#a4b9a5"
+    }
+  },
+  abyss: {
+    name: "Abyss",
+    mode: "dark",
+    colors: {
+      def: "#73c9bc",
+      thm: "#82b6df",
+      lem: "#b4a1e0",
+      prop: "#9bcba7",
+      cor: "#78ccd2",
+      claim: "#d0ac8e",
+      example: "#d6c07c",
+      proof: "#a1b7b6"
+    }
+  },
+  radiation: {
+    name: "Radiation",
+    mode: "dark",
+    colors: {
+      def: "#86ca98",
+      thm: "#83bbce",
+      lem: "#b7a7ca",
+      prop: "#b8c984",
+      cor: "#8dcbb4",
+      claim: "#9baed0",
+      example: "#dec178",
+      proof: "#a8b898"
+    }
+  }
+};
+
+// src/indexing/environments.ts
+var ENVIRONMENT_STYLES = ["thm", "def", "lem", "prop", "cor", "claim", "example", "remark"];
+var object = (value) => !!value && typeof value === "object" && !Array.isArray(value);
+function validEnvironmentKey(key2, reserved) {
+  return /^[a-z][a-z0-9-]{0,39}$/.test(key2) && !reserved.includes(key2) && !["constructor", "prototype", "__proto__"].includes(key2);
+}
+function readEnvironments(raw, reserved) {
+  const result = {};
+  try {
+    if (raw.length > 6e4) return result;
+    const data = JSON.parse(raw);
+    if (!object(data)) return result;
+    for (const [key2, entry] of Object.entries(data).slice(0, 64)) {
+      if (!validEnvironmentKey(key2, reserved) || !object(entry) || typeof entry.name !== "string" || !entry.name.trim()) continue;
+      const style = ENVIRONMENT_STYLES.includes(entry.style) ? entry.style : "thm";
+      const clean = { name: entry.name.trim().slice(0, 100), abbr: typeof entry.abbr === "string" ? entry.abbr.trim().slice(0, 100) || key2 : key2, style, numbered: entry.numbered !== false };
+      for (const mode of ["light", "dark"]) if (typeof entry[mode] === "string" && /^#[0-9a-f]{6}$/i.test(entry[mode])) clean[mode] = entry[mode];
+      result[key2] = clean;
+    }
+  } catch {
+  }
+  return result;
+}
+function readReferenceOverrides(raw, keys) {
+  const result = {};
+  try {
+    if (raw.length > 6e4) return result;
+    const data = JSON.parse(raw);
+    if (!object(data)) return result;
+    for (const key2 of keys) {
+      const entry = data[key2];
+      if (!object(entry)) continue;
+      const clean = {};
+      for (const field of ["name", "abbr", "format"]) if (typeof entry[field] === "string" && entry[field].trim()) clean[field] = entry[field].trim().slice(0, field === "format" ? 500 : 100);
+      result[key2] = clean;
+    }
+  } catch {
+  }
+  return result;
+}
+
+// src/algorithms/model.ts
+var import_Lexer = __toESM(require_Lexer());
+var import_Parser = __toESM(require_Parser());
+function algorithmText(nodes) {
+  return nodes.map((node) => {
+    const value = typeof node.value === "string" ? node.value : "";
+    const text = /^(?:font-|sizing-)/.test(node.type) ? "" : node.type === "call" ? value + "(" + algorithmText(node.children || []) + ")" : node.children ? algorithmText(node.children) : node.type === "special" ? value === "\\\\" ? " " : value.slice(1) : node.type === "text-symbol" ? "\\" : value;
+    return (node.whitespace ? " " : "") + text;
+  }).join("").trim();
+}
+function parseAlgorithm(source, title) {
+  if ((title?.length || 0) > 2e3) throw new Error("Algorithm caption exceeds 2,000 characters.");
+  if (source.length > 3e4) throw new Error("Algorithm source exceeds 30,000 characters.");
+  let nesting = 0;
+  for (const token of (source + (title || "")).matchAll(/(?<!\\)[{}]|\\(?:if|for|forall|while|repeat|upon|function|procedure|endif|endfor|endwhile|until|endupon|endfunction|endprocedure)\b/gi)) {
+    const closing2 = token[0] === "}" || /^\\(?:end|until)/i.test(token[0]);
+    nesting = Math.max(0, nesting + (closing2 ? -1 : 1));
+    if (nesting > 80) throw new Error("Algorithm nesting exceeds 80 levels.");
+  }
+  let lineNumbers;
+  source = source.trim().replace(/\\begin\{algorithmic\}\[([01])\]/g, (_all, n) => {
+    lineNumbers = n === "1";
+    return "\\begin{algorithmic}";
+  });
+  if (!/^\\begin\{(?:algorithm|algorithmic)\}/.test(source)) source = "\\begin{algorithmic}\n" + source + "\n\\end{algorithmic}";
+  const root = new import_Parser.default(new import_Lexer.default(source)).parse();
+  const children = root.children || [];
+  if (children.length !== 1) throw new Error("Use one algorithm per block.");
+  const tree = children[0];
+  const captions = (tree.children || []).filter((node) => node.type === "caption");
+  const bodies = tree.type === "algorithm" ? (tree.children || []).filter((node) => node.type === "algorithmic") : [tree];
+  if (bodies.length !== 1 || captions.length > 1) throw new Error("Use one algorithmic environment and at most one caption.");
+  let caption = captions[0]?.children?.[0]?.children || [];
+  if (title?.trim()) {
+    const titled = new import_Parser.default(new import_Lexer.default("\\begin{algorithm}\\caption{" + title.trim() + "}\\begin{algorithmic}\\end{algorithmic}\\end{algorithm}")).parse();
+    caption = titled.children?.[0]?.children?.[0]?.children?.[0]?.children || [];
+  }
+  return { tree: bodies[0], caption, title: algorithmText(caption), lineNumbers };
+}
+function algorithmBlocks(source) {
+  const lines = source.split("\n"), starts = [];
+  let offset = 0;
+  lines.forEach((line) => {
+    starts.push(offset);
+    offset += line.length + 1;
+  });
+  const visible2 = source.replace(/^\uFEFF?---\r?\n[\s\S]*?\r?\n---[^\S\r\n]*(?:\r?\n|$)/, (text) => text.replace(/[^\r\n]/g, " ")).replace(/<!--[\s\S]*?(?:-->|$)|%%[\s\S]*?(?:%%|$)/g, (text) => text.replace(/[^\r\n]/g, " ")).split("\n");
+  const quote3 = (line) => {
+    const match = line.match(/^(?:[ \t]*>[ \t]?)+/);
+    return { depth: match?.[0].match(/>/g)?.length || 0, body: line.slice(match?.[0].length || 0) };
+  };
+  const strip = (line, depth) => {
+    for (let n = 0; n < depth; n++) line = line.replace(/^[ \t]*>[ \t]?/, "");
+    return line;
+  };
+  const result = [];
+  let fence;
+  for (let line = 0; line < lines.length; line++) {
+    const q = quote3(visible2[line]), marker = q.body.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
+    if (fence) {
+      if (marker && q.depth === fence.depth && marker[1][0] === fence.marker[0] && marker[1].length >= fence.marker.length && !marker[2].trim()) fence = void 0;
+      continue;
+    }
+    const callout = q.depth && q.body.match(/^\[!algorithm(?:\|([^\]]*))?\][+-]?[ \t]*(.*?)\r?$/i);
+    if (!callout && !marker) continue;
+    if (marker && !/^algorithm\s*$/i.test(marker[2].trim())) {
+      fence = { marker: marker[1], depth: q.depth };
+      continue;
+    }
+    if (!q.depth && /^(?: {4}|\t)/.test(lines[line])) continue;
+    let endLine = line;
+    if (callout) {
+      while (endLine + 1 < lines.length) {
+        const next = quote3(lines[endLine + 1]);
+        if (next.depth < q.depth || next.depth === q.depth && /^\[![\w-]+/.test(next.body)) break;
+        endLine++;
+      }
+    } else {
+      for (let n = line + 1; n < lines.length; n++) {
+        const next = quote3(lines[n]), close = next.body.match(/^ {0,3}(`{3,}|~{3,})\s*$/);
+        if (next.depth < q.depth) break;
+        if (close && next.depth === q.depth && close[1][0] === marker[1][0] && close[1].length >= marker[1].length) {
+          endLine = n;
+          break;
+        }
+      }
+      if (endLine === line) {
+        fence = { marker: marker[1], depth: q.depth };
+        continue;
+      }
+    }
+    const ids = [];
+    const body = lines.slice(line + 1, callout ? endLine + 1 : endLine).map((text) => strip(text, q.depth)).filter((text) => {
+      const id2 = text.match(/^\s*\^([A-Za-z0-9-]+)\s*$/);
+      if (callout && id2) {
+        ids.push(id2[1]);
+        return false;
+      }
+      return true;
+    }).join("\n");
+    result.push({
+      from: starts[line],
+      to: starts[endLine] + lines[endLine].length,
+      line,
+      endLine,
+      depth: q.depth,
+      source: body,
+      title: callout ? callout[2] : void 0,
+      metadata: callout ? callout[1] : void 0,
+      callout: !!callout,
+      ids
+    });
+    line = endLine;
+  }
+  return result;
+}
 
 // src/i18n.ts
 var ENGLISH = {
+  "\u4FDD\u5B58\u914D\u8272\u8FC1\u79FB": "Save palette migration",
+  "\u63D2\u4EF6\u8BBE\u7F6E": "Plugin settings",
+  "\u73AF\u5883\u4E0E\u5F15\u7528": "Environments and references",
+  "\u914D\u8272\u4E0E\u5916\u89C2": "Palettes and appearance",
+  "\u6BB5\u843D\u6392\u7248": "Paragraph typography",
+  "\u76EE\u5F55\u4E0E\u5BFC\u51FA": "Contents and export",
+  "\u7F16\u53F7\u89C4\u5219": "Numbering rules",
+  "\u5F15\u7528\u9ED8\u8BA4\u683C\u5F0F\u4E0E\u7D22\u5F15": "Reference defaults and indexing",
+  "\u989C\u8272\u5728\u914D\u8272\u4E0E\u5916\u89C2\u4E2D\u6309\u8272\u677F\u8BBE\u7F6E\uFF1B\u7F16\u53F7\u9075\u5FAA\u4E0B\u65B9\u7684\u7F16\u53F7\u89C4\u5219\u3002": "Set colors for each palette under Palettes and appearance; counters follow the numbering rules below.",
+  "\u8BF7\u68C0\u67E5\u6807\u8BC6\u548C\u540D\u79F0\uFF1B\u6807\u8BC6\u4E0D\u80FD\u91CD\u590D\u6216\u5360\u7528\u5185\u7F6E\u73AF\u5883\u3002": "Check the ID and name. IDs must be unique and cannot replace built-in environments.",
+  "\u7F16\u8F91\u8272\u677F\u6A21\u5F0F": "Edit palette mode",
+  "\u6D45\u8272": "Light",
+  "\u6DF1\u8272": "Dark",
+  "\u73AF\u5883\u4E3B\u8272": "Environment accent",
+  "\u89D2\u6807\u989C\u8272": "Motif color",
+  "\u8DDF\u968F\u5F53\u524D\u8272\u677F\u9ED8\u8BA4\u503C": "Use this palette\u2019s default",
+  "\u4FEE\u6539\u53EA\u5E94\u7528\u4E8E\u5F53\u524D\u8272\u677F\uFF1B\u5207\u6362\u8272\u677F\u65F6\u6062\u590D\u8BE5\u8272\u677F\u81EA\u5DF1\u7684\u989C\u8272\u3002": "Changes apply only to the selected palette. Switching palettes restores each palette\u2019s own colors.",
+  "\u8FD9\u662F\u6240\u9009\u8272\u677F\u7684\u5916\u89C2\u9884\u89C8\u3002": "Preview of the selected palette.",
+  "\u6062\u590D\u6574\u5957\u8272\u677F\u9ED8\u8BA4\u503C": "Reset this palette",
+  "\u53EA\u6E05\u9664\u5F53\u524D\u8272\u677F\u7684\u6240\u6709\u73AF\u5883\u8986\u76D6\uFF0C\u5176\u4ED6\u8272\u677F\u4E0D\u53D8\u3002": "Clear all environment overrides for this palette. Other palettes keep their settings.",
+  "\u590D\u5236\u4E3A\u81EA\u5B9A\u4E49\u8272\u677F": "Copy to a custom palette",
+  "\u590D\u5236\u5F53\u524D\u8272\u677F\u53CA\u5176\u73AF\u5883\u8986\u76D6\uFF1B\u65B0\u8272\u677F\u53EF\u72EC\u7ACB\u7F16\u8F91\u548C\u6062\u590D\u9ED8\u8BA4\u3002": "Copy this palette and its environment overrides. The new palette can be edited and reset independently.",
+  "\u8272\u677F\u540D\u79F0": "Palette name",
+  "\u521B\u5EFA\u8272\u677F": "Create palette",
+  "\u8BF7\u586B\u5199\u8272\u677F\u540D\u79F0\uFF1B\u6700\u591A 32 \u4E2A\u81EA\u5B9A\u4E49\u8272\u677F\u3002": "Enter a palette name. Up to 32 custom palettes are supported.",
+  "\u5220\u9664\u5F53\u524D\u81EA\u5B9A\u4E49\u8272\u677F": "Delete this custom palette",
+  "\u5220\u9664\u8272\u677F": "Delete palette",
   "\u6807\u9898": "Title",
   "\u6B63\u6587": "Body",
   "\u73AF\u5883\u540D\u79F0\u4E0E\u5F15\u7528": "Environment names and references",
@@ -57951,488 +58443,6 @@ function t(key2, ...values) {
   return text.replace(/\{(\d+)\}/g, (match, index) => Number(index) < values.length ? String(values[Number(index)]) : match);
 }
 
-// src/diagrams/math.ts
-function mathSource(label2) {
-  const text = label2.trim();
-  if (text.startsWith("$$") && text.endsWith("$$")) return text.slice(2, -2).trim();
-  if (text.startsWith("$") && text.endsWith("$")) return text.slice(1, -1).trim();
-  if (text.startsWith("\\(") && text.endsWith("\\)") || text.startsWith("\\[") && text.endsWith("\\]")) return text.slice(2, -2).trim();
-  return text;
-}
-async function localMathSvg2(doc, source) {
-  const { localMathSvg: render } = await Promise.resolve().then(() => (init_svg_math(), svg_math_exports));
-  return render(doc, source);
-}
-
-// src/rendering/editor-dom.ts
-function editorFragment(node) {
-  return !!node.closest('.cm-editor,.cm-content,.markdown-source-view,[contenteditable="true"],[contenteditable="plaintext-only"]') || node.isContentEditable;
-}
-function nativeEditorInteraction(node) {
-  if (!editorFragment(node)) return false;
-  const scope = node.closest(".callout") || node;
-  if (scope.isContentEditable || scope.querySelector('[contenteditable="true"],[contenteditable="plaintext-only"]')) return true;
-  const active3 = node.ownerDocument.activeElement;
-  if (active3?.matches("input,textarea,select") && scope.contains(active3)) return true;
-  const selection = node.ownerDocument.getSelection();
-  return !!selection && !!(selection.anchorNode && scope.contains(selection.anchorNode) || selection.focusNode && scope.contains(selection.focusNode));
-}
-function nativeCalloutBodyInteraction(node) {
-  if (!editorFragment(node)) return false;
-  const scope = node.closest(".callout") || node;
-  if (scope.isContentEditable) return true;
-  const title = scope.querySelector(":scope > .callout-title");
-  for (const editable of scope.querySelectorAll('[contenteditable="true"],[contenteditable="plaintext-only"],input,textarea,select'))
-    if (!title?.contains(editable)) return true;
-  const active3 = scope.ownerDocument.activeElement;
-  if (active3 && scope.contains(active3) && (active3.matches("input,textarea,select") || active3.isContentEditable)) return true;
-  const selection = scope.ownerDocument.getSelection();
-  return !!selection && !!(selection.anchorNode && scope.contains(selection.anchorNode) || selection.focusNode && scope.contains(selection.focusNode));
-}
-function editorIdleScheduler(root, work, delay = 30) {
-  const doc = root.ownerDocument, win = doc.defaultView;
-  let timer, disposed = false, quietUntil = 0, touches = 0;
-  const pointers = /* @__PURE__ */ new Set();
-  const schedule = (wait = delay) => {
-    if (disposed) return;
-    win.clearTimeout(timer);
-    timer = win.setTimeout(() => {
-      timer = void 0;
-      if (disposed || pointers.size || touches) return;
-      const remaining = quietUntil - Date.now();
-      if (remaining > 0) {
-        schedule(remaining);
-        return;
-      }
-      work();
-    }, wait);
-  };
-  const down = (event) => {
-    if (event.pointerType === "touch" || event.pointerType === "pen") {
-      pointers.add(event.pointerId);
-      win.clearTimeout(timer);
-      timer = void 0;
-    }
-  };
-  const up = (event) => {
-    if (pointers.delete(event.pointerId) && !pointers.size) {
-      quietUntil = Date.now() + 180;
-      schedule(180);
-    }
-  };
-  const scroll = () => {
-    quietUntil = Date.now() + 180;
-    schedule(180);
-  };
-  const touch = (event) => {
-    if (event.type !== "touchstart" && !touches) return;
-    touches = event.touches.length;
-    if (touches) {
-      win.clearTimeout(timer);
-      timer = void 0;
-    } else {
-      quietUntil = Date.now() + 180;
-      schedule(180);
-    }
-  };
-  const blur = () => {
-    pointers.clear();
-    touches = 0;
-    schedule();
-  };
-  root.addEventListener("pointerdown", down, { passive: true, capture: true });
-  doc.addEventListener("pointerup", up, { passive: true, capture: true });
-  doc.addEventListener("pointercancel", up, { passive: true, capture: true });
-  root.addEventListener("scroll", scroll, { passive: true, capture: true });
-  root.addEventListener("touchstart", touch, { passive: true, capture: true });
-  doc.addEventListener("touchend", touch, { passive: true, capture: true });
-  doc.addEventListener("touchcancel", touch, { passive: true, capture: true });
-  win.addEventListener("blur", blur);
-  return { schedule, isIdle: () => !disposed && !pointers.size && !touches && Date.now() >= quietUntil, dispose() {
-    disposed = true;
-    win.clearTimeout(timer);
-    pointers.clear();
-    root.removeEventListener("pointerdown", down, true);
-    doc.removeEventListener("pointerup", up, true);
-    doc.removeEventListener("pointercancel", up, true);
-    root.removeEventListener("scroll", scroll, true);
-    win.removeEventListener("blur", blur);
-    root.removeEventListener("touchstart", touch, true);
-    doc.removeEventListener("touchend", touch, true);
-    doc.removeEventListener("touchcancel", touch, true);
-  } };
-}
-
-// src/algorithms/model.ts
-var import_Lexer = __toESM(require_Lexer());
-var import_Parser = __toESM(require_Parser());
-function algorithmText(nodes) {
-  return nodes.map((node) => {
-    const value = typeof node.value === "string" ? node.value : "";
-    const text = /^(?:font-|sizing-)/.test(node.type) ? "" : node.type === "call" ? value + "(" + algorithmText(node.children || []) + ")" : node.children ? algorithmText(node.children) : node.type === "special" ? value === "\\\\" ? " " : value.slice(1) : node.type === "text-symbol" ? "\\" : value;
-    return (node.whitespace ? " " : "") + text;
-  }).join("").trim();
-}
-function parseAlgorithm(source, title) {
-  if ((title?.length || 0) > 2e3) throw new Error("Algorithm caption exceeds 2,000 characters.");
-  if (source.length > 3e4) throw new Error("Algorithm source exceeds 30,000 characters.");
-  let nesting = 0;
-  for (const token of (source + (title || "")).matchAll(/(?<!\\)[{}]|\\(?:if|for|forall|while|repeat|upon|function|procedure|endif|endfor|endwhile|until|endupon|endfunction|endprocedure)\b/gi)) {
-    const closing2 = token[0] === "}" || /^\\(?:end|until)/i.test(token[0]);
-    nesting = Math.max(0, nesting + (closing2 ? -1 : 1));
-    if (nesting > 80) throw new Error("Algorithm nesting exceeds 80 levels.");
-  }
-  let lineNumbers;
-  source = source.trim().replace(/\\begin\{algorithmic\}\[([01])\]/g, (_all, n) => {
-    lineNumbers = n === "1";
-    return "\\begin{algorithmic}";
-  });
-  if (!/^\\begin\{(?:algorithm|algorithmic)\}/.test(source)) source = "\\begin{algorithmic}\n" + source + "\n\\end{algorithmic}";
-  const root = new import_Parser.default(new import_Lexer.default(source)).parse();
-  const children = root.children || [];
-  if (children.length !== 1) throw new Error("Use one algorithm per block.");
-  const tree = children[0];
-  const captions = (tree.children || []).filter((node) => node.type === "caption");
-  const bodies = tree.type === "algorithm" ? (tree.children || []).filter((node) => node.type === "algorithmic") : [tree];
-  if (bodies.length !== 1 || captions.length > 1) throw new Error("Use one algorithmic environment and at most one caption.");
-  let caption = captions[0]?.children?.[0]?.children || [];
-  if (title?.trim()) {
-    const titled = new import_Parser.default(new import_Lexer.default("\\begin{algorithm}\\caption{" + title.trim() + "}\\begin{algorithmic}\\end{algorithmic}\\end{algorithm}")).parse();
-    caption = titled.children?.[0]?.children?.[0]?.children?.[0]?.children || [];
-  }
-  return { tree: bodies[0], caption, title: algorithmText(caption), lineNumbers };
-}
-function algorithmBlocks(source) {
-  const lines = source.split("\n"), starts = [];
-  let offset = 0;
-  lines.forEach((line) => {
-    starts.push(offset);
-    offset += line.length + 1;
-  });
-  const visible2 = source.replace(/^\uFEFF?---\r?\n[\s\S]*?\r?\n---[^\S\r\n]*(?:\r?\n|$)/, (text) => text.replace(/[^\r\n]/g, " ")).replace(/<!--[\s\S]*?(?:-->|$)|%%[\s\S]*?(?:%%|$)/g, (text) => text.replace(/[^\r\n]/g, " ")).split("\n");
-  const quote2 = (line) => {
-    const match = line.match(/^(?:[ \t]*>[ \t]?)+/);
-    return { depth: match?.[0].match(/>/g)?.length || 0, body: line.slice(match?.[0].length || 0) };
-  };
-  const strip = (line, depth) => {
-    for (let n = 0; n < depth; n++) line = line.replace(/^[ \t]*>[ \t]?/, "");
-    return line;
-  };
-  const result = [];
-  let fence;
-  for (let line = 0; line < lines.length; line++) {
-    const q = quote2(visible2[line]), marker = q.body.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
-    if (fence) {
-      if (marker && q.depth === fence.depth && marker[1][0] === fence.marker[0] && marker[1].length >= fence.marker.length && !marker[2].trim()) fence = void 0;
-      continue;
-    }
-    const callout = q.depth && q.body.match(/^\[!algorithm(?:\|([^\]]*))?\][+-]?[ \t]*(.*?)\r?$/i);
-    if (!callout && !marker) continue;
-    if (marker && !/^algorithm\s*$/i.test(marker[2].trim())) {
-      fence = { marker: marker[1], depth: q.depth };
-      continue;
-    }
-    if (!q.depth && /^(?: {4}|\t)/.test(lines[line])) continue;
-    let endLine = line;
-    if (callout) {
-      while (endLine + 1 < lines.length) {
-        const next = quote2(lines[endLine + 1]);
-        if (next.depth < q.depth || next.depth === q.depth && /^\[![\w-]+/.test(next.body)) break;
-        endLine++;
-      }
-    } else {
-      for (let n = line + 1; n < lines.length; n++) {
-        const next = quote2(lines[n]), close = next.body.match(/^ {0,3}(`{3,}|~{3,})\s*$/);
-        if (next.depth < q.depth) break;
-        if (close && next.depth === q.depth && close[1][0] === marker[1][0] && close[1].length >= marker[1].length) {
-          endLine = n;
-          break;
-        }
-      }
-      if (endLine === line) {
-        fence = { marker: marker[1], depth: q.depth };
-        continue;
-      }
-    }
-    const ids = [];
-    const body = lines.slice(line + 1, callout ? endLine + 1 : endLine).map((text) => strip(text, q.depth)).filter((text) => {
-      const id2 = text.match(/^\s*\^([A-Za-z0-9-]+)\s*$/);
-      if (callout && id2) {
-        ids.push(id2[1]);
-        return false;
-      }
-      return true;
-    }).join("\n");
-    result.push({
-      from: starts[line],
-      to: starts[endLine] + lines[endLine].length,
-      line,
-      endLine,
-      depth: q.depth,
-      source: body,
-      title: callout ? callout[2] : void 0,
-      metadata: callout ? callout[1] : void 0,
-      callout: !!callout,
-      ids
-    });
-    line = endLine;
-  }
-  return result;
-}
-
-// src/algorithms/render.ts
-var pending = /* @__PURE__ */ new WeakMap();
-var families = { normal: "var(--font-text)", rm: "var(--font-text)", sf: "var(--font-interface)", tt: "var(--font-monospace)" };
-var sizes = { tiny: 0.68, scriptsize: 0.8, footnotesize: 0.85, small: 0.92, normalsize: 1, large: 1.17, Large: 1.41, LARGE: 1.58, huge: 1.9, Huge: 2.28 };
-function styleText(span, command) {
-  const name = command.replace(/^text/, "");
-  if (sizes[name]) span.style.fontSize = sizes[name] + "em";
-  if (/bf|md|lf/.test(name)) span.style.fontWeight = /bf/.test(name) ? "bold" : /lf/.test(name) ? "300" : "normal";
-  if (/it|sl|up/.test(name)) span.style.fontStyle = /it|sl/.test(name) ? "italic" : "normal";
-  if (name === "sc" || name === "scshape") span.classList.add("an-algorithm-smallcaps");
-  if (name === "uppercase" || name === "lowercase") span.style.textTransform = name;
-  for (const [key2, family] of Object.entries(families)) if (name.startsWith(key2)) span.style.fontFamily = family;
-}
-function renderAlgorithm(host, data, number = "", lineNumbers = false, captionHost, name = t("\u7B97\u6CD5")) {
-  const doc = host.ownerDocument, formulas = [];
-  const signature = JSON.stringify([data, number, lineNumbers, !!captionHost?.isContentEditable, name]);
-  if (host.dataset.anAlgorithm === signature) return;
-  host.dataset.anAlgorithm = signature;
-  host.classList.add("an-algorithm");
-  host.classList.remove("an-algorithm-error");
-  host.setAttribute("role", "group");
-  const content = captionHost ? host.querySelector(":scope > .callout-content") : host;
-  if (!content) return;
-  const caption = captionHost || doc.win.createDiv({ cls: "an-algorithm-caption" });
-  const body = doc.win.createDiv({ cls: "an-algorithm-body" });
-  content.replaceChildren(...captionHost ? [body] : [caption, body]);
-  const nativeTitle = !!captionHost?.isContentEditable;
-  if (nativeTitle) caption.dataset.anAlgorithmLabel = name + (number ? " " + number : "");
-  else {
-    caption.removeAttribute("data-an-algorithm-label");
-    caption.replaceChildren();
-  }
-  const decoratedCaption = nativeTitle ? doc.win.createDiv() : caption;
-  decoratedCaption.createSpan({ cls: "an-algorithm-label", text: name + (number ? " " + number : "") });
-  const title = decoratedCaption.createSpan({ cls: "an-algorithm-title" });
-  const inline = (parent, nodes) => {
-    for (let index = 0; index < nodes.length; index++) {
-      const node = nodes[index], value = typeof node.value === "string" ? node.value : "";
-      if (node.whitespace) parent.appendChild(doc.createTextNode(" "));
-      if (node.type === "math") {
-        const span = parent.createSpan({ cls: "an-algorithm-math" });
-        span.setAttribute("aria-label", value);
-        try {
-          span.appendChild((0, import_obsidian.renderMath)(value, false));
-        } catch {
-        }
-        formulas.push({ span, source: value });
-      } else if (node.type === "cond-symbol") parent.createSpan({ cls: "an-algorithm-keyword", text: value.toLowerCase() });
-      else if (node.type === "call") {
-        parent.createSpan({ cls: "an-algorithm-function", text: value });
-        parent.appendChild(doc.createTextNode("("));
-        inline(parent, node.children || []);
-        parent.appendChild(doc.createTextNode(")"));
-      } else if (node.type === "font-cmd") {
-        const span = parent.createSpan();
-        styleText(span, value);
-        const next = nodes[index + 1];
-        if (next?.type === "close-text") {
-          inline(span, next.children || []);
-          index++;
-        }
-      } else if (node.type === "font-dclr" || node.type === "sizing-dclr") {
-        const span = parent.createSpan();
-        styleText(span, value);
-        inline(span, nodes.slice(index + 1));
-        break;
-      } else if (node.children) inline(parent, node.children);
-      else if (node.type === "special") {
-        if (value === "\\\\") parent.createEl("br");
-        else parent.appendChild(doc.createTextNode(value.slice(1)));
-      } else if (node.type === "text-symbol") parent.appendChild(doc.createTextNode("\\"));
-      else if (node.type === "quote-symbol") parent.appendChild(doc.createTextNode({ "`": "\u2018", "``": "\u201C", "'": "\u2019", "''": "\u201D" }[value] || value));
-      else parent.appendChild(doc.createTextNode(value));
-    }
-  };
-  if (data.caption.length && !nativeTitle) {
-    title.appendChild(doc.createTextNode(" \xB7 "));
-    inline(title, data.caption);
-  }
-  let serial = 0, current2;
-  const line = (depth, keyword = "", text, ending = "", numbered = true) => {
-    const row = body.createDiv({ cls: "an-algorithm-line" });
-    row.style.setProperty("--an-algorithm-depth", String(depth));
-    const n = row.createSpan({ cls: "an-algorithm-line-number" });
-    if (numbered) {
-      serial++;
-      if (data.lineNumbers ?? lineNumbers) n.textContent = String(serial);
-    }
-    current2 = row.createDiv({ cls: "an-algorithm-line-content" });
-    if (keyword) current2.createSpan({ cls: "an-algorithm-keyword", text: keyword });
-    if (text) inline(current2, text.children || [text]);
-    if (ending) current2.createSpan({ cls: "an-algorithm-keyword", text: ending });
-    return current2;
-  };
-  const walk = (node, depth = 0) => {
-    const children = node.children || [], value = typeof node.value === "string" ? node.value : "", options = typeof node.value === "object" ? node.value : {};
-    switch (node.type) {
-      case "algorithmic":
-      case "block":
-        for (const child of children) walk(child, depth);
-        break;
-      case "statement":
-        line(depth, { state: "", input: "Input: ", output: "Output: ", require: "Require: ", ensure: "Ensure: ", return: "return ", print: "print " }[value], children[0], "", !["input", "output", "require", "ensure"].includes(value));
-        break;
-      case "command":
-        line(depth, value);
-        break;
-      case "comment": {
-        if (!current2) current2 = line(depth, "", void 0, "", false);
-        const comment = current2.createSpan({ cls: "an-algorithm-comment" });
-        comment.appendChild(doc.createTextNode(" // "));
-        inline(comment, children);
-        break;
-      }
-      case "function": {
-        const row = line(depth, (options.type || "function").toLowerCase() + " ");
-        row.createSpan({ cls: "an-algorithm-function", text: options.name || "" });
-        row.appendChild(doc.createTextNode("("));
-        inline(row, children[0]?.children || []);
-        row.appendChild(doc.createTextNode(")"));
-        walk(children[1], depth + 1);
-        line(depth, "end " + (options.type || "function").toLowerCase());
-        break;
-      }
-      case "loop":
-      case "upon":
-        line(depth, (value === "forall" ? "for all" : value || "upon") + " ", children[0], node.type === "loop" ? " do" : "");
-        walk(children[1], depth + 1);
-        line(depth, "end " + (value === "forall" ? "for" : value || "upon"));
-        break;
-      case "repeat":
-        line(depth, "repeat");
-        walk(children[0], depth + 1);
-        line(depth, "until ", children[1]);
-        break;
-      case "if": {
-        line(depth, "if ", children[0], " then");
-        walk(children[1], depth + 1);
-        const count = options.numElif || 0;
-        for (let i = 0; i < count; i++) {
-          line(depth, "else if ", children[2 + 2 * i], " then");
-          walk(children[3 + 2 * i], depth + 1);
-        }
-        if (options.hasElse) {
-          line(depth, "else");
-          walk(children[2 + 2 * count], depth + 1);
-        }
-        line(depth, "end if");
-        break;
-      }
-      default:
-        throw new Error("Unsupported algorithm node: " + node.type);
-    }
-  };
-  walk(data.tree);
-  const work = (async () => {
-    let finished = true;
-    try {
-      await (0, import_obsidian.finishRenderMath)();
-    } catch {
-      finished = false;
-    }
-    for (const { span, source } of formulas) {
-      if (host.dataset.anAlgorithm !== signature || !host.contains(span) && !caption.contains(span)) return;
-      if (!finished || !span.querySelector("svg,mjx-container")) span.replaceChildren(await localMathSvg2(doc, source));
-    }
-  })();
-  pending.set(host, work);
-  void work.catch((error) => {
-    if (host.dataset.anAlgorithm === signature) algorithmError(host, error);
-  });
-}
-function algorithmError(host, error) {
-  const message = String(error instanceof Error ? error.message : error);
-  if (host.dataset.anAlgorithmError === message && host.querySelector("pre")) return;
-  host.dataset.anAlgorithmError = message;
-  host.classList.add("an-algorithm-error");
-  host.removeAttribute("data-an-algorithm");
-  const body = host.querySelector(":scope > .callout-content") || host;
-  body.replaceChildren(body.ownerDocument.win.createEl("pre", { text: t("\u7B97\u6CD5\u8BED\u6CD5\u9519\u8BEF\uFF1A") + String(error instanceof Error ? error.message : error) }));
-}
-function algorithmRecord(host, record, lineNumbers, name = t("\u7B97\u6CD5")) {
-  if (editorFragment(host) && (!host.closest('[contenteditable="false"]') || nativeCalloutBodyInteraction(host))) return;
-  if (record.algorithmError) {
-    algorithmError(host, record.algorithmError);
-    return;
-  }
-  if (!record.algorithm) return;
-  const caption = host.matches(".callout") ? host.querySelector(":scope > .callout-title > .callout-title-inner") || void 0 : void 0;
-  renderAlgorithm(host, record.algorithm, record.number, lineNumbers, caption, name);
-  host.dataset.anLine = String(record.line);
-}
-function algorithmProcessor(source, host, lineNumbers) {
-  host.classList.add("an-algorithm-fence");
-  try {
-    renderAlgorithm(host, parseAlgorithm(source), "", lineNumbers);
-  } catch (error) {
-    algorithmError(host, error);
-  }
-}
-async function finishAlgorithms(root) {
-  const hosts = [...root.matches(".an-algorithm") ? [root] : [], ...root.querySelectorAll(".an-algorithm")];
-  await Promise.all(hosts.map((host) => pending.get(host)).filter((work) => !!work));
-}
-
-// src/styles/algorithms.css
-var algorithms_default = 'body.an-active .an-algorithm,\nbody.phb-export .an-algorithm,\nbody.an-active .callout[data-callout=algorithm] {\n  --an-algorithm-accent: var(--an-color-algorithm, var(--phb-thm));\n  display: block;\n  color: var(--text-normal, #24372e);\n  background: transparent !important;\n  border: 0 !important;\n  border-top: 2px solid var(--an-algorithm-accent) !important;\n  border-bottom: 2px solid var(--an-algorithm-accent) !important;\n  border-radius: 0 !important;\n  box-shadow: none;\n  padding: 0 !important;\n  margin: 1.2em 0 !important;\n  font-family: var(--font-text);\n  font-size: 1em;\n  line-height: 1.6;\n  overflow: visible;\n}\nbody.an-active .callout[data-callout=algorithm]::before,\nbody.an-active .callout[data-callout=algorithm]::after {\n  content: none;\n  display: none;\n}\nbody .an-algorithm > .callout-title,\nbody .an-algorithm > .an-algorithm-caption,\nbody .an-appearance-preview .callout[data-callout=algorithm] > .callout-title {\n  display: flex !important;\n  background: transparent !important;\n  color: var(--an-algorithm-accent) !important;\n  position: static;\n  float: none;\n  width: 100%;\n  max-width: 100%;\n  box-sizing: border-box;\n  box-shadow: none;\n  padding: .35em .5em !important;\n  border: 0 !important;\n  border-bottom: 1px solid var(--an-algorithm-accent) !important;\n  margin: 0 !important;\n  font-weight: 400;\n  font-style: normal;\n  border-radius: 0 !important;\n}\nbody .an-algorithm > .callout-title > .callout-icon {\n  display: none !important;\n}\n.an-algorithm-label {\n  font-weight: 700;\n}\n.an-algorithm-title {\n  color: var(--text-normal);\n}\n.an-algorithm > .callout-content {\n  padding: 0;\n  margin: 0;\n}\n.an-algorithm-body {\n  padding: .4em .5em;\n}\n.an-algorithm .an-algorithm-line {\n  display: flex;\n  margin: .12em 0;\n  padding: 0;\n  gap: .65em;\n  text-align: start;\n  text-indent: 0;\n}\n.an-algorithm-line-number {\n  flex: 0 0 2ch;\n  color: var(--text-muted);\n  font-size: .85em;\n  text-align: end;\n  user-select: none;\n}\n.an-algorithm-line-content {\n  flex: 1;\n  min-width: 0;\n  padding-inline-start: calc(var(--an-algorithm-depth, 0) * 1.2em);\n  overflow-wrap: anywhere;\n  white-space: normal;\n}\n.an-algorithm-keyword {\n  font-weight: 700;\n}\n.an-algorithm-function,\n.an-algorithm-smallcaps {\n  font-variant: small-caps;\n}\n.an-algorithm-comment {\n  color: var(--text-muted);\n  font-style: italic;\n}\n.an-algorithm-math {\n  display: inline-block;\n  max-width: 100%;\n  vertical-align: baseline;\n}\n.an-algorithm-math > svg {\n  max-width: 100%;\n  overflow: visible;\n}\n.an-algorithm-error pre {\n  white-space: pre-wrap;\n  color: var(--text-error);\n}\n@media print {\n  body.phb-export .an-algorithm {\n    break-inside: avoid;\n    -webkit-box-decoration-break: clone;\n    box-decoration-break: clone;\n  }\n  body.phb-export .an-algorithm[data-phb-long=true] {\n    break-inside: auto !important;\n  }\n  body.phb-export .an-algorithm-line {\n    break-inside: avoid;\n  }\n  body.phb-export .an-algorithm > :is(.callout-title, .an-algorithm-caption) {\n    break-after: avoid;\n  }\n}\n.an-algorithm .callout-title-inner[data-an-algorithm-label]::before {\n  content: attr(data-an-algorithm-label) " \\b7  ";\n  font-weight: 700;\n}\nbody.phb-export .phb-callout-wrap:has(> .an-algorithm) {\n  padding-top: 0;\n}\n';
-
-// src/main.ts
-var Obs2 = __toESM(require("obsidian"));
-var import_obsidian9 = require("obsidian");
-
-// src/indexing/environments.ts
-var ENVIRONMENT_STYLES = ["thm", "def", "lem", "prop", "cor", "claim", "example", "remark"];
-var object = (value) => !!value && typeof value === "object" && !Array.isArray(value);
-function validEnvironmentKey(key2, reserved) {
-  return /^[a-z][a-z0-9-]{0,39}$/.test(key2) && !reserved.includes(key2) && !["constructor", "prototype", "__proto__"].includes(key2);
-}
-function readEnvironments(raw, reserved) {
-  const result = {};
-  try {
-    if (raw.length > 6e4) return result;
-    const data = JSON.parse(raw);
-    if (!object(data)) return result;
-    for (const [key2, entry] of Object.entries(data).slice(0, 64)) {
-      if (!validEnvironmentKey(key2, reserved) || !object(entry) || typeof entry.name !== "string" || !entry.name.trim()) continue;
-      const style = ENVIRONMENT_STYLES.includes(entry.style) ? entry.style : "thm";
-      const clean = { name: entry.name.trim().slice(0, 100), abbr: typeof entry.abbr === "string" ? entry.abbr.trim().slice(0, 100) || key2 : key2, style, numbered: entry.numbered !== false };
-      for (const mode of ["light", "dark"]) if (typeof entry[mode] === "string" && /^#[0-9a-f]{6}$/i.test(entry[mode])) clean[mode] = entry[mode];
-      result[key2] = clean;
-    }
-  } catch {
-  }
-  return result;
-}
-function readReferenceOverrides(raw, keys) {
-  const result = {};
-  try {
-    if (raw.length > 6e4) return result;
-    const data = JSON.parse(raw);
-    if (!object(data)) return result;
-    for (const key2 of keys) {
-      const entry = data[key2];
-      if (!object(entry)) continue;
-      const clean = {};
-      for (const field of ["name", "abbr", "format"]) if (typeof entry[field] === "string" && entry[field].trim()) clean[field] = entry[field].trim().slice(0, field === "format" ? 500 : 100);
-      result[key2] = clean;
-    }
-  } catch {
-  }
-  return result;
-}
-
 // src/diagrams/model.ts
 var emptyDiagram = () => ({ version: 1, grid: 2, nodes: [], arrows: [] });
 var label = (value) => {
@@ -58642,7 +58652,7 @@ function lineOf(starts, offset) {
   }
   return l;
 }
-function quote(s) {
+function quote2(s) {
   const m = s.match(/^[ \t]*(?:>[ \t]*)*/)[0];
   return { depth: (m.match(/>/g) || []).length, prefix: m, body: s.slice(m.length) };
 }
@@ -58651,7 +58661,7 @@ function maskedSource(source) {
   masked = masked.replace(/<!--[\s\S]*?(?:-->|$)/g, blank).replace(/%%[\s\S]*?(?:%%|$)/g, blank);
   let fence = null;
   masked = masked.split("\n").map((line) => {
-    const q = quote(line), m = q.body.match(/^(`{3,}|~{3,})/);
+    const q = quote2(line), m = q.body.match(/^(`{3,}|~{3,})/);
     if (fence) {
       const ending = m && m[1][0] === fence[0] && m[1].length >= fence.length;
       if (ending)
@@ -58718,7 +58728,7 @@ function parse(path, source, cache = {}, opts = {}) {
   const delimiters = [...mask.matchAll(/(?<!\\)\$\$/g)];
   for (let i = 0; i + 1 < delimiters.length; i += 2) {
     const from = delimiters[i].index, close = delimiters[i + 1].index, to = close + 2;
-    const line = lineOf(starts, from), endLine = lineOf(starts, to - 1), depth = quote(lines[line]).depth;
+    const line = lineOf(starts, from), endLine = lineOf(starts, to - 1), depth = quote2(lines[line]).depth;
     const tex = source.slice(from + 2, close).split("\n").map((l, i2) => {
       if (!i2 || !depth)
         return l;
@@ -58735,7 +58745,7 @@ function parse(path, source, cache = {}, opts = {}) {
       endLine,
       from,
       to,
-      depth: quote(lines[line]).depth,
+      depth: quote2(lines[line]).depth,
       tex,
       id: null,
       manual: tags.length === 1 ? tags[0][2] : null,
@@ -58758,7 +58768,7 @@ function parse(path, source, cache = {}, opts = {}) {
         chars[i] = " ";
   const prose = chars.join(""), proseLines2 = prose.split("\n");
   for (let line = 0; line < lines.length; line++) {
-    const q = quote(proseLines2[line]);
+    const q = quote2(proseLines2[line]);
     if (!q.depth)
       continue;
     const m = q.body.match(/^\[!([\w-]+)(?:\|([^\]]*))?\]([+-])?[ \t]*(.*?)\r?$/);
@@ -58766,7 +58776,7 @@ function parse(path, source, cache = {}, opts = {}) {
       continue;
     let endLine = line;
     for (let n = line + 1; n < lines.length; n++) {
-      const nq = quote(lines[n]);
+      const nq = quote2(lines[n]);
       if (nq.depth < q.depth)
         break;
       if (nq.depth === q.depth && /^\[![\w-]+(?:\|[^\]]*)?\]/.test(nq.body))
@@ -58795,7 +58805,7 @@ function parse(path, source, cache = {}, opts = {}) {
       ids: [],
       layout: figure?.layout,
       environment: custom[key2],
-      proofOwnLine: key2 === "proof" && (!(m[4] || "").trim() || !quote(lines[line + 1] || "").body.trim())
+      proofOwnLine: key2 === "proof" && (!(m[4] || "").trim() || !quote2(lines[line + 1] || "").body.trim())
     };
     (rec.kind === "theorem" ? theorems : media).push(rec);
     callouts.push(rec);
@@ -58803,7 +58813,7 @@ function parse(path, source, cache = {}, opts = {}) {
   }
   const visible2 = source.replace(/^\uFEFF?---\r?\n[\s\S]*?\r?\n---[^\S\r\n]*(?:\r?\n|$)/, blank).replace(/<!--[\s\S]*?(?:-->|$)/g, blank).replace(/%%[\s\S]*?(?:%%|$)/g, blank).split("\n");
   for (const block of diagramBlocks(source)) {
-    const line = lineOf(starts, block.from), endLine = lineOf(starts, Math.max(block.from, block.to - 1)), depth = quote(lines[line]).depth;
+    const line = lineOf(starts, block.from), endLine = lineOf(starts, Math.max(block.from, block.to - 1)), depth = quote2(lines[line]).depth;
     if (!visible2[line]?.trim()) continue;
     if (!depth && /^(?: {4}|\t)/.test(lines[line]) || media.some((r) => ["figure", "subfigure"].includes(r.kind) && r.line < line && r.endLine >= endLine)) continue;
     try {
@@ -58831,12 +58841,12 @@ function parse(path, source, cache = {}, opts = {}) {
   }
   const ids = [...prose.matchAll(/(?:^|[ \t])\^([A-Za-z0-9-]+)[ \t]*\r?$/gm)];
   for (const m of ids) {
-    const ln = lineOf(starts, m.index + m[0].indexOf("^")), q = quote(lines[ln]);
+    const ln = lineOf(starts, m.index + m[0].indexOf("^")), q = quote2(lines[ln]);
     const standalone = /^\^[\w-]+\s*$/.test(q.body.trim());
     let rec;
     if (standalone) {
-      const candidates2 = records.filter((r) => r.endLine < ln && r.depth <= q.depth && lines.slice(r.endLine + 1, ln).every((x) => !quote(x).body.trim()));
-      candidates2.push(...callouts.filter((r) => r.depth === q.depth + 1 && r.endLine < ln && lines.slice(r.endLine + 1, ln).every((x) => !quote(x).body.trim())));
+      const candidates2 = records.filter((r) => r.endLine < ln && r.depth <= q.depth && lines.slice(r.endLine + 1, ln).every((x) => !quote2(x).body.trim()));
+      candidates2.push(...callouts.filter((r) => r.depth === q.depth + 1 && r.endLine < ln && lines.slice(r.endLine + 1, ln).every((x) => !quote2(x).body.trim())));
       candidates2.sort((a, b) => b.endLine - a.endLine || a.depth - b.depth || (a.kind === "theorem" ? -1 : 1));
       rec = candidates2[0];
       if (!rec)
@@ -59050,7 +59060,373 @@ function labelName(key2, opts = {}) {
 }
 var validCustomKey = (key2) => validEnvironmentKey(key2, reservedEnvironmentKeys);
 var APPEARANCE_TYPES = { ...TYPES, algorithm: MEDIA.algorithm };
-var engine_default = { environments, referenceOverrides, typeNames, labelName, validCustomKey, TYPES, APPEARANCE_TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, resolvePath, cleanPath, lineOf, quote, plain };
+var engine_default = { environments, referenceOverrides, typeNames, labelName, validCustomKey, TYPES, APPEARANCE_TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, resolvePath, cleanPath, lineOf, quote: quote2, plain };
+
+// src/rendering/custom-appearance.ts
+var drawing = (paths) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="black" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+var MOTIFS = {
+  laurel: drawing('<path d="M23 41C8 35 5 19 16 7M25 41C40 35 43 19 32 7M14 12Q5 12 9 20Q16 20 14 12M10 23Q2 25 10 31Q17 28 10 23M15 33Q10 40 20 40Q23 34 15 33M34 12Q43 12 39 20Q32 20 34 12M38 23Q46 25 38 31Q31 28 38 23M33 33Q38 40 28 40Q25 34 33 33"/><path d="M19 23l4 4 7-9M18 43l6-3 6 3"/>'),
+  compass: drawing('<circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="13" stroke-dasharray="1 4"/><path d="M24 3v6m0 30v6M3 24h6m30 0h6M30 15l-3 12-12 6 6-12zM21 21l6 6"/><circle cx="24" cy="24" r="2"/>'),
+  rosette: drawing('<path d="M24 5C30 14 37 7 35 17C46 17 38 26 42 30C32 31 35 41 25 37C18 46 16 34 8 37C11 28 1 27 9 20C5 12 18 16 17 7Z"/><circle cx="24" cy="24" r="9"/><circle cx="24" cy="24" r="5"/><path d="M21 24l2 2 4-5"/>'),
+  orbit: drawing('<circle cx="24" cy="24" r="3"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(-35 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(35 24 24)"/><ellipse cx="24" cy="24" rx="8" ry="20"/><circle cx="39" cy="12" r="2" fill="black"/>'),
+  lattice: drawing('<path d="M24 4l17 10v20L24 44 7 34V14ZM7 14l17 10 17-10M24 24v20M24 4v20M7 34l17-10 17 10"/><path d="M15 9v20l17 10M33 9v20L16 39M7 24l17 10 17-10"/>'),
+  knot: drawing('<path d="M24 6C11-5 0 14 13 23l12 10C38 44 49 25 36 16L24 6ZM24 42C37 53 48 34 35 25L23 15C10 4-1 23 12 32l12 10Z" transform="translate(5 5) scale(.79)"/><path d="M16 18l16 12M16 30l16-12"/>'),
+  arch: drawing('<path d="M7 41h34M10 37V23a14 14 0 0128 0v14M15 37V23a9 9 0 0118 0v14M19 37V24a5 5 0 0110 0v13M8 37h9m14 0h9M24 5v5M13 10l4 5m18-5l-4 5M8 20l7 2m25-2l-7 2"/>'),
+  quill: drawing('<path d="M8 41l24-27M13 34C7 17 27 5 41 6C39 22 29 35 13 34ZM20 27l-2-10m9 2l-1-9M20 27l12-1M27 19l10-1M8 42h19"/><path d="M32 36h8m-6 4h8"/>'),
+  folio: drawing('<path d="M24 12C18 7 11 8 5 10v27c7-2 13-1 19 3 6-4 12-5 19-3V10c-6-2-13-3-19 2ZM24 12v28M9 15c4-1 7 0 11 2M9 21c4-1 7 0 11 2M9 27c4-1 7 0 11 2M28 17c4-2 7-3 11-2M28 23c4-2 7-3 11-2M28 29c4-2 7-3 11-2"/>')
+};
+function parseAppearance(raw, roles = Object.keys(engine_default.APPEARANCE_TYPES)) {
+  const result = {};
+  try {
+    if (raw.length > 2e4) return result;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return result;
+    for (const key2 of roles) {
+      const entry = parsed[key2];
+      if (!entry || typeof entry !== "object") continue;
+      const clean = {};
+      for (const field of ["light", "dark", "motifLight", "motifDark"]) {
+        const color = entry[field];
+        if (typeof color === "string" && /^#[0-9a-f]{6}$/i.test(color)) clean[field] = color;
+      }
+      const motif = entry.motif;
+      if (typeof motif === "string" && (Object.hasOwn(MOTIFS, motif) || motif === "none")) clean.motif = motif;
+      result[key2] = clean;
+    }
+  } catch {
+  }
+  return result;
+}
+function motifMask(id2) {
+  return Object.hasOwn(MOTIFS, id2) ? `url("data:image/svg+xml,${encodeURIComponent(MOTIFS[id2])}")` : "none";
+}
+function titleInk(hex) {
+  const rgb = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+  const luminance = rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+  return luminance > 0.179 ? "#000000" : "#ffffff";
+}
+var appearanceVariables = Object.keys(engine_default.APPEARANCE_TYPES).flatMap((key2) => ["color", "ink", "motif-color", "symbol", "motif-display"].map((part) => `--an-${part}-${key2}`));
+function appearanceValues(raw, dark, roles = Object.keys(engine_default.APPEARANCE_TYPES)) {
+  const values = {};
+  for (const [key2, entry] of Object.entries(parseAppearance(raw, roles))) {
+    const color = dark ? entry.dark : entry.light, motifColor = dark ? entry.motifDark : entry.motifLight;
+    if (color) {
+      values[`--an-color-${key2}`] = color;
+      values[`--an-ink-${key2}`] = titleInk(color);
+    }
+    if (motifColor) values[`--an-motif-color-${key2}`] = motifColor;
+    if (entry.motif) {
+      values[`--an-symbol-${key2}`] = motifMask(entry.motif);
+      values[`--an-motif-display-${key2}`] = entry.motif === "none" ? "none" : "block";
+    }
+  }
+  return values;
+}
+
+// src/rendering/palettes.ts
+var PRESETS = palettes_default;
+var roleBase = { axiom: "thm", hypothesis: "thm", assumption: "def", conjecture: "claim", exercise: "example", solution: "proof", remark: "def", algorithm: "def" };
+function appearanceRoles(settings = {}) {
+  return { ...engine_default.APPEARANCE_TYPES, ...Object.fromEntries(Object.entries(engine_default.environments(settings)).map(([key2, entry]) => [key2, [entry.name, key2]])) };
+}
+function customPalettes(raw) {
+  const result = {};
+  try {
+    if (raw.length > 2e4) return result;
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== "object" || Array.isArray(data)) return result;
+    for (const [key2, value] of Object.entries(data).slice(0, 32)) {
+      if (!/^custom-[a-z0-9-]{1,40}$/.test(key2) || !value || typeof value !== "object") continue;
+      const entry = value, mode = entry.mode;
+      if (mode !== "light" && mode !== "dark" || typeof entry.name !== "string" || !entry.name.trim() || typeof entry.base !== "string" || entry.base !== "theme" && PRESETS[entry.base]?.mode !== mode) continue;
+      result[key2] = { name: entry.name.trim().slice(0, 100), mode, base: entry.base };
+    }
+  } catch {
+  }
+  return result;
+}
+function paletteOptions(settings, mode) {
+  return { theme: "theme", ...Object.fromEntries(Object.entries(PRESETS).filter(([, p]) => p.mode === mode).map(([key2, p]) => [key2, p.name])), ...Object.fromEntries(Object.entries(customPalettes(settings.customPalettes)).filter(([, p]) => p.mode === mode).map(([key2, p]) => [key2, p.name])) };
+}
+function selectedPalette(settings, mode) {
+  const value = mode === "dark" ? settings.darkPalette : settings.lightPalette;
+  return Object.hasOwn(paletteOptions(settings, mode), value) ? value : mode === "dark" ? "radiation" : "forest";
+}
+function basePalette(settings, key2) {
+  return customPalettes(settings.customPalettes)[key2]?.base || (Object.hasOwn(PRESETS, key2) ? key2 : "theme");
+}
+function paletteOverrides(settings) {
+  const result = {};
+  try {
+    if (settings.paletteAppearance.length > 6e5) return result;
+    const data = JSON.parse(settings.paletteAppearance);
+    if (!data || typeof data !== "object" || Array.isArray(data)) return result;
+    const allowed = ["theme", ...Object.keys(PRESETS), ...Object.keys(customPalettes(settings.customPalettes))], roles = Object.keys(appearanceRoles(settings));
+    for (const key2 of allowed) if (Object.hasOwn(data, key2)) result[key2] = parseAppearance(JSON.stringify(data[key2]), roles);
+  } catch {
+  }
+  return result;
+}
+function paletteValues(settings, mode) {
+  const overrides = paletteOverrides(settings)[selectedPalette(settings, mode)] || {};
+  return appearanceValues(JSON.stringify(overrides), mode === "dark", Object.keys(appearanceRoles(settings)));
+}
+function defaultRoleColor(settings, palette, key2) {
+  const env = engine_default.environments(settings)[key2], role2 = roleBase[env?.style || key2] || env?.style || key2;
+  return PRESETS[basePalette(settings, palette)]?.colors[role2] || "#286b76";
+}
+function migratePaletteSettings(settings) {
+  const before = JSON.stringify([settings.customAppearance, settings.customEnvironments, settings.paletteAppearance, settings.lightPalette, settings.darkPalette]);
+  settings.lightPalette = selectedPalette(settings, "light");
+  settings.darkPalette = selectedPalette(settings, "dark");
+  const all = paletteOverrides(settings), old = parseAppearance(settings.customAppearance), defs = engine_default.environments(settings);
+  for (const [key2, entry] of Object.entries(defs)) if (entry.light || entry.dark) old[key2] = { light: entry.light, dark: entry.dark };
+  for (const mode of ["light", "dark"]) {
+    const palette = selectedPalette(settings, mode), profile = all[palette] || {};
+    for (const [key2, entry] of Object.entries(old)) {
+      const moved = {};
+      for (const field of mode === "light" ? ["light", "motifLight", "motif"] : ["dark", "motifDark", "motif"]) if (entry[field]) moved[field] = entry[field];
+      if (Object.keys(moved).length) profile[key2] = { ...moved, ...profile[key2] };
+    }
+    if (Object.keys(profile).length) all[palette] = profile;
+  }
+  for (const entry of Object.values(defs)) {
+    delete entry.light;
+    delete entry.dark;
+  }
+  if (Object.values(engine_default.environments(settings)).some((entry) => entry.light || entry.dark)) settings.customEnvironments = JSON.stringify(defs);
+  settings.customAppearance = "{}";
+  settings.paletteAppearance = JSON.stringify(all);
+  return before !== JSON.stringify([settings.customAppearance, settings.customEnvironments, settings.paletteAppearance, settings.lightPalette, settings.darkPalette]);
+}
+
+// src/algorithms/render.ts
+var import_obsidian = require("obsidian");
+
+// src/diagrams/math.ts
+function mathSource(label2) {
+  const text = label2.trim();
+  if (text.startsWith("$$") && text.endsWith("$$")) return text.slice(2, -2).trim();
+  if (text.startsWith("$") && text.endsWith("$")) return text.slice(1, -1).trim();
+  if (text.startsWith("\\(") && text.endsWith("\\)") || text.startsWith("\\[") && text.endsWith("\\]")) return text.slice(2, -2).trim();
+  return text;
+}
+async function localMathSvg2(doc, source) {
+  const { localMathSvg: render } = await Promise.resolve().then(() => (init_svg_math(), svg_math_exports));
+  return render(doc, source);
+}
+
+// src/algorithms/render.ts
+var pending = /* @__PURE__ */ new WeakMap();
+var families = { normal: "var(--font-text)", rm: "var(--font-text)", sf: "var(--font-interface)", tt: "var(--font-monospace)" };
+var sizes = { tiny: 0.68, scriptsize: 0.8, footnotesize: 0.85, small: 0.92, normalsize: 1, large: 1.17, Large: 1.41, LARGE: 1.58, huge: 1.9, Huge: 2.28 };
+function styleText(span, command) {
+  const name = command.replace(/^text/, "");
+  if (sizes[name]) span.style.fontSize = sizes[name] + "em";
+  if (/bf|md|lf/.test(name)) span.style.fontWeight = /bf/.test(name) ? "bold" : /lf/.test(name) ? "300" : "normal";
+  if (/it|sl|up/.test(name)) span.style.fontStyle = /it|sl/.test(name) ? "italic" : "normal";
+  if (name === "sc" || name === "scshape") span.classList.add("an-algorithm-smallcaps");
+  if (name === "uppercase" || name === "lowercase") span.style.textTransform = name;
+  for (const [key2, family] of Object.entries(families)) if (name.startsWith(key2)) span.style.fontFamily = family;
+}
+function renderAlgorithm(host, data, number = "", lineNumbers = false, captionHost, name = t("\u7B97\u6CD5")) {
+  const doc = host.ownerDocument, formulas = [];
+  const signature = JSON.stringify([data, number, lineNumbers, !!captionHost?.isContentEditable, name]);
+  if (host.dataset.anAlgorithm === signature) return;
+  host.dataset.anAlgorithm = signature;
+  host.classList.add("an-algorithm");
+  host.classList.remove("an-algorithm-error");
+  host.setAttribute("role", "group");
+  const content = captionHost ? host.querySelector(":scope > .callout-content") : host;
+  if (!content) return;
+  const caption = captionHost || doc.win.createDiv({ cls: "an-algorithm-caption" });
+  const body = doc.win.createDiv({ cls: "an-algorithm-body" });
+  content.replaceChildren(...captionHost ? [body] : [caption, body]);
+  const nativeTitle = !!captionHost?.isContentEditable;
+  if (nativeTitle) caption.dataset.anAlgorithmLabel = name + (number ? " " + number : "");
+  else {
+    caption.removeAttribute("data-an-algorithm-label");
+    caption.replaceChildren();
+  }
+  const decoratedCaption = nativeTitle ? doc.win.createDiv() : caption;
+  decoratedCaption.createSpan({ cls: "an-algorithm-label", text: name + (number ? " " + number : "") });
+  const title = decoratedCaption.createSpan({ cls: "an-algorithm-title" });
+  const inline = (parent, nodes) => {
+    for (let index = 0; index < nodes.length; index++) {
+      const node = nodes[index], value = typeof node.value === "string" ? node.value : "";
+      if (node.whitespace) parent.appendChild(doc.createTextNode(" "));
+      if (node.type === "math") {
+        const span = parent.createSpan({ cls: "an-algorithm-math" });
+        span.setAttribute("aria-label", value);
+        try {
+          span.appendChild((0, import_obsidian.renderMath)(value, false));
+        } catch {
+        }
+        formulas.push({ span, source: value });
+      } else if (node.type === "cond-symbol") parent.createSpan({ cls: "an-algorithm-keyword", text: value.toLowerCase() });
+      else if (node.type === "call") {
+        parent.createSpan({ cls: "an-algorithm-function", text: value });
+        parent.appendChild(doc.createTextNode("("));
+        inline(parent, node.children || []);
+        parent.appendChild(doc.createTextNode(")"));
+      } else if (node.type === "font-cmd") {
+        const span = parent.createSpan();
+        styleText(span, value);
+        const next = nodes[index + 1];
+        if (next?.type === "close-text") {
+          inline(span, next.children || []);
+          index++;
+        }
+      } else if (node.type === "font-dclr" || node.type === "sizing-dclr") {
+        const span = parent.createSpan();
+        styleText(span, value);
+        inline(span, nodes.slice(index + 1));
+        break;
+      } else if (node.children) inline(parent, node.children);
+      else if (node.type === "special") {
+        if (value === "\\\\") parent.createEl("br");
+        else parent.appendChild(doc.createTextNode(value.slice(1)));
+      } else if (node.type === "text-symbol") parent.appendChild(doc.createTextNode("\\"));
+      else if (node.type === "quote-symbol") parent.appendChild(doc.createTextNode({ "`": "\u2018", "``": "\u201C", "'": "\u2019", "''": "\u201D" }[value] || value));
+      else parent.appendChild(doc.createTextNode(value));
+    }
+  };
+  if (data.caption.length && !nativeTitle) {
+    title.appendChild(doc.createTextNode(" \xB7 "));
+    inline(title, data.caption);
+  }
+  let serial = 0, current2;
+  const line = (depth, keyword = "", text, ending = "", numbered = true) => {
+    const row = body.createDiv({ cls: "an-algorithm-line" });
+    row.style.setProperty("--an-algorithm-depth", String(depth));
+    const n = row.createSpan({ cls: "an-algorithm-line-number" });
+    if (numbered) {
+      serial++;
+      if (data.lineNumbers ?? lineNumbers) n.textContent = String(serial);
+    }
+    current2 = row.createDiv({ cls: "an-algorithm-line-content" });
+    if (keyword) current2.createSpan({ cls: "an-algorithm-keyword", text: keyword });
+    if (text) inline(current2, text.children || [text]);
+    if (ending) current2.createSpan({ cls: "an-algorithm-keyword", text: ending });
+    return current2;
+  };
+  const walk = (node, depth = 0) => {
+    const children = node.children || [], value = typeof node.value === "string" ? node.value : "", options = typeof node.value === "object" ? node.value : {};
+    switch (node.type) {
+      case "algorithmic":
+      case "block":
+        for (const child of children) walk(child, depth);
+        break;
+      case "statement":
+        line(depth, { state: "", input: "Input: ", output: "Output: ", require: "Require: ", ensure: "Ensure: ", return: "return ", print: "print " }[value], children[0], "", !["input", "output", "require", "ensure"].includes(value));
+        break;
+      case "command":
+        line(depth, value);
+        break;
+      case "comment": {
+        if (!current2) current2 = line(depth, "", void 0, "", false);
+        const comment = current2.createSpan({ cls: "an-algorithm-comment" });
+        comment.appendChild(doc.createTextNode(" // "));
+        inline(comment, children);
+        break;
+      }
+      case "function": {
+        const row = line(depth, (options.type || "function").toLowerCase() + " ");
+        row.createSpan({ cls: "an-algorithm-function", text: options.name || "" });
+        row.appendChild(doc.createTextNode("("));
+        inline(row, children[0]?.children || []);
+        row.appendChild(doc.createTextNode(")"));
+        walk(children[1], depth + 1);
+        line(depth, "end " + (options.type || "function").toLowerCase());
+        break;
+      }
+      case "loop":
+      case "upon":
+        line(depth, (value === "forall" ? "for all" : value || "upon") + " ", children[0], node.type === "loop" ? " do" : "");
+        walk(children[1], depth + 1);
+        line(depth, "end " + (value === "forall" ? "for" : value || "upon"));
+        break;
+      case "repeat":
+        line(depth, "repeat");
+        walk(children[0], depth + 1);
+        line(depth, "until ", children[1]);
+        break;
+      case "if": {
+        line(depth, "if ", children[0], " then");
+        walk(children[1], depth + 1);
+        const count = options.numElif || 0;
+        for (let i = 0; i < count; i++) {
+          line(depth, "else if ", children[2 + 2 * i], " then");
+          walk(children[3 + 2 * i], depth + 1);
+        }
+        if (options.hasElse) {
+          line(depth, "else");
+          walk(children[2 + 2 * count], depth + 1);
+        }
+        line(depth, "end if");
+        break;
+      }
+      default:
+        throw new Error("Unsupported algorithm node: " + node.type);
+    }
+  };
+  walk(data.tree);
+  const work = (async () => {
+    let finished = true;
+    try {
+      await (0, import_obsidian.finishRenderMath)();
+    } catch {
+      finished = false;
+    }
+    for (const { span, source } of formulas) {
+      if (host.dataset.anAlgorithm !== signature || !host.contains(span) && !caption.contains(span)) return;
+      if (!finished || !span.querySelector("svg,mjx-container")) span.replaceChildren(await localMathSvg2(doc, source));
+    }
+  })();
+  pending.set(host, work);
+  void work.catch((error) => {
+    if (host.dataset.anAlgorithm === signature) algorithmError(host, error);
+  });
+}
+function algorithmError(host, error) {
+  const message = String(error instanceof Error ? error.message : error);
+  if (host.dataset.anAlgorithmError === message && host.querySelector("pre")) return;
+  host.dataset.anAlgorithmError = message;
+  host.classList.add("an-algorithm-error");
+  host.removeAttribute("data-an-algorithm");
+  const body = host.querySelector(":scope > .callout-content") || host;
+  body.replaceChildren(body.ownerDocument.win.createEl("pre", { text: t("\u7B97\u6CD5\u8BED\u6CD5\u9519\u8BEF\uFF1A") + String(error instanceof Error ? error.message : error) }));
+}
+function algorithmRecord(host, record, lineNumbers, name = t("\u7B97\u6CD5")) {
+  if (editorFragment(host) && (!host.closest('[contenteditable="false"]') || nativeCalloutBodyInteraction(host))) return;
+  if (record.algorithmError) {
+    algorithmError(host, record.algorithmError);
+    return;
+  }
+  if (!record.algorithm) return;
+  const caption = host.matches(".callout") ? host.querySelector(":scope > .callout-title > .callout-title-inner") || void 0 : void 0;
+  renderAlgorithm(host, record.algorithm, record.number, lineNumbers, caption, name);
+  host.dataset.anLine = String(record.line);
+}
+function algorithmProcessor(source, host, lineNumbers) {
+  host.classList.add("an-algorithm-fence");
+  try {
+    renderAlgorithm(host, parseAlgorithm(source), "", lineNumbers);
+  } catch (error) {
+    algorithmError(host, error);
+  }
+}
+async function finishAlgorithms(root) {
+  const hosts = [...root.matches(".an-algorithm") ? [root] : [], ...root.querySelectorAll(".an-algorithm")];
+  await Promise.all(hosts.map((host) => pending.get(host)).filter((work) => !!work));
+}
+
+// src/styles/algorithms.css
+var algorithms_default = 'body.an-active .an-algorithm,\nbody.phb-export .an-algorithm,\nbody.an-active .callout[data-callout=algorithm] {\n  --an-algorithm-accent: var(--an-color-algorithm, var(--an-color-def, var(--phb-def)));\n  display: block;\n  color: var(--text-normal, #24372e);\n  background: transparent !important;\n  border: 0 !important;\n  border-top: 2px solid var(--an-algorithm-accent) !important;\n  border-bottom: 2px solid var(--an-algorithm-accent) !important;\n  border-radius: 0 !important;\n  box-shadow: none;\n  padding: 0 !important;\n  margin: 1.2em 0 !important;\n  font-family: var(--font-text);\n  font-size: 1em;\n  line-height: 1.6;\n  overflow: visible;\n}\nbody.an-active .callout[data-callout=algorithm]::before,\nbody.an-active .callout[data-callout=algorithm]::after {\n  content: none;\n  display: none;\n}\nbody .an-algorithm > .callout-title,\nbody .an-algorithm > .an-algorithm-caption,\nbody .an-appearance-preview .callout[data-callout=algorithm] > .callout-title {\n  display: flex !important;\n  background: transparent !important;\n  color: var(--an-algorithm-accent) !important;\n  position: static;\n  float: none;\n  width: 100%;\n  max-width: 100%;\n  box-sizing: border-box;\n  box-shadow: none;\n  padding: .35em .5em !important;\n  border: 0 !important;\n  border-bottom: 1px solid var(--an-algorithm-accent) !important;\n  margin: 0 !important;\n  font-weight: 400;\n  font-style: normal;\n  border-radius: 0 !important;\n}\nbody .an-algorithm > .callout-title > .callout-icon {\n  display: none !important;\n}\n.an-algorithm-label {\n  font-weight: 700;\n}\n.an-algorithm-title {\n  color: var(--text-normal);\n}\n.an-algorithm > .callout-content {\n  padding: 0;\n  margin: 0;\n}\n.an-algorithm-body {\n  padding: .4em .5em;\n}\n.an-algorithm .an-algorithm-line {\n  display: flex;\n  margin: .12em 0;\n  padding: 0;\n  gap: .65em;\n  text-align: start;\n  text-indent: 0;\n}\n.an-algorithm-line-number {\n  flex: 0 0 2ch;\n  color: var(--text-muted);\n  font-size: .85em;\n  text-align: end;\n  user-select: none;\n}\n.an-algorithm-line-content {\n  flex: 1;\n  min-width: 0;\n  padding-inline-start: calc(var(--an-algorithm-depth, 0) * 1.2em);\n  overflow-wrap: anywhere;\n  white-space: normal;\n}\n.an-algorithm-keyword {\n  font-weight: 700;\n}\n.an-algorithm-function,\n.an-algorithm-smallcaps {\n  font-variant: small-caps;\n}\n.an-algorithm-comment {\n  color: var(--text-muted);\n  font-style: italic;\n}\n.an-algorithm-math {\n  display: inline-block;\n  max-width: 100%;\n  vertical-align: baseline;\n}\n.an-algorithm-math > svg {\n  max-width: 100%;\n  overflow: visible;\n}\n.an-algorithm-error pre {\n  white-space: pre-wrap;\n  color: var(--text-error);\n}\n@media print {\n  body.phb-export .an-algorithm {\n    break-inside: avoid;\n    -webkit-box-decoration-break: clone;\n    box-decoration-break: clone;\n  }\n  body.phb-export .an-algorithm[data-phb-long=true] {\n    break-inside: auto !important;\n  }\n  body.phb-export .an-algorithm-line {\n    break-inside: avoid;\n  }\n  body.phb-export .an-algorithm > :is(.callout-title, .an-algorithm-caption) {\n    break-after: avoid;\n  }\n}\n.an-algorithm .callout-title-inner[data-an-algorithm-label]::before {\n  content: attr(data-an-algorithm-label) " \\b7  ";\n  font-weight: 700;\n}\nbody.phb-export .phb-callout-wrap:has(> .an-algorithm) {\n  padding-top: 0;\n}\n';
+
+// src/main.ts
+var Obs2 = __toESM(require("obsidian"));
+var import_obsidian9 = require("obsidian");
 
 // src/export/document.ts
 var TYPES2 = { "def": ["Definition", "definition", "def"], "thm": ["Theorem", "theorem", "thm"], "lem": ["Lemma", "lemma", "lem"], "prop": ["Proposition", "proposition", "prop", "prp"], "cor": ["Corollary", "corollary", "cor"], "claim": ["Claim", "claim", "clm"], "example": ["Example", "example", "ex", "exa", "exm"], "proof": ["Proof", "proof", "pf"], "remark": ["Remark", "remark", "rem", "rmk"], "axiom": ["Axiom", "axiom", "axm"], "assumption": ["Assumption", "assumption", "asm"], "exercise": ["Exercise", "exercise", "exr"], "conjecture": ["Conjecture", "conjecture", "cnj"], "hypothesis": ["Hypothesis", "hypothesis", "hyp"], "solution": ["Solution", "solution", "sol"] };
@@ -59403,6 +59779,8 @@ var DEFAULTS2 = {
   neutralBody: false,
   hideMotif: false,
   customAppearance: "{}",
+  customPalettes: "{}",
+  paletteAppearance: "{}",
   captureTheme: true,
   openPdf: true,
   paragraphIndent: false,
@@ -59415,66 +59793,6 @@ var DEFAULTS2 = {
   excludedFolders: "",
   indexDelay: 450
 };
-
-// src/rendering/custom-appearance.ts
-var drawing = (paths) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="black" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
-var MOTIFS = {
-  laurel: drawing('<path d="M23 41C8 35 5 19 16 7M25 41C40 35 43 19 32 7M14 12Q5 12 9 20Q16 20 14 12M10 23Q2 25 10 31Q17 28 10 23M15 33Q10 40 20 40Q23 34 15 33M34 12Q43 12 39 20Q32 20 34 12M38 23Q46 25 38 31Q31 28 38 23M33 33Q38 40 28 40Q25 34 33 33"/><path d="M19 23l4 4 7-9M18 43l6-3 6 3"/>'),
-  compass: drawing('<circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="13" stroke-dasharray="1 4"/><path d="M24 3v6m0 30v6M3 24h6m30 0h6M30 15l-3 12-12 6 6-12zM21 21l6 6"/><circle cx="24" cy="24" r="2"/>'),
-  rosette: drawing('<path d="M24 5C30 14 37 7 35 17C46 17 38 26 42 30C32 31 35 41 25 37C18 46 16 34 8 37C11 28 1 27 9 20C5 12 18 16 17 7Z"/><circle cx="24" cy="24" r="9"/><circle cx="24" cy="24" r="5"/><path d="M21 24l2 2 4-5"/>'),
-  orbit: drawing('<circle cx="24" cy="24" r="3"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(-35 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(35 24 24)"/><ellipse cx="24" cy="24" rx="8" ry="20"/><circle cx="39" cy="12" r="2" fill="black"/>'),
-  lattice: drawing('<path d="M24 4l17 10v20L24 44 7 34V14ZM7 14l17 10 17-10M24 24v20M24 4v20M7 34l17-10 17 10"/><path d="M15 9v20l17 10M33 9v20L16 39M7 24l17 10 17-10"/>'),
-  knot: drawing('<path d="M24 6C11-5 0 14 13 23l12 10C38 44 49 25 36 16L24 6ZM24 42C37 53 48 34 35 25L23 15C10 4-1 23 12 32l12 10Z" transform="translate(5 5) scale(.79)"/><path d="M16 18l16 12M16 30l16-12"/>'),
-  arch: drawing('<path d="M7 41h34M10 37V23a14 14 0 0128 0v14M15 37V23a9 9 0 0118 0v14M19 37V24a5 5 0 0110 0v13M8 37h9m14 0h9M24 5v5M13 10l4 5m18-5l-4 5M8 20l7 2m25-2l-7 2"/>'),
-  quill: drawing('<path d="M8 41l24-27M13 34C7 17 27 5 41 6C39 22 29 35 13 34ZM20 27l-2-10m9 2l-1-9M20 27l12-1M27 19l10-1M8 42h19"/><path d="M32 36h8m-6 4h8"/>'),
-  folio: drawing('<path d="M24 12C18 7 11 8 5 10v27c7-2 13-1 19 3 6-4 12-5 19-3V10c-6-2-13-3-19 2ZM24 12v28M9 15c4-1 7 0 11 2M9 21c4-1 7 0 11 2M9 27c4-1 7 0 11 2M28 17c4-2 7-3 11-2M28 23c4-2 7-3 11-2M28 29c4-2 7-3 11-2"/>')
-};
-function parseAppearance(raw) {
-  const result = {};
-  try {
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return result;
-    for (const key2 of Object.keys(engine_default.APPEARANCE_TYPES)) {
-      const entry = parsed[key2];
-      if (!entry || typeof entry !== "object") continue;
-      const clean = {};
-      for (const field of ["light", "dark", "motifLight", "motifDark"]) {
-        const color = entry[field];
-        if (typeof color === "string" && /^#[0-9a-f]{6}$/i.test(color)) clean[field] = color;
-      }
-      const motif = entry.motif;
-      if (typeof motif === "string" && (Object.hasOwn(MOTIFS, motif) || motif === "none")) clean.motif = motif;
-      result[key2] = clean;
-    }
-  } catch {
-  }
-  return result;
-}
-function motifMask(id2) {
-  return Object.hasOwn(MOTIFS, id2) ? `url("data:image/svg+xml,${encodeURIComponent(MOTIFS[id2])}")` : "none";
-}
-function titleInk(hex) {
-  const rgb = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
-  const luminance = rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
-  return luminance > 0.179 ? "#000000" : "#ffffff";
-}
-var appearanceVariables = Object.keys(engine_default.APPEARANCE_TYPES).flatMap((key2) => ["color", "ink", "motif-color", "symbol", "motif-display"].map((part) => `--an-${part}-${key2}`));
-function appearanceValues(raw, dark) {
-  const values = {};
-  for (const [key2, entry] of Object.entries(parseAppearance(raw))) {
-    const color = dark ? entry.dark : entry.light, motifColor = dark ? entry.motifDark : entry.motifLight;
-    if (color) {
-      values[`--an-color-${key2}`] = color;
-      values[`--an-ink-${key2}`] = titleInk(color);
-    }
-    if (motifColor) values[`--an-motif-color-${key2}`] = motifColor;
-    if (entry.motif) {
-      values[`--an-symbol-${key2}`] = motifMask(entry.motif);
-      values[`--an-motif-display-${key2}`] = entry.motif === "none" ? "none" : "block";
-    }
-  }
-  return values;
-}
 
 // src/typography/solver.ts
 var KP_FORCED = -1e4;
@@ -60308,13 +60626,17 @@ function titleRecord(box, r, graph2) {
   setClass(box, "an-custom-environment", !!r.environment);
   if (r.environment) {
     setAttribute(box, "data-an-style", r.environment.style);
+    for (const part of ["color", "ink", "symbol", "motif-color", "motif-display"]) {
+      const property = `--an-custom-palette-${part}`, value = `var(--an-${part}-${r.key})`;
+      if (box.style.getPropertyValue(property) !== value) box.style.setProperty(property, value);
+    }
     for (const mode of ["light", "dark"]) {
       const color = r.environment[mode];
       for (const [part, value] of [["color", color], ["ink", color && titleInk(color)]]) {
         const property = `--an-custom-${part}-${mode}`;
         if (value) {
           if (box.style.getPropertyValue(property) !== value) box.style.setProperty(property, value);
-        } else box.style.removeProperty(property);
+        } else if (box.style.getPropertyValue(property)) box.style.removeProperty(property);
       }
     }
   }
@@ -60462,6 +60784,7 @@ function renderFragment(el, note, graph2, infoFor) {
     if (r)
       mathChanged = mathRecord(mjx, r) || mathChanged;
   }
+  markMathContinuations(el, note, infoFor);
   if (mathChanged)
     Promise.resolve(Obs.finishRenderMath()).catch(console.error);
   const usedRefs = /* @__PURE__ */ new Set();
@@ -60641,7 +60964,9 @@ function createLiveExtension(plugin) {
           if (!content) continue;
           const title = box.querySelector(":scope > .callout-title"), win = box.ownerDocument.defaultView;
           const style = win.getComputedStyle(content), titleStyle = title && win.getComputedStyle(title);
-          const key2 = enabled ? [
+          const key2 = [
+            enabled,
+            plugin.settings.paragraphIndent,
             note.source.slice(from, to),
             content.getBoundingClientRect().width,
             style.font,
@@ -60654,10 +60979,11 @@ function createLiveExtension(plugin) {
             title?.getBoundingClientRect().width,
             titleStyle?.cssFloat,
             titleStyle?.font
-          ].join("|") : "";
+          ].join("|");
           const previous = this.layouts.get(box);
           if (previous?.key === key2 && previous.nodes.length === content.childNodes.length && previous.nodes.every((node, index) => content.childNodes[index] === node)) continue;
           restoreParagraphs(box);
+          markMathContinuations(box, note, infoFor);
           traceLayout(box, "live.layout", { enabled });
           if (enabled) layoutReadOnlyCallout(box);
           this.layouts.set(box, { key: key2, nodes: [...content.childNodes] });
@@ -60692,8 +61018,8 @@ function proseLines(state) {
   if (state.doc.length > 3e5) return lines;
   let frontmatter = state.doc.line(1).text.trim() === "---", fence = "", math = false, previousDepth = -1, previousProse = false, algorithmDepth = 0, list = false, htmlEnd = null;
   for (let n = 1; n <= state.doc.lines; n++) {
-    const line = state.doc.line(n), quote2 = line.text.match(/^(?: {0,3}> ?)+/), depth = quote2?.[0].match(/>/g)?.length || 0;
-    const text = line.text.slice(quote2?.[0].length || 0);
+    const line = state.doc.line(n), quote3 = line.text.match(/^(?: {0,3}> ?)+/), depth = quote3?.[0].match(/>/g)?.length || 0;
+    const text = line.text.slice(quote3?.[0].length || 0);
     if (algorithmDepth && (depth < algorithmDepth || depth === algorithmDepth && /^\[![\w-]+/.test(text))) algorithmDepth = 0;
     if (/^\[!algorithm(?:\||\])/i.test(text) && depth) algorithmDepth = depth;
     if (algorithmDepth) {
@@ -60722,7 +61048,8 @@ function proseLines(state) {
     if (fence) continue;
     if (/^\s*\$\$/.test(text)) {
       if (!/^\s*\$\$.+\$\$\s*$/.test(text)) math = !math;
-      previousProse = false;
+      previousProse = !math;
+      previousDepth = depth;
       continue;
     }
     if (math) continue;
@@ -60738,6 +61065,7 @@ function proseLines(state) {
       previousProse = false;
       continue;
     }
+    if (/^\^[\w-]+\s*$/.test(text) && previousDepth === depth) continue;
     if (list || !text.trim() || /^\s|^(?:#{1,6}\s|\[!|\^[\w-]+\s*$|[-+*]\s|\d+[.)]\s|[-=_*]{3,}\s*$|!\[)/.test(text) || /\|/.test(text.replace(/\[\[[^\]]+\]\]/g, ""))) {
       previousProse = false;
       previousDepth = depth;
@@ -60824,7 +61152,7 @@ function candidates(state) {
 function active2(state, plan) {
   return state.selection.ranges.some((range) => range.from <= plan.to && range.to >= plan.from);
 }
-function planParagraph(text, offset, width, context, em, indent) {
+function planParagraph(text, offset, width, context, em, indent, letterSpacing = 0, wordSpacing = 0) {
   if (!Intl.Segmenter) return null;
   const parts = [];
   for (const part of new Intl.Segmenter(void 0, { granularity: "grapheme" }).segment(text)) {
@@ -60840,7 +61168,7 @@ function planParagraph(text, offset, width, context, em, indent) {
     const part = parts[i], previous = parts[i - 1], next = parts[i + 1];
     if (previous && previous.kind !== "space" && part.kind !== "space" && (previous.kind === "cjk" || part.kind === "cjk") && !opening.test(previous.text) && !closing.test(part.text))
       tokens.push({ from: part.from, to: part.from, item: { type: "glue", width: 0, stretch: em * 0.12, shrink: 0 } });
-    const natural = context.measureText(part.text).width;
+    const natural = context.measureText(part.text).width + (!("letterSpacing" in context) ? [...new Intl.Segmenter(void 0, { granularity: "grapheme" }).segment(part.text)].length * letterSpacing : 0) + (!("wordSpacing" in context) && part.kind === "space" ? part.text.length * wordSpacing : 0);
     tokens.push({ from: part.from, to: part.to, item: part.kind === "space" && !opening.test(previous?.text || "") && !closing.test(next?.text || "") ? { type: "glue", width: natural, stretch: Math.max(natural * 0.65, em * 0.12), shrink: natural * 0.4 } : { type: "box", width: natural } });
   }
   if (tokens.length > 900) return null;
@@ -60937,11 +61265,16 @@ function createLiveParagraphExtension(plugin) {
         if (!element) continue;
         const style = view.dom.ownerDocument.defaultView.getComputedStyle(element);
         const indent = parseFloat(style.textIndent) || 0;
-        if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || indent < 0 || !style.textIndent.endsWith("px") || parseFloat(style.letterSpacing) || parseFloat(style.wordSpacing) || style.fontVariantCaps !== "normal" || style.textAlign === "center" || style.textAlign === "right") continue;
+        if (style.direction !== "ltr" || style.writingMode !== "horizontal-tb" || indent < 0 || !style.textIndent.endsWith("px") || style.fontVariantCaps !== "normal" || style.textAlign === "center" || style.textAlign === "right") continue;
+        const letterSpacing = parseFloat(style.letterSpacing) || 0, wordSpacing = parseFloat(style.wordSpacing) || 0;
+        if (!Number.isFinite(letterSpacing + wordSpacing) || Math.abs(letterSpacing) > 4 || Math.abs(wordSpacing) > 20) continue;
+        if ("letterSpacing" in context) context.letterSpacing = letterSpacing + "px";
+        if ("wordSpacing" in context) context.wordSpacing = wordSpacing + "px";
+        if (["auto", "normal", "none"].includes(style.fontKerning)) context.fontKerning = style.fontKerning;
         context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
         const width = element.getBoundingClientRect().width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
         if (width < 100) continue;
-        const plan = planParagraph(paragraph2.text, paragraph2.from, width, context, parseFloat(style.fontSize) || 16, indent);
+        const plan = planParagraph(paragraph2.text, paragraph2.from, width, context, parseFloat(style.fontSize) || 16, indent, letterSpacing, wordSpacing);
         if (plan) plans.push(plan);
         if (plans.length >= 40) break;
       }
@@ -61217,113 +61550,94 @@ var EnvironmentModal = class extends import_obsidian3.Modal {
 // src/ui/environment-settings.ts
 var import_obsidian4 = require("obsidian");
 function renderEnvironmentSettings(container, plugin) {
-  const syntaxExamples = { key: "observation", abbreviation: "obs", color: "#4488aa" };
+  const syntaxExamples = { name: "Observation", key: "observation" };
   const root = container.createDiv({ cls: "an-environment-settings" });
-  new import_obsidian4.Setting(root).setName(t("\u73AF\u5883\u540D\u79F0\u4E0E\u5F15\u7528")).setHeading();
+  new import_obsidian4.Setting(root).setName(t("\u73AF\u5883\u4E0E\u5F15\u7528")).setHeading();
   root.createEl("p", { text: t("\u6309\u73AF\u5883\u81EA\u5B9A\u4E49\u663E\u793A\u540D\u79F0\u3001\u5F15\u7528\u7F29\u5199\u548C\u5B8C\u6574\u683C\u5F0F\u3002\u7559\u7A7A\u4F7F\u7528\u9ED8\u8BA4\u503C\uFF1B\u683C\u5F0F\u652F\u6301 {type}\u3001{abbr}\u3001{name}\u3001{number}\u3001{title}\u3001{file}\u3002\u8BBE\u7F6E\u540E\u70B9\u51FB\u4FDD\u5B58\u3002") });
-  const referenceForm = root.createDiv();
+  const form = root.createDiv();
   let selected = "algorithm";
-  const options = () => Object.fromEntries([...Object.keys(engine_default.TYPES), ...Object.keys(engine_default.MEDIA), "equation", ...Object.keys(engine_default.environments(plugin.settings))].map((key2) => [key2, engine_default.typeNames(key2, plugin.settings)[0] + ` [${key2}]`]));
-  const drawReference = () => {
-    referenceForm.empty();
-    const entry = { ...engine_default.referenceOverrides(plugin.settings)[selected] };
-    new import_obsidian4.Setting(referenceForm).setName(t("\u9009\u62E9\u73AF\u5883")).addDropdown((d) => d.addOptions(options()).setValue(selected).onChange((value) => {
+  const draw = () => {
+    form.empty();
+    const definitions = engine_default.environments(plugin.settings), isNew = !selected, custom = definitions[selected];
+    const reference = { ...engine_default.referenceOverrides(plugin.settings)[selected] };
+    const entry = { ...custom || { name: "", abbr: "", style: "thm", numbered: true } };
+    let key2 = selected;
+    const options = Object.fromEntries([...Object.keys(engine_default.TYPES), ...Object.keys(engine_default.MEDIA), "equation", ...Object.keys(definitions)].map((key3) => [key3, engine_default.typeNames(key3, plugin.settings)[0] + ` [${key3}]`]));
+    new import_obsidian4.Setting(form).setName(t("\u9009\u62E9\u73AF\u5883")).addDropdown((d) => d.addOptions({ ...options, "": t("\u65B0\u5EFA\u73AF\u5883") }).setValue(selected).onChange((value) => {
       d.selectEl.blur();
       selected = value;
-      drawReference();
+      draw();
     }));
-    new import_obsidian4.Setting(referenceForm).setName(t("\u663E\u793A\u540D\u79F0")).setDesc(t("\u7528\u4E8E\u73AF\u5883\u6807\u9898\u53CA\u5F15\u7528\u7684\u5168\u79F0\uFF1B\u53EF\u586B\u5199\u4EFB\u610F\u8BED\u8A00\u3002")).addText((c) => c.setValue(entry.name || "").setPlaceholder(engine_default.labelName(selected)).onChange((value) => {
+    if (isNew || custom) new import_obsidian4.Setting(form).setName(t("\u73AF\u5883\u6807\u8BC6")).setDesc(t("\u5982 observation\uFF0C\u5BF9\u5E94 [!observation]\uFF1B\u4F7F\u7528\u5C0F\u5199\u82F1\u6587\u5B57\u6BCD\u3001\u6570\u5B57\u548C\u8FDE\u5B57\u7B26\uFF0C\u4EE5\u5B57\u6BCD\u5F00\u5934\uFF0C\u4E0D\u80FD\u5360\u7528\u5DF2\u6709\u7C7B\u578B\u3002\u4FDD\u5B58\u540E\u4E0D\u53EF\u6539\u540D\u3002")).addText((c) => c.setValue(key2).setDisabled(!!selected).setPlaceholder(syntaxExamples.key).onChange((value) => {
+      key2 = value.trim();
+    }));
+    new import_obsidian4.Setting(form).setName(t("\u663E\u793A\u540D\u79F0")).setDesc(t("\u7528\u4E8E\u73AF\u5883\u6807\u9898\u53CA\u5F15\u7528\u7684\u5168\u79F0\uFF1B\u53EF\u586B\u5199\u4EFB\u610F\u8BED\u8A00\u3002")).addText((c) => c.setValue(isNew ? entry.name : reference.name || custom?.name || "").setPlaceholder(isNew ? syntaxExamples.name : engine_default.labelName(selected)).onChange((value) => {
+      reference.name = value;
       entry.name = value;
     }));
-    new import_obsidian4.Setting(referenceForm).setName(t("\u5F15\u7528\u7F29\u5199")).addText((c) => c.setValue(entry.abbr || "").setPlaceholder(engine_default.ABBR[selected] || selected).onChange((value) => {
+    new import_obsidian4.Setting(form).setName(t("\u5F15\u7528\u7F29\u5199")).addText((c) => c.setValue(isNew ? entry.abbr : reference.abbr || custom?.abbr || "").setPlaceholder(isNew ? "obs" : engine_default.ABBR[selected] || selected).onChange((value) => {
+      reference.abbr = value;
       entry.abbr = value;
     }));
-    new import_obsidian4.Setting(referenceForm).setName(t("\u6B64\u73AF\u5883\u7684\u5F15\u7528\u683C\u5F0F")).setDesc(t("\u4F8B\u5982\uFF1A{abbr} {number}\u3001\u7B97\u6CD5 {number}\u3001Satz {number}\u3002\u7559\u7A7A\u6CBF\u7528\u5BF9\u5E94\u7684\u5168\u5C40\u683C\u5F0F\u3002")).addText((c) => c.setValue(entry.format || "").setPlaceholder("{abbr} {number}").onChange((value) => {
-      entry.format = value;
+    new import_obsidian4.Setting(form).setName(t("\u6B64\u73AF\u5883\u7684\u5F15\u7528\u683C\u5F0F")).setDesc(t("\u4F8B\u5982\uFF1A{abbr} {number}\u3001\u7B97\u6CD5 {number}\u3001Satz {number}\u3002\u7559\u7A7A\u6CBF\u7528\u5BF9\u5E94\u7684\u5168\u5C40\u683C\u5F0F\u3002")).addText((c) => c.setValue(reference.format || "").setPlaceholder("{abbr} {number}").onChange((value) => {
+      reference.format = value;
     }));
-    new import_obsidian4.Setting(referenceForm).addButton((b) => b.setButtonText(t("\u4FDD\u5B58")).setCta().onClick(async () => {
+    if (isNew || custom) {
+      new import_obsidian4.Setting(form).setName(t("\u57FA\u7840\u5916\u89C2")).addDropdown((d) => d.addOptions(Object.fromEntries(ENVIRONMENT_STYLES.map((style) => [style, engine_default.TYPES[style][0]]))).setValue(entry.style).onChange((value) => {
+        entry.style = value;
+      }));
+      new import_obsidian4.Setting(form).setName(t("\u81EA\u52A8\u7F16\u53F7")).addToggle((c) => c.setValue(entry.numbered).onChange((value) => {
+        entry.numbered = value;
+      }));
+      form.createEl("p", { text: t("\u989C\u8272\u5728\u914D\u8272\u4E0E\u5916\u89C2\u4E2D\u6309\u8272\u677F\u8BBE\u7F6E\uFF1B\u7F16\u53F7\u9075\u5FAA\u4E0B\u65B9\u7684\u7F16\u53F7\u89C4\u5219\u3002") });
+      if (custom) form.createEl("p", { cls: "an-environment-example", text: `> [!${selected}] ${t("\u6807\u9898")}
+> ${t("\u6B63\u6587")}
+
+^${selected}-example` });
+    }
+    const actions = new import_obsidian4.Setting(form).addButton((b) => b.setButtonText(t("\u4FDD\u5B58")).setCta().onClick(async () => {
+      if (isNew || custom) {
+        const current2 = engine_default.environments(plugin.settings);
+        if (!engine_default.validCustomKey(key2) || !entry.name.trim() || isNew && (Object.hasOwn(current2, key2) || Object.keys(current2).length >= 64)) {
+          new import_obsidian4.Notice(t("\u8BF7\u68C0\u67E5\u6807\u8BC6\u548C\u540D\u79F0\uFF1B\u6807\u8BC6\u4E0D\u80FD\u91CD\u590D\u6216\u5360\u7528\u5185\u7F6E\u73AF\u5883\u3002"));
+          return;
+        }
+        current2[key2] = entry;
+        plugin.settings.customEnvironments = JSON.stringify(engine_default.environments({ customEnvironments: JSON.stringify(current2) }));
+      }
       const all = engine_default.referenceOverrides(plugin.settings);
-      all[selected] = entry;
+      all[key2] = reference;
       plugin.settings.referenceOverrides = JSON.stringify(engine_default.referenceOverrides({ ...plugin.settings, referenceOverrides: JSON.stringify(all) }));
       await plugin.saveSettings();
       new import_obsidian4.Notice(t("\u5DF2\u4FDD\u5B58\u3002"));
-    })).addButton((b) => b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
+      if (isNew) {
+        selected = key2;
+        draw();
+      }
+    }));
+    if (!isNew) actions.addButton((b) => b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
       const all = engine_default.referenceOverrides(plugin.settings);
       delete all[selected];
       plugin.settings.referenceOverrides = JSON.stringify(all);
       await plugin.saveSettings();
-      drawReference();
+      draw();
     }));
-  };
-  drawReference();
-  new import_obsidian4.Setting(root).setName(t("\u81EA\u5B9A\u4E49\u65B0\u73AF\u5883")).setHeading();
-  root.createEl("p", { text: t("\u65B0\u73AF\u5883\u6CBF\u7528\u6570\u5B66\u6846\u6216 Remark \u7684\u5916\u89C2\uFF0C\u53EF\u9009\u62E9\u662F\u5426\u7F16\u53F7\u5E76\u8BBE\u7F6E\u6D45\u6DF1\u914D\u8272\u3002\u7F16\u53F7\u9075\u5FAA\u5F53\u524D\u5206\u8282\u548C\u5171\u4EAB\u8BA1\u6570\u5668\u8BBE\u7F6E\uFF1B\u6B63\u6587\u4ECD\u4F7F\u7528 Markdown\u3002\u6700\u591A 64 \u4E2A\u3002") });
-  const customForm = root.createDiv();
-  let customKey = "";
-  const drawCustom = () => {
-    customForm.empty();
-    const all = engine_default.environments(plugin.settings);
-    const entry = { ...all[customKey] || { name: "", abbr: "", style: "thm", numbered: true } };
-    let key2 = customKey;
-    new import_obsidian4.Setting(customForm).setName(t("\u7F16\u8F91\u73AF\u5883")).addDropdown((d) => d.addOptions({ "": t("\u65B0\u5EFA\u73AF\u5883"), ...Object.fromEntries(Object.entries(all).map(([key3, value]) => [key3, value.name + ` [${key3}]`])) }).setValue(customKey).onChange((value) => {
-      d.selectEl.blur();
-      customKey = value;
-      drawCustom();
-    }));
-    new import_obsidian4.Setting(customForm).setName(t("\u73AF\u5883\u6807\u8BC6")).setDesc(t("\u5982 observation\uFF0C\u5BF9\u5E94 [!observation]\uFF1B\u4F7F\u7528\u5C0F\u5199\u82F1\u6587\u5B57\u6BCD\u3001\u6570\u5B57\u548C\u8FDE\u5B57\u7B26\uFF0C\u4EE5\u5B57\u6BCD\u5F00\u5934\uFF0C\u4E0D\u80FD\u5360\u7528\u5DF2\u6709\u7C7B\u578B\u3002\u4FDD\u5B58\u540E\u4E0D\u53EF\u6539\u540D\u3002")).addText((c) => c.setValue(key2).setDisabled(!!customKey).setPlaceholder(syntaxExamples.key).onChange((value) => {
-      key2 = value.trim();
-    }));
-    new import_obsidian4.Setting(customForm).setName(t("\u663E\u793A\u540D\u79F0")).addText((c) => c.setValue(entry.name).setPlaceholder("Observation").onChange((value) => {
-      entry.name = value;
-    }));
-    new import_obsidian4.Setting(customForm).setName(t("\u5F15\u7528\u7F29\u5199")).addText((c) => c.setValue(entry.abbr).setPlaceholder(syntaxExamples.abbreviation).onChange((value) => {
-      entry.abbr = value;
-    }));
-    new import_obsidian4.Setting(customForm).setName(t("\u57FA\u7840\u5916\u89C2")).addDropdown((d) => d.addOptions(Object.fromEntries(ENVIRONMENT_STYLES.map((style) => [style, engine_default.TYPES[style][0]]))).setValue(entry.style).onChange((value) => {
-      entry.style = value;
-    }));
-    new import_obsidian4.Setting(customForm).setName(t("\u81EA\u52A8\u7F16\u53F7")).addToggle((c) => c.setValue(entry.numbered).onChange((value) => {
-      entry.numbered = value;
-    }));
-    for (const mode of ["light", "dark"]) new import_obsidian4.Setting(customForm).setName(mode === "light" ? t("\u6D45\u8272\u6A21\u5F0F\u4E3B\u8272") : t("\u6DF1\u8272\u6A21\u5F0F\u4E3B\u8272")).setDesc(t("\u7559\u7A7A\u8DDF\u968F\u57FA\u7840\u5916\u89C2\u7684\u5F53\u524D\u8272\u677F\uFF0C\u6216\u586B\u5199 #RRGGBB\u3002")).addText((c) => c.setValue(entry[mode] || "").setPlaceholder(syntaxExamples.color).onChange((value) => {
-      entry[mode] = value.trim();
-    }));
-    const status = customForm.createEl("p", { cls: "an-environment-example", text: customKey ? `> [!${customKey}] ${t("\u6807\u9898")}
-> ${t("\u6B63\u6587")}
-
-^${customKey}-example` : "" });
-    new import_obsidian4.Setting(customForm).addButton((b) => b.setButtonText(t("\u4FDD\u5B58\u73AF\u5883")).setCta().onClick(async () => {
+    if (custom) actions.addButton((b) => b.setButtonText(t("\u5220\u9664\u73AF\u5883")).onClick(async () => {
       const current2 = engine_default.environments(plugin.settings);
-      if (!engine_default.validCustomKey(key2) || !entry.name.trim() || !customKey && (Object.hasOwn(current2, key2) || Object.keys(current2).length >= 64) || [entry.light, entry.dark].some((color) => color && !/^#[0-9a-f]{6}$/i.test(color))) {
-        new import_obsidian4.Notice(t("\u8BF7\u68C0\u67E5\u6807\u8BC6\u3001\u540D\u79F0\u548C\u989C\u8272\uFF1B\u6807\u8BC6\u4E0D\u80FD\u91CD\u590D\u6216\u5360\u7528\u5185\u7F6E\u73AF\u5883\u3002"));
-        return;
-      }
-      current2[key2] = entry;
-      plugin.settings.customEnvironments = JSON.stringify(engine_default.environments({ customEnvironments: JSON.stringify(current2) }));
-      await plugin.saveSettings();
-      customKey = key2;
-      status.textContent = `> [!${key2}] ${t("\u6807\u9898")}
-> ${t("\u6B63\u6587")}
-
-^${key2}-example`;
-      new import_obsidian4.Notice(t("\u5DF2\u4FDD\u5B58\u3002"));
-      drawCustom();
-      drawReference();
-    })).addButton((b) => b.setButtonText(t("\u5220\u9664\u73AF\u5883")).setDisabled(!customKey).onClick(async () => {
-      const current2 = engine_default.environments(plugin.settings);
-      delete current2[customKey];
+      delete current2[selected];
       plugin.settings.customEnvironments = JSON.stringify(current2);
       const refs = engine_default.referenceOverrides(plugin.settings);
-      delete refs[customKey];
+      delete refs[selected];
       plugin.settings.referenceOverrides = JSON.stringify(refs);
+      const palettes = paletteOverrides(plugin.settings);
+      for (const profile of Object.values(palettes)) delete profile[selected];
+      plugin.settings.paletteAppearance = JSON.stringify(palettes);
       await plugin.saveSettings();
-      if (selected === customKey) selected = "algorithm";
-      customKey = "";
-      drawCustom();
-      drawReference();
+      selected = "algorithm";
+      draw();
     }));
   };
-  drawCustom();
+  draw();
 }
 
 // src/ui/settings-tab.ts
@@ -61332,6 +61646,8 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.appearanceType = "thm";
+    this.section = "environment";
+    this.appearanceMode = typeof document !== "undefined" && document.body.classList.contains("theme-dark") ? "dark" : "light";
     this.plugin = plugin;
   }
   display() {
@@ -61339,18 +61655,52 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
   }
   refreshSettings() {
     this.containerEl.empty();
-    for (const definition of this.getSettingDefinitions()) {
-      const setting = new import_obsidian5.Setting(this.containerEl).setName(definition.name).setDesc(definition.desc || "");
-      definition.render(setting);
+    const navigation = this.containerEl.createDiv({ cls: "an-settings-tabs", attr: { role: "tablist", "aria-label": t("\u63D2\u4EF6\u8BBE\u7F6E") } });
+    const panel = this.containerEl.createDiv({ cls: "an-settings-panel", attr: { role: "tabpanel", id: "an-settings-panel" } });
+    const sections = { environment: t("\u73AF\u5883\u4E0E\u5F15\u7528"), appearance: t("\u914D\u8272\u4E0E\u5916\u89C2"), typography: t("\u6BB5\u843D\u6392\u7248"), export: t("\u76EE\u5F55\u4E0E\u5BFC\u51FA") };
+    for (const [key2, name] of Object.entries(sections)) {
+      const button = navigation.createEl("button", { text: name, attr: { role: "tab", "aria-controls": "an-settings-panel", "aria-selected": String(key2 === this.section), tabindex: key2 === this.section ? "0" : "-1", id: "an-settings-" + key2, "data-an-section": key2 } });
+      button.addEventListener("click", () => {
+        this.section = key2;
+        this.refreshSettings();
+        this.containerEl.querySelector(`[data-an-section="${key2}"]`)?.focus({ preventScroll: true });
+      });
     }
+    panel.setAttribute("aria-labelledby", "an-settings-" + this.section);
+    navigation.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      const keys = Object.keys(sections), current2 = keys.indexOf(this.section), index = event.key === "Home" ? 0 : event.key === "End" ? keys.length - 1 : (current2 + (event.key === "ArrowRight" ? 1 : -1) + keys.length) % keys.length;
+      event.preventDefault();
+      navigation.querySelector(`[data-an-section="${keys[index]}"]`)?.click();
+    });
+    const definitions = this.getSettingDefinitions();
+    const render = (parent, group) => {
+      for (const definition of definitions.filter((definition2) => definition2.group === group)) {
+        const setting = new import_obsidian5.Setting(parent).setName(definition.name).setDesc(definition.desc || "");
+        definition.render(setting);
+      }
+    };
+    if (this.section === "environment") {
+      renderEnvironmentSettings(panel, this.plugin);
+      for (const [group, name] of [["numbering", t("\u7F16\u53F7\u89C4\u5219")], ["references", t("\u5F15\u7528\u9ED8\u8BA4\u683C\u5F0F\u4E0E\u7D22\u5F15")]]) {
+        const details = panel.createEl("details", { cls: "an-settings-details" });
+        details.createEl("summary", { text: name });
+        render(details, group);
+      }
+    } else if (this.section === "appearance") {
+      render(panel, "appearance");
+      const section = panel.createDiv({ cls: "an-custom-appearance-row" });
+      this.renderAppearance(section);
+    } else render(panel, this.section);
   }
   async changeAppearance(field, value) {
-    const all = parseAppearance(this.plugin.settings.customAppearance);
-    const entry = all[this.appearanceType] || {};
+    const all = paletteOverrides(this.plugin.settings), key2 = selectedPalette(this.plugin.settings, this.appearanceMode);
+    const profile = all[key2] || {}, entry = profile[this.appearanceType] || {};
     if (value) entry[field] = value;
     else delete entry[field];
-    all[this.appearanceType] = entry;
-    this.plugin.settings.customAppearance = JSON.stringify(all);
+    profile[this.appearanceType] = entry;
+    all[key2] = profile;
+    this.plugin.settings.paletteAppearance = JSON.stringify(all);
     await this.plugin.saveSettings();
   }
   refreshAppearance(container) {
@@ -61368,37 +61718,66 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     for (const [node, top] of positions) node.scrollTop = top;
   }
   renderAppearance(container) {
-    const root = container.createDiv({ cls: "an-appearance-settings" });
+    const root = container.createDiv({ cls: "an-appearance-settings" }), settings = this.plugin.settings;
     const redraw = () => {
       if (root.parentElement) this.refreshAppearance(root.parentElement);
     };
-    new import_obsidian5.Setting(root).setName(t("\u73AF\u5883\u81EA\u5B9A\u4E49")).setHeading();
-    new import_obsidian5.Setting(root).setName(t("\u9009\u62E9\u73AF\u5883")).setDesc(t("\u6BCF\u7C7B\u73AF\u5883\u72EC\u7ACB\u8BBE\u7F6E\uFF1B\u5173\u95ED\u989C\u8272\u5F00\u5173\u5373\u6062\u590D\u5F53\u524D\u8272\u677F\u3002")).addDropdown((d) => {
+    const options = (mode) => ({ ...paletteOptions(settings, mode), theme: t("\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272") });
+    new import_obsidian5.Setting(root).setName(t("\u6D45\u8272\u6570\u5B66\u6846\u914D\u8272")).addDropdown((d) => {
+      d.selectEl.dataset.anControl = "lightPalette";
+      d.addOptions(options("light")).setValue(settings.lightPalette).onChange(async (value) => {
+        d.selectEl.blur();
+        settings.lightPalette = value;
+        this.appearanceMode = "light";
+        await this.plugin.saveSettings();
+        redraw();
+      });
+    });
+    new import_obsidian5.Setting(root).setName(t("\u6DF1\u8272\u6570\u5B66\u6846\u914D\u8272")).addDropdown((d) => {
+      d.selectEl.dataset.anControl = "darkPalette";
+      d.addOptions(options("dark")).setValue(settings.darkPalette).onChange(async (value) => {
+        d.selectEl.blur();
+        settings.darkPalette = value;
+        this.appearanceMode = "dark";
+        await this.plugin.saveSettings();
+        redraw();
+      });
+    });
+    new import_obsidian5.Setting(root).setName(t("\u7F16\u8F91\u8272\u677F\u6A21\u5F0F")).addDropdown((d) => {
+      d.selectEl.dataset.anControl = "mode";
+      d.addOptions({ light: t("\u6D45\u8272"), dark: t("\u6DF1\u8272") }).setValue(this.appearanceMode).onChange((value) => {
+        this.appearanceMode = value;
+        redraw();
+      });
+    });
+    const palette = selectedPalette(settings, this.appearanceMode), profiles = paletteOverrides(settings), roles = appearanceRoles(settings);
+    if (!Object.hasOwn(roles, this.appearanceType)) this.appearanceType = "thm";
+    new import_obsidian5.Setting(root).setName(t("\u9009\u62E9\u73AF\u5883")).setDesc(t("\u4FEE\u6539\u53EA\u5E94\u7528\u4E8E\u5F53\u524D\u8272\u677F\uFF1B\u5207\u6362\u8272\u677F\u65F6\u6062\u590D\u8BE5\u8272\u677F\u81EA\u5DF1\u7684\u989C\u8272\u3002")).addDropdown((d) => {
       d.selectEl.dataset.anControl = "environment";
-      d.addOptions(Object.fromEntries(Object.entries(engine_default.APPEARANCE_TYPES).map(([key2, names2]) => [key2, names2[0]]))).setValue(this.appearanceType).onChange((value) => {
+      d.addOptions(Object.fromEntries(Object.entries(roles).map(([key2, names2]) => [key2, engine_default.typeNames(key2, settings)[0] || names2[0]]))).setValue(this.appearanceType).onChange((value) => {
         this.appearanceType = value;
         redraw();
       });
     });
-    const entry = parseAppearance(this.plugin.settings.customAppearance)[this.appearanceType] || {};
-    const colors = [
-      ["light", t("\u6D45\u8272\u6A21\u5F0F\u4E3B\u8272"), "#286b76"],
-      ["dark", t("\u6DF1\u8272\u6A21\u5F0F\u4E3B\u8272"), "#8dc8d0"]
-    ];
-    const plain2 = ["proof", "remark", "algorithm"].includes(this.appearanceType);
-    if (!plain2) colors.push(["motifLight", t("\u6D45\u8272\u6A21\u5F0F\u89D2\u6807\u989C\u8272"), "#286b76"], ["motifDark", t("\u6DF1\u8272\u6A21\u5F0F\u89D2\u6807\u989C\u8272"), "#8dc8d0"]);
-    for (const [field, name, fallback] of colors) {
-      const row = new import_obsidian5.Setting(root).setName(name).setDesc(entry[field] || t("\u8DDF\u968F\u9ED8\u8BA4\u914D\u8272"));
+    const entry = profiles[palette]?.[this.appearanceType] || {};
+    const field = this.appearanceMode, motifField = field === "light" ? "motifLight" : "motifDark";
+    const fallback = defaultRoleColor(settings, palette, this.appearanceType);
+    const plain2 = ["proof", "remark", "algorithm"].includes(this.appearanceType) || engine_default.environments(settings)[this.appearanceType]?.style === "remark";
+    const colors = [[field, t("\u73AF\u5883\u4E3B\u8272"), fallback]];
+    if (!plain2) colors.push([motifField, t("\u89D2\u6807\u989C\u8272"), entry[field] || fallback]);
+    for (const [colorField, name2, defaultColor] of colors) {
+      const row = new import_obsidian5.Setting(root).setName(name2).setDesc(entry[colorField] || t("\u8DDF\u968F\u5F53\u524D\u8272\u677F\u9ED8\u8BA4\u503C"));
       row.addToggle((c) => {
-        c.toggleEl.dataset.anControl = field;
-        c.setValue(!!entry[field]).onChange(async (enabled) => {
-          await this.changeAppearance(field, enabled ? fallback : "");
+        c.toggleEl.dataset.anControl = colorField;
+        c.setValue(!!entry[colorField]).onChange(async (enabled) => {
+          await this.changeAppearance(colorField, enabled ? defaultColor : "");
           redraw();
         });
       });
-      row.addColorPicker((c) => c.setValue(entry[field] || fallback).setDisabled(!entry[field]).onChange(async (value) => {
-        await this.changeAppearance(field, value);
+      row.addColorPicker((c) => c.setValue(entry[colorField] || defaultColor).setDisabled(!entry[colorField]).onChange(async (value) => {
+        await this.changeAppearance(colorField, value);
         row.setDesc(value);
+        updatePreview();
       }));
     }
     const names = { laurel: t("\u6708\u6842"), compass: t("\u7F57\u76D8"), rosette: t("\u82B1\u7AE0"), orbit: t("\u8F68\u9053"), lattice: t("\u6676\u683C"), knot: t("\u7F16\u7ED3"), arch: t("\u62F1\u5ECA"), quill: t("\u7FBD\u7B14"), folio: t("\u4E66\u9875") };
@@ -61413,8 +61792,7 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
       const gallery = root.createDiv({ cls: "an-motif-gallery" });
       for (const id2 of Object.keys(MOTIFS)) {
         const button = gallery.createEl("button", { attr: { "aria-label": names[id2], "aria-pressed": String(entry.motif === id2), "data-an-control": id2 } });
-        const symbol = button.createSpan({ cls: "an-motif-sample", attr: { "aria-hidden": "true" } });
-        symbol.style.setProperty("--an-preview-mask", motifMask(id2));
+        button.createSpan({ cls: "an-motif-sample", attr: { "aria-hidden": "true" } }).style.setProperty("--an-preview-mask", motifMask(id2));
         button.createSpan({ text: names[id2] });
         button.addEventListener("click", () => {
           void this.changeAppearance("motif", id2).then(redraw);
@@ -61422,48 +61800,112 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
       }
     }
     root.createEl("p", { text: this.appearanceType === "algorithm" ? t("\u7B97\u6CD5\u4F7F\u7528\u4E09\u7EBF\u6837\u5F0F\uFF1B\u4E3B\u8272\u6539\u53D8\u7EBF\u6761\u548C\u6807\u9898\uFF0C\u6B63\u6587\u4FDD\u6301\u4E2D\u6027\u8272\u3002") : plain2 ? t("Proof \u4E0E Remark \u4FDD\u6301\u65E0\u6846\u6BB5\u843D\uFF1B\u81EA\u5B9A\u4E49\u4E3B\u8272\u53EA\u6539\u53D8\u6807\u9898\uFF0CProof \u7684\u7ED3\u675F\u65B9\u6846\u4FDD\u6301\u4E0D\u53D8\u3002") : t("\u4E3B\u8272\u540C\u6B65\u7528\u4E8E\u6807\u9898\u5E95\u8272\u3001\u8FB9\u6846\u548C\u6D45\u8272\u540C\u8272\u7CFB\u80CC\u666F\uFF1B\u6807\u9898\u6587\u5B57\u81EA\u52A8\u9009\u62E9\u9ED1\u8272\u6216\u767D\u8272\u3002\u89D2\u6807\u9ED8\u8BA4\u8DDF\u968F\u4E3B\u8272\u3002") });
-    const preview = root.createDiv({ cls: "markdown-rendered an-appearance-preview" });
-    const callout = preview.createDiv({ cls: "callout", attr: { "data-callout": this.appearanceType } });
-    callout.createDiv({ cls: "callout-title" }).createDiv({ cls: "callout-title-inner", text: engine_default.APPEARANCE_TYPES[this.appearanceType][0] });
-    callout.createDiv({ cls: "callout-content" }).createEl("p", { text: t("\u8FD9\u662F\u5F53\u524D\u6A21\u5F0F\u4E0B\u7684\u5916\u89C2\u9884\u89C8\u3002") });
+    const preview = root.createDiv({ cls: "markdown-rendered an-appearance-preview" }), custom = engine_default.environments(settings)[this.appearanceType];
+    const box = preview.createDiv({ cls: "callout" + (custom ? " an-custom-environment" : ""), attr: { "data-callout": this.appearanceType } });
+    if (custom) box.dataset.anStyle = custom.style;
+    const updatePreview = () => {
+      const current2 = paletteOverrides(settings)[palette]?.[this.appearanceType] || {};
+      box.style.setProperty("--phb-accent", current2[field] || fallback);
+      box.style.setProperty("--phb-badge-ink", titleInk(current2[field] || fallback));
+      box.style.setProperty("--an-algorithm-accent", current2[field] || fallback);
+      box.style.setProperty("--an-color-" + this.appearanceType, current2[field] || "initial");
+      box.style.setProperty("--an-symbol-" + this.appearanceType, current2.motif ? motifMask(current2.motif) : "initial");
+      box.style.setProperty("--an-motif-display-" + this.appearanceType, current2.motif ? current2.motif === "none" ? "none" : "block" : "initial");
+      box.style.setProperty("--phb-symbol", current2.motif ? motifMask(current2.motif) : "var(--an-original-symbol, none)");
+      box.style.setProperty("--an-motif-display", current2.motif ? current2.motif === "none" ? "none" : "block" : custom ? "none" : "block");
+      if (this.appearanceType === "remark" || custom?.style === "remark") box.style.setProperty("--an-remark-color", `color-mix(in srgb, ${fallback} ${field === "dark" ? "80%" : "98%"}, white)`);
+      if (custom) {
+        box.style.setProperty("--an-custom-palette-color", current2[field] || (plain2 ? "var(--an-remark-color)" : fallback));
+        box.style.setProperty("--an-custom-palette-ink", titleInk(current2[field] || fallback));
+      }
+      box.style.setProperty("--phb-motif-color", current2[motifField] || current2[field] || fallback);
+    };
+    updatePreview();
+    box.createDiv({ cls: "callout-title" }).createDiv({ cls: "callout-title-inner", text: engine_default.typeNames(this.appearanceType, settings)[0] });
+    box.createDiv({ cls: "callout-content" }).createEl("p", { text: t("\u8FD9\u662F\u6240\u9009\u8272\u677F\u7684\u5916\u89C2\u9884\u89C8\u3002") });
     new import_obsidian5.Setting(root).setName(t("\u6062\u590D\u6B64\u73AF\u5883\u9ED8\u8BA4\u5916\u89C2")).addButton((b) => {
       b.buttonEl.dataset.anControl = "reset";
       b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
-        const all = parseAppearance(this.plugin.settings.customAppearance);
-        delete all[this.appearanceType];
-        this.plugin.settings.customAppearance = JSON.stringify(all);
+        const all = paletteOverrides(settings), profile = all[palette] || {};
+        delete profile[this.appearanceType];
+        all[palette] = profile;
+        settings.paletteAppearance = JSON.stringify(all);
         await this.plugin.saveSettings();
         redraw();
       });
     });
+    new import_obsidian5.Setting(root).setName(t("\u6062\u590D\u6574\u5957\u8272\u677F\u9ED8\u8BA4\u503C")).setDesc(t("\u53EA\u6E05\u9664\u5F53\u524D\u8272\u677F\u7684\u6240\u6709\u73AF\u5883\u8986\u76D6\uFF0C\u5176\u4ED6\u8272\u677F\u4E0D\u53D8\u3002")).addButton((b) => {
+      b.buttonEl.dataset.anControl = "resetPalette";
+      b.setButtonText(t("\u6062\u590D\u9ED8\u8BA4")).onClick(async () => {
+        const all = paletteOverrides(settings);
+        delete all[palette];
+        settings.paletteAppearance = JSON.stringify(all);
+        await this.plugin.saveSettings();
+        redraw();
+      });
+    });
+    let name = "";
+    new import_obsidian5.Setting(root).setName(t("\u590D\u5236\u4E3A\u81EA\u5B9A\u4E49\u8272\u677F")).setDesc(t("\u590D\u5236\u5F53\u524D\u8272\u677F\u53CA\u5176\u73AF\u5883\u8986\u76D6\uFF1B\u65B0\u8272\u677F\u53EF\u72EC\u7ACB\u7F16\u8F91\u548C\u6062\u590D\u9ED8\u8BA4\u3002")).addText((c) => c.setPlaceholder(t("\u8272\u677F\u540D\u79F0")).onChange((value) => {
+      name = value.trim();
+    })).addButton((b) => b.setButtonText(t("\u521B\u5EFA\u8272\u677F")).onClick(async () => {
+      const all = customPalettes(settings.customPalettes);
+      if (!name || Object.keys(all).length >= 32) {
+        new import_obsidian5.Notice(t("\u8BF7\u586B\u5199\u8272\u677F\u540D\u79F0\uFF1B\u6700\u591A 32 \u4E2A\u81EA\u5B9A\u4E49\u8272\u677F\u3002"));
+        return;
+      }
+      let key2 = "custom-" + Date.now().toString(36);
+      while (Object.hasOwn(all, key2)) key2 += "x";
+      all[key2] = { name, mode: this.appearanceMode, base: basePalette(settings, palette) };
+      settings.customPalettes = JSON.stringify(all);
+      const overrides = paletteOverrides(settings);
+      overrides[key2] = structuredClone(overrides[palette] || {});
+      settings.paletteAppearance = JSON.stringify(overrides);
+      if (this.appearanceMode === "dark") settings.darkPalette = key2;
+      else settings.lightPalette = key2;
+      await this.plugin.saveSettings();
+      redraw();
+    }));
+    const customPalette = customPalettes(settings.customPalettes)[palette];
+    if (customPalette) new import_obsidian5.Setting(root).setName(t("\u5220\u9664\u5F53\u524D\u81EA\u5B9A\u4E49\u8272\u677F")).addButton((b) => b.setButtonText(t("\u5220\u9664\u8272\u677F")).onClick(async () => {
+      const all = customPalettes(settings.customPalettes), overrides = paletteOverrides(settings);
+      delete all[palette];
+      delete overrides[palette];
+      settings.customPalettes = JSON.stringify(all);
+      settings.paletteAppearance = JSON.stringify(overrides);
+      if (this.appearanceMode === "dark") settings.darkPalette = customPalette.base;
+      else settings.lightPalette = customPalette.base;
+      await this.plugin.saveSettings();
+      redraw();
+    }));
     root.createEl("p", { text: t("\u8FB9\u6846\u7C97\u7EC6\u3001\u5706\u89D2\u3001\u89D2\u6807\u5927\u5C0F\u4E0E\u900F\u660E\u5EA6\u53EF\u5728 Style Settings \u2192 Academic Notes \u8C03\u6574\uFF1B\u5706\u89D2 0 \u4E3A\u76F4\u89D2\u3002") });
   }
   getSettingDefinitions() {
+    let group = "typography";
     const definitions = [];
     const p = this.plugin, s = p.settings;
-    const toggle = (key2, name, desc = "") => definitions.push({ name, desc, render: (row) => {
+    const toggle = (key2, name, desc = "") => definitions.push({ group, name, desc, render: (row) => {
       row.addToggle((t2) => t2.setValue(s[key2]).onChange(async (v) => {
         s[key2] = v;
         await p.saveSettings();
       }));
     } });
-    const text = (key2, name, desc = "") => definitions.push({ name, desc, render: (row) => {
+    const text = (key2, name, desc = "") => definitions.push({ group, name, desc, render: (row) => {
       row.addText((t2) => t2.setValue(s[key2]).onChange(async (v) => {
         s[key2] = v;
         await p.saveSettings();
       }));
     } });
-    const select = (key2, name, options, desc = "") => definitions.push({ name, desc, render: (row) => {
+    const select = (key2, name, options, desc = "") => definitions.push({ group, name, desc, render: (row) => {
       row.addDropdown((d) => d.addOptions(options).setValue(String(s[key2])).onChange(async (v) => {
         if (key2 === "tocDepth" || key2 === "pdfFloatMaxRounds") s[key2] = Number(v);
         else s[key2] = v;
         await p.saveSettings();
       }));
     } });
-    const heading = (name) => definitions.push({ name, render: (row) => {
+    const heading = (name) => definitions.push({ group, name, render: (row) => {
       row.setHeading();
     } });
-    const description = (desc) => definitions.push({ name: "", desc, render: () => {
+    const description = (desc) => definitions.push({ group, name: "", desc, render: () => {
     } });
     heading(t("\u6BB5\u843D\u6392\u7248\uFF08Beta\uFF09"));
     toggle("paragraphIndent", t("\u6B63\u6587\u9996\u884C\u7F29\u8FDB\u4E24\u4E2A\u6C49\u5B57"), t("\u9605\u8BFB\u3001\u5B9E\u65F6\u9884\u89C8\u53CA\u5BFC\u51FA\u4E2D\u7684\u6587\u5B57\u6BB5\u843D\u9996\u884C\u7F29\u8FDB 2em\uFF1B\u4E0D\u5199\u5165\u7A7A\u683C\uFF0C\u9ED8\u8BA4\u5173\u95ED\u3002\u6807\u9898\u3001\u5217\u8868\u3001\u4EE3\u7801\u3001\u56FE\u6CE8\u548C\u8868\u683C\u4E0D\u7F29\u8FDB\u3002"));
@@ -61471,7 +61913,7 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     toggle("kpLivePreview", t("\u5B9E\u65F6\u9884\u89C8\u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u4F18\u5316\u672A\u7F16\u8F91\u7684\u5355\u884C\u666E\u901A\u6BB5\u843D\u548C\u53EA\u8BFB\u6570\u5B66\u73AF\u5883\u6B63\u6587\uFF1B\u73AF\u5883\u5185\u652F\u6301\u516C\u5F0F\u548C\u94FE\u63A5\u3002\u5149\u6807\u6216\u9009\u533A\u8FDB\u5165\u65F6\u6062\u590D\u539F\u751F\u6392\u7248\uFF0C\u7F16\u8F91\u6807\u9898\u65F6\u4FDD\u6301\u539F\u751F\u3002\u9ED8\u8BA4\u5173\u95ED\u3002"));
     if (import_obsidian5.Platform.isDesktopApp) toggle("kpPdf", t("PDF \u4F7F\u7528 Knuth\u2013Plass \u65AD\u884C"), t("\u5728\u6700\u7EC8\u6253\u5370\u5BBD\u5EA6\u4E0B\u91CD\u65B0\u6392\u7248\u6B63\u6587\u53CA\u6570\u5B66\u73AF\u5883\uFF1BHTML \u5FEB\u7167\u4FDD\u7559\u6D4F\u89C8\u5668\u6392\u7248\u3002"));
     description(t("\u652F\u6301 Proof\u3001Remark\u3001\u5B9A\u7406\u7B49\u73AF\u5883\u53CA\u9996\u884C\u7F29\u8FDB\uFF0C\u4FDD\u7559\u6807\u9898\u3001\u516C\u5F0F\u548C\u8BC1\u660E\u7ED3\u675F\u65B9\u6846\u3002\u5B9E\u65F6\u9884\u89C8\u4E2D\u6B63\u5728\u7F16\u8F91\u7684\u6BB5\u843D\u4F7F\u7528\u539F\u751F\u4E24\u7AEF\u5BF9\u9F50\uFF1B\u672A\u7F16\u8F91\u7684\u53EA\u8BFB\u73AF\u5883\u53EF\u4F7F\u7528 KP\u3002\u5217\u8868\u3001\u56FE\u7247\u3001\u663E\u5F0F\u6362\u884C\u548C\u4E0D\u652F\u6301\u6216\u8FC7\u957F\u7684\u5185\u5BB9\u4F7F\u7528\u6D4F\u89C8\u5668\u6392\u7248\uFF1B\u6682\u4E0D\u81EA\u52A8\u65AD\u8BCD\u3002"));
-    heading(t("\u7F16\u53F7\u4E0E\u5F15\u7528"));
+    group = "numbering";
     toggle("numbered", t("\u5B9A\u7406\u7C7B\u73AF\u5883\u81EA\u52A8\u7F16\u53F7"), t("Proof\u3001Remark\u3001Solution \u9ED8\u8BA4\u4E0D\u8BA1\u6570\u3002"));
     select("equationMode", t("\u516C\u5F0F\u81EA\u52A8\u7F16\u53F7"), { referenced: t("\u4EC5\u88AB\u5F15\u7528\u7684\u516C\u5F0F\uFF08\u5168\u5E93\u5224\u65AD\uFF09"), all: t("\u6240\u6709\u72EC\u7ACB\u516C\u5F0F\u5757"), none: t("\u5173\u95ED\u81EA\u52A8\u7F16\u53F7") }, t("\u4FDD\u7559\u663E\u5F0F \\tag\uFF1B\u53EA\u6709\u8FDB\u5165\u81EA\u52A8\u7F16\u53F7\u7684\u516C\u5F0F\u624D\u589E\u52A0\u8BA1\u6570\u5668\u3002"));
     select("numbering", t("\u7B14\u8BB0\u5185\u7F16\u53F7\u8303\u56F4"), { section: t("\u6309 H2 \u5206\u8282\u91CD\u7F6E"), file: t("\u6574\u7BC7\u8FDE\u7EED\u7F16\u53F7") });
@@ -61482,8 +61924,11 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     toggle("sharedCounter", t("\u4E0D\u540C\u5B9A\u7406\u7C7B\u578B\u5171\u4EAB\u8BA1\u6570\u5668"), t("\u5173\u95ED\u65F6 Definition\u3001Theorem \u7B49\u5404\u81EA\u8BA1\u6570\u3002\u516C\u5F0F\u59CB\u7EC8\u72EC\u7ACB\u3002"));
     toggle("algorithmNumbered", t("\u7B97\u6CD5\u81EA\u52A8\u7F16\u53F7"), t("\u4EE3\u7801\u5757\u4E0E Callout \u5171\u7528\u72EC\u7ACB\u8BA1\u6570\u5668\uFF0C\u9075\u5FAA\u5F53\u524D\u5206\u8282\u6216\u6574\u7BC7\u7F16\u53F7\u8BBE\u7F6E\u3002"));
     toggle("algorithmLineNumbers", t("\u663E\u793A\u7B97\u6CD5\u884C\u53F7"), t("\u884C\u53F7\u4E0E\u7B97\u6CD5\u7F16\u53F7\u4E92\u76F8\u72EC\u7ACB\uFF1B\u8F93\u5165\u3001\u8F93\u51FA\u548C\u6CE8\u91CA\u4E0D\u8BA1\u884C\u53F7\u3002"));
+    group = "references";
     text("algorithmFormat", t("\u7B97\u6CD5\u5F15\u7528\u683C\u5F0F"), t("\u9ED8\u8BA4 alg {number}\uFF1B\u652F\u6301\u4E0E\u5B9A\u7406\u5F15\u7528\u76F8\u540C\u7684\u5360\u4F4D\u7B26\u3002"));
+    group = "numbering";
     text("numberPrefix", t("\u7F16\u53F7\u524D\u7F00"), t("\u7559\u7A7A\u4E0D\u4F1A\u4ECE\u65E5\u671F\u6587\u4EF6\u540D\u63A8\u65AD\u7AE0\u8282\u53F7\u3002"));
+    group = "references";
     text("figureFormat", t("\u56FE\u7247\u5F15\u7528\u683C\u5F0F"), t("\u652F\u6301 {type}\u3001{abbr}\u3001{name}\u3001{number}\u3001{title}\u3001{file}\u3002"));
     text("tableFormat", t("\u8868\u683C\u5F15\u7528\u683C\u5F0F"), t("\u652F\u6301 {type}\u3001{abbr}\u3001{name}\u3001{number}\u3001{title}\u3001{file}\u3002"));
     text("eqFormat", t("\u516C\u5F0F\u5F15\u7528\u683C\u5F0F"), t("\u652F\u6301 {number}\u3001{file}\uFF1B\u9ED8\u8BA4 eq:{number}\uFF0C\u4E5F\u53EF\u8BBE Eq. ({number})\u3002"));
@@ -61491,14 +61936,10 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
     toggle("respectAliases", t("\u4FDD\u7559\u624B\u5199\u94FE\u63A5\u522B\u540D"), t("[[#^id|\u81EA\u5DF1\u7684\u6587\u5B57]] \u4E0D\u88AB\u81EA\u52A8\u7F16\u53F7\u66FF\u6362\uFF0C\u4F46\u4ECD\u7B97\u5F15\u7528\u3002"));
     toggle("livePreview", t("\u5728\u5B9E\u65F6\u9884\u89C8\u4E2D\u8F6C\u6362\u94FE\u63A5\u4E0E\u7F16\u53F7"), t("\u5149\u6807\u8FDB\u5165\u94FE\u63A5\u65F6\u6062\u590D\u6E90\u7801\u3002\u6E90\u7801\u6A21\u5F0F\u4E0D\u8FDB\u884C\u663E\u793A\u66FF\u6362\u3002"));
     text("excludedFolders", t("\u6392\u9664\u7D22\u5F15\u7684\u8DEF\u5F84"), t("\u591A\u4E2A\u76EE\u5F55/\u6587\u4EF6\u8BF7\u7528\u6362\u884C\u5206\u9694\uFF1B\u4E5F\u53EF\u76F4\u63A5\u7F16\u8F91\u672C\u63D2\u4EF6 data.json\u3002"));
-    definitions.push({ name: "", render: (setting) => renderEnvironmentSettings(setting.settingEl, p) });
-    heading(t("\u72EC\u7ACB\u914D\u8272"));
-    select("lightPalette", t("\u6D45\u8272\u6570\u5B66\u6846\u914D\u8272"), { theme: t("\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272"), forest: "Forest", sakura: "Sakura", mint: "Mint", sky: "Sky", mauve: "Mauve", golden: "Golden", cherry: "Cherry", prussian: "Prussian" });
-    select("darkPalette", t("\u6DF1\u8272\u6570\u5B66\u6846\u914D\u8272"), { theme: t("\u8DDF\u968F Obsidian \u4E3B\u9898\u914D\u8272"), radiation: "Radiation", vampire: "Vampire", abyss: "Abyss" });
-    description(t("\u8DDF\u968F\u4E3B\u9898\u8BFB\u53D6 Obsidian \u7684\u5F3A\u8C03\u8272\u3001\u84DD/\u7D2B/\u7EFF/\u9752/\u6A59\u8272\u53CA\u6B63\u6587\u8272\uFF0C\u4E0D\u5339\u914D\u9884\u8BBE\u8272\u677F\uFF0C\u4E5F\u4E0D\u76F4\u63A5\u8BFB\u53D6\u64CD\u4F5C\u7CFB\u7EDF\u4E3B\u8272\u8C03\u3002\u56FA\u5B9A\u8272\u677F\u4E0D\u53D7\u4E3B\u9898\u914D\u8272\u5207\u6362\u5F71\u54CD\uFF1B\u6D45\u6DF1\u6A21\u5F0F\u8DDF\u968F Obsidian\u3002"));
+    group = "appearance";
     toggle("neutralBody", t("\u6846\u5185\u6B63\u6587\u4F7F\u7528\u666E\u901A\u6B63\u6587\u8272"), t("\u5F00\u542F\uFF1A\u6B63\u6587\u4E0E\u7B14\u8BB0\u666E\u901A\u6587\u5B57\u540C\u8272\uFF1B\u5173\u95ED\uFF1A\u6B63\u6587\u6DF7\u5165 36% \u7684\u5F53\u524D\u6846\u8272\u3002\u53EA\u6539\u53D8\u6B63\u6587\uFF0C\u4E0D\u6539\u53D8\u6807\u9898\u3001\u8FB9\u6846\u548C\u5E95\u8272\u3002"));
     toggle("hideMotif", t("\u9690\u85CF\u53F3\u4E0B\u89D2\u5C0F\u56FE\u6848"));
-    heading(t("\u76EE\u5F55\u4E0E PDF"));
+    group = "export";
     description(import_obsidian5.Platform.isDesktopApp ? t("PDF \u4F7F\u7528 Obsidian \u81EA\u5E26\u7684 Electron \u5F15\u64CE\uFF0C\u65E0\u9700\u5B89\u88C5 Python \u6216\u5916\u90E8\u6D4F\u89C8\u5668\u3002") : t("\u79FB\u52A8\u7AEF\u53EF\u4F7F\u7528\u7F16\u53F7\u3001\u5F15\u7528\u3001\u6837\u5F0F\u548C HTML \u5FEB\u7167\uFF1BPDF \u5BFC\u51FA\u4EC5\u5728\u684C\u9762\u7248\u53EF\u7528\u3002"));
     select("tocDepth", t("\u76EE\u5F55\u5C42\u7EA7"), { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6" });
     select("exportNumbering", t("\u5408\u8BA2\u672C\u7F16\u53F7"), { "chapter-section": t("\u7AE0.\u8282.\u5E8F\u53F7\uFF08\u5982 2.3.1\uFF09"), chapter: t("\u7AE0.\u5E8F\u53F7\uFF08\u5982 2.1\uFF0C\u7AE0\u5185\u8FDE\u7EED\uFF09"), note: t("\u4FDD\u7559\u5E93\u5185\u663E\u793A\u7F16\u53F7\uFF08\u53EF\u80FD\u8DE8\u7AE0\u91CD\u53F7\uFF09") }, t("\u524D\u4E24\u79CD\u6309\u5165\u9009\u7AE0\u8282\u91CD\u65B0\u7F16\u53F7\u548C\u89E3\u6790\u5F15\u7528\uFF1B\u4FDD\u7559\u6A21\u5F0F\u6CBF\u7528\u5168\u5E93\u7F16\u53F7\u3002\u539F\u7B14\u8BB0\u4E0D\u6539\u5199\u3002"));
@@ -61509,10 +61950,6 @@ var AcademicSettings = class extends import_obsidian5.PluginSettingTab {
       select("pdfFloatMaxRounds", t("\u6700\u5927\u56FE\u7247\u8C03\u6574\u6B21\u6570"), { "1": "1", "3": "3", "6": "6", "10": "10" }, t("\u6574\u6B21\u5BFC\u51FA\u6700\u591A\u5C1D\u8BD5\u8FD9\u4E9B\u6B21\u6570\uFF1B\u9700\u8981\u66F4\u591A\u5C1D\u8BD5\u65F6\u64A4\u9500\u5168\u90E8\u5B9E\u9A8C\u8C03\u6574\u5E76\u4FDD\u7559\u7559\u767D\u3002\u76EE\u5F55\u6821\u51C6\u6B21\u6570\u5355\u72EC\u8BA1\u7B97\u3002"));
     }
     if (import_obsidian5.Platform.isDesktopApp) toggle("openPdf", t("\u751F\u6210\u540E\u5728 Obsidian \u6253\u5F00 PDF"));
-    definitions.push({ name: "", render: (setting) => {
-      setting.settingEl.addClass("an-custom-appearance-row");
-      this.renderAppearance(setting.settingEl);
-    } });
     return definitions;
   }
 };
@@ -62621,13 +63058,13 @@ async function diagramProcessor(app, source, el, ctx) {
 var diagrams_default = '.an-diagram-modal {\n  width: min(850px, 96vw);\n}\n.an-diagram-toolbar,\n.an-diagram-fields,\n.an-diagram-arrow-list {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 12px;\n  margin: 12px 0;\n}\n.an-diagram-editor label {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 8px;\n}\n.an-diagram-editor input[type=text] {\n  min-width: 140px;\n  max-width: 100%;\n}\n.an-diagram-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 10px;\n  max-width: 420px;\n  margin: 16px auto;\n}\n.an-diagram-grid[data-grid="3"] {\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n}\n.an-diagram-grid button {\n  min-height: 48px;\n  height: auto;\n  overflow-wrap: anywhere;\n}\n.an-diagram-grid button[aria-pressed=true] {\n  background: var(--background-modifier-hover);\n}\n.an-diagram-grid button:is(.is-selected, .is-start) {\n  outline: 2px solid var(--interactive-accent);\n  outline-offset: 2px;\n}\n.an-diagram-arrow-list button[aria-pressed=true] {\n  border-color: var(--interactive-accent);\n}\n.an-diagram-figure {\n  display: block;\n  width: 100%;\n  margin: 1em auto;\n  text-align: center;\n  break-inside: avoid;\n}\n.an-diagram-svg {\n  display: block;\n  width: 100%;\n  max-width: 700px;\n  height: auto;\n  margin: auto;\n  color: var(--text-normal,currentColor);\n}\n.an-diagram-math-stage {\n  position: fixed;\n  left: -10000px;\n  top: 0;\n  font-size: 20px;\n  opacity: 0;\n  pointer-events: none;\n  white-space: nowrap;\n}\n.an-diagram-math-stage mjx-container {\n  font-size: 20px;\n}\n.an-diagram-interactive-arrow {\n  cursor: pointer;\n}\n.an-diagram-interactive-arrow.is-selected {\n  color: var(--interactive-accent);\n}\n.an-diagram-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 8px;\n  margin: 8px 0;\n}\n.an-diagram-caption {\n  display: flex;\n  justify-content: center;\n  font-size: .9em;\n  margin-top: .5em;\n}\n.an-diagram-caption[hidden] {\n  display: none;\n}\n.an-diagram-status {\n  color: var(--text-muted);\n  margin: 8px 0;\n}\n.block-language-tikz svg {\n  max-width: 100%;\n  height: auto;\n}\n@media print {\n  .an-diagram-actions,\n  .an-diagram-edit {\n    display: none;\n  }\n  .an-diagram-block,\n  .an-diagram-figure,\n  .block-language-tikz {\n    break-inside: avoid;\n  }\n}\n';
 
 // src/styles/typography.css
-var typography_default = 'body.an-active p.an-kp-paragraph,\nbody.phb-export p.an-kp-paragraph {\n  text-indent: 0 !important;\n}\n.an-kp-math-end {\n  display: inline-block;\n}\n.an-kp-math-end > :is(.math, .phb-math, mjx-container),\n.an-kp-math-end > :is(.math, .phb-math) > mjx-container {\n  margin-inline-end: 0 !important;\n}\nbody.an-active.an-prose-indent .markdown-rendered p,\nbody.an-active.an-prose-indent .markdown-rendered .callout > .callout-content p,\nbody.phb-export.an-prose-indent .markdown-rendered p {\n  text-indent: 2em;\n}\nbody.an-prose-indent :is(li, table, figcaption, .callout-title, .an-diagram-caption, .an-media, .phb-toc, .phb-frontmatter, .an-diagram-block) p {\n  text-indent: 0 !important;\n}\nbody.an-prose-indent p:has(> img, > .image-embed, > .math-block) {\n  text-indent: 0 !important;\n}\n.an-kp-native-justify .cm-line.an-prose-line:not(:has(.an-kp-live-break)),\n.an-kp-native-justify .callout-content > p:not(.an-kp-paragraph) {\n  text-align: justify;\n  text-align-last: start;\n}\n.an-prose-indent-enabled .cm-line.an-prose-start {\n  text-indent: 2em;\n}\n.an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  text-indent: 0;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n.an-kp-live-line {\n  white-space: nowrap;\n}\n.an-kp-live-gap {\n  display: inline-block;\n  white-space: pre;\n  font-size: 0;\n  line-height: 0;\n  height: 0;\n}\n.an-kp-qed > .an-kp-line:last-child::after {\n  content: "\\25a1";\n  float: right;\n  margin-inline-start: .75em;\n  font-style: normal;\n  font-weight: 400;\n  color: inherit;\n}\n.an-kp-qed-probe {\n  font-style: normal;\n  font-weight: 400;\n  margin-inline-start: .75em;\n}\n';
+var typography_default = 'body.an-active p.an-kp-paragraph,\nbody.phb-export p.an-kp-paragraph {\n  text-indent: 0 !important;\n}\n.an-kp-math-end {\n  display: inline-block;\n}\n.an-kp-math-end > :is(.math, .phb-math, mjx-container),\n.an-kp-math-end > :is(.math, .phb-math) > mjx-container {\n  margin-inline-end: 0 !important;\n}\nbody.an-active.an-prose-indent .markdown-rendered p,\nbody.an-active.an-prose-indent .markdown-rendered .callout > .callout-content p,\nbody.phb-export.an-prose-indent .markdown-rendered p {\n  text-indent: 2em;\n}\nbody.an-prose-indent :is(li, table, figcaption, .callout-title, .an-diagram-caption, .an-media, .phb-toc, .phb-frontmatter, .an-diagram-block) p {\n  text-indent: 0 !important;\n}\nbody.an-prose-indent p:has(> img, > .image-embed, > .math-block) {\n  text-indent: 0 !important;\n}\n.an-kp-native-justify .cm-line.an-prose-line:not(:has(.an-kp-live-break)),\n.an-kp-native-justify .callout-content > p:not(.an-kp-paragraph) {\n  text-align: justify;\n  text-align-last: start;\n}\n.an-prose-indent-enabled .cm-line.an-prose-start {\n  text-indent: 2em;\n}\n.an-prose-indent-enabled .cm-line.an-prose-line:not(.an-prose-start) {\n  text-indent: 0;\n}\n.an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  text-indent: 0;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n.an-kp-live-line {\n  white-space: nowrap;\n}\n.an-kp-live-gap {\n  display: inline-block;\n  white-space: pre;\n  font-size: 0;\n  line-height: 0;\n  height: 0;\n  letter-spacing: 0;\n  word-spacing: 0;\n}\n.an-kp-qed > .an-kp-line:last-child::after {\n  content: "\\25a1";\n  float: right;\n  margin-inline-start: .75em;\n  font-style: normal;\n  font-weight: 400;\n  color: inherit;\n}\n.an-kp-qed-probe {\n  font-style: normal;\n  font-weight: 400;\n  margin-inline-start: .75em;\n}\nbody.an-active.an-prose-indent .markdown-rendered p.an-prose-continuation,\nbody.an-active.an-prose-indent .callout-content p.an-prose-continuation,\nbody.phb-export.an-prose-indent p.an-prose-continuation {\n  text-indent: 0 !important;\n}\n';
 
 // src/styles/callouts.css
-var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def: #a63c67;\n  --phb-thm: #6952a0;\n  --phb-lem: #8a4e8d;\n  --phb-prop: #406e68;\n  --phb-cor: #536c9a;\n  --phb-claim: #996040;\n  --phb-example: #8f6c25;\n  --phb-proof: #697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def: #227c77;\n  --phb-thm: #326694;\n  --phb-lem: #65709d;\n  --phb-prop: #457d5b;\n  --phb-cor: #6b7552;\n  --phb-claim: #4c7192;\n  --phb-example: #916b35;\n  --phb-proof: #647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def: #256f83;\n  --phb-thm: #2f609c;\n  --phb-lem: #665d98;\n  --phb-prop: #3d7a70;\n  --phb-cor: #536d86;\n  --phb-claim: #7f668d;\n  --phb-example: #956b35;\n  --phb-proof: #5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def: #247651;\n  --phb-thm: #286b76;\n  --phb-lem: #71628c;\n  --phb-prop: #62752e;\n  --phb-cor: #42786b;\n  --phb-claim: #44698c;\n  --phb-example: #946b2f;\n  --phb-proof: #687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def: #776085;\n  --phb-thm: #674386;\n  --phb-lem: #925d86;\n  --phb-prop: #5d7767;\n  --phb-cor: #646998;\n  --phb-claim: #896440;\n  --phb-example: #936c3f;\n  --phb-proof: #72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def: #88712e;\n  --phb-thm: #9c582d;\n  --phb-lem: #826489;\n  --phb-prop: #617542;\n  --phb-cor: #946640;\n  --phb-claim: #587a7b;\n  --phb-example: #a75c3c;\n  --phb-proof: #77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def: #9c3a55;\n  --phb-thm: #7f3f65;\n  --phb-lem: #845786;\n  --phb-prop: #3e756b;\n  --phb-cor: #626987;\n  --phb-claim: #9c5e36;\n  --phb-example: #906c32;\n  --phb-proof: #69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def: #2a6c76;\n  --phb-thm: #28558a;\n  --phb-lem: #6c608c;\n  --phb-prop: #477966;\n  --phb-cor: #526d94;\n  --phb-claim: #887052;\n  --phb-example: #926938;\n  --phb-proof: #5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def: #82d6ac;\n  --phb-thm: #bca1e2;\n  --phb-lem: #db9bc4;\n  --phb-prop: #afd294;\n  --phb-cor: #83c7d1;\n  --phb-claim: #e5b78f;\n  --phb-example: #dfc67d;\n  --phb-proof: #a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def: #73c9bc;\n  --phb-thm: #82b6df;\n  --phb-lem: #b4a1e0;\n  --phb-prop: #9bcba7;\n  --phb-cor: #78ccd2;\n  --phb-claim: #d0ac8e;\n  --phb-example: #d6c07c;\n  --phb-proof: #a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def: #86ca98;\n  --phb-thm: #83bbce;\n  --phb-lem: #b7a7ca;\n  --phb-prop: #b8c984;\n  --phb-cor: #8dcbb4;\n  --phb-claim: #9baed0;\n  --phb-example: #dec178;\n  --phb-proof: #a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout.an-custom-environment,\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk], [data-an-style=remark]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child:not(.an-kp-qed)::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\nbody .callout.an-custom-environment {\n  --an-custom-fallback: var(--phb-thm);\n  --phb-accent: var(--an-custom-color-light, var(--an-custom-fallback));\n  --phb-badge-ink: var(--an-custom-ink-light, var(--an-custom-default-ink, #fff));\n  --phb-symbol: none;\n  --an-motif-display: none;\n}\nbody .callout.an-custom-environment[data-an-style=def] {\n  --an-custom-fallback: var(--phb-def);\n}\nbody .callout.an-custom-environment[data-an-style=lem] {\n  --an-custom-fallback: var(--phb-lem);\n}\nbody .callout.an-custom-environment[data-an-style=prop] {\n  --an-custom-fallback: var(--phb-prop);\n}\nbody .callout.an-custom-environment[data-an-style=cor] {\n  --an-custom-fallback: var(--phb-cor);\n}\nbody .callout.an-custom-environment[data-an-style=claim] {\n  --an-custom-fallback: var(--phb-claim);\n}\nbody .callout.an-custom-environment[data-an-style=example] {\n  --an-custom-fallback: var(--phb-example);\n}\nbody .callout.an-custom-environment[data-an-style=remark] {\n  --an-custom-fallback: var(--phb-remark, var(--phb-def));\n}\nbody.theme-dark .callout.an-custom-environment {\n  --an-custom-default-ink: #18181b;\n  --phb-accent: var(--an-custom-color-dark, var(--an-custom-fallback));\n  --phb-badge-ink: var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff));\n}\nbody .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-color-light, var(--an-remark-color)) !important;\n}\nbody.theme-dark .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-color-dark, var(--an-remark-color)) !important;\n}\n';
+var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 60%, var(--text-normal, #24372e));\n  --phb-thm: color-mix(in srgb, var(--color-blue, #286b76) 60%, var(--text-normal, #24372e));\n  --phb-lem: color-mix(in srgb, var(--color-purple, #71628c) 60%, var(--text-normal, #24372e));\n  --phb-prop: color-mix(in srgb, var(--color-green, #62752e) 60%, var(--text-normal, #24372e));\n  --phb-cor: color-mix(in srgb, var(--color-cyan, #42786b) 60%, var(--text-normal, #24372e));\n  --phb-claim: color-mix(in srgb, var(--color-blue, #44698c) 60%, var(--text-normal, #24372e));\n  --phb-example: color-mix(in srgb, var(--color-orange, #946b2f) 60%, var(--text-normal, #24372e));\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-muted, #687252) 60%, var(--text-normal, #24372e));\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def:#a63c67;\n  --phb-thm:#6952a0;\n  --phb-lem:#8a4e8d;\n  --phb-prop:#406e68;\n  --phb-cor:#536c9a;\n  --phb-claim:#996040;\n  --phb-example:#8f6c25;\n  --phb-proof:#697455;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def:#227c77;\n  --phb-thm:#326694;\n  --phb-lem:#65709d;\n  --phb-prop:#457d5b;\n  --phb-cor:#6b7552;\n  --phb-claim:#4c7192;\n  --phb-example:#916b35;\n  --phb-proof:#647267;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def:#256f83;\n  --phb-thm:#2f609c;\n  --phb-lem:#665d98;\n  --phb-prop:#3d7a70;\n  --phb-cor:#536d86;\n  --phb-claim:#7f668d;\n  --phb-example:#956b35;\n  --phb-proof:#5c6d5b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def:#247651;\n  --phb-thm:#286b76;\n  --phb-lem:#71628c;\n  --phb-prop:#62752e;\n  --phb-cor:#42786b;\n  --phb-claim:#44698c;\n  --phb-example:#946b2f;\n  --phb-proof:#687252;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def:#776085;\n  --phb-thm:#674386;\n  --phb-lem:#925d86;\n  --phb-prop:#5d7767;\n  --phb-cor:#646998;\n  --phb-claim:#896440;\n  --phb-example:#936c3f;\n  --phb-proof:#72736c;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def:#88712e;\n  --phb-thm:#9c582d;\n  --phb-lem:#826489;\n  --phb-prop:#617542;\n  --phb-cor:#946640;\n  --phb-claim:#587a7b;\n  --phb-example:#a75c3c;\n  --phb-proof:#77705b;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def:#9c3a55;\n  --phb-thm:#7f3f65;\n  --phb-lem:#845786;\n  --phb-prop:#3e756b;\n  --phb-cor:#626987;\n  --phb-claim:#9c5e36;\n  --phb-example:#906c32;\n  --phb-proof:#69725b;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def:#2a6c76;\n  --phb-thm:#28558a;\n  --phb-lem:#6c608c;\n  --phb-prop:#477966;\n  --phb-cor:#526d94;\n  --phb-claim:#887052;\n  --phb-example:#926938;\n  --phb-proof:#5b7172;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def:#82d6ac;\n  --phb-thm:#bca1e2;\n  --phb-lem:#db9bc4;\n  --phb-prop:#afd294;\n  --phb-cor:#83c7d1;\n  --phb-claim:#e5b78f;\n  --phb-example:#dfc67d;\n  --phb-proof:#a4b9a5;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def:#73c9bc;\n  --phb-thm:#82b6df;\n  --phb-lem:#b4a1e0;\n  --phb-prop:#9bcba7;\n  --phb-cor:#78ccd2;\n  --phb-claim:#d0ac8e;\n  --phb-example:#d6c07c;\n  --phb-proof:#a1b7b6;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def:#86ca98;\n  --phb-thm:#83bbce;\n  --phb-lem:#b7a7ca;\n  --phb-prop:#b8c984;\n  --phb-cor:#8dcbb4;\n  --phb-claim:#9baed0;\n  --phb-example:#dec178;\n  --phb-proof:#a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout.an-custom-environment,\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk], [data-an-style=remark]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child:not(.an-kp-qed)::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\nbody .callout.an-custom-environment {\n  --an-custom-fallback: var(--an-color-thm, var(--phb-thm));\n  --phb-motif-color: var(--an-custom-palette-motif-color, var(--phb-accent));\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-light, var(--an-custom-default-ink, #fff)));\n  --phb-symbol: var(--an-custom-palette-symbol, none);\n  --an-motif-display: var(--an-custom-palette-motif-display, none);\n}\nbody .callout.an-custom-environment[data-an-style=def] {\n  --an-custom-fallback: var(--an-color-def, var(--phb-def));\n}\nbody .callout.an-custom-environment[data-an-style=lem] {\n  --an-custom-fallback: var(--an-color-lem, var(--phb-lem));\n}\nbody .callout.an-custom-environment[data-an-style=prop] {\n  --an-custom-fallback: var(--an-color-prop, var(--phb-prop));\n}\nbody .callout.an-custom-environment[data-an-style=cor] {\n  --an-custom-fallback: var(--an-color-cor, var(--phb-cor));\n}\nbody .callout.an-custom-environment[data-an-style=claim] {\n  --an-custom-fallback: var(--an-color-claim, var(--phb-claim));\n}\nbody .callout.an-custom-environment[data-an-style=example] {\n  --an-custom-fallback: var(--an-color-example, var(--phb-example));\n}\nbody .callout.an-custom-environment[data-an-style=remark] {\n  --an-custom-fallback: var(--phb-remark, var(--phb-def));\n}\nbody.theme-dark .callout.an-custom-environment {\n  --an-custom-default-ink: #18181b;\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff)));\n}\nbody .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\nbody.theme-dark .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\n';
 
 // snippets/academic-layout.css
-var academic_layout_default = 'body {\n  --an-layout-caption-size: .9em;\n  --an-layout-caption-gap: .55em;\n  --an-layout-image-gap: 1.25em;\n  --an-layout-subfigure-min: 12rem;\n  --an-layout-rule: var(--text-normal, #26352c);\n  --an-layout-rule-heavy: 1.6px;\n  --an-layout-rule-light: 1px;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) {\n  border-collapse: collapse !important;\n  border-spacing: 0 !important;\n  border-radius: 0;\n  border: 0 !important;\n  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  background: transparent !important;\n  box-shadow: none;\n  width: auto;\n  min-width: min(100%, 22rem);\n  max-width: 100%;\n  margin: 1.25em auto;\n  font-variant-numeric: tabular-nums;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td, tr, thead, tbody, tfoot) {\n  border: 0 !important;\n  border-radius: 0;\n  background: transparent !important;\n  box-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) thead {\n  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td) {\n  padding: .5em .85em;\n  line-height: 1.5;\n  color: var(--text-normal, inherit) !important;\n  text-indent: 0;\n  overflow-wrap: anywhere;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) th {\n  font-weight: 650;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td):hover {\n  box-shadow: none !important;\n  background: transparent !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) {\n  --callout-blend-mode: normal;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: visible !important;\n  width: auto;\n  min-width: 0;\n  max-width: 100%;\n  margin: 1.5em 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit);\n  transform: none;\n  filter: none;\n  isolation: auto;\n  mix-blend-mode: normal;\n  box-sizing: border-box;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::before,\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::after {\n  content: none;\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {\n  position: static;\n  inset: auto;\n  display: var(--an-caption-display, flex) !important;\n  align-items: baseline;\n  justify-content: center;\n  order: 2;\n  width: auto;\n  max-width: 100%;\n  margin: var(--an-layout-caption-gap) 0 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit) !important;\n  text-align: center;\n  font: inherit;\n  font-size: var(--an-layout-caption-size);\n  line-height: 1.55;\n  white-space: normal;\n  overflow-wrap: anywhere;\n  transform: none;\n  text-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-icon {\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-title-inner {\n  display: block;\n  color: inherit;\n  font: inherit;\n  white-space: normal;\n  text-indent: 0;\n  padding: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content {\n  order: 1;\n  position: static;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--text-normal, inherit);\n  overflow: visible;\n  min-width: 0;\n  text-align: center;\n}\nbody .an-caption-label {\n  font-weight: 650;\n}\nbody .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {\n  content: "\\2002";\n}\nbody .an-caption-text {\n  font-weight: 400;\n}\nbody .callout.an-captionless:not(.is-collapsible) > .callout-title,\nbody.phb-export .callout.an-captionless > .callout-title {\n  --an-caption-display: none;\n}\nbody :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {\n  margin: .35em 0;\n  text-indent: 0;\n  text-align: center !important;\n}\nbody .an-media .image-embed,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  display: inline-block !important;\n  margin: 0 auto;\n  padding: 0;\n  min-width: 0;\n  max-width: 100%;\n  float: none !important;\n  background: transparent;\n  border: 0;\n  box-shadow: none;\n  vertical-align: top;\n}\nbody .an-media img,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n  margin: 0 auto;\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n  object-fit: contain;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=table], [data-callout=tbl]) > .callout-title {\n  order: 0;\n  margin: 0 0 var(--an-layout-caption-gap) !important;\n}\nbody .callout:is([data-callout=table], [data-callout=tbl]) table {\n  margin: 0 auto !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig]) > .callout-content.an-figure-grid {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: flex-start;\n  gap: var(--an-layout-image-gap);\n}\nbody .an-figure-grid > :not(.an-subfigure-cell) {\n  flex: 0 0 100%;\n}\nbody .an-figure-grid > .an-subfigure-cell {\n  flex: 1 1 calc(50% - var(--an-layout-image-gap));\n  min-width: min(100%, var(--an-layout-subfigure-min));\n  max-width: 100%;\n  margin: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) {\n  margin: 0 !important;\n}\nbody .an-figure-grid > .an-empty-anchor {\n  display: none;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig]) {\n  container: an-figure / inline-size;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n  --an-columns: 1;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid > .an-subfigure-cell {\n  flex: 0 0 calc((100% - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns));\n  min-width: 0;\n}\n@container an-figure (min-width: 26rem) {\n  body .callout:is(.an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n    --an-columns: 2;\n  }\n}\n@container an-figure (min-width: 39rem) {\n  body .callout.an-columns-3 > .an-figure-grid {\n    --an-columns: 3;\n  }\n}\n@container an-figure (min-width: 52rem) {\n  body .callout.an-columns-4 > .an-figure-grid {\n    --an-columns: 4;\n  }\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  width: 100% !important;\n  max-width: 100%;\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) img {\n  width: auto !important;\n  height: min(var(--an-subfigure-height), calc((100cqw - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns) / var(--an-max-image-ratio, 1))) !important;\n  max-height: none;\n  object-fit: contain;\n  object-position: center;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {\n  text-indent: 2em;\n}\nbody .academic-indent :is(.callout, blockquote, li, td, th, figcaption, .phb-toc) p {\n  text-indent: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-serif {\n  font-family:\n    "Latin Modern Roman",\n    "Times New Roman",\n    "Noto Serif CJK SC",\n    "Source Han Serif SC",\n    "Songti SC",\n    "SimSun",\n    serif;\n}\n@media print {\n  body .an-media {\n    break-inside: avoid;\n  }\n  body .an-media > .callout-title {\n    break-before: avoid;\n    break-after: auto;\n  }\n  body .an-table {\n    display: block !important;\n    break-inside: auto;\n  }\n  body .an-table > .callout-title {\n    break-before: auto;\n    break-after: avoid;\n  }\n  body .callout.an-media img {\n    max-height: 155mm;\n  }\n  body .an-figure-grid {\n    --an-layout-image-gap: 4mm;\n    gap: var(--an-layout-image-gap);\n  }\n  body .an-figure-grid > .an-subfigure-cell {\n    min-width: 0;\n    flex-basis: calc(50% - 4mm);\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) table {\n    break-inside: auto;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) thead {\n    display: table-header-group;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) tr {\n    break-inside: avoid;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) :is(table, .an-media) {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n  }\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content:not(.an-figure-grid),\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content > p {\n  text-align: center !important;\n  text-indent: 0 !important;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  justify-content: center;\n  text-align: center;\n}\n';
+var academic_layout_default = 'body {\n  --an-layout-caption-size: .9em;\n  --an-layout-caption-gap: .55em;\n  --an-layout-image-gap: 1.25em;\n  --an-layout-subfigure-min: 12rem;\n  --an-layout-rule: var(--text-normal, #26352c);\n  --an-layout-rule-heavy: 1.6px;\n  --an-layout-rule-light: 1px;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) {\n  border-collapse: collapse !important;\n  border-spacing: 0 !important;\n  border-radius: 0;\n  border: 0 !important;\n  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  background: transparent !important;\n  box-shadow: none;\n  width: auto;\n  min-width: min(100%, 22rem);\n  max-width: 100%;\n  margin: 1.25em auto;\n  font-variant-numeric: tabular-nums;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td, tr, thead, tbody, tfoot) {\n  border: 0 !important;\n  border-radius: 0;\n  background: transparent !important;\n  box-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) thead {\n  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td) {\n  padding: .5em .85em;\n  line-height: 1.5;\n  color: var(--text-normal, inherit) !important;\n  text-indent: 0;\n  overflow-wrap: anywhere;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) th {\n  font-weight: 650;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td):hover {\n  box-shadow: none !important;\n  background: transparent !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) {\n  --callout-blend-mode: normal;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: visible !important;\n  width: auto;\n  min-width: 0;\n  max-width: 100%;\n  margin: 1.5em 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit);\n  transform: none;\n  filter: none;\n  isolation: auto;\n  mix-blend-mode: normal;\n  box-sizing: border-box;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::before,\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::after {\n  content: none;\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {\n  position: static;\n  inset: auto;\n  display: var(--an-caption-display, flex) !important;\n  align-items: baseline;\n  justify-content: center;\n  order: 2;\n  width: auto;\n  max-width: 100%;\n  margin: var(--an-layout-caption-gap) 0 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit) !important;\n  text-align: center;\n  font: inherit;\n  font-size: var(--an-layout-caption-size);\n  line-height: 1.55;\n  white-space: normal;\n  overflow-wrap: anywhere;\n  transform: none;\n  text-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-icon {\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-title-inner {\n  display: block;\n  color: inherit;\n  font: inherit;\n  white-space: normal;\n  text-indent: 0;\n  padding: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content {\n  order: 1;\n  position: static;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--text-normal, inherit);\n  overflow: visible;\n  min-width: 0;\n  text-align: center;\n}\nbody .an-caption-label {\n  font-weight: 650;\n}\nbody .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {\n  content: "\\2002";\n}\nbody .an-caption-text {\n  font-weight: 400;\n}\nbody .callout.an-captionless:not(.is-collapsible) > .callout-title,\nbody.phb-export .callout.an-captionless > .callout-title {\n  --an-caption-display: none;\n}\nbody :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {\n  margin: .35em 0;\n  text-indent: 0;\n  text-align: center !important;\n}\nbody .an-media .image-embed,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  display: inline-block !important;\n  margin: 0 auto;\n  padding: 0;\n  min-width: 0;\n  max-width: 100%;\n  float: none !important;\n  background: transparent;\n  border: 0;\n  box-shadow: none;\n  vertical-align: top;\n}\nbody .an-media img,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n  margin: 0 auto;\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n  object-fit: contain;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=table], [data-callout=tbl]) > .callout-title {\n  order: 0;\n  margin: 0 0 var(--an-layout-caption-gap) !important;\n}\nbody .callout:is([data-callout=table], [data-callout=tbl]) table {\n  margin: 0 auto !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig]) > .callout-content.an-figure-grid {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: flex-start;\n  gap: var(--an-layout-image-gap);\n}\nbody .an-figure-grid > :not(.an-subfigure-cell) {\n  flex: 0 0 100%;\n}\nbody .an-figure-grid > .an-subfigure-cell {\n  flex: 1 1 calc(50% - var(--an-layout-image-gap));\n  min-width: min(100%, var(--an-layout-subfigure-min));\n  max-width: 100%;\n  margin: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) {\n  margin: 0 !important;\n}\nbody .an-figure-grid > .an-empty-anchor {\n  display: none;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig]) {\n  container: an-figure / inline-size;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n  --an-columns: 1;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid > .an-subfigure-cell {\n  flex: 0 0 calc((100% - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns));\n  min-width: 0;\n}\n@container an-figure (min-width: 26rem) {\n  body .callout:is(.an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n    --an-columns: 2;\n  }\n}\n@container an-figure (min-width: 39rem) {\n  body .callout.an-columns-3 > .an-figure-grid {\n    --an-columns: 3;\n  }\n}\n@container an-figure (min-width: 52rem) {\n  body .callout.an-columns-4 > .an-figure-grid {\n    --an-columns: 4;\n  }\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  width: 100% !important;\n  max-width: 100%;\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) img {\n  width: auto !important;\n  height: min(var(--an-subfigure-height), calc((100cqw - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns) / var(--an-max-image-ratio, 1))) !important;\n  max-height: none;\n  object-fit: contain;\n  object-position: center;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {\n  text-indent: 2em;\n}\nbody .academic-indent :is(.callout, blockquote, li, td, th, figcaption, .phb-toc) p {\n  text-indent: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-serif {\n  font-family:\n    "Latin Modern Roman",\n    "Times New Roman",\n    "Noto Serif CJK SC",\n    "Source Han Serif SC",\n    "Songti SC",\n    "SimSun",\n    serif;\n}\n@media print {\n  body .an-media {\n    break-inside: avoid;\n  }\n  body .an-media > .callout-title {\n    break-before: avoid;\n    break-after: auto;\n  }\n  body .an-table {\n    display: block !important;\n    break-inside: auto;\n  }\n  body .an-table > .callout-title {\n    break-before: auto;\n    break-after: avoid;\n  }\n  body .callout.an-media img {\n    max-height: 155mm;\n  }\n  body .an-figure-grid {\n    --an-layout-image-gap: 4mm;\n    gap: var(--an-layout-image-gap);\n  }\n  body .an-figure-grid > .an-subfigure-cell {\n    min-width: 0;\n    flex-basis: calc(50% - 4mm);\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) table {\n    break-inside: auto;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) thead {\n    display: table-header-group;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) tr {\n    break-inside: avoid;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) :is(table, .an-media) {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n  }\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content:not(.an-figure-grid),\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content > p {\n  text-align: center !important;\n  text-indent: 0 !important;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  justify-content: center;\n  text-align: center;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=\\56fe], [data-callout=subfigure], [data-callout=subfig], [data-callout=\\5b50\\56fe]) > .callout-content :is(.cm-line, .cm-embed-block):has(.image-embed) {\n  text-align: center !important;\n  text-indent: 0 !important;\n  padding-inline: 0 !important;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=\\56fe], [data-callout=subfigure], [data-callout=subfig], [data-callout=\\5b50\\56fe]) .image-embed {\n  float: none !important;\n  margin-inline: auto !important;\n  vertical-align: middle;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=\\56fe], [data-callout=subfigure], [data-callout=subfig], [data-callout=\\5b50\\56fe]) .image-embed img {\n  margin-inline: auto !important;\n}\n';
 
 // src/styles/document.css
 var document_default2 = 'html {\n  font-size: 16px;\n  background: var(--phb-page-background, white);\n}\nbody.phb-export {\n  display: block !important;\n  position: static !important;\n  width: auto !important;\n  height: auto !important;\n  min-height: 0 !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  overflow: visible !important;\n  background: var(--phb-surface, #fff) !important;\n  color: var(--phb-text, #24372e) !important;\n  font-family: var(--font-text, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif);\n  font-size: 11pt;\n  line-height: 1.7;\n  -webkit-print-color-adjust: exact;\n  print-color-adjust: exact;\n}\nbody.phb-export *,\nbody.phb-export *::before,\nbody.phb-export *::after {\n  animation: none !important;\n  transition: none !important;\n  caret-color: transparent !important;\n}\nbody.phb-export #phb-document {\n  display: block !important;\n  position: static !important;\n  width: 174mm !important;\n  max-width: none !important;\n  height: auto !important;\n  padding: 0 !important;\n  margin: 0 auto !important;\n  overflow: visible !important;\n  font-size: inherit;\n  line-height: inherit;\n}\nbody.phb-export :is(.markdown-preview-view, .markdown-preview-sizer, .markdown-rendered, .phb-chapter) {\n  min-height: 0 !important;\n  max-height: none !important;\n  height: auto !important;\n  overflow: visible !important;\n  contain: none !important;\n  content-visibility: visible !important;\n}\nbody.phb-export .phb-chapter {\n  display: block;\n}\nbody.phb-export :is(p, li) {\n  line-height: 1.7;\n}\nbody.phb-export p {\n  margin: .65em 0;\n}\nbody.phb-export :is(h1, h2, h3, h4, h5, h6) {\n  position: relative !important;\n  break-after: avoid !important;\n  text-shadow: none !important;\n  transform: none !important;\n}\nbody.phb-export h1 {\n  font-size: 1.9em;\n  line-height: 1.4;\n  margin: 1.1em 0 .8em;\n}\nbody.phb-export h2 {\n  font-size: 1.4em;\n  margin: 1.1em 0 .7em;\n}\nbody.phb-export h3 {\n  font-size: 1.16em;\n  margin: 1em 0 .5em;\n}\nbody.phb-export pre {\n  white-space: pre-wrap !important;\n  overflow-wrap: anywhere;\n}\nbody.phb-export :is(.math-block, .phb-math[data-display=true]) {\n  display: block;\n  text-align: center;\n  margin: .7em 0;\n  text-indent: 0;\n}\nbody.phb-export .phb-math mjx-container {\n  margin: 0 !important;\n}\nbody.phb-export mjx-container[display=true] {\n  display: block !important;\n  max-width: 100%;\n  overflow: visible !important;\n}\nbody.phb-export :is(.math-block, .phb-math) {\n  overflow: visible !important;\n}\nbody.phb-export .phb-math-error {\n  border: 2px solid #c00;\n  padding: .5em;\n}\nbody.phb-export .phb-chapter-kicker {\n  font-size: 9pt;\n  font-weight: 600;\n  letter-spacing: .16em;\n  color: var(--phb-thm);\n  margin: 1em 0;\n}\nbody.phb-export .phb-book-title {\n  text-align: center;\n  margin-top: 1.5em;\n}\nbody.phb-export .phb-book-subtitle {\n  text-align: center;\n  color: var(--text-muted,#66776c);\n}\nbody.phb-export .phb-frontmatter {\n  padding-top: 5mm;\n}\nbody.phb-export #phb-document .phb-probe {\n  position: absolute;\n  top: 0;\n  left: 0;\n  display: block;\n  width: 2px;\n  height: 2px;\n  font-size: 1px;\n  line-height: 1px;\n  padding: 0;\n  margin: 0;\n  border: 0;\n  opacity: 1;\n  color: var(--phb-surface, #fff);\n  background: none;\n  z-index: 1;\n}\nbody.phb-export #phb-document .phb-probe::before,\nbody.phb-export #phb-document .phb-probe::after {\n  content: none;\n}\nbody.phb-export .heading-collapse-indicator,\nbody.phb-export .callout-fold {\n  display: none !important;\n}\nbody.phb-export .callout-title {\n  max-width: 100% !important;\n}\nbody.phb-export .callout-content:not(.an-figure-grid) {\n  display: block !important;\n}\nbody.phb-export .callout-content li::before {\n  display: none !important;\n}\nbody.phb-export .callout-content ul,\nbody.phb-export .callout-content ol {\n  padding-left: 1.6em;\n}\nbody.phb-export img {\n  max-width: 100%;\n  max-height: 220mm;\n  object-fit: contain;\n}\nbody.phb-export .phb-toc {\n  font-size: 10.5pt;\n}\n@media screen {\n  body.phb-export {\n    padding: 12mm !important;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    margin-top: 3em;\n  }\n}\n@media print {\n  @page {\n    size: A4;\n    margin: 18mm 18mm 20mm;\n  }\n  body.phb-export .phb-frontmatter ~ .phb-chapter {\n    break-before: page;\n  }\n  body.phb-export .phb-chapter > :first-child {\n    margin-top: 0 !important;\n  }\n  body.phb-export .callout:not(.an-media) {\n    break-inside: auto;\n  }\n  body.phb-export .callout[data-phb-keep=true] {\n    break-inside: avoid !important;\n  }\n  body.phb-export .callout[data-phb-long=true] {\n    break-inside: auto !important;\n  }\n  body.phb-export .callout[data-phb-long=true]::after {\n    display: none !important;\n  }\n  body.phb-export :is(p, li) {\n    orphans: 2;\n    widows: 2;\n  }\n  body.phb-export .phb-toc-title {\n    break-after: avoid;\n  }\n  body.phb-export .phb-toc {\n    break-after: page;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=true] {\n    break-inside: avoid;\n  }\n  body.phb-export .phb-callout-wrap[data-phb-keep=false] {\n    break-inside: auto;\n  }\n  body.phb-export :is(.math-block, .phb-math[data-display=true], mjx-container[display=true]) {\n    break-inside: avoid !important;\n  }\n  body.phb-export tr {\n    break-inside: avoid;\n  }\n  body.phb-export .callout.an-print-figure {\n    display: block !important;\n  }\n  body.phb-export :is(.an-print-figure, .an-print-image, img) {\n    break-inside: avoid;\n  }\n  body.phb-export .an-print-figure > :is(.callout-title, .an-diagram-caption) {\n    break-before: avoid;\n  }\n  body.phb-export .an-print-figure.an-print-oversized {\n    break-inside: auto;\n  }\n}\nbody.phb-export mjx-assistive-mml {\n  display: none !important;\n}\nbody.phb-export .phb-callout-wrap {\n  display: block;\n  padding-top: .95em;\n  margin: .85em 0 1.25em;\n  break-inside: auto;\n  box-sizing: border-box;\n}\nbody.phb-export .phb-callout-wrap > .callout[data-callout] {\n  margin: 0 !important;\n}\n@page {\n  size: A4;\n  margin: 18mm 18mm 20mm;\n  background: var(--phb-page-background, white);\n}\n.phb-glyph-cache {\n  position: absolute;\n  width: 0;\n  height: 0;\n  overflow: hidden;\n}\nbody.phb-export #phb-document .an-float-block {\n  position: relative;\n}\nbody.phb-export #phb-document p.an-float-block > .phb-probe.an-float-end {\n  position: relative;\n  display: inline-block;\n  top: auto;\n  left: auto;\n  width: 1px;\n  height: 1px;\n  margin-left: -1px;\n  vertical-align: baseline;\n}\nbody.phb-export #phb-document .an-float-figure > .phb-probe.an-float-end {\n  top: auto;\n  bottom: 0;\n}\n';
@@ -62677,7 +63114,7 @@ var AcademicNotes = class extends import_obsidian9.Plugin {
     this.active = true;
     this.busy = false;
     this.indexRunning = false;
-    this.appearanceBefore = { palette: document.body.getAttribute("data-an-palette"), classes: Object.fromEntries(["an-active", "an-prose-indent", "phb-neutral-body", "phb-no-motif"].map((c) => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map((k) => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
+    this.appearanceBefore = { palette: document.body.getAttribute("data-an-palette"), profile: document.body.getAttribute("data-an-profile"), classes: Object.fromEntries(["an-active", "an-prose-indent", "phb-neutral-body", "phb-no-motif"].map((c) => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map((k) => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
     this.editorViews = /* @__PURE__ */ new Set();
     this.readers = /* @__PURE__ */ new Set();
     this.readerUnloads = /* @__PURE__ */ new Set();
@@ -62692,6 +63129,11 @@ var AcademicNotes = class extends import_obsidian9.Plugin {
     } catch (e) {
       this.settings = { ...DEFAULTS2 };
       this.recordError(t("\u8BFB\u53D6 data.json\uFF08\u5DF2\u56DE\u9000\u9ED8\u8BA4\u503C\uFF09"), e);
+    }
+    try {
+      if (migratePaletteSettings(this.settings)) await this.saveData(this.settings);
+    } catch (error) {
+      this.recordError(t("\u4FDD\u5B58\u914D\u8272\u8FC1\u79FB"), error);
     }
     if (Obs2.Platform.isDesktopApp) {
       this.addCommand({ id: "export-current-pdf", name: t("\u76F4\u63A5\u5BFC\u51FA\u5F53\u524D\u7B14\u8BB0\u4E3A PDF"), callback: () => this.exportActive(false, true) });
@@ -62793,6 +63235,8 @@ var AcademicNotes = class extends import_obsidian9.Plugin {
     this.themeObserver?.disconnect();
     const before = this.appearanceBefore;
     if (before) {
+      if (before.profile == null) document.body.removeAttribute("data-an-profile");
+      else document.body.setAttribute("data-an-profile", before.profile);
       if (before.palette === null)
         document.body.removeAttribute("data-an-palette");
       else
@@ -62825,7 +63269,8 @@ var AcademicNotes = class extends import_obsidian9.Plugin {
   applyAppearance() {
     if (!this.active)
       return;
-    const b = document.body, dark = b.classList.contains("theme-dark"), palette = dark ? this.settings.darkPalette : this.settings.lightPalette;
+    const b = document.body, dark = b.classList.contains("theme-dark"), profile = selectedPalette(this.settings, dark ? "dark" : "light"), palette = basePalette(this.settings, profile);
+    if (b.dataset.anProfile !== profile) b.dataset.anProfile = profile;
     if (b.dataset.anPalette !== palette)
       b.dataset.anPalette = palette;
     const set = (c, v) => {
@@ -62836,10 +63281,13 @@ var AcademicNotes = class extends import_obsidian9.Plugin {
     set("an-prose-indent", !!this.settings.paragraphIndent);
     set("phb-neutral-body", !!this.settings.neutralBody);
     set("phb-no-motif", !!this.settings.hideMotif);
-    const values = appearanceValues(this.settings.customAppearance, dark);
-    for (const key2 of appearanceVariables) {
-      if (values[key2]) b.style.setProperty(key2, values[key2]);
-      else b.style.removeProperty(key2);
+    const values = paletteValues(this.settings, dark ? "dark" : "light");
+    const keys = /* @__PURE__ */ new Set([...appearanceVariables, ...Object.keys(this.appearanceBefore.variables), ...Object.keys(appearanceRoles(this.settings)).flatMap((role2) => ["color", "ink", "motif-color", "symbol", "motif-display"].map((part) => `--an-${part}-${role2}`))]);
+    for (const key2 of keys) {
+      if (!Object.hasOwn(this.appearanceBefore.variables, key2)) this.appearanceBefore.variables[key2] = [b.style.getPropertyValue(key2), b.style.getPropertyPriority(key2)];
+      if (values[key2]) {
+        if (b.style.getPropertyValue(key2) !== values[key2]) b.style.setProperty(key2, values[key2]);
+      } else if (b.style.getPropertyValue(key2)) b.style.removeProperty(key2);
     }
   }
   scheduleIndex() {
@@ -63306,6 +63754,7 @@ var AcademicNotes = class extends import_obsidian9.Plugin {
               box.dataset.phbBlocks = JSON.stringify(rec.ids);
           }
         }
+        markMathContinuations(section, note);
         await finishAlgorithms(section);
         if (section.querySelector(".an-algorithm-error")) throw new Error(t("\u7B97\u6CD5\u8BED\u6CD5\u9519\u8BEF\uFF0C\u5DF2\u505C\u6B62\u5BFC\u51FA\u3002"));
         if (math.length === note.equations.length)

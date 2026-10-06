@@ -62,137 +62,8 @@ body {
 }
 body.theme-dark { --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white); --phb-surface:#18181b; --phb-badge-ink:#18181b; --phb-tint:8%; }
 
-/* Sakura / light */
-body.theme-light[data-an-palette="sakura"] {
-  --phb-def: #a63c67;
-  --phb-thm: #6952a0;
-  --phb-lem: #8a4e8d;
-  --phb-prop: #406e68;
-  --phb-cor: #536c9a;
-  --phb-claim: #996040;
-  --phb-example: #8f6c25;
-  --phb-proof: #697455;
-}
-
-/* Mint / light */
-body.theme-light[data-an-palette="mint"] {
-  --phb-def: #227c77;
-  --phb-thm: #326694;
-  --phb-lem: #65709d;
-  --phb-prop: #457d5b;
-  --phb-cor: #6b7552;
-  --phb-claim: #4c7192;
-  --phb-example: #916b35;
-  --phb-proof: #647267;
-}
-
-/* Sky / light */
-body.theme-light[data-an-palette="sky"] {
-  --phb-def: #256f83;
-  --phb-thm: #2f609c;
-  --phb-lem: #665d98;
-  --phb-prop: #3d7a70;
-  --phb-cor: #536d86;
-  --phb-claim: #7f668d;
-  --phb-example: #956b35;
-  --phb-proof: #5c6d5b;
-}
-
-/* Forest / light */
-body.theme-light[data-an-palette="forest"] {
-  --phb-def: #247651;
-  --phb-thm: #286b76;
-  --phb-lem: #71628c;
-  --phb-prop: #62752e;
-  --phb-cor: #42786b;
-  --phb-claim: #44698c;
-  --phb-example: #946b2f;
-  --phb-proof: #687252;
-}
-
-/* Mauve / light */
-body.theme-light[data-an-palette="mauve"] {
-  --phb-def: #776085;
-  --phb-thm: #674386;
-  --phb-lem: #925d86;
-  --phb-prop: #5d7767;
-  --phb-cor: #646998;
-  --phb-claim: #896440;
-  --phb-example: #936c3f;
-  --phb-proof: #72736c;
-}
-
-/* Golden / light */
-body.theme-light[data-an-palette="golden"] {
-  --phb-def: #88712e;
-  --phb-thm: #9c582d;
-  --phb-lem: #826489;
-  --phb-prop: #617542;
-  --phb-cor: #946640;
-  --phb-claim: #587a7b;
-  --phb-example: #a75c3c;
-  --phb-proof: #77705b;
-}
-
-/* Cherry / light */
-body.theme-light[data-an-palette="cherry"] {
-  --phb-def: #9c3a55;
-  --phb-thm: #7f3f65;
-  --phb-lem: #845786;
-  --phb-prop: #3e756b;
-  --phb-cor: #626987;
-  --phb-claim: #9c5e36;
-  --phb-example: #906c32;
-  --phb-proof: #69725b;
-}
-
-/* Prussian / light */
-body.theme-light[data-an-palette="prussian"] {
-  --phb-def: #2a6c76;
-  --phb-thm: #28558a;
-  --phb-lem: #6c608c;
-  --phb-prop: #477966;
-  --phb-cor: #526d94;
-  --phb-claim: #887052;
-  --phb-example: #926938;
-  --phb-proof: #5b7172;
-}
-
-/* Vampire / dark */
-body.theme-dark[data-an-palette="vampire"] {
-  --phb-def: #82d6ac;
-  --phb-thm: #bca1e2;
-  --phb-lem: #db9bc4;
-  --phb-prop: #afd294;
-  --phb-cor: #83c7d1;
-  --phb-claim: #e5b78f;
-  --phb-example: #dfc67d;
-  --phb-proof: #a4b9a5;
-}
-
-/* Abyss / dark */
-body.theme-dark[data-an-palette="abyss"] {
-  --phb-def: #73c9bc;
-  --phb-thm: #82b6df;
-  --phb-lem: #b4a1e0;
-  --phb-prop: #9bcba7;
-  --phb-cor: #78ccd2;
-  --phb-claim: #d0ac8e;
-  --phb-example: #d6c07c;
-  --phb-proof: #a1b7b6;
-}
-
-/* Radiation / dark */
-body.theme-dark[data-an-palette="radiation"] {
-  --phb-def: #86ca98;
-  --phb-thm: #83bbce;
-  --phb-lem: #b7a7ca;
-  --phb-prop: #b8c984;
-  --phb-cor: #8dcbb4;
-  --phb-claim: #9baed0;
-  --phb-example: #dec178;
-  --phb-proof: #a8b898;
-}
+/* Built-in presets are generated from palettes.json for the plugin and PDF. */
+/* @academic-palette-presets */
 
 /* Role variables live on EACH callout: nested boxes do not borrow their parent color. */
 body .callout:is([data-callout="def"],[data-callout="assumption"],[data-callout="asm"],[data-callout="definition"]) {
@@ -587,23 +458,24 @@ body.an-active .callout[data-callout]:is([data-callout="solution"],[data-callout
 
 /* Custom environments share the native theorem structure and safe palette roles. */
 body .callout.an-custom-environment {
-  --an-custom-fallback: var(--phb-thm);
-  --phb-accent: var(--an-custom-color-light, var(--an-custom-fallback));
-  --phb-badge-ink: var(--an-custom-ink-light, var(--an-custom-default-ink, #fff));
-  --phb-symbol: none;
-  --an-motif-display: none;
+  --an-custom-fallback: var(--an-color-thm, var(--phb-thm));
+  --phb-motif-color: var(--an-custom-palette-motif-color, var(--phb-accent));
+  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-custom-fallback)));
+  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-light, var(--an-custom-default-ink, #fff)));
+  --phb-symbol: var(--an-custom-palette-symbol, none);
+  --an-motif-display: var(--an-custom-palette-motif-display, none);
 }
-body .callout.an-custom-environment[data-an-style="def"] { --an-custom-fallback: var(--phb-def); }
-body .callout.an-custom-environment[data-an-style="lem"] { --an-custom-fallback: var(--phb-lem); }
-body .callout.an-custom-environment[data-an-style="prop"] { --an-custom-fallback: var(--phb-prop); }
-body .callout.an-custom-environment[data-an-style="cor"] { --an-custom-fallback: var(--phb-cor); }
-body .callout.an-custom-environment[data-an-style="claim"] { --an-custom-fallback: var(--phb-claim); }
-body .callout.an-custom-environment[data-an-style="example"] { --an-custom-fallback: var(--phb-example); }
+body .callout.an-custom-environment[data-an-style="def"] { --an-custom-fallback: var(--an-color-def, var(--phb-def)); }
+body .callout.an-custom-environment[data-an-style="lem"] { --an-custom-fallback: var(--an-color-lem, var(--phb-lem)); }
+body .callout.an-custom-environment[data-an-style="prop"] { --an-custom-fallback: var(--an-color-prop, var(--phb-prop)); }
+body .callout.an-custom-environment[data-an-style="cor"] { --an-custom-fallback: var(--an-color-cor, var(--phb-cor)); }
+body .callout.an-custom-environment[data-an-style="claim"] { --an-custom-fallback: var(--an-color-claim, var(--phb-claim)); }
+body .callout.an-custom-environment[data-an-style="example"] { --an-custom-fallback: var(--an-color-example, var(--phb-example)); }
 body .callout.an-custom-environment[data-an-style="remark"] { --an-custom-fallback: var(--phb-remark, var(--phb-def)); }
 body.theme-dark .callout.an-custom-environment {
   --an-custom-default-ink: #18181b;
-  --phb-accent: var(--an-custom-color-dark, var(--an-custom-fallback));
-  --phb-badge-ink: var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff));
+  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-custom-fallback)));
+  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff)));
 }
-body .callout.an-custom-environment[data-an-style="remark"] > .callout-title { color: var(--an-custom-color-light, var(--an-remark-color)) !important; }
-body.theme-dark .callout.an-custom-environment[data-an-style="remark"] > .callout-title { color: var(--an-custom-color-dark, var(--an-remark-color)) !important; }
+body .callout.an-custom-environment[data-an-style="remark"] > .callout-title { color: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-color-remark, var(--an-remark-color)))) !important; }
+body.theme-dark .callout.an-custom-environment[data-an-style="remark"] > .callout-title { color: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-color-remark, var(--an-remark-color)))) !important; }

@@ -2,7 +2,7 @@
 body.an-active .an-algorithm,
 body.phb-export .an-algorithm,
 body.an-active .callout[data-callout="algorithm"] {
-  --an-algorithm-accent: var(--an-color-algorithm, var(--phb-thm));
+  --an-algorithm-accent: var(--an-color-algorithm, var(--an-color-def, var(--phb-def)));
   display: block; color: var(--text-normal, #24372e); background: transparent !important;
   border: 0 !important; border-top: 2px solid var(--an-algorithm-accent) !important; border-bottom: 2px solid var(--an-algorithm-accent) !important;
   border-radius: 0 !important; box-shadow: none; padding: 0 !important; margin: 1.2em 0 !important;

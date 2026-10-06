@@ -167,6 +167,10 @@ Open the command palette (`Ctrl+P` on Windows) and search for **Academic Notes**
 
 Type `\ref`, `\tref`, or `\eqref` for reference suggestions. The latter two filter to mathematical callouts or equations. Reading view and Live Preview replace reference labels; Source mode preserves the syntax. Moving the cursor into a reference in Live Preview also reveals its source. Custom aliases are preserved by default.
 
+## Settings overview
+
+Settings are grouped into four tabs: **Environments and references** (one editor for names, references and new environments, with expandable numbering/default/index options), **Palettes and appearance**, **Paragraph typography**, and **Contents and export**. Editing an appearance control keeps the current scroll position; native dropdown pickers close after selection.
+
 ## Numbering settings
 
 | Setting | Behavior |
@@ -185,7 +189,7 @@ Equation references default to `eq:{number}`; mathematical callouts use `{type} 
 
 ## Custom environment names and references
 
-In **Settings → Academic Notes → Environment names and references**, select any environment and set:
+In **Settings → Academic Notes → Environments and references**, select any environment and set:
 
 - **Display name**: the name in its heading and full-name references, in any language (for example, `Satz`, `算法`, or `Observación`).
 - **Reference abbreviation**: for example, `S.`, `算`, or `obs`. The default algorithm/figure/table/equation reference prefixes also respect this field.
@@ -195,7 +199,7 @@ Click **Save**. Empty fields use defaults; **Reset to default** clears only the 
 
 ### Add a new Markdown environment
 
-Under **Custom environments**, choose **New environment**. For example, set ID `observation`, display name `Observation`, abbreviation `obs`, base appearance `Lemma`, and enable automatic numbering. Optional light/dark accents accept `#RRGGBB`; empty colors follow the selected base palette. Click **Save environment**, then write:
+In the same environment selector, choose **New environment**. For example, set ID `observation`, display name `Observation`, abbreviation `obs`, base appearance `Lemma`, and enable automatic numbering. Colors are configured per palette under **Palettes and appearance**; without an override, the environment follows its base appearance. Click **Save**, then write:
 
 ```markdown
 > [!observation] Compactness
@@ -271,7 +275,7 @@ Commands are case-insensitive, except the usual case-sensitive LaTeX font sizes.
 - **Automatically number algorithms** follows the current section/whole-note scope; theorems, equations and figures have separate counters. Book export re-numbers algorithms with the selected chapter scheme and resolves links across selected chapters.
 - **Show algorithm line numbers** is independent of caption numbering. Input/output declarations and comments do not consume a line number. Override a callout with `[!algorithm|lines=true]` or `lines=false`; `\begin{algorithmic}[1]` / `[0]` overrides a fence. `[!algorithm|*]` suppresses the caption number; `[!algorithm|A]` supplies a manual number.
 - **Algorithm reference format** defaults to `alg {number}` and supports the same placeholders as theorem references. References use `[[#^alg-euclid]]` or `[[Other note#^alg-euclid]]`.
-- **Environment customization → Algorithm** changes the rule and caption accent. Body/formula text stays neutral, keywords are bold, and line numbers/comments use muted text. Traditional heavy–thin–heavy rules match the three-line table style.
+- **Palettes and appearance → Algorithm** changes the rule and caption accent. Body/formula text stays neutral, keywords are bold, and line numbers/comments use muted text. Traditional heavy–thin–heavy rules match the three-line table style.
 - Reading view and inactive Live Preview callouts render algorithms. Native editing remains available when entering the source/title; no note text is rewritten. Algorithm rows are excluded from prose KP and first-line indentation.
 - Desktop PDF export keeps short algorithms together; blocks exceeding the printable height split between complete rows. HTML snapshots include static formulas and styles. Syntax errors are displayed locally and stop export, avoiding a silently incomplete PDF. Formula layout remains subject to the available page width.
 
@@ -402,9 +406,15 @@ The **follow Obsidian theme colors** option uses the theme's public accent for d
 
 Framed callouts mix 6% callout color with 94% white in light mode, or 8% callout color with 92% neutral dark gray in dark mode. Nested callouts use their own colors. The corner decoration can be hidden; this does not hide a proof's QED square. The optional Style Settings plugin can adjust border width, corner radius (0 means square corners), motif size and opacity.
 
-Under **Settings → Academic Notes → Environment customization**, select an environment such as Theorem, Definition or Axiom. Enable a color override and choose a color separately for light and dark modes. Turning its switch off restores the selected palette. The accent controls the border, title background and subtle same-hue fill; title text automatically uses black or white for contrast. Proof and Remark keep their unframed layout, and their accent changes only the title.
+Open **Settings → Academic Notes → Palettes and appearance**:
 
-Each framed environment also has independent light/dark motif colors and a motif selector: keep the original drawing, hide it, or choose one of nine fine-line vector designs. Click a gallery tile to select it; the callout preview shows the current mode. **Reset this environment** clears only the selected environment's overrides. The global hide-decoration option takes precedence and never hides the proof's QED square. Custom appearance is preserved in PDF exports, including exports with theme capture disabled.
+1. Select your light and dark palettes, then choose the **Edit palette mode**. The editor operates on the palette selected for that mode; the preview shows that palette even if Obsidian currently uses the other mode.
+2. Choose a built-in or custom environment. Enable **Environment accent** and choose its color. Changes are stored **only in this palette**: a Forest override does not affect Sakura, and returning to Forest restores its saved override. The accent controls the border, title background and same-hue fill; title text uses black or white for contrast. Proof/Remark remain unframed, with only their title color changing. Algorithm rules and captions default to the palette's primary/definition hue, with neutral body text.
+3. For a framed environment, choose a motif and an optional motif color. The gallery contains nine fine-line vector drawings. The global hide-decoration option takes precedence; it never hides the proof's QED square.
+4. **Reset this environment** clears its overrides in the edited palette. **Reset this palette** clears all environment overrides in that palette; other palettes remain untouched.
+5. Enter a name and use **Copy to a custom palette → Create palette** to copy the selected preset and its current overrides. The copy is independently editable. Resetting it returns to its underlying built-in preset (or theme colors); **Delete palette** removes the copy and selects its base.
+
+On upgrade, previous global overrides, including custom-environment colors, migrate to the light and dark palettes selected at the time of upgrading. This preserves the current appearance and lets other presets use their own defaults. Custom colors and motifs are preserved in PDF exports, including when theme capture is disabled.
 
 ![Nine original corner motifs, enlarged and at actual size](screenshots/motifs.png)
 
@@ -412,7 +422,7 @@ Each framed environment also has independent light/dark motif colors and a motif
 
 ![Browser justification and optional Knuth–Plass paragraph layout](screenshots/typography.png)
 
-Open **Settings → Academic Notes → Paragraph typography (Beta)**. The three KP switches and the first-line indentation option are off by default and work independently:
+Open **Settings → Academic Notes → Paragraph typography**. The three KP switches and the first-line indentation option are off by default and work independently:
 
 | Setting | Use |
 |---|---|
@@ -421,7 +431,7 @@ Open **Settings → Academic Notes → Paragraph typography (Beta)**. The three 
 | Use Knuth–Plass line breaking in Live Preview | Optimize inactive, standalone plain-text paragraphs and read-only mathematical callout bodies. Entering with the caret or a selection restores native editing; leaving reoptimizes the paragraph. |
 | Use Knuth–Plass line breaking in PDF | Optimize paragraphs at their final printed width when exporting a note or book to PDF on desktop. |
 
-Knuth–Plass considers line breaks across a whole paragraph and adjusts spacing to reduce uneven lines. It supports basic Latin text and CJK characters with common Chinese punctuation rules. Inline links and formulas remain intact; they are treated as units that cannot be split across lines. Enable the Reading view switch, open a note in **Reading view**, and compare its paragraphs at different window widths. First-line indentation reserves space on the left before KP chooses breaks; non-final lines keep the same right edge. No Markdown syntax changes are needed, and the source note is preserved. Source mode keeps its normal editing layout; HTML snapshots keep responsive browser layout.
+Knuth–Plass considers line breaks across a whole paragraph and adjusts spacing to reduce uneven lines. It supports basic Latin text and CJK characters with common Chinese punctuation rules. Inline links and formulas remain intact; they are treated as units that cannot be split across lines. Enable the Reading view switch, open a note in **Reading view**, and compare its paragraphs at different window widths. First-line indentation reserves space on the left before KP chooses breaks; non-final lines keep the same right edge. A display equation followed immediately by text continues the same paragraph: that text is not indented again. Insert an empty source line after the equation to start a new indented paragraph. An equation block ID does not create a paragraph boundary. No Markdown syntax changes are needed, and the source note is preserved. Source mode keeps its normal editing layout; HTML snapshots keep responsive browser layout.
 
 Proof, Remark, theorem, definition and other mathematical callout bodies use the same solver. Inline headings reserve space on the first line; subsequent lines use the full width. Proof reserves space for a single final QED square, including across PDF pages. Long or multi-line floating headings retain native layout. Optimized non-final lines fill their available width; the final line keeps natural spacing. When inline formulas make fitting difficult, a bounded second pass evaluates the actual visible spacing. Small rendered-width differences are corrected through flexible gaps. At a formula-ending row, presentation wrappers trim theme end margins without modifying the original formula nodes or LaTeX spacing. Formulas remain indivisible: one wider than the remaining space moves to a later line; oversized formulas or unsupported paragraphs retain native layout.
 
@@ -429,7 +439,7 @@ Proof, Remark, theorem, definition and other mathematical callout bodies use the
 
 This Beta does not add automatic word hyphenation. Lists, tables, headings, captions, image paragraphs, explicit line breaks, and right-to-left or vertical text use normal browser layout. Complex markup, paragraphs that cannot fit, and content beyond the processing limit also fall back to normal layout; long notes may therefore be only partly optimized. The result depends on the text, font and width, so it will not improve every paragraph.
 
-The **Live Preview** switch keeps a narrower scope for ordinary editable prose: it handles paragraphs written as one source line, surrounded by blank lines (or file boundaries), without inline Markdown formatting. Math, links, emphasis and multiline-source ordinary paragraphs keep native line breaking with browser justification while the Live Preview KP switch is enabled. Active prose also keeps browser justification. Lists and code keep their original layout. This fallback is not a global KP optimization. Read-only mathematical callout bodies also support inline formulas and links. Entering a callout restores its native body; an editable title remains under Obsidian's control. An inactive editable title alone does not exclude its read-only body from KP. A native caret still inside the callout defers further updates even after focus changes. Touch scrolling and momentum must settle before layout resumes. Copy selections defer reflow, and disabling the switch or removing the extension restores native content. All selected paragraphs and IME composition use native editing. Only visible prose is optimized, with bounded work; very large notes retain native layout. It never inserts source line breaks or changes note text. Reading/PDF retain their broader inline-content support.
+The **Live Preview** switch keeps a narrower scope for ordinary editable prose: it handles paragraphs written as one source line, surrounded by blank lines (or file boundaries), without inline Markdown formatting. Math, links, emphasis and multiline-source ordinary paragraphs keep native line breaking with browser justification while the Live Preview KP switch is enabled. Active prose also keeps browser justification. Lists and code keep their original layout. This fallback is not a global KP optimization. Read-only mathematical callout bodies also support inline formulas and links. Entering a callout restores its native body; an editable title remains under Obsidian's control. An inactive editable title alone does not exclude its read-only body from KP. A native caret still inside the callout defers further updates even after focus changes. Touch scrolling and momentum must settle before layout resumes. Copy selections defer reflow, and disabling the switch or removing the extension restores native content. All selected paragraphs and IME composition use native editing. Theme letter spacing and word spacing are included in Live Preview width measurements, with a local fallback for older WebKit canvas implementations. Only visible prose is optimized, with bounded work; very large notes retain native layout. It never inserts source line breaks or changes note text. Reading/PDF retain their broader inline-content support.
 
 ## Table of contents
 
@@ -478,7 +488,7 @@ PDF output uses A4 pages. Figures, subfigure groups and captions stay together w
 
 ### Experimental figure layout
 
-On desktop, open **Settings → Academic Notes → Figure layout priority (experimental)**. The default is **Keep whitespace (off)**. Choose a priority:
+On desktop, open **Settings → Academic Notes → Contents and export → Figure layout priority (experimental)**. The default is **Keep whitespace (off)**. Choose a priority:
 
 | Priority | Behavior |
 |---|---|

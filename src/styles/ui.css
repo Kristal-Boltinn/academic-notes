@@ -21,3 +21,9 @@
 .an-custom-appearance-row > .setting-item-info, .an-custom-appearance-row > .setting-item-control { display: none; }
 
 .an-environment-example { white-space: pre-wrap; font-family: var(--font-monospace); }
+
+.an-settings-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
+.an-settings-tabs button { flex:1 1 auto; }
+.an-settings-tabs button[aria-selected="true"] { color:var(--text-on-accent); background:var(--interactive-accent); }
+.an-settings-details { margin:12px 0; border-top:1px solid var(--background-modifier-border); }
+.an-settings-details > summary { cursor:pointer; padding:12px 0; font-weight:600; }

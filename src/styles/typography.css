@@ -13,6 +13,7 @@ body.an-prose-indent p:has(> img,> .image-embed,> .math-block) { text-indent: 0 
 .an-kp-native-justify .cm-line.an-prose-line:not(:has(.an-kp-live-break)),
 .an-kp-native-justify .callout-content > p:not(.an-kp-paragraph) { text-align: justify; text-align-last: start; }
 .an-prose-indent-enabled .cm-line.an-prose-start { text-indent: 2em; }
+.an-prose-indent-enabled .cm-line.an-prose-line:not(.an-prose-start) { text-indent: 0; }
 .an-kp-paragraph > .an-kp-line {
   display: inline-block;
   box-sizing: border-box;
@@ -39,7 +40,7 @@ body.an-prose-indent p:has(> img,> .image-embed,> .math-block) { text-indent: 0 
 /* Temporary intrinsic-width measurement, restored before the layout is painted. */
 .an-active p.an-kp-measure, body.phb-export p.an-kp-measure { white-space: nowrap !important; }
 .an-kp-live-line { white-space: nowrap; }
-.an-kp-live-gap { display: inline-block; white-space: pre; font-size: 0; line-height: 0; height: 0; }
+.an-kp-live-gap { display: inline-block; white-space: pre; font-size: 0; line-height: 0; height: 0; letter-spacing:0; word-spacing:0; }
 .an-kp-qed > .an-kp-line:last-child::after {
   content: "□";
   float: right;
@@ -49,3 +50,8 @@ body.an-prose-indent p:has(> img,> .image-embed,> .math-block) { text-indent: 0 
   color: inherit;
 }
 .an-kp-qed-probe { font-style: normal; font-weight: 400; margin-inline-start: .75em; }
+
+/* Formula-following prose continues until an explicit blank source line. */
+body.an-active.an-prose-indent .markdown-rendered p.an-prose-continuation,
+body.an-active.an-prose-indent .callout-content p.an-prose-continuation,
+body.phb-export.an-prose-indent p.an-prose-continuation { text-indent:0 !important; }

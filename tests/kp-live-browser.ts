@@ -77,6 +77,26 @@ export async function runKpLiveRegressions() {
         check(breaks() > 2, 'layout must resume after composition');
         host.style.width = '360px'; await settle();
         check(breaks() > 2, 'resizing must rebuild line breaks');
+        const tracking=host.createEl('style',{text:'.kp-live-test .cm-line{letter-spacing:1px;word-spacing:1.5px}'});
+        await settle();await settle();
+        check(breaks()>2,'Theme letter and word spacing must no longer disable live KP');
+        const tracked=view.dom.querySelector<HTMLElement>('.cm-line:has(.an-kp-live-break)')!,trackedBounds=tracked.getBoundingClientRect(),trackedRows=glyphRows(tracked),trackedStyle=getComputedStyle(tracked);
+        check(trackedRows.slice(0,-1).every(row=>Math.abs(trackedBounds.right-parseFloat(trackedStyle.paddingRight)-row.right)<2),'Tracked KP rows must fill the actual right edge: '+JSON.stringify({trackedRows,bounds:trackedBounds.toJSON()}));
+        // Simulate WebKit versions whose canvas has no tracking properties.
+        const getContext=HTMLCanvasElement.prototype.getContext;let legacyMeasurements=0;
+        HTMLCanvasElement.prototype.getContext=function(...args:any[]){
+            const context=(getContext as any).apply(this,args);if(args[0]!=='2d' || !context)return context;
+            return new Proxy(context,{set:(target,key,value)=>Reflect.set(target,key,value,target),has:(target,key)=>key==='letterSpacing'||key==='wordSpacing'?false:key in target,get:(target,key)=>key==='measureText'?((text:string)=>{legacyMeasurements++;return target.measureText(text);}):typeof target[key]==='function'?target[key].bind(target):target[key]});
+        } as any;
+        try {
+            tracking.textContent='.kp-live-test .cm-line{letter-spacing:0.7px;word-spacing:1.25px}';
+            view.dispatch({effects:plugin.refreshEffect.of(112)});await settle();await settle();
+            check(legacyMeasurements>20,'Legacy canvas test must actually recompute measured source');
+            const fallback=view.dom.querySelector<HTMLElement>('.cm-line:has(.an-kp-live-break)')!,fallbackRows=glyphRows(fallback),fallbackBounds=fallback.getBoundingClientRect(),fallbackStyle=getComputedStyle(fallback);
+            check(fallbackRows.slice(0,-1).every(row=>Math.abs(fallbackBounds.right-parseFloat(fallbackStyle.paddingRight)-row.right)<2),'Legacy WebKit tracking fallback must fill the actual right edge: '+JSON.stringify({fallbackRows,bounds:fallbackBounds.toJSON()}));
+            check(view.state.doc.toString().includes(prose.slice(0,60)),'Tracking fallback must preserve source');
+        }finally{HTMLCanvasElement.prototype.getContext=getContext;}
+        tracking.remove();await settle();
         const line = view.dom.querySelector<HTMLElement>('.cm-line:has(.an-kp-live-break)');
         check(line && line.scrollWidth <= line.clientWidth + 2, 'optimized paragraph must not overflow');
         const stableText = view.state.doc.toString();
@@ -101,5 +121,16 @@ export async function runKpLiveRegressions() {
         check(!sourceView.dom.classList.contains('an-prose-indent-enabled') && !sourceView.dom.querySelector('.an-prose-line'), 'Indentation must leave source mode untouched');
         check(sourceView.state.doc.toString() === source, 'source mode text must remain unchanged');
     } finally { sourceView.destroy(); sourceHost.remove(); }
+    const boundaryHost=document.body.createDiv();boundaryHost.style.width='490px';
+    const boundarySource='Before.\n\n$$\nx+y\n$$\nContinue without a blank.\n\nNew paragraph after a blank.';
+    plugin.settings.paragraphIndent=true;plugin.settings.kpLivePreview=true;
+    const boundaryView=new EditorView({parent:boundaryHost,state:EditorState.create({doc:boundarySource,extensions:[editorInfoField,editorLivePreviewField,EditorView.lineWrapping,createLiveParagraphExtension(plugin)]})});
+    try {
+      await settle();
+      const paragraphs=[...boundaryView.dom.querySelectorAll<HTMLElement>('.cm-line')],continued=paragraphs.find(line=>line.textContent?.startsWith('Continue without'))!,newParagraph=paragraphs.find(line=>line.textContent?.startsWith('New paragraph'))!;
+      check(continued.classList.contains('an-prose-line') && !continued.classList.contains('an-prose-start') && parseFloat(getComputedStyle(continued).textIndent)===0,'Editable continuation after a display equation must not repeat indentation');
+      check(newParagraph.classList.contains('an-prose-start') && parseFloat(getComputedStyle(newParagraph).textIndent)>0,'An empty source line must restart editable-prose indentation');
+      check(boundaryView.state.doc.toString()===boundarySource,'Source-boundary decorations must preserve text');
+    }finally{boundaryView.destroy();boundaryHost.remove();plugin.settings.paragraphIndent=false;}
     return 'Live Preview KP: source preservation, native editing/selection/IME, hit testing, resizing and scroll stability passed';
 }

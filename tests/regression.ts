@@ -18,8 +18,10 @@ import { parseDiagram, diagramFence, diagramBlocks, resizeDiagram, removeNode, r
 import { commutationArc } from '../src/diagrams/geometry';
 import { mathSource } from '../src/diagrams/math';
 import { normalizeFloatOptions } from '../src/export/floats';
+import { migratePaletteSettings, paletteOverrides, paletteValues, customPalettes, defaultRoleColor, PRESETS } from '../src/rendering/palettes';
 import { DEFAULTS as PluginDefaults } from '../src/settings';
 import { diagramDeletionRange } from '../src/ui/diagram-modal';
+import { mathContinuationLines } from '../src/typography/continuations';
 import { proseLines } from '../src/typography/prose';
 import { EditorState } from '@codemirror/state';
 
@@ -179,9 +181,11 @@ test('mobile registers numbering and HTML commands without desktop PDF', async (
   Platform.isDesktopApp = false;
   const app: any = { metadataCache: { on() {} }, vault: { on() {} }, workspace: { on() {}, onLayoutReady() {} } };
   const plugin: any = new AcademicNotes(app, { id: 'academic-notes', name: 'Academic Notes', version: '2.7.0' } as any);
+  plugin.data={customAppearance:JSON.stringify({thm:{light:'#112233'}})};
   try {
     await plugin.onload();
     assert.equal(plugin.commands.length, 10);
+    assert.equal(paletteValues(plugin.settings,'light')['--an-color-thm'],'#112233','Mobile upgrades must migrate colors too');
     assert.ok(plugin.commands.every((command: any) => !command.id.endsWith('-pdf')));
     for (const id of ['export-current', 'export-book', 'insert-reference', 'label-block', 'insert-environment', 'refresh', 'start-layout-diagnostics', 'stop-layout-diagnostics'])
       assert.ok(plugin.commands.some((command: any) => command.id === id), id);
@@ -336,7 +340,7 @@ test('PDF annotations supply exact page positions and become nested outlines', a
 
 test('appearance settings persist changes independently and reset the selected environment', async () => {
   let saves = 0;
-  const plugin: any = { settings: { customAppearance: '{}' }, saveSettings: async () => { saves++; } };
+  const plugin: any = { settings: { ...PluginDefaults }, saveSettings: async () => { saves++; } };
   const tab = new AcademicSettings({} as any, plugin);
   (tab as any).refreshSettings = () => {};
   await tab.changeAppearance('light', '#123456');
@@ -344,9 +348,9 @@ test('appearance settings persist changes independently and reset the selected e
   Setting.controls = []; tab.renderAppearance(new MockElement() as any);
   const selector = Setting.controls.find(c => c.options?.laurel);
   await selector.change('none');
-  assert.equal(parseAppearance(plugin.settings.customAppearance).def.motif, 'none');
+  assert.equal(paletteOverrides(plugin.settings).forest.def.motif, 'none');
   await Setting.controls.find(c => c.click).click();
-  assert.deepEqual(parseAppearance(plugin.settings.customAppearance), { thm: { light: '#123456' } });
+  assert.deepEqual(paletteOverrides(plugin.settings).forest, { thm: { light: '#123456' } });
   assert.equal(saves, 4);
   tab.appearanceType = 'proof'; Setting.controls = []; tab.renderAppearance(new MockElement() as any);
   assert.ok(!Setting.controls.some(c => c.options?.laurel));
@@ -416,4 +420,40 @@ test('environment settings reject reserved IDs, invalid colors and executable-st
   assert.equal(Engine.validCustomKey('definition'),false); assert.equal(Engine.validCustomKey('observation'),true);
   const overrides=Engine.referenceOverrides({referenceOverrides:JSON.stringify({thm:{abbr:'S.', format:'{abbr} {number}'},unknown:{name:'Unexpected'}})});
   assert.deepEqual(Object.keys(overrides),['thm']);
+});
+
+
+test('palette migration preserves the selected colors while other presets remain independent', () => {
+  const settings = { ...PluginDefaults, lightPalette:'mint', customAppearance:JSON.stringify({thm:{light:'#123456',dark:'#fedcba',motif:'folio'}}), customEnvironments:JSON.stringify({observation:{name:'Observation',abbr:'obs',style:'thm',numbered:true,light:'#447788',dark:'#aabbcc'}}) };
+  assert.equal(migratePaletteSettings(settings),true);
+  assert.equal(settings.customAppearance,'{}'); assert.equal(Engine.environments(settings).observation.light,undefined);
+  assert.equal(paletteValues(settings,'light')['--an-color-thm'],'#123456');
+  assert.equal(paletteValues(settings,'light')['--an-color-observation'],'#447788');
+  assert.equal(paletteValues(settings,'dark')['--an-color-observation'],'#aabbcc');
+  settings.lightPalette='forest'; assert.equal(paletteValues(settings,'light')['--an-color-thm'],undefined);
+  settings.lightPalette='mint'; assert.equal(migratePaletteSettings(settings),false);
+  settings.paletteAppearance=JSON.stringify({...paletteOverrides(settings),sakura:{thm:{light:'#ab1234'}}});
+  settings.lightPalette='sakura';assert.equal(paletteValues(settings,'light')['--an-color-thm'],'#ab1234');
+  const all=paletteOverrides(settings);delete all.sakura;settings.paletteAppearance=JSON.stringify(all);
+  assert.equal(paletteValues(settings,'light')['--an-color-thm'],undefined);settings.lightPalette='mint';assert.equal(paletteValues(settings,'light')['--an-color-thm'],'#123456');
+  assert.equal(defaultRoleColor(settings,'sakura','algorithm'),PRESETS.sakura.colors.def);
+});
+test('custom palettes validate modes and base presets, with independent custom-environment accents', () => {
+  const settings={...PluginDefaults,customPalettes:JSON.stringify({'custom-study':{name:'Study',mode:'light',base:'forest'},'custom-wrong':{name:'Wrong',mode:'dark',base:'forest'}}),customEnvironments:JSON.stringify({observation:{name:'Observation',abbr:'obs',style:'lem',numbered:true}})};
+  assert.deepEqual(Object.keys(customPalettes(settings.customPalettes)),['custom-study']);
+  settings.paletteAppearance=JSON.stringify({'custom-study':{observation:{light:'#447788',motif:'laurel'}},forest:{observation:{light:'#cc7733'}},unknown:{thm:{light:'#111111'}}});
+  settings.lightPalette='custom-study';assert.equal(paletteValues(settings,'light')['--an-color-observation'],'#447788');
+  assert.equal(defaultRoleColor(settings,'custom-study','observation'),PRESETS.forest.colors.lem);
+  settings.lightPalette='forest';assert.equal(paletteValues(settings,'light')['--an-color-observation'],'#cc7733');
+  assert.ok(!Object.hasOwn(paletteOverrides(settings),'unknown'));
+  settings.customPalettes='invalid';migratePaletteSettings(settings);assert.equal(settings.lightPalette,'forest');
+});
+
+
+test('display equations continue prose until an empty source line, including callouts and IDs', () => {
+  const source=['Before','$$','x+y','$$','Continued','','New paragraph','','> [!proof]','> Start','> $$','> x+y','> $$','> Continued','>','> New paragraph','> $$x$$','> ^eq-a','> Continued again'].join('\n');
+  const state=EditorState.create({doc:source}),note=Engine.parse('prose.md',source);
+  assert.deepEqual(proseLines(state).map(line=>[state.doc.lineAt(line.from).text,line.start]),[['Before',true],['Continued',false],['New paragraph',true],['> Start',true],['> Continued',false],['> New paragraph',true],['> Continued again',false]]);
+  assert.deepEqual([...mathContinuationLines(note)],[4,13,18]);
+  const separated=Engine.parse('blank.md','$$x$$\n\nNew paragraph');assert.equal(mathContinuationLines(separated).size,0);
 });

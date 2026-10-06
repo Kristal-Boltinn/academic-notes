@@ -1,3 +1,5 @@
+import { markMathContinuations } from './typography/continuations';
+import { paletteValues, selectedPalette, basePalette, appearanceRoles, migratePaletteSettings } from './rendering/palettes';
 import { algorithmProcessor, algorithmRecord, finishAlgorithms } from './algorithms/render';
 import algorithmCss from './styles/algorithms.css';
 import { t, setLanguage, language } from './i18n';
@@ -14,7 +16,7 @@ import { DEFAULTS, type AcademicSettingsData } from './settings';
 import { titleRecord, mediaRecord, renderFragment, createLiveExtension, allNodes } from './rendering/adapters';
 import { createLiveParagraphExtension } from './typography/live';
 import { updateFigureImageRatio } from './rendering/figure-layout';
-import { appearanceVariables, appearanceValues } from './rendering/custom-appearance';
+import { appearanceVariables } from './rendering/custom-appearance';
 import { ProgressModal, ReferencePicker, ReferenceSuggest, BookPicker, EnvironmentModal } from './ui/modals';
 import { AcademicSettings } from './ui/settings-tab';
 import { exportPdf, pdfAvailability } from './export/pdf';
@@ -49,7 +51,7 @@ export default class AcademicNotes extends Plugin {
     rerun = false;
     indexPromise: Promise<void> | undefined;
     indexTimer: number | undefined;
-    appearanceBefore: { palette: string | null; classes: Record<string, boolean>; variables: Record<string, [string, string]> };
+    appearanceBefore: { palette: string | null; profile?: string | null; classes: Record<string, boolean>; variables: Record<string, [string, string]> };
     editorViews = new Set<EditorView>();
     readers = new Set<() => void>();
     readerUnloads = new Set<() => void>();
@@ -73,7 +75,7 @@ export default class AcademicNotes extends Plugin {
         this.active = true;
         this.busy = false;
         this.indexRunning = false;
-        this.appearanceBefore = { palette: document.body.getAttribute('data-an-palette'), classes: Object.fromEntries(['an-active', 'an-prose-indent', 'phb-neutral-body', 'phb-no-motif'].map(c => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map(k => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
+        this.appearanceBefore = { palette: document.body.getAttribute('data-an-palette'), profile: document.body.getAttribute('data-an-profile'), classes: Object.fromEntries(['an-active', 'an-prose-indent', 'phb-neutral-body', 'phb-no-motif'].map(c => [c, document.body.classList.contains(c)])), variables: Object.fromEntries(appearanceVariables.map(k => [k, [document.body.style.getPropertyValue(k), document.body.style.getPropertyPriority(k)]])) };
         this.editorViews = new Set();
         this.readers = new Set();
         this.readerUnloads = new Set();
@@ -90,6 +92,8 @@ export default class AcademicNotes extends Plugin {
             this.settings = { ...DEFAULTS };
             this.recordError(t("读取 data.json（已回退默认值）"), e);
         }
+        try { if (migratePaletteSettings(this.settings)) await this.saveData(this.settings); }
+        catch (error) { this.recordError(t('保存配色迁移'), error); }
         // Registration does not depend on the PDF runtime or other plugins.
         if (Obs.Platform.isDesktopApp) {
             this.addCommand({ id: 'export-current-pdf', name: t("直接导出当前笔记为 PDF"), callback: () => this.exportActive(false, true) });
@@ -172,6 +176,7 @@ export default class AcademicNotes extends Plugin {
         this.themeObserver?.disconnect();
         const before = this.appearanceBefore;
         if (before) {
+            if (before.profile == null) document.body.removeAttribute('data-an-profile'); else document.body.setAttribute('data-an-profile', before.profile);
             if (before.palette === null)
                 document.body.removeAttribute('data-an-palette');
             else
@@ -192,7 +197,8 @@ export default class AcademicNotes extends Plugin {
     applyAppearance() {
         if (!this.active)
             return;
-        const b = document.body, dark = b.classList.contains('theme-dark'), palette = dark ? this.settings.darkPalette : this.settings.lightPalette;
+        const b = document.body, dark = b.classList.contains('theme-dark'), profile = selectedPalette(this.settings, dark ? 'dark' : 'light'), palette = basePalette(this.settings, profile);
+        if (b.dataset.anProfile !== profile) b.dataset.anProfile = profile;
         if (b.dataset.anPalette !== palette)
             b.dataset.anPalette = palette;
         const set = (c: string, v: boolean) => { if (b.classList.contains(c) !== v)
@@ -201,10 +207,12 @@ export default class AcademicNotes extends Plugin {
         set('an-prose-indent', !!this.settings.paragraphIndent);
         set('phb-neutral-body', !!this.settings.neutralBody);
         set('phb-no-motif', !!this.settings.hideMotif);
-        const values = appearanceValues(this.settings.customAppearance, dark);
-        for (const key of appearanceVariables) {
-            if (values[key]) b.style.setProperty(key, values[key]);
-            else b.style.removeProperty(key);
+        const values = paletteValues(this.settings, dark ? 'dark' : 'light');
+        const keys = new Set([...appearanceVariables, ...Object.keys(this.appearanceBefore.variables), ...Object.keys(appearanceRoles(this.settings)).flatMap(role => ['color','ink','motif-color','symbol','motif-display'].map(part=>`--an-${part}-${role}`))]);
+        for (const key of keys) {
+            if (!Object.hasOwn(this.appearanceBefore.variables,key)) this.appearanceBefore.variables[key] = [b.style.getPropertyValue(key), b.style.getPropertyPriority(key)];
+            if (values[key]) { if (b.style.getPropertyValue(key) !== values[key]) b.style.setProperty(key,values[key]); }
+            else if (b.style.getPropertyValue(key)) b.style.removeProperty(key);
         }
     }
     scheduleIndex() { if (!this.active)
@@ -633,6 +641,7 @@ export default class AcademicNotes extends Plugin {
                             box.dataset.phbBlocks = JSON.stringify(rec.ids);
                     }
                 }
+                markMathContinuations(section, note);
                 await finishAlgorithms(section);
                 if (section.querySelector('.an-algorithm-error')) throw new Error(t('算法语法错误，已停止导出。'));
                 if (math.length === note.equations.length)

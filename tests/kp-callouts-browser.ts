@@ -1,3 +1,4 @@
+import { markMathContinuations } from '../src/typography/continuations';
 import { layoutParagraphs, restoreParagraphs } from '../src/typography/dom';
 import { renderMath, editorInfoField, editorLivePreviewField } from 'obsidian';
 import { EditorState, StateField, StateEffect } from '@codemirror/state';
@@ -12,6 +13,37 @@ const prose = 'A mathematical proof considers a sequence of related statements. 
 export async function runCalloutTypographyRegressions() {
     const host = document.body.createDiv({ cls: 'markdown-rendered' });
     let example = '';
+    const hadIndent=document.body.classList.contains('an-prose-indent');document.body.classList.add('an-prose-indent');
+    try {
+      for(const quoted of [false,true]) {
+        const text=prose.repeat(3),prefix=quoted?'> ':'';
+        const source=(quoted?'> [!proof]\n':'')+[text,'$$','x+y','$$',text,'',text,'$$','z','$$','',text].map(line=>prefix+line).join('\n');
+        const note=Engine.parse('paragraphs.md',source),root=quoted?host.createDiv({cls:'callout an-proof-own-line',attr:{'data-callout':'proof'}}):host.createDiv();
+        if(quoted)root.createDiv({cls:'callout-title'}).createDiv({cls:'callout-title-inner',text:'Proof'});
+        const content=quoted?root.createDiv({cls:'callout-content'}):root;host.style.width='720px';
+        const first=content.createEl('p',{text});content.createDiv({cls:'math-block'}).appendChild(renderMath('x+y',true));
+        const continued=content.createEl('p',{text}),newParagraph=content.createEl('p',{text});content.createDiv({cls:'math-block'}).appendChild(renderMath('z',true));
+        const separated=content.createEl('p',{text});
+        markMathContinuations(root,note);
+        check(continued.classList.contains('an-prose-continuation') && !separated.classList.contains('an-prose-continuation'),'Only an explicit source blank starts a new paragraph after math');
+        const originals=[first,continued,newParagraph,separated].map(p=>p.textContent),formulaNodes=[...root.querySelectorAll('mjx-container')];
+        for(const copy of [root,root.cloneNode(true) as HTMLElement]) {
+          if(copy!==root)host.appendChild(copy);
+          const paragraphs=[...copy.querySelectorAll<HTMLElement>('p')];
+          check(parseFloat(getComputedStyle(paragraphs[1]).textIndent)===0 && parseFloat(getComputedStyle(paragraphs[3]).textIndent)>0,'Native reading and serialized export CSS must preserve source boundaries');
+          check(layoutParagraphs(copy).processed===4,'Source-boundary fixture must also use KP');
+          const firstGlyphOffset=(p:HTMLElement)=>{const range=document.createRange();range.selectNode(p.querySelector('.an-kp-line')!.firstChild!);return range.getBoundingClientRect().left-p.getBoundingClientRect().left;};
+          check(Math.abs(firstGlyphOffset(paragraphs[1]))<2,'KP continuation must place its first glyph at the normal left edge');
+          check(Math.abs(firstGlyphOffset(paragraphs[3])-2*parseFloat(getComputedStyle(paragraphs[3]).fontSize))<2,'KP after a source blank must place its first glyph two em from the left edge');
+          restoreParagraphs(copy);check(paragraphs.every((p,index)=>p.textContent===originals[index]),'Boundary marking and KP must preserve text');
+          if(copy!==root)copy.remove();
+        }
+        check(formulaNodes.every((node,index)=>root.querySelectorAll('mjx-container')[index]===node),'Paragraph classification must retain formula nodes');
+        const edited=Engine.parse('paragraphs.md',source.replace('$$\n'+prefix+text,'$$\n'+prefix+'\n'+prefix+text));
+        markMathContinuations(root,edited);check(!continued.classList.contains('an-prose-continuation'),'Adding a source blank must remove the old continuation marker');
+        root.remove();
+      }
+    }finally{if(!hadIndent)document.body.classList.remove('an-prose-indent');}
     try {
         for (const type of ['proof', 'pf', 'remark', 'rem', 'thm', 'def']) for (const width of [340, 720, 900]) for (const spacing of [0, 1]) {
             host.style.width = width + 'px';
