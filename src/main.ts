@@ -172,6 +172,11 @@ export default class AcademicNotes extends Plugin {
         if (typeof this.settings.excludedFolders !== 'string')
             this.settings.excludedFolders = '';
         this.applyAppearance();
+        this.registerDomEvent(document, 'click', event => this.followEquationReference(event), true);
+        this.registerDomEvent(document, 'keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ')
+                this.followEquationReference(event);
+        }, true);
         this.themeObserver = new MutationObserver(() => this.applyAppearance());
         this.themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         this.register(() => this.themeObserver.disconnect());
@@ -297,7 +302,13 @@ export default class AcademicNotes extends Plugin {
             if (changed) { this.graph = Engine.graph(notes, this.settings, (n, h) => this.resolver(n, h)); metrics.graphRebuilt = true; }
             const affected = new Set<string>(), allViews = renderKey !== this.renderKey;
             for (const note of notes) {
-                const labels = JSON.stringify([note.records.map(r => [r.key, r.id, r.number, r.referenced]), note.refs.map(r => [r.targetPath, r.target && Engine.refText(r.target, this.settings)])]);
+                const labels = JSON.stringify([
+                    note.records.map(r => [r.key, r.id, r.number, r.referenced, r.rowNumbers]),
+                    note.refs.map(r => {
+                        const key = r.label ? Engine.labelTarget(r.label)?.block : undefined;
+                        return [r.targetPath, r.target && Engine.refText(r.target, this.settings), r.target && key ? r.target.rowNumbers?.[key] ?? r.target.number : null];
+                    })
+                ]);
                 const previous = this.renderStates.get(note.path);
                 if (allViews || !previous || previous.source !== note.source || previous.labels !== labels) affected.add(note.path);
                 this.renderStates.set(note.path, { source: note.source, labels });
@@ -446,10 +457,7 @@ export default class AcademicNotes extends Plugin {
         this.scheduleIndex();
         new Notice(t('已添加 ^{0}；可用 [[#^{0}]] 引用。', id));
     }
-    async openReference(raw: string, sourcePath: string, newLeaf = false) {
-        const rec = this.graph?.resolve(raw, sourcePath);
-        if (!rec)
-            return this.app.workspace.openLinkText(raw, sourcePath, newLeaf);
+    private async openRecord(rec: SourceRecord, newLeaf = false) {
         const file = this.app.vault.getAbstractFileByPath(rec.path);
         if (!(file instanceof TFile))
             throw new Error(t("引用目标文件不存在：") + rec.path);
@@ -465,7 +473,28 @@ export default class AcademicNotes extends Plugin {
             }
         }
     }
+    async openReference(raw: string, sourcePath: string, newLeaf = false) {
+        const rec = this.graph?.resolve(raw, sourcePath);
+        if (!rec)
+            return this.app.workspace.openLinkText(raw, sourcePath, newLeaf);
+        return this.openRecord(rec, newLeaf);
+    }
+    async openReferenceLabel(label: string, sourcePath: string, newLeaf = false) {
+        const rec = this.graph?.resolveLabel(label, sourcePath);
+        if (rec)
+            return this.openRecord(rec, newLeaf);
+    }
+    followEquationReference(event: MouseEvent | KeyboardEvent) {
+        const link = (event.target as Element | null)?.closest?.<HTMLElement>('[data-an-eqref]'), host = link?.closest<HTMLElement>('[data-an-path]');
+        const label = link?.dataset.anEqref, path = host?.dataset.anPath;
+        if (!label || !path)
+            return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        void this.openReferenceLabel(label, path, !!(event.ctrlKey || event.metaKey)).catch(error => this.fail(t("打开公式引用"), error));
+    }
     makeReference(record: SourceRecord, sourcePath: string) { const target = record.path === sourcePath ? '' : record.path.replace(/\.md$/i, ''); return '[[' + target + '#^' + record.id + ']]'; }
+    makeLatexReference(record: SourceRecord, sourcePath: string, command: 'eqref' | 'ref' = 'eqref') { const target = record.path === sourcePath ? '' : record.path.replace(/\.md$/i, '') + '#^'; return '\\' + command + '{' + target + record.id + '}'; }
     targets() { return this.graph ? [...this.graph.notes.values()].flatMap(n => n.records.filter(r => r.id)) : []; }
     pluginDir() { return this.manifest.dir || normalizePath(this.app.vault.configDir + '/plugins/' + this.manifest.id); }
     async mkdir(folder: string) { let p = ''; for (const part of safeFolder(folder).split('/')) {
@@ -573,9 +602,10 @@ export default class AcademicNotes extends Plugin {
     exportSource(note: ParsedNote, graph: NoteGraph) {
         const replacements: { from: number; to: number; text: string }[] = [];
         for (const eq of note.equations) {
-            if (eq.manual || eq.multiTag)
+            const tex = Engine.taggedTex(eq, label => graph.resolveLabel(label, note.path));
+            if ((eq.manual || eq.multiTag) && tex === (eq.tex || ''))
                 continue;
-            const tex = Engine.taggedTex(eq), q = Engine.quote(note.lines[eq.line]).prefix;
+            const q = Engine.quote(note.lines[eq.line]).prefix;
             const math = tex.includes('\n') ? '$$\n' + tex.split('\n').map(l => q + l).join('\n') + '\n' + q + '$$' : '$$' + tex + '$$';
             replacements.push({ from: eq.from, to: eq.to, text: math });
         }
@@ -630,7 +660,7 @@ export default class AcademicNotes extends Plugin {
                 for (const rec of note.records) {
                     const old = original.records.find(r => r.from === rec.from && r.kind === rec.kind);
                     if (old)
-                        Object.assign(rec, { number: old.number, prefix: old.prefix, subletter: old.subletter, referenced: old.referenced });
+                        Object.assign(rec, { number: old.number, prefix: old.prefix, subletter: old.subletter, referenced: old.referenced, rowNumbers: old.rowNumbers });
                 }
             }
             warnings.push(t("保留笔记编号模式：不同章节可能显示相同编号；跳转仍按文件路径和块 ID 区分。"));

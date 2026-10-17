@@ -1,6 +1,6 @@
 import Engine from '../src/indexing/engine';
 import { titleRecord, renderFragment } from '../src/rendering/adapters';
-import { TFile } from 'obsidian';
+import { TFile, renderMath } from 'obsidian';
 import { setMathOutput } from './browser-host';
 import { diagramProcessor } from '../src/ui/diagram-modal';
 import { DiagramEditor } from '../src/diagrams/editor';
@@ -128,9 +128,31 @@ export async function runFeatureRegressions() {
   await image.decode(); const report = prepareMediaForPrint();
   check(report.scaled >= 1 && !tall.classList.contains('an-print-oversized') && tall.getBoundingClientRect().height < 950, 'Oversized pictures must fit the usable A4 height');
   check(tall.lastElementChild === caption, 'Print protection must retain captions below pictures');
+  const mathHost = host.createDiv();
+  const mathNote = Engine.parse('math.md', '$$E=mc^2$$ ^eq-a\n\n$$\\eqref{eq-a}$$'), mathGraph = Engine.graph([mathNote]);
+  setMathOutput('chtml');
+  const mathTex = (el: HTMLElement) => JSON.parse(el.dataset.anMath || '[]')[0] as string;
+  const targetMath = mathHost.createDiv(), refMath = mathHost.createDiv();
+  targetMath.appendChild(renderMath('E=mc^2', true)); refMath.appendChild(renderMath('\\eqref{eq-a}', true));
+  renderFragment(mathHost, mathNote, mathGraph, () => ({ lineStart: 0, lineEnd: 10 }));
+  await settle();
+  const targetContainer = targetMath.querySelector<HTMLElement>('mjx-container')!, refContainer = refMath.querySelector<HTMLElement>('mjx-container')!;
+  check(mathTex(targetContainer) === 'E=mc^2\\tag{1}', `Numbered display math must receive the plugin tag (${mathTex(targetContainer)})`);
+  const refTex = mathTex(refContainer), refLink = refMath.querySelector<HTMLAnchorElement>('a.an-eqref');
+  check(/^\\href\{an-eqref:[0-9a-f]+\}\{\\text\{\(1\)\}\}$/.test(refTex) && !refMath.querySelector('[data-mml-node="merror"],mjx-merror'), `LaTeX \\eqref must resolve to the plugin number (${refTex})`);
+  check(refLink?.dataset.anEqref === 'eq-a' && !refLink.hasAttribute('href') && targetContainer.dataset.anPath === 'math.md', 'Resolved \\eqref must become a path-aware clickable link');
+  const rowHost = host.createDiv(), rowNote = Engine.parse('rows.md', '$$\n\\begin{align*}\na &= b \\\\\nc &= d \\label{eq:c}\n\\end{align*}\n$$\n\n$$\\eqref{eq:c}$$'), rowGraph = Engine.graph([rowNote]);
+  const rowMath = rowHost.createDiv(), rowRef = rowHost.createDiv();
+  rowMath.appendChild(renderMath('\\begin{align*}a &= b \\\\ c &= d \\end{align*}', true)); rowRef.appendChild(renderMath('\\eqref{eq:c}', true));
+  renderFragment(rowHost, rowNote, rowGraph, () => ({ lineStart: 0, lineEnd: 10 }));
+  await settle();
+  const rowTex = mathTex(rowMath.querySelector<HTMLElement>('mjx-container')!);
+  check(rowTex.includes('\\begin{align*}') && rowTex.includes('\\tag{1}') && !rowMath.querySelector('[data-mml-node="merror"],mjx-merror'), `A row label must tag only its row (${rowTex})`);
+  rowHost.remove();
+  setMathOutput('svg'); mathHost.remove();
   const proofMarkup = proof.outerHTML + standalone.outerHTML;
   tall.remove(); proof.remove(); standalone.remove();
   // Leave this synthetic figure for the README screenshot and PDF fixture.
   host.id = 'an-diagram-test-fixture';
-  return { message: 'Proof titles, responsive pure-SVG diagrams, touch selection, direct deletion, shared numbering, TikZ waiting and picture fitting passed', svg: svg.outerHTML, diagramMarkup, fence: diagramFence(tensorDiagram), proofMarkup };
+  return { message: 'Proof titles, responsive pure-SVG diagrams, touch selection, direct deletion, shared numbering, LaTeX equation references, TikZ waiting and picture fitting passed', svg: svg.outerHTML, diagramMarkup, fence: diagramFence(tensorDiagram), proofMarkup };
 }

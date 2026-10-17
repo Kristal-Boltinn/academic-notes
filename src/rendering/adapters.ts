@@ -119,19 +119,32 @@ function mediaRecord(box: HTMLElement, r: SourceRecord | null | undefined, setti
                 setClass(child, 'an-empty-anchor');
     }
 }
-function mathRecord(mjx: HTMLElement, r: SourceRecord | null | undefined) {
+function mathRecord(mjx: HTMLElement, r: SourceRecord | null | undefined, note: ParsedNote, graph: NoteGraph) {
     if (!r || editableLiveNode(mjx))
         return false;
-    const tex = Engine.taggedTex(r), signature = JSON.stringify([tex, r.number]);
+    const tex = Engine.taggedTex(r, label => graph.resolveLabel(label, note.path), true);
+    const signature = JSON.stringify([tex, r.number]);
     if (mjx.dataset.anMath === signature)
         return false;
     mjx.dataset.anMath = signature;
     mjx.dataset.anLine = String(r.line);
-    if (r.manual || r.multiTag)
-        return false; // Native rendering owns explicit tags.
+    mjx.dataset.anPath = note.path;
+    // Native rendering owns explicit tags unless \label/\eqref changed the source.
+    if ((r.manual || r.multiTag) && tex === (r.tex || ''))
+        return false;
     const rendered = Obs.renderMath(tex, true);
     // Retain the host element, native events, source mapping, and its outer layout wrapper.
     mjx.replaceChildren(...rendered.childNodes);
+    for (const a of mjx.querySelectorAll<HTMLAnchorElement>('a[href^="an-eqref:"]')) {
+        const label = Engine.decodeLabel(a.getAttribute('href')!.slice('an-eqref:'.length));
+        if (!label)
+            continue;
+        a.dataset.anEqref = label;
+        a.removeAttribute('href');
+        a.classList.add('an-eqref');
+        a.setAttribute('role', 'link');
+        a.setAttribute('tabindex', '0');
+    }
     for (const key of ['style', 'jax', 'display', 'width']) {
         if (rendered.hasAttribute(key))
             mjx.setAttribute(key, rendered.getAttribute(key)!);
@@ -189,7 +202,7 @@ function renderFragment(el: HTMLElement, note: ParsedNote | undefined, graph: No
     for (const mjx of allNodes(el, 'mjx-container[display="true"]')) {
         const r = pick(mjx, note.equations);
         if (r)
-            mathChanged = mathRecord(mjx, r) || mathChanged;
+            mathChanged = mathRecord(mjx, r, note, graph) || mathChanged;
     }
     markMathContinuations(el, note, infoFor);
     if (mathChanged)

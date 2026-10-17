@@ -14,7 +14,7 @@
 
 - **数学环境**：提供定理、定义、引理、命题、证明、注记等环境，支持折叠和嵌套。
 - **灵活编号**：支持自动或手动编号、按节或全文连续计数、共享定理计数器，以及仅为被引用公式编号。
-- **跨文件引用**：提供易读的引用标签、插入建议和可自定义的名称与缩写；合订本 PDF 中保留内部跳转。
+- **跨文件引用**：提供易读的引用标签、插入建议和可自定义的名称与缩写；合订本 PDF 中保留内部跳转。独立公式块还支持 LaTeX 的 `\label`、`\eqref` 和 `\ref` 写法，`\eqref` 可点击跳转，并可用行内 `\label` 只给多行环境中的某一行编号。
 - **自建环境**：创建自己的环境，设置编号、引用、颜色与角标。
 
 [数学环境](https://github.com/Kristal-Boltinn/academic-notes/wiki/Mathematical-environments-ZH) · [引用与学术索引](https://github.com/Kristal-Boltinn/academic-notes/wiki/References-and-indexes-ZH)

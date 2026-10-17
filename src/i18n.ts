@@ -293,6 +293,7 @@ export const ENGLISH = {
   "刷新阅读片段": "Refresh reading view",
   "刷新编辑器": "Refresh editor",
   "打开块引用": "Open block reference",
+  "打开公式引用": "Open equation reference",
   "目录渲染": "Render table of contents",
   "请把光标放到 $$ 公式块或定理、figure、subfigure、table callout 内。": "Place the cursor inside a $$ equation or a theorem, figure, subfigure or table callout.",
   "该块已有 ID：^": "This block already has an ID: ^",

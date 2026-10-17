@@ -12,7 +12,7 @@ class Plugin {
   async loadData() { return {}; }
   addCommand(command) { this.commands.push(command); }
   addSettingTab() {} registerMarkdownPostProcessor() {} registerMarkdownCodeBlockProcessor() {}
-  registerEditorExtension() {} registerEditorSuggest() {} registerEvent() {} register() {}
+  registerEditorExtension() {} registerEditorSuggest() {} registerEvent() {} registerDomEvent() {} register() {}
 }
 class HostComponent { constructor() {} }
 const Platform = { isDesktopApp: false, isMobile: true, isIosApp: true };

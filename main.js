@@ -58426,6 +58426,7 @@ var ENGLISH = {
   "\u5237\u65B0\u9605\u8BFB\u7247\u6BB5": "Refresh reading view",
   "\u5237\u65B0\u7F16\u8F91\u5668": "Refresh editor",
   "\u6253\u5F00\u5757\u5F15\u7528": "Open block reference",
+  "\u6253\u5F00\u516C\u5F0F\u5F15\u7528": "Open equation reference",
   "\u76EE\u5F55\u6E32\u67D3": "Render table of contents",
   "\u8BF7\u628A\u5149\u6807\u653E\u5230 $$ \u516C\u5F0F\u5757\u6216\u5B9A\u7406\u3001figure\u3001subfigure\u3001table callout \u5185\u3002": "Place the cursor inside a $$ equation or a theorem, figure, subfigure or table callout.",
   "\u8BE5\u5757\u5DF2\u6709 ID\uFF1A^": "This block already has an ID: ^",
@@ -58827,6 +58828,7 @@ function parse(path, source, cache = {}, opts = {}) {
   });
   let mask = maskedSource(source);
   const records = [], equations = [], theorems = [], media = [], callouts = [], warnings = [];
+  const labelBindings = [], latexReferences = [];
   const algorithms = algorithmBlocks(source);
   for (const block of algorithms) {
     mask = mask.slice(0, block.from) + blank(mask.slice(block.from, block.to)) + mask.slice(block.to);
@@ -58894,6 +58896,36 @@ function parse(path, source, cache = {}, opts = {}) {
     };
     if (rec.multiTag)
       warnings.push(t("{0}:{1} \u542B\u591A\u4E2A\u624B\u5199 tag\uFF0C\u4FDD\u7559\u516C\u5F0F\u4F46\u4E0D\u731C\u6D4B\u6574\u5757\u5F15\u7528\u7F16\u53F7\u3002", path, line + 1));
+    const latex = latexCommands(tex);
+    if (latex.labels.length)
+      labelBindings.push({ rec, names: latex.labels.map((label3) => label3.name) });
+    const env = rowEnvironment(tex);
+    if (env && ROW_ENVIRONMENTS.has(env.name)) {
+      const rows = rowGroups(env.body, latex.labels, env.bodyStart);
+      if (rows.multi && rows.groups.length)
+        rec.rowGroups = rows.groups;
+    }
+    const content = source.slice(from + 2, close), lead = content.length - content.trimStart().length;
+    const leadLines = (content.slice(0, lead).match(/\n/g) || []).length;
+    for (const ref of latex.refs) {
+      const target = labelTarget(ref.label);
+      if (!target)
+        continue;
+      const at = from + 2 + lead + ref.index, refLine = line + leadLines + (tex.slice(0, ref.index).match(/\n/g) || []).length;
+      latexReferences.push({
+        file: target.file,
+        block: target.block,
+        raw: ref.source,
+        alias: null,
+        embed: false,
+        from: at,
+        to: at + ref.source.length,
+        line: refLine,
+        syntax: "latex",
+        command: ref.command,
+        label: ref.label
+      });
+    }
     equations.push(rec);
     records.push(rec);
   }
@@ -59012,6 +59044,9 @@ function parse(path, source, cache = {}, opts = {}) {
       }
     }
   }
+  for (const { rec, names } of labelBindings)
+    for (const name of names)
+      bind(rec, name);
   for (const [id2, b] of Object.entries(cache.blocks || {})) {
     const p = b.position;
     if (!p || blocks.has(id2))
@@ -59023,7 +59058,7 @@ function parse(path, source, cache = {}, opts = {}) {
       bind(rec, id2);
     }
   }
-  const refs = [];
+  const refs = [...latexReferences];
   for (const m of prose.matchAll(/(!?)\[\[([^\]\n]+)\]\]/g)) {
     const pieces = m[2].split(/(?<!\\)\|/), raw = pieces.shift().trim().replace(/\\\|/g, "|");
     const target = splitTarget(raw);
@@ -59055,12 +59090,99 @@ function parse(path, source, cache = {}, opts = {}) {
 }
 function splitTarget(raw) {
   raw = decode(raw);
+  const block = (value) => !!value && !/[\s#|\[\]]/.test(value);
   let at = raw.indexOf("#^");
-  if (at >= 0 && /^[A-Za-z0-9-]+$/.test(raw.slice(at + 2)))
+  if (at >= 0 && block(raw.slice(at + 2)))
     return { file: raw.slice(0, at), block: raw.slice(at + 2) };
-  if (/^\^[A-Za-z0-9-]+$/.test(raw))
+  if (raw.startsWith("^") && block(raw.slice(1)))
     return { file: "", block: raw.slice(1) };
   return null;
+}
+function labelTarget(raw) {
+  const value = decode(String(raw || "")).trim();
+  if (!value || /[{}]/.test(value))
+    return null;
+  const at = value.indexOf("#");
+  if (at >= 0) {
+    const file = value.slice(0, at).trim(), block2 = value.slice(at + 1).replace(/^\^/, "").trim();
+    return block2 ? { file, block: block2 } : null;
+  }
+  const block = value.replace(/^\^/, "").trim();
+  return block ? { file: "", block } : null;
+}
+function latexCommands(tex) {
+  const masked = tex.replace(/(?<!\\)%[^\n]*/g, (comment) => " ".repeat(comment.length)), labels = [], refs = [];
+  for (const m of masked.matchAll(/\\label\s*\{([^{}]*)\}/g)) {
+    const name = (m[1] || "").trim().replace(/^\^/, "");
+    if (name)
+      labels.push({ name, index: m.index ?? 0 });
+  }
+  for (const m of masked.matchAll(/(?<![A-Za-z\\])\\(eq)?ref\s*\{([^{}]*)\}/g)) {
+    const label3 = (m[2] || "").trim();
+    if (label3)
+      refs.push({ command: m[1] ? "eqref" : "ref", label: label3, index: m.index ?? 0, source: m[0] });
+  }
+  return { labels, refs };
+}
+var ROW_ENVIRONMENTS = /* @__PURE__ */ new Set(["align", "align*", "gather", "gather*", "multline", "multline*", "eqnarray", "eqnarray*", "aligned", "gathered", "split"]);
+var ROW_ENV_TARGET = { aligned: "align", gathered: "gather", split: "align", align: "align", gather: "gather", equation: "equation", multline: "multline", eqnarray: "eqnarray" };
+function rowEnvironment(tex) {
+  const begin = tex.match(/^\s*\\begin\{([A-Za-z]+\*?)\}/), end = tex.match(/\\end\{([A-Za-z]+\*?)\}\s*$/);
+  if (!begin || !end || begin[1] !== end[1])
+    return null;
+  const bodyStart = begin[0].length;
+  return { name: begin[1], bodyStart, body: tex.slice(bodyStart, tex.length - end[0].length) };
+}
+function rowGroups(body, labels, bodyStart) {
+  const groups = [], sorted = labels.filter((label3) => label3.index >= bodyStart && label3.index <= bodyStart + body.length).map((label3) => ({ name: label3.name, index: label3.index - bodyStart })).sort((a, b) => a.index - b.index);
+  let depth = 0, row = 0, i = 0, li = 0, multi = false;
+  const push = () => {
+    const label3 = sorted[li++];
+    if (!depth && label3)
+      (groups[row] ||= []).push(label3.name);
+  };
+  while (i < body.length) {
+    while (li < sorted.length && sorted[li].index === i)
+      push();
+    if (body.startsWith("\\begin{", i)) {
+      depth++;
+      i += 7;
+      continue;
+    }
+    if (body.startsWith("\\end{", i)) {
+      depth = Math.max(0, depth - 1);
+      i += 5;
+      continue;
+    }
+    if (!depth && body.startsWith("\\\\", i)) {
+      multi = true;
+      row++;
+      i += 2;
+      continue;
+    }
+    i++;
+  }
+  while (li < sorted.length)
+    push();
+  return { groups: groups.filter(Boolean), multi };
+}
+function starRowEnvironment(tex) {
+  const begin = tex.match(/^(\s*)\\begin\{([A-Za-z]+)(\*?)\}(?:\[[^\]]*\])?/), end = tex.match(/\\end\{([A-Za-z]+)(\*?)\}(\s*)$/);
+  if (!begin || !end || begin[2] !== end[1])
+    return tex;
+  const target = ROW_ENV_TARGET[begin[2]];
+  return target ? begin[1] + "\\begin{" + target + "*}" + tex.slice(begin[0].length, end.index) + "\\end{" + target + "*}" + end[3] : tex;
+}
+function encodeLabel(label3) {
+  return Array.from(new TextEncoder().encode(label3), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+function decodeLabel(value) {
+  if (!value || value.length % 2 || !/^[0-9a-f]+$/i.test(value))
+    return "";
+  const bytes = new Uint8Array(value.length / 2);
+  for (let i = 0; i < bytes.length; i++)
+    bytes[i] = parseInt(value.slice(i * 2, i * 2 + 2), 16);
+  return new TextDecoder().decode(bytes);
 }
 function resolvePath(name, here, paths, resolver) {
   if (!name)
@@ -59103,6 +59225,7 @@ function assign(note, settings, referenced, chapter) {
     r.scope = s.scope;
     r.number = "";
     r.subletter = "";
+    r.rowNumbers = void 0;
     r.referenced = r.ids.some((id2) => referenced.has(note.path + "#^" + id2));
     if (r.manual) {
       const k = bucket(r);
@@ -59117,6 +59240,26 @@ function assign(note, settings, referenced, chapter) {
     if (r.manual) {
       r.number = r.manual;
       continue;
+    }
+    if (r.kind === "equation" && r.rowGroups?.length && !r.multiTag) {
+      const k2 = bucket(r), taken2 = reserved.get(k2) || /* @__PURE__ */ new Set(), numbers = {};
+      let n2 = counters.get(k2) || 0;
+      for (const group of r.rowGroups) {
+        let label4;
+        do {
+          n2++;
+          label4 = (r.prefix ? r.prefix + "." : "") + n2;
+        } while (taken2.has(label4));
+        for (const name of group)
+          numbers[name] = label4;
+        if (!r.number)
+          r.number = label4;
+      }
+      if (Object.keys(numbers).length) {
+        counters.set(k2, n2);
+        r.rowNumbers = numbers;
+        continue;
+      }
     }
     const should = r.kind === "algorithm" ? settings.algorithmNumbered : r.kind === "equation" ? settings.equationMode === "all" || settings.equationMode === "referenced" && r.referenced : r.kind === "theorem" ? settings.numbered && (r.environment ? r.environment.numbered : !["proof", "remark", "solution"].includes(r.key)) : settings.mediaNumbered;
     if (!should || r.suppress || r.multiTag)
@@ -59167,13 +59310,26 @@ function graph(notes, opts = {}, resolver, chapters) {
     }
   for (const n of notes)
     assign(n, settings, referenced, chapters?.get(n.path));
-  return { notes: map, settings, warnings, referenced, resolve(raw, here) {
-    const t2 = splitTarget(raw);
-    if (!t2)
-      return null;
-    const p = resolvePath(t2.file, here, paths, resolver);
-    return p ? map.get(p).blocks.get(t2.block) || null : null;
-  } };
+  return {
+    notes: map,
+    settings,
+    warnings,
+    referenced,
+    resolve(raw, here) {
+      const t2 = splitTarget(raw);
+      if (!t2)
+        return null;
+      const p = resolvePath(t2.file, here, paths, resolver);
+      return p ? map.get(p).blocks.get(t2.block) || null : null;
+    },
+    resolveLabel(raw, here) {
+      const t2 = labelTarget(raw);
+      if (!t2)
+        return null;
+      const p = resolvePath(t2.file, here, paths, resolver);
+      return p ? map.get(p).blocks.get(t2.block) || null : null;
+    }
+  };
 }
 function migrateReferenceFormats(settings) {
   const overrides = referenceOverrides(settings);
@@ -59209,12 +59365,36 @@ function refText(r, settings = DEFAULTS) {
   const format = referenceFormat(r.key, settings, r.kind);
   return String(format).replace(/\{(number|type|name|abbr|title|file)\}/g, (_, k) => ({ number: r.number, type, name, abbr, title: plain(r.title), file: r.path.replace(/\.md$/i, "").split("/").pop() || "" })[k]);
 }
-function taggedTex(eq) {
-  if (eq.manual || eq.multiTag)
-    return eq.tex || "";
-  let tex = (eq.tex || "").replace(/^\s*\\begin\{(equation\*?|align\*?|gather\*?)\}([\s\S]*)\\end\{\1\}\s*$/, (_, env, body) => env.startsWith("align") ? "\\begin{aligned}" + body + "\\end{aligned}" : env.startsWith("gather") ? "\\begin{gathered}" + body + "\\end{gathered}" : body);
-  if (eq.number)
-    tex += "\\tag{" + eq.number + "}";
+function taggedTex(eq, resolve, links = false) {
+  let tex = eq.tex || "";
+  const rowGroups2 = eq.rowGroups, rowNumbers = eq.rowNumbers;
+  const rowTagged = !!rowNumbers && !!rowGroups2?.length && !eq.manual && !eq.multiTag;
+  if (!eq.manual && !eq.multiTag) {
+    if (rowTagged) {
+      tex = starRowEnvironment(tex);
+    } else {
+      tex = tex.replace(/^\s*\\begin\{(equation\*?|align\*?|gather\*?)\}([\s\S]*)\\end\{\1\}\s*$/, (_, env, body) => env.startsWith("align") ? "\\begin{aligned}" + body + "\\end{aligned}" : env.startsWith("gather") ? "\\begin{gathered}" + body + "\\end{gathered}" : body);
+      if (eq.number)
+        tex += "\\tag{" + eq.number + "}";
+    }
+  }
+  tex = tex.replace(/\\label\s*\{([^{}]*)\}/g, (_, raw) => {
+    const name = raw.trim().replace(/^\^/, "");
+    if (!rowTagged || !rowGroups2 || !rowNumbers)
+      return "";
+    const group = rowGroups2.find((entry) => entry.includes(name));
+    const number = group?.[0] === name ? rowNumbers[name] : "";
+    return number ? "\\tag{" + number + "}" : "";
+  });
+  if (resolve)
+    tex = tex.replace(/(?<![A-Za-z\\])\\(eq)?ref\s*\{([^{}]*)\}/g, (whole, kind, label3) => {
+      const key2 = label3.trim(), target = resolve(key2), name = labelTarget(key2)?.block || key2.replace(/^\^/, "");
+      const raw = target?.rowNumbers?.[name] ?? target?.number;
+      if (!raw)
+        return whole;
+      const number = raw.replace(/[\\{}%#&$]/g, (ch) => "\\" + ch), shown = "\\text{" + (kind ? "(" + number + ")" : number) + "}";
+      return links ? "\\href{an-eqref:" + encodeLabel(key2) + "}{" + shown + "}" : shown;
+    });
   return tex;
 }
 function typeNames(key2, opts = {}) {
@@ -59229,7 +59409,7 @@ function labelName(key2, opts = {}) {
 }
 var validCustomKey = (key2) => validEnvironmentKey(key2, reservedEnvironmentKeys);
 var APPEARANCE_TYPES = { ...TYPES, algorithm: MEDIA.algorithm };
-var engine_default = { migrateReferenceFormats, referenceFormat, environments, referenceOverrides, typeNames, labelName, validCustomKey, TYPES, APPEARANCE_TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, resolvePath, cleanPath, lineOf, quote: quote2, plain };
+var engine_default = { migrateReferenceFormats, referenceFormat, environments, referenceOverrides, typeNames, labelName, validCustomKey, TYPES, APPEARANCE_TYPES, MEDIA, ABBR, mediaCanon, canon, DEFAULTS, maskedSource, parse, graph, refText, taggedTex, splitTarget, labelTarget, encodeLabel, decodeLabel, resolvePath, cleanPath, lineOf, quote: quote2, plain };
 
 // src/rendering/custom-appearance.ts
 var drawing = (paths) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="black" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
@@ -60952,18 +61132,30 @@ function mediaRecord(box, r, settings = engine_default.DEFAULTS) {
         setClass(child, "an-empty-anchor");
   }
 }
-function mathRecord(mjx, r) {
+function mathRecord(mjx, r, note, graph2) {
   if (!r || editableLiveNode(mjx))
     return false;
-  const tex = engine_default.taggedTex(r), signature = JSON.stringify([tex, r.number]);
+  const tex = engine_default.taggedTex(r, (label3) => graph2.resolveLabel(label3, note.path), true);
+  const signature = JSON.stringify([tex, r.number]);
   if (mjx.dataset.anMath === signature)
     return false;
   mjx.dataset.anMath = signature;
   mjx.dataset.anLine = String(r.line);
-  if (r.manual || r.multiTag)
+  mjx.dataset.anPath = note.path;
+  if ((r.manual || r.multiTag) && tex === (r.tex || ""))
     return false;
   const rendered = Obs.renderMath(tex, true);
   mjx.replaceChildren(...rendered.childNodes);
+  for (const a of mjx.querySelectorAll('a[href^="an-eqref:"]')) {
+    const label3 = engine_default.decodeLabel(a.getAttribute("href").slice("an-eqref:".length));
+    if (!label3)
+      continue;
+    a.dataset.anEqref = label3;
+    a.removeAttribute("href");
+    a.classList.add("an-eqref");
+    a.setAttribute("role", "link");
+    a.setAttribute("tabindex", "0");
+  }
   for (const key2 of ["style", "jax", "display", "width"]) {
     if (rendered.hasAttribute(key2))
       mjx.setAttribute(key2, rendered.getAttribute(key2));
@@ -61021,7 +61213,7 @@ function renderFragment(el, note, graph2, infoFor) {
   for (const mjx of allNodes(el, 'mjx-container[display="true"]')) {
     const r = pick(mjx, note.equations);
     if (r)
-      mathChanged = mathRecord(mjx, r) || mathChanged;
+      mathChanged = mathRecord(mjx, r, note, graph2) || mathChanged;
   }
   markMathContinuations(el, note, infoFor);
   if (mathChanged)
@@ -61614,6 +61806,10 @@ ${children}
 
 // src/ui/modals.ts
 var import_obsidian3 = require("obsidian");
+function inDisplayMath(editor, cursor) {
+  const before = editor.getRange({ line: 0, ch: 0 }, cursor);
+  return (engine_default.maskedSource(before).match(/(?<!\\)\$\$/g) || []).length % 2 === 1;
+}
 var ProgressModal = class extends import_obsidian3.Modal {
   constructor(app, title) {
     super(app);
@@ -61652,7 +61848,8 @@ var ReferencePicker = class extends import_obsidian3.FuzzySuggestModal {
   onChooseItem(r) {
     if (!this.file)
       return;
-    this.editor.replaceSelection(this.plugin.makeReference(r, this.file.path));
+    const latex = inDisplayMath(this.editor, this.editor.getCursor());
+    this.editor.replaceSelection(latex ? this.plugin.makeLatexReference(r, this.file.path, r.kind === "equation" ? "eqref" : "ref") : this.plugin.makeReference(r, this.file.path));
     this.plugin.scheduleIndex();
   }
 };
@@ -61660,17 +61857,20 @@ var ReferenceSuggest = class extends import_obsidian3.EditorSuggest {
   constructor(plugin) {
     super(plugin.app);
     this.kind = "";
+    this.math = false;
     this.plugin = plugin;
     this.limit = 30;
   }
   onTrigger(cursor, editor, file) {
     if (!file)
       return null;
-    const before = editor.getLine(cursor.line).slice(0, cursor.ch), m = before.match(/\\(eqref|tref|ref)(?:\s+([^\n]*))?$/);
+    const before = editor.getLine(cursor.line).slice(0, cursor.ch), m = before.match(/\\(eqref|tref|ref)(?:[ \t]*\{?[ \t]*([^\n}]*))$/);
     if (!m)
       return null;
     this.kind = m[1];
-    return { start: { line: cursor.line, ch: cursor.ch - m[0].length }, end: cursor, query: m[2] || "" };
+    this.math = inDisplayMath(editor, cursor);
+    const closing2 = m[0].includes("{") && editor.getLine(cursor.line).charAt(cursor.ch) === "}";
+    return { start: { line: cursor.line, ch: cursor.ch - m[0].length }, end: closing2 ? { line: cursor.line, ch: cursor.ch + 1 } : cursor, query: (m[2] || "").trim() };
   }
   getSuggestions(ctx) {
     const q = ctx.query.toLowerCase();
@@ -61684,7 +61884,8 @@ var ReferenceSuggest = class extends import_obsidian3.EditorSuggest {
     const c = this.context;
     if (!c?.file)
       return;
-    c.editor.replaceRange(this.plugin.makeReference(r, c.file.path), c.start, c.end);
+    const latex = this.math && (this.kind === "eqref" || this.kind === "ref" || this.kind === "tref");
+    c.editor.replaceRange(latex ? this.plugin.makeLatexReference(r, c.file.path, this.kind === "eqref" ? "eqref" : "ref") : this.plugin.makeReference(r, c.file.path), c.start, c.end);
     this.close();
     this.plugin.scheduleIndex();
   }
@@ -63947,7 +64148,7 @@ var diagrams_default = '.an-diagram-modal {\n  width: min(850px, 96vw);\n}\n.an-
 var typography_default = 'body.an-active p.an-kp-paragraph,\nbody.phb-export p.an-kp-paragraph {\n  text-indent: 0 !important;\n}\n.an-kp-math-end {\n  display: inline-block;\n}\n.an-kp-math-end > :is(.math, .phb-math, mjx-container),\n.an-kp-math-end > :is(.math, .phb-math) > mjx-container {\n  margin-inline-end: 0 !important;\n}\nbody.an-active.an-prose-indent .markdown-rendered p,\nbody.an-active.an-prose-indent .markdown-rendered .callout > .callout-content p,\nbody.phb-export.an-prose-indent .markdown-rendered p {\n  text-indent: 2em;\n}\nbody.an-prose-indent :is(li, table, figcaption, .callout-title, .an-diagram-caption, .an-media, .phb-toc, .phb-frontmatter, .an-diagram-block) p {\n  text-indent: 0 !important;\n}\nbody.an-prose-indent p:has(> img, > .image-embed, > .math-block) {\n  text-indent: 0 !important;\n}\n.an-kp-native-justify .cm-line.an-prose-line:not(:has(.an-kp-live-break)),\n.an-kp-native-justify .callout:not(.an-media, .an-algorithm, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl], [data-callout=algorithm]) > .callout-content > p:not(.an-kp-paragraph) {\n  text-align: justify;\n  text-align-last: start;\n}\n.an-prose-indent-enabled .cm-line.an-prose-start {\n  text-indent: 2em;\n}\n.an-prose-indent-enabled .cm-line.an-prose-line:not(.an-prose-start) {\n  text-indent: 0;\n}\n.an-kp-paragraph > .an-kp-line {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  vertical-align: top;\n  white-space: nowrap;\n  text-align: start;\n  text-indent: 0;\n  font: inherit;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-kp-line > .an-kp-space {\n  display: inline-block;\n  height: 0;\n  line-height: 0;\n  font-size: 0;\n  white-space: pre;\n  margin: 0;\n  padding: 0;\n  border: 0;\n}\n.an-active p.an-kp-measure,\nbody.phb-export p.an-kp-measure {\n  white-space: nowrap !important;\n}\n.an-kp-live-line {\n  white-space: nowrap;\n}\n.an-kp-live-gap {\n  display: inline-block;\n  white-space: pre;\n  font-size: 0;\n  line-height: 0;\n  height: 0;\n  letter-spacing: 0;\n  word-spacing: 0;\n}\n.an-kp-qed > .an-kp-line:last-child::after {\n  content: "\\25a1";\n  float: right;\n  margin-inline-start: .75em;\n  font-style: normal;\n  font-weight: 400;\n  color: inherit;\n}\n.an-kp-qed-probe {\n  font-style: normal;\n  font-weight: 400;\n  margin-inline-start: .75em;\n}\nbody.an-active.an-prose-indent .markdown-rendered p.an-prose-continuation,\nbody.an-active.an-prose-indent .callout-content p.an-prose-continuation,\nbody.phb-export.an-prose-indent p.an-prose-continuation {\n  text-indent: 0 !important;\n}\n';
 
 // src/styles/callouts.css
-var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 82%, #3e594c);\n  --phb-thm: color-mix(in srgb, var(--text-accent, #247651) 77%, #354d68);\n  --phb-lem: color-mix(in srgb, var(--text-accent, #247651) 80%, #605268);\n  --phb-prop: color-mix(in srgb, var(--text-accent, #247651) 75%, #686340);\n  --phb-cor: color-mix(in srgb, var(--text-accent, #247651) 85%, #3e645a);\n  --phb-claim: color-mix(in srgb, var(--text-accent, #247651) 79%, #495d73);\n  --phb-example: color-mix(in srgb, var(--text-accent, #247651) 70%, #886b45);\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-accent, #247651) 65%, #606862);\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 66%, #e0e5df);\n  --phb-thm: color-mix(in srgb, var(--text-accent, #247651) 61%, #e0e5df);\n  --phb-lem: color-mix(in srgb, var(--text-accent, #247651) 64%, #e0e5df);\n  --phb-prop: color-mix(in srgb, var(--text-accent, #247651) 59%, #e0e5df);\n  --phb-cor: color-mix(in srgb, var(--text-accent, #247651) 69%, #e0e5df);\n  --phb-claim: color-mix(in srgb, var(--text-accent, #247651) 63%, #e0e5df);\n  --phb-example: color-mix(in srgb, var(--text-accent, #247651) 54%, #e0e5df);\n  --phb-proof: color-mix(in srgb, var(--text-accent, #247651) 49%, #e0e5df);\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def:#a94d70;\n  --phb-thm:#83507f;\n  --phb-lem:#ad5d79;\n  --phb-prop:#8d657a;\n  --phb-cor:#a8616f;\n  --phb-claim:#965b8f;\n  --phb-example:#a26756;\n  --phb-proof:#806771;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def:#23786b;\n  --phb-thm:#2d6a79;\n  --phb-lem:#507d70;\n  --phb-prop:#657b59;\n  --phb-cor:#32827e;\n  --phb-claim:#527988;\n  --phb-example:#647e57;\n  --phb-proof:#536c67;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def:#326d99;\n  --phb-thm:#475f95;\n  --phb-lem:#586faa;\n  --phb-prop:#467e90;\n  --phb-cor:#527b97;\n  --phb-claim:#6c719a;\n  --phb-example:#637b78;\n  --phb-proof:#5e6c7b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def:#2e7055;\n  --phb-thm:#296a70;\n  --phb-lem:#537354;\n  --phb-prop:#73723d;\n  --phb-cor:#367d69;\n  --phb-claim:#477486;\n  --phb-example:#87653e;\n  --phb-proof:#5c6d61;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def:#7c588c;\n  --phb-thm:#615b8d;\n  --phb-lem:#8f6a90;\n  --phb-prop:#7f6a80;\n  --phb-cor:#766283;\n  --phb-claim:#6b6c94;\n  --phb-example:#946a7f;\n  --phb-proof:#726574;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def:#88712e;\n  --phb-thm:#8a603d;\n  --phb-lem:#89744a;\n  --phb-prop:#727039;\n  --phb-cor:#8c733f;\n  --phb-claim:#806344;\n  --phb-example:#9f6b41;\n  --phb-proof:#70644c;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def:#9c3a55;\n  --phb-thm:#873950;\n  --phb-lem:#a94d59;\n  --phb-prop:#905466;\n  --phb-cor:#a95e64;\n  --phb-claim:#865275;\n  --phb-example:#a56650;\n  --phb-proof:#7e5d65;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def:#28558a;\n  --phb-thm:#324775;\n  --phb-lem:#456a91;\n  --phb-prop:#356876;\n  --phb-cor:#465c86;\n  --phb-claim:#5b5b83;\n  --phb-example:#5d756e;\n  --phb-proof:#4e6073;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def:#df939e;\n  --phb-thm:#c897ba;\n  --phb-lem:#e6a7ab;\n  --phb-prop:#cba2b2;\n  --phb-cor:#e4b2ae;\n  --phb-claim:#b8a3ce;\n  --phb-example:#e0b995;\n  --phb-proof:#bfa8b0;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def:#82b6df;\n  --phb-thm:#8aa0d8;\n  --phb-lem:#9ab7dd;\n  --phb-prop:#87c3ca;\n  --phb-cor:#9dc9d6;\n  --phb-claim:#b0b1d7;\n  --phb-example:#a9c8bc;\n  --phb-proof:#9daebc;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def:#b8ce86;\n  --phb-thm:#9dc7b8;\n  --phb-lem:#afcf9b;\n  --phb-prop:#cfca89;\n  --phb-cor:#a6c99b;\n  --phb-claim:#9abfbf;\n  --phb-example:#d4bd8f;\n  --phb-proof:#acb7a0;\n}\nbody.theme-light[data-an-palette=colorful] {\n  --phb-def:#247651;\n  --phb-thm:#286b76;\n  --phb-lem:#71628c;\n  --phb-prop:#62752e;\n  --phb-cor:#42786b;\n  --phb-claim:#44698c;\n  --phb-example:#946b2f;\n  --phb-proof:#687252;\n}\nbody.theme-dark[data-an-palette=colorful-dark] {\n  --phb-def:#86ca98;\n  --phb-thm:#83bbce;\n  --phb-lem:#b7a7ca;\n  --phb-prop:#b8c984;\n  --phb-cor:#8dcbb4;\n  --phb-claim:#9baed0;\n  --phb-example:#dec178;\n  --phb-proof:#a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout.an-custom-environment,\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk], [data-an-style=remark]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child:not(.an-kp-qed)::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\nbody .callout.an-custom-environment {\n  --an-custom-fallback: var(--an-color-thm, var(--phb-thm));\n  --phb-motif-color: var(--an-custom-palette-motif-color, var(--phb-accent));\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-light, var(--an-custom-default-ink, #fff)));\n  --phb-symbol: var(--an-custom-palette-symbol, none);\n  --an-motif-display: var(--an-custom-palette-motif-display, none);\n}\nbody .callout.an-custom-environment[data-an-style=def] {\n  --an-custom-fallback: var(--an-color-def, var(--phb-def));\n}\nbody .callout.an-custom-environment[data-an-style=lem] {\n  --an-custom-fallback: var(--an-color-lem, var(--phb-lem));\n}\nbody .callout.an-custom-environment[data-an-style=prop] {\n  --an-custom-fallback: var(--an-color-prop, var(--phb-prop));\n}\nbody .callout.an-custom-environment[data-an-style=cor] {\n  --an-custom-fallback: var(--an-color-cor, var(--phb-cor));\n}\nbody .callout.an-custom-environment[data-an-style=claim] {\n  --an-custom-fallback: var(--an-color-claim, var(--phb-claim));\n}\nbody .callout.an-custom-environment[data-an-style=example] {\n  --an-custom-fallback: var(--an-color-example, var(--phb-example));\n}\nbody .callout.an-custom-environment[data-an-style=remark] {\n  --an-custom-fallback: var(--phb-remark, var(--phb-def));\n}\nbody.theme-dark .callout.an-custom-environment {\n  --an-custom-default-ink: #18181b;\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff)));\n}\nbody .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\nbody.theme-dark .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\n';
+var callouts_default = '/* @settings\nname: Academic Notes\nname.zh: \u6570\u5B66\u6846\u4E0E\u5B66\u672F\u6392\u7248\nid: academic-notes\nsettings:\n  - id: phb-border-width\n    title: Border width\n    title.zh: \u8FB9\u6846\u7C97\u7EC6\n    type: variable-number-slider\n    default: 1.4\n    min: 0.6\n    max: 3\n    step: 0.2\n    format: px\n  - id: phb-radius\n    title: Corner radius\n    title.zh: \u5706\u89D2\u5927\u5C0F\n    type: variable-number-slider\n    default: 6\n    min: 0\n    max: 16\n    step: 1\n    format: px\n  - id: an-motif-size\n    title: Corner motif size\n    title.zh: \u89D2\u6807\u5927\u5C0F\n    type: variable-number-slider\n    default: 27\n    min: 20\n    max: 44\n    step: 1\n    format: px\n  - id: an-motif-opacity\n    title: Corner motif opacity\n    title.zh: \u89D2\u6807\u4E0D\u900F\u660E\u5EA6\n    type: variable-number-slider\n    default: 0.33\n    min: 0.1\n    max: 1\n    step: 0.05\n*/\nbody {\n  --phb-border-width: 1.4px;\n  --phb-radius: 6px;\n  --phb-surface: #fff;\n  --phb-text: var(--text-normal, #24372e);\n  --phb-font: var(--font-text, var(--font-interface, sans-serif));\n  --phb-badge-ink: #fff;\n  --phb-tint: 6%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 82%, #3e594c);\n  --phb-thm: color-mix(in srgb, var(--text-accent, #247651) 77%, #354d68);\n  --phb-lem: color-mix(in srgb, var(--text-accent, #247651) 80%, #605268);\n  --phb-prop: color-mix(in srgb, var(--text-accent, #247651) 75%, #686340);\n  --phb-cor: color-mix(in srgb, var(--text-accent, #247651) 85%, #3e645a);\n  --phb-claim: color-mix(in srgb, var(--text-accent, #247651) 79%, #495d73);\n  --phb-example: color-mix(in srgb, var(--text-accent, #247651) 70%, #886b45);\n  --an-remark-color: color-mix(in srgb, var(--phb-def) 98%, white);\n  --phb-proof: color-mix(in srgb, var(--text-accent, #247651) 65%, #606862);\n}\nbody.theme-dark {\n  --an-remark-color:color-mix(in srgb, var(--phb-def) 80%, white);\n  --phb-surface:#18181b;\n  --phb-badge-ink:#18181b;\n  --phb-tint:8%;\n  --phb-def: color-mix(in srgb, var(--text-accent, #247651) 66%, #e0e5df);\n  --phb-thm: color-mix(in srgb, var(--text-accent, #247651) 61%, #e0e5df);\n  --phb-lem: color-mix(in srgb, var(--text-accent, #247651) 64%, #e0e5df);\n  --phb-prop: color-mix(in srgb, var(--text-accent, #247651) 59%, #e0e5df);\n  --phb-cor: color-mix(in srgb, var(--text-accent, #247651) 69%, #e0e5df);\n  --phb-claim: color-mix(in srgb, var(--text-accent, #247651) 63%, #e0e5df);\n  --phb-example: color-mix(in srgb, var(--text-accent, #247651) 54%, #e0e5df);\n  --phb-proof: color-mix(in srgb, var(--text-accent, #247651) 49%, #e0e5df);\n}\nbody.theme-light[data-an-palette=sakura] {\n  --phb-def:#a94d70;\n  --phb-thm:#83507f;\n  --phb-lem:#ad5d79;\n  --phb-prop:#8d657a;\n  --phb-cor:#a8616f;\n  --phb-claim:#965b8f;\n  --phb-example:#a26756;\n  --phb-proof:#806771;\n}\nbody.theme-light[data-an-palette=mint] {\n  --phb-def:#23786b;\n  --phb-thm:#2d6a79;\n  --phb-lem:#507d70;\n  --phb-prop:#657b59;\n  --phb-cor:#32827e;\n  --phb-claim:#527988;\n  --phb-example:#647e57;\n  --phb-proof:#536c67;\n}\nbody.theme-light[data-an-palette=sky] {\n  --phb-def:#326d99;\n  --phb-thm:#475f95;\n  --phb-lem:#586faa;\n  --phb-prop:#467e90;\n  --phb-cor:#527b97;\n  --phb-claim:#6c719a;\n  --phb-example:#637b78;\n  --phb-proof:#5e6c7b;\n}\nbody.theme-light[data-an-palette=forest] {\n  --phb-def:#2e7055;\n  --phb-thm:#296a70;\n  --phb-lem:#537354;\n  --phb-prop:#73723d;\n  --phb-cor:#367d69;\n  --phb-claim:#477486;\n  --phb-example:#87653e;\n  --phb-proof:#5c6d61;\n}\nbody.theme-light[data-an-palette=mauve] {\n  --phb-def:#7c588c;\n  --phb-thm:#615b8d;\n  --phb-lem:#8f6a90;\n  --phb-prop:#7f6a80;\n  --phb-cor:#766283;\n  --phb-claim:#6b6c94;\n  --phb-example:#946a7f;\n  --phb-proof:#726574;\n}\nbody.theme-light[data-an-palette=golden] {\n  --phb-def:#88712e;\n  --phb-thm:#8a603d;\n  --phb-lem:#89744a;\n  --phb-prop:#727039;\n  --phb-cor:#8c733f;\n  --phb-claim:#806344;\n  --phb-example:#9f6b41;\n  --phb-proof:#70644c;\n}\nbody.theme-light[data-an-palette=cherry] {\n  --phb-def:#9c3a55;\n  --phb-thm:#873950;\n  --phb-lem:#a94d59;\n  --phb-prop:#905466;\n  --phb-cor:#a95e64;\n  --phb-claim:#865275;\n  --phb-example:#a56650;\n  --phb-proof:#7e5d65;\n}\nbody.theme-light[data-an-palette=prussian] {\n  --phb-def:#28558a;\n  --phb-thm:#324775;\n  --phb-lem:#456a91;\n  --phb-prop:#356876;\n  --phb-cor:#465c86;\n  --phb-claim:#5b5b83;\n  --phb-example:#5d756e;\n  --phb-proof:#4e6073;\n}\nbody.theme-dark[data-an-palette=vampire] {\n  --phb-def:#df939e;\n  --phb-thm:#c897ba;\n  --phb-lem:#e6a7ab;\n  --phb-prop:#cba2b2;\n  --phb-cor:#e4b2ae;\n  --phb-claim:#b8a3ce;\n  --phb-example:#e0b995;\n  --phb-proof:#bfa8b0;\n}\nbody.theme-dark[data-an-palette=abyss] {\n  --phb-def:#82b6df;\n  --phb-thm:#8aa0d8;\n  --phb-lem:#9ab7dd;\n  --phb-prop:#87c3ca;\n  --phb-cor:#9dc9d6;\n  --phb-claim:#b0b1d7;\n  --phb-example:#a9c8bc;\n  --phb-proof:#9daebc;\n}\nbody.theme-dark[data-an-palette=radiation] {\n  --phb-def:#b8ce86;\n  --phb-thm:#9dc7b8;\n  --phb-lem:#afcf9b;\n  --phb-prop:#cfca89;\n  --phb-cor:#a6c99b;\n  --phb-claim:#9abfbf;\n  --phb-example:#d4bd8f;\n  --phb-proof:#acb7a0;\n}\nbody.theme-light[data-an-palette=colorful] {\n  --phb-def:#247651;\n  --phb-thm:#286b76;\n  --phb-lem:#71628c;\n  --phb-prop:#62752e;\n  --phb-cor:#42786b;\n  --phb-claim:#44698c;\n  --phb-example:#946b2f;\n  --phb-proof:#687252;\n}\nbody.theme-dark[data-an-palette=colorful-dark] {\n  --phb-def:#86ca98;\n  --phb-thm:#83bbce;\n  --phb-lem:#b7a7ca;\n  --phb-prop:#b8c984;\n  --phb-cor:#8dcbb4;\n  --phb-claim:#9baed0;\n  --phb-example:#dec178;\n  --phb-proof:#a8b898;\n}\nbody .callout:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition]) {\n  --phb-accent: var(--phb-def);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%206h7c3%200%204%202%204%204v17c0-3-3-4-5-4H5zM27%206h-7c-3%200-4%202-4%204v17c0-3%203-4%205-4h6z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem]) {\n  --phb-accent: var(--phb-thm);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2025h20M9%2025V12m7%2013V12m7%2013V12M5%2010l11-6%2011%206z%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=lem], [data-callout=lemma]) {\n  --phb-accent: var(--phb-lem);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M10%2019l-2%202a5%205%200%200%200%207%207l6-6a5%205%200%200%200-7-7M22%2013l2-2a5%205%200%200%200-7-7l-6%206a5%205%200%200%200%207%207%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=prp], [data-callout=prop], [data-callout=proposition]) {\n  --phb-accent: var(--phb-prop);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2016h20m-7-7%207%207-7%207%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%2216%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=cor], [data-callout=corollary]) {\n  --phb-accent: var(--phb-cor);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%2027V12m0%207C7%2020%205%2015%205%2010c7%200%2011%202%2011%209m0-5c0-7%205-9%2011-9%200%207-4%2011-11%209%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--phb-claim);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2027V5m0%201c8-5%2010%205%2018%200v13c-8%205-10-5-18%200%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa]) {\n  --phb-accent: var(--phb-example);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M8%205h16M12%205v10L5%2026q-1%202%202%202h18q3%200%202-2l-7-11V5M10%2020h12%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2224%22%20r%3D%221%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--phb-proof);\n  --an-original-symbol: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2016l6%206L26%208M6%206h13M6%206v21h21V16%22%2F%3E%3C%2Fsvg%3E);\n}\nbody .callout.an-custom-environment,\nbody .callout[data-callout]:is([data-callout=def], [data-callout=assumption], [data-callout=asm], [data-callout=definition], [data-callout=thm], [data-callout=axiom], [data-callout=axm], [data-callout=hypothesis], [data-callout=hyp], [data-callout=theorem], [data-callout=lem], [data-callout=lemma], [data-callout=prp], [data-callout=prop], [data-callout=proposition], [data-callout=cor], [data-callout=corollary], [data-callout=claim], [data-callout=clm], [data-callout=conjecture], [data-callout=cnj], [data-callout=example], [data-callout=exm], [data-callout=exercise], [data-callout=exr], [data-callout=ex], [data-callout=exa], [data-callout=solution], [data-callout=sol], [data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --phb-ink: color-mix(in srgb, var(--phb-accent) 36%, var(--phb-text));\n  --callout-blend-mode: normal;\n  --an-box-margin: 1.8em 0 1.25em;\n  --an-box-padding: 0 1em .8em;\n  --an-box-border: var(--phb-border-width) solid var(--phb-accent);\n  --an-box-radius: var(--phb-radius);\n  --an-box-background: color-mix(in srgb, var(--phb-accent) var(--phb-tint), var(--phb-surface));\n  --an-title-margin: -.85em 0 .3em .25em;\n  --an-title-padding: .25em .75em;\n  --an-title-radius: 4px;\n  --an-title-background: var(--phb-accent);\n  --an-title-color: var(--phb-badge-ink);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  overflow: visible !important;\n  margin: var(--an-box-margin) !important;\n  padding: var(--an-box-padding) !important;\n  border: var(--an-box-border) !important;\n  border-radius: var(--an-box-radius) !important;\n  background: var(--an-box-background) !important;\n  color: var(--phb-ink) !important;\n  box-shadow: none;\n  transform: none;\n  filter: none;\n  backdrop-filter: none;\n  mix-blend-mode: normal;\n  isolation: isolate;\n  text-indent: 0;\n  transition: none !important;\n  &:where(body.phb-neutral-body *) {\n    --phb-ink: var(--phb-text);\n  }\n  &:hover {\n    transform: none;\n    box-shadow: none;\n    z-index: auto;\n  }\n  &::before {\n    content: none;\n    display: none;\n  }\n  &::after {\n    content: "";\n    position: absolute;\n    right: 10px !important;\n    bottom: 8px !important;\n    left: auto;\n    top: auto;\n    width: var(--an-motif-size, 27px);\n    height: var(--an-motif-size, 27px);\n    display: block;\n    display: var(--an-motif-display, block);\n    background: var(--an-motif-color, var(--phb-accent));\n    mask: var(--phb-symbol, var(--an-original-symbol)) center / contain no-repeat;\n    opacity: var(--an-motif-opacity, .33) !important;\n    transform: none !important;\n    filter: none !important;\n    transition: none !important;\n    pointer-events: none;\n    z-index: 0;\n  }\n  &:where(body.phb-no-motif *)::after,\n  &.is-collapsed::after {\n    display: none;\n  }\n  & > .callout-title {\n    position: relative;\n    inset: auto;\n    display: flex !important;\n    align-items: center;\n    width: fit-content;\n    max-width: calc(100% - 1em);\n    box-sizing: border-box;\n    margin: var(--an-title-margin) !important;\n    padding: var(--an-title-padding) !important;\n    border: 0 !important;\n    border-radius: var(--an-title-radius) !important;\n    background: var(--an-title-background) !important;\n    color: var(--an-title-color) !important;\n    font: 650 .94em/1.45 var(--phb-font);\n    white-space: normal;\n    overflow-wrap: anywhere;\n    text-shadow: none;\n    box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n    z-index: 2;\n    & > .callout-icon {\n      display: none !important;\n    }\n    & > .callout-title-inner {\n      color: inherit;\n      font: inherit;\n      min-width: 0;\n      white-space: normal;\n    }\n    & > .callout-fold {\n      display: flex;\n      color: inherit;\n      flex: 0 0 auto;\n      margin-inline-start: .5em;\n    }\n    & :is(strong, em, a) {\n      color: inherit;\n      background: none;\n    }\n  }\n  & > .callout-content {\n    position: relative;\n    z-index: 1;\n    background: transparent !important;\n    box-shadow: none;\n    padding: .2em 0 1.1em;\n    color: var(--phb-ink);\n    line-height: 1.7;\n    overflow: visible;\n    text-indent: 0;\n    & :is(p, li, strong, em, b, i) {\n      color: inherit;\n      text-indent: 0;\n      line-height: inherit;\n    }\n    & > :first-child {\n      margin-top: .3em;\n    }\n    & > :last-child {\n      margin-bottom: 0;\n    }\n    & blockquote:not(.callout) {\n      padding: .3em .8em;\n      margin: .8em 0;\n      border: 0;\n      border-left: 2px solid var(--phb-accent);\n      border-radius: 0;\n      background: transparent;\n      box-shadow: none;\n      transform: none;\n      &::before {\n        content: none;\n      }\n    }\n  }\n  & :is(.math, mjx-container) {\n    color: inherit;\n  }\n  &.is-collapsed {\n    --an-box-padding: 0 1em .2em;\n  }\n  &.is-collapsed > .callout-content {\n    display: none;\n  }\n  &:is([data-callout=proof], [data-callout=pf], [data-callout=remark], [data-callout=rem], [data-callout=rmk], [data-an-style=remark]) {\n    --phb-accent: var(--phb-text);\n    --phb-ink: var(--phb-text);\n    display: flow-root;\n    --an-box-margin: 1em 0;\n    --an-box-padding: 0;\n    --an-box-border: 0;\n    --an-box-radius: 0;\n    --an-box-background: transparent;\n    --an-title-margin: 0 .6em 0 0;\n    --an-title-padding: 0;\n    --an-title-radius: 0;\n    --an-title-background: transparent;\n    --an-title-color: var(--phb-text);\n    &::after {\n      content: none;\n      display: none;\n    }\n    & > .callout-title {\n      float: left;\n      max-width: 100%;\n      font: 600 1em/1.7 var(--phb-font);\n      box-shadow: none;\n    }\n    & > .callout-content {\n      padding: 0;\n      & > :first-child {\n        margin-top: 0;\n      }\n    }\n    &:has(> .callout-content > :first-child:not(p)) > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.is-collapsed > .callout-title {\n      float: none;\n    }\n  }\n  &:is([data-callout=proof], [data-callout=pf]) {\n    & > .callout-title {\n      font-style: italic;\n    }\n    &.an-proof-own-line > .callout-title {\n      float: none;\n      --an-title-margin: 0 0 .35em;\n    }\n    &.an-proof-reference > .callout-title .phb-title-name:not(:empty)::before {\n      content: " ";\n    }\n    & > .callout-content > p:last-child:not(.an-kp-qed)::after {\n      content: "\\25a1";\n      float: right;\n      margin-inline-start: .75em;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n    }\n    & > .callout-content:not(:has(> p:last-child))::after {\n      content: "\\25a1";\n      display: block;\n      clear: both;\n      text-align: end;\n      font-style: normal;\n      font-weight: 400;\n      color: var(--phb-text);\n      break-before: avoid;\n    }\n  }\n  &:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n    --an-title-color: var(--an-remark-color);\n  }\n  @media print {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n    break-inside: auto;\n    box-decoration-break: clone;\n    -webkit-box-decoration-break: clone;\n    & > .callout-title {\n      break-after: avoid;\n    }\n    & > .callout-content > :first-child {\n      break-before: avoid;\n    }\n    &[data-phb-keep=true] {\n      break-inside: avoid;\n    }\n    & :is(.math-block, mjx-container[display=true], tr, img) {\n      break-inside: avoid;\n    }\n  }\n}\n.phb-type-label {\n  font-weight: 700;\n}\n.phb-title-name:not(:empty)::before {\n  content: " \\b7  ";\n  opacity: .7;\n}\nbody .phb-toc {\n  --phb-toc-accent: var(--phb-thm);\n  position: relative;\n  display: block;\n  box-sizing: border-box;\n  margin: 2.3em 0 1.8em;\n  padding: 1.4em 1.35em 1em;\n  border: 0;\n  border-top: 1.5px solid var(--phb-toc-accent);\n  border-bottom: 1.5px solid var(--phb-toc-accent);\n  background: color-mix(in srgb, var(--phb-toc-accent) 5%, var(--phb-surface));\n  color: var(--phb-toc-accent);\n  text-indent: 0;\n}\nbody .phb-toc-title {\n  position: absolute;\n  left: 50%;\n  top: 0;\n  transform: translate(-50%, -50%);\n  padding: .3em 1.2em;\n  border-radius: 4px;\n  background: var(--phb-toc-accent);\n  color: var(--phb-badge-ink);\n  font-weight: 700;\n  line-height: 1.5;\n  letter-spacing: .12em;\n  box-shadow: 0 2px 4px rgb(0 0 0 / .12);\n}\nbody .phb-toc-row {\n  display: flex;\n  align-items: baseline;\n  gap: .7em;\n  padding-block: .27em;\n  padding-inline-start: calc(var(--phb-depth, 0) * 1.35em);\n  line-height: 1.55;\n  break-inside: avoid;\n}\nbody .phb-toc-row::before {\n  content: "";\n  width: .36em;\n  height: .36em;\n  border: 1px solid currentColor;\n  flex: 0 0 auto;\n}\nbody .phb-toc-row[data-level="2"]::before,\nbody .phb-toc-row[data-level="3"]::before {\n  width: .2em;\n  height: .2em;\n  border-radius: 50%;\n}\nbody .phb-toc a {\n  color: inherit;\n  text-decoration: none;\n  background: none;\n  border: none;\n  padding: 0;\n}\nbody .phb-toc a::before,\nbody .phb-toc a::after {\n  content: none;\n}\nbody .phb-toc a:hover {\n  text-decoration: underline;\n}\nbody .phb-toc-leader {\n  flex: 1 1 auto;\n  min-width: 1em;\n  border-bottom: 1px dotted currentColor;\n  opacity: .35;\n}\nbody .phb-toc-page {\n  flex: 0 0 3.5ch;\n  text-align: right;\n  font-variant-numeric: tabular-nums;\n}\nbody:not(.phb-export) .phb-toc-page,\nbody:not(.phb-export) .phb-toc-leader {\n  display: none;\n}\nbody .phb-anchor {\n  display: block;\n  height: 0;\n  margin: 0;\n  padding: 0;\n}\nbody a.an-ref,\nbody .markdown-preview-view a.an-ref {\n  color: var(--phb-thm,var(--text-accent,#247651));\n  white-space: normal;\n  cursor: pointer;\n  font-variant-numeric: tabular-nums;\n}\nbody a.an-ref::before,\nbody a.an-ref::after {\n  content: none;\n  display: none;\n}\nbody a.an-eqref {\n  color: inherit;\n  cursor: pointer;\n  text-decoration: none;\n}\nbody a.an-eqref:hover,\nbody a.an-eqref:focus-visible {\n  color: var(--text-accent);\n  text-decoration: underline;\n}\nbody .an-live-toc .phb-toc-row {\n  gap: .65em;\n}\nbody.an-active .callout[data-callout]:is([data-callout=definition], [data-callout=def]) {\n  --phb-accent: var(--an-color-def, var(--phb-def));\n  --an-title-color: var(--an-ink-def, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-def, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-def, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-def, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=theorem], [data-callout=thm]) {\n  --phb-accent: var(--an-color-thm, var(--phb-thm));\n  --an-title-color: var(--an-ink-thm, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-thm, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-thm, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-thm, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=lemma], [data-callout=lem]) {\n  --phb-accent: var(--an-color-lem, var(--phb-lem));\n  --an-title-color: var(--an-ink-lem, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-lem, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-lem, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-lem, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proposition], [data-callout=prop], [data-callout=prp]) {\n  --phb-accent: var(--an-color-prop, var(--phb-prop));\n  --an-title-color: var(--an-ink-prop, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-prop, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-prop, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-prop, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=corollary], [data-callout=cor]) {\n  --phb-accent: var(--an-color-cor, var(--phb-cor));\n  --an-title-color: var(--an-ink-cor, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-cor, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-cor, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-cor, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=claim], [data-callout=clm]) {\n  --phb-accent: var(--an-color-claim, var(--phb-claim));\n  --an-title-color: var(--an-ink-claim, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-claim, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-claim, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-claim, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=example], [data-callout=ex], [data-callout=exa], [data-callout=exm]) {\n  --phb-accent: var(--an-color-example, var(--phb-example));\n  --an-title-color: var(--an-ink-example, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-example, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-example, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-example, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=proof], [data-callout=pf]) {\n  --an-title-color: var(--an-color-proof, var(--phb-text));\n}\nbody.an-active .callout[data-callout]:is([data-callout=remark], [data-callout=rem], [data-callout=rmk]) {\n  --an-title-color: var(--an-color-remark, var(--an-remark-color));\n}\nbody.an-active .callout[data-callout]:is([data-callout=axiom], [data-callout=axm]) {\n  --phb-accent: var(--an-color-axiom, var(--phb-thm));\n  --an-title-color: var(--an-ink-axiom, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-axiom, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-axiom, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-axiom, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=assumption], [data-callout=asm]) {\n  --phb-accent: var(--an-color-assumption, var(--phb-def));\n  --an-title-color: var(--an-ink-assumption, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-assumption, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-assumption, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-assumption, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=exercise], [data-callout=exr]) {\n  --phb-accent: var(--an-color-exercise, var(--phb-example));\n  --an-title-color: var(--an-ink-exercise, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-exercise, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-exercise, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-exercise, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=conjecture], [data-callout=cnj]) {\n  --phb-accent: var(--an-color-conjecture, var(--phb-claim));\n  --an-title-color: var(--an-ink-conjecture, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-conjecture, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-conjecture, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-conjecture, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=hypothesis], [data-callout=hyp]) {\n  --phb-accent: var(--an-color-hypothesis, var(--phb-thm));\n  --an-title-color: var(--an-ink-hypothesis, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-hypothesis, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-hypothesis, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-hypothesis, block);\n}\nbody.an-active .callout[data-callout]:is([data-callout=solution], [data-callout=sol]) {\n  --phb-accent: var(--an-color-solution, var(--phb-proof));\n  --an-title-color: var(--an-ink-solution, var(--phb-badge-ink));\n  --phb-symbol: var(--an-symbol-solution, var(--an-original-symbol));\n  --an-motif-color: var(--an-motif-color-solution, var(--phb-accent));\n  --an-motif-display: var(--an-motif-display-solution, block);\n}\nbody .callout.an-custom-environment {\n  --an-custom-fallback: var(--an-color-thm, var(--phb-thm));\n  --phb-motif-color: var(--an-custom-palette-motif-color, var(--phb-accent));\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-light, var(--an-custom-default-ink, #fff)));\n  --phb-symbol: var(--an-custom-palette-symbol, none);\n  --an-motif-display: var(--an-custom-palette-motif-display, none);\n}\nbody .callout.an-custom-environment[data-an-style=def] {\n  --an-custom-fallback: var(--an-color-def, var(--phb-def));\n}\nbody .callout.an-custom-environment[data-an-style=lem] {\n  --an-custom-fallback: var(--an-color-lem, var(--phb-lem));\n}\nbody .callout.an-custom-environment[data-an-style=prop] {\n  --an-custom-fallback: var(--an-color-prop, var(--phb-prop));\n}\nbody .callout.an-custom-environment[data-an-style=cor] {\n  --an-custom-fallback: var(--an-color-cor, var(--phb-cor));\n}\nbody .callout.an-custom-environment[data-an-style=claim] {\n  --an-custom-fallback: var(--an-color-claim, var(--phb-claim));\n}\nbody .callout.an-custom-environment[data-an-style=example] {\n  --an-custom-fallback: var(--an-color-example, var(--phb-example));\n}\nbody .callout.an-custom-environment[data-an-style=remark] {\n  --an-custom-fallback: var(--phb-remark, var(--phb-def));\n}\nbody.theme-dark .callout.an-custom-environment {\n  --an-custom-default-ink: #18181b;\n  --phb-accent: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-custom-fallback)));\n  --phb-badge-ink: var(--an-custom-palette-ink, var(--an-custom-ink-dark, var(--an-custom-default-ink, #fff)));\n}\nbody .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-light, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\nbody.theme-dark .callout.an-custom-environment[data-an-style=remark] > .callout-title {\n  color: var(--an-custom-palette-color, var(--an-custom-color-dark, var(--an-color-remark, var(--an-remark-color)))) !important;\n}\n';
 
 // snippets/academic-layout.css
 var academic_layout_default = 'body {\n  --an-layout-caption-size: .9em;\n  --an-layout-caption-gap: .55em;\n  --an-layout-image-gap: 1.25em;\n  --an-layout-subfigure-min: 12rem;\n  --an-layout-rule: var(--text-normal, #26352c);\n  --an-layout-rule-heavy: 1.6px;\n  --an-layout-rule-light: 1px;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) {\n  border-collapse: collapse !important;\n  border-spacing: 0 !important;\n  border-radius: 0;\n  border: 0 !important;\n  border-top: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  border-bottom: var(--an-layout-rule-heavy) solid var(--an-layout-rule) !important;\n  background: transparent !important;\n  box-shadow: none;\n  width: auto;\n  min-width: min(100%, 22rem);\n  max-width: 100%;\n  margin: 1.25em auto;\n  font-variant-numeric: tabular-nums;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td, tr, thead, tbody, tfoot) {\n  border: 0 !important;\n  border-radius: 0;\n  background: transparent !important;\n  box-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) thead {\n  border-bottom: var(--an-layout-rule-light) solid var(--an-layout-rule) !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td) {\n  padding: .5em .85em;\n  line-height: 1.5;\n  color: var(--text-normal, inherit) !important;\n  text-indent: 0;\n  overflow-wrap: anywhere;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) th {\n  font-weight: 650;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) table:not(.academic-keep-table-style table) :is(th, td):hover {\n  box-shadow: none !important;\n  background: transparent !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) {\n  --callout-blend-mode: normal;\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: visible !important;\n  width: auto;\n  min-width: 0;\n  max-width: 100%;\n  margin: 1.5em 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit);\n  transform: none;\n  filter: none;\n  isolation: auto;\n  mix-blend-mode: normal;\n  box-sizing: border-box;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::before,\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl])::after {\n  content: none;\n  display: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title {\n  position: static;\n  inset: auto;\n  display: var(--an-caption-display, flex) !important;\n  align-items: baseline;\n  justify-content: center;\n  order: 2;\n  width: auto;\n  max-width: 100%;\n  margin: var(--an-layout-caption-gap) 0 0 !important;\n  padding: 0 !important;\n  border: 0 !important;\n  border-radius: 0 !important;\n  background: transparent !important;\n  box-shadow: none;\n  color: var(--text-normal, inherit) !important;\n  text-align: center;\n  font: inherit;\n  font-size: var(--an-layout-caption-size);\n  line-height: 1.55;\n  white-space: normal;\n  overflow-wrap: anywhere;\n  transform: none;\n  text-shadow: none;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-icon {\n  display: none !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-title > .callout-title-inner {\n  display: block;\n  color: inherit;\n  font: inherit;\n  white-space: normal;\n  text-indent: 0;\n  padding: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content {\n  order: 1;\n  position: static;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  color: var(--text-normal, inherit);\n  overflow: visible;\n  min-width: 0;\n  text-align: center;\n}\nbody .an-caption-label {\n  font-weight: 650;\n}\nbody .an-caption-label:not(:empty) + .an-caption-text:not(:empty)::before {\n  content: "\\2002";\n}\nbody .an-caption-text {\n  font-weight: 400;\n}\nbody .callout.an-captionless:not(.is-collapsible) > .callout-title,\nbody.phb-export .callout.an-captionless > .callout-title {\n  --an-caption-display: none;\n}\nbody :is(.an-media, [data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig], [data-callout=table], [data-callout=tbl]) > .callout-content > p {\n  margin: .35em 0;\n  text-indent: 0;\n  text-align: center !important;\n}\nbody .an-media .image-embed,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  display: inline-block !important;\n  margin: 0 auto !important;\n  padding: 0;\n  min-width: 0;\n  max-width: 100%;\n  float: none !important;\n  background: transparent;\n  border: 0;\n  box-shadow: none;\n  vertical-align: top;\n}\nbody .an-media img,\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n  margin: 0 auto !important;\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n  object-fit: contain;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=table], [data-callout=tbl]) > .callout-title {\n  order: 0;\n  margin: 0 0 var(--an-layout-caption-gap) !important;\n}\nbody .callout:is([data-callout=table], [data-callout=tbl]) table {\n  margin: 0 auto !important;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .callout:is([data-callout=figure], [data-callout=fig]) > .callout-content.an-figure-grid {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: center;\n  align-items: flex-start;\n  gap: var(--an-layout-image-gap);\n}\nbody .an-figure-grid > :not(.an-subfigure-cell) {\n  flex: 0 0 100%;\n}\nbody .an-figure-grid > .an-subfigure-cell {\n  flex: 1 1 calc(50% - var(--an-layout-image-gap));\n  min-width: min(100%, var(--an-layout-subfigure-min));\n  max-width: 100%;\n  margin: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view.mod-cm6, .markdown-rendered) .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) {\n  margin: 0 !important;\n}\nbody .an-figure-grid > .an-empty-anchor {\n  display: none;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig]) {\n  container: an-figure / inline-size;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n  --an-columns: 1;\n}\nbody .callout:is(.an-columns-1, .an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid > .an-subfigure-cell {\n  flex: 0 0 calc((100% - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns));\n  min-width: 0;\n}\n@container an-figure (min-width: 26rem) {\n  body .callout:is(.an-columns-2, .an-columns-3, .an-columns-4) > .an-figure-grid {\n    --an-columns: 2;\n  }\n}\n@container an-figure (min-width: 39rem) {\n  body .callout.an-columns-3 > .an-figure-grid {\n    --an-columns: 3;\n  }\n}\n@container an-figure (min-width: 52rem) {\n  body .callout.an-columns-4 > .an-figure-grid {\n    --an-columns: 4;\n  }\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  width: 100% !important;\n  max-width: 100%;\n}\nbody .callout.an-uniform-height > .an-figure-grid .callout:is([data-callout=subfigure], [data-callout=subfig]) img {\n  width: auto !important;\n  height: min(var(--an-subfigure-height), calc((100cqw - (var(--an-columns) - 1) * var(--an-layout-image-gap)) / var(--an-columns) / var(--an-max-image-ratio, 1))) !important;\n  max-height: none;\n  object-fit: contain;\n  object-position: center;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-indent p {\n  text-indent: 2em;\n}\nbody .academic-indent :is(.callout, blockquote, li, td, th, figcaption, .phb-toc) p {\n  text-indent: 0;\n}\nbody :is(.markdown-preview-view, .markdown-source-view, .phb-chapter).academic-serif {\n  font-family:\n    "Latin Modern Roman",\n    "Times New Roman",\n    "Noto Serif CJK SC",\n    "Source Han Serif SC",\n    "Songti SC",\n    "SimSun",\n    serif;\n}\n@media print {\n  body .an-media {\n    break-inside: avoid;\n  }\n  body .an-media > .callout-title {\n    break-before: avoid;\n    break-after: auto;\n  }\n  body .an-table {\n    display: block !important;\n    break-inside: auto;\n  }\n  body .an-table > .callout-title {\n    break-before: auto;\n    break-after: avoid;\n  }\n  body .callout.an-media img {\n    max-height: 155mm;\n  }\n  body .an-figure-grid {\n    --an-layout-image-gap: 4mm;\n    gap: var(--an-layout-image-gap);\n  }\n  body .an-figure-grid > .an-subfigure-cell {\n    min-width: 0;\n    flex-basis: calc(50% - 4mm);\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) table {\n    break-inside: auto;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) thead {\n    display: table-header-group;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) tr {\n    break-inside: avoid;\n  }\n  body :is(.markdown-preview-view, .markdown-rendered) :is(table, .an-media) {\n    -webkit-print-color-adjust: exact;\n    print-color-adjust: exact;\n  }\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content:not(.an-figure-grid),\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content > p {\n  text-align: center !important;\n  text-align-last: center !important;\n  text-indent: 0 !important;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-embed {\n  justify-content: center;\n  text-align: center;\n}\nbody .callout:is([data-callout=figure], [data-callout=fig], [data-callout=\\56fe], [data-callout=subfigure], [data-callout=subfig], [data-callout=\\5b50\\56fe]) > .callout-content :is(.cm-line, .cm-embed-block):has(.image-embed) {\n  text-align: center !important;\n  text-align-last: center !important;\n  text-indent: 0 !important;\n  padding-inline: 0 !important;\n}\nbody .markdown-source-view.mod-cm6 .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) > .callout-content {\n  text-align: center !important;\n}\nbody .markdown-source-view.mod-cm6 .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .cm-content > .image-embed {\n  display: flex !important;\n  width: fit-content;\n  max-width: 100%;\n  margin-inline: auto !important;\n  justify-content: center;\n}\nbody .markdown-source-view.mod-cm6 .callout:is([data-callout=figure], [data-callout=fig], [data-callout=subfigure], [data-callout=subfig]) .image-wrapper {\n  position: relative;\n  max-width: 100%;\n  margin-inline: auto !important;\n}\n';
@@ -64119,6 +64320,11 @@ var AcademicNotes = class extends import_obsidian10.Plugin {
     if (typeof this.settings.excludedFolders !== "string")
       this.settings.excludedFolders = "";
     this.applyAppearance();
+    this.registerDomEvent(document, "click", (event) => this.followEquationReference(event), true);
+    this.registerDomEvent(document, "keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ")
+        this.followEquationReference(event);
+    }, true);
     this.themeObserver = new MutationObserver(() => this.applyAppearance());
     this.themeObserver.observe(document.body, { attributes: true, attributeFilter: ["class"] });
     this.register(() => this.themeObserver.disconnect());
@@ -64292,7 +64498,13 @@ var AcademicNotes = class extends import_obsidian10.Plugin {
       }
       const affected = /* @__PURE__ */ new Set(), allViews = renderKey !== this.renderKey;
       for (const note of notes) {
-        const labels = JSON.stringify([note.records.map((r) => [r.key, r.id, r.number, r.referenced]), note.refs.map((r) => [r.targetPath, r.target && engine_default.refText(r.target, this.settings)])]);
+        const labels = JSON.stringify([
+          note.records.map((r) => [r.key, r.id, r.number, r.referenced, r.rowNumbers]),
+          note.refs.map((r) => {
+            const key2 = r.label ? engine_default.labelTarget(r.label)?.block : void 0;
+            return [r.targetPath, r.target && engine_default.refText(r.target, this.settings), r.target && key2 ? r.target.rowNumbers?.[key2] ?? r.target.number : null];
+          })
+        ]);
         const previous = this.renderStates.get(note.path);
         if (allViews || !previous || previous.source !== note.source || previous.labels !== labels) affected.add(note.path);
         this.renderStates.set(note.path, { source: note.source, labels });
@@ -64475,10 +64687,7 @@ var AcademicNotes = class extends import_obsidian10.Plugin {
     this.scheduleIndex();
     new import_obsidian10.Notice(t("\u5DF2\u6DFB\u52A0 ^{0}\uFF1B\u53EF\u7528 [[#^{0}]] \u5F15\u7528\u3002", id2));
   }
-  async openReference(raw, sourcePath, newLeaf = false) {
-    const rec = this.graph?.resolve(raw, sourcePath);
-    if (!rec)
-      return this.app.workspace.openLinkText(raw, sourcePath, newLeaf);
+  async openRecord(rec, newLeaf = false) {
     const file = this.app.vault.getAbstractFileByPath(rec.path);
     if (!(file instanceof import_obsidian10.TFile))
       throw new Error(t("\u5F15\u7528\u76EE\u6807\u6587\u4EF6\u4E0D\u5B58\u5728\uFF1A") + rec.path);
@@ -64493,9 +64702,33 @@ var AcademicNotes = class extends import_obsidian10.Plugin {
       }
     }
   }
+  async openReference(raw, sourcePath, newLeaf = false) {
+    const rec = this.graph?.resolve(raw, sourcePath);
+    if (!rec)
+      return this.app.workspace.openLinkText(raw, sourcePath, newLeaf);
+    return this.openRecord(rec, newLeaf);
+  }
+  async openReferenceLabel(label3, sourcePath, newLeaf = false) {
+    const rec = this.graph?.resolveLabel(label3, sourcePath);
+    if (rec)
+      return this.openRecord(rec, newLeaf);
+  }
+  followEquationReference(event) {
+    const link2 = event.target?.closest?.("[data-an-eqref]"), host = link2?.closest("[data-an-path]");
+    const label3 = link2?.dataset.anEqref, path = host?.dataset.anPath;
+    if (!label3 || !path)
+      return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    void this.openReferenceLabel(label3, path, !!(event.ctrlKey || event.metaKey)).catch((error) => this.fail(t("\u6253\u5F00\u516C\u5F0F\u5F15\u7528"), error));
+  }
   makeReference(record, sourcePath) {
     const target = record.path === sourcePath ? "" : record.path.replace(/\.md$/i, "");
     return "[[" + target + "#^" + record.id + "]]";
+  }
+  makeLatexReference(record, sourcePath, command = "eqref") {
+    const target = record.path === sourcePath ? "" : record.path.replace(/\.md$/i, "") + "#^";
+    return "\\" + command + "{" + target + record.id + "}";
   }
   targets() {
     return this.graph ? [...this.graph.notes.values()].flatMap((n) => n.records.filter((r) => r.id)) : [];
@@ -64608,9 +64841,10 @@ var AcademicNotes = class extends import_obsidian10.Plugin {
   exportSource(note, graph2) {
     const replacements = [];
     for (const eq of note.equations) {
-      if (eq.manual || eq.multiTag)
+      const tex = engine_default.taggedTex(eq, (label3) => graph2.resolveLabel(label3, note.path));
+      if ((eq.manual || eq.multiTag) && tex === (eq.tex || ""))
         continue;
-      const tex = engine_default.taggedTex(eq), q = engine_default.quote(note.lines[eq.line]).prefix;
+      const q = engine_default.quote(note.lines[eq.line]).prefix;
       const math = tex.includes("\n") ? "$$\n" + tex.split("\n").map((l) => q + l).join("\n") + "\n" + q + "$$" : "$$" + tex + "$$";
       replacements.push({ from: eq.from, to: eq.to, text: math });
     }
@@ -64662,7 +64896,7 @@ var AcademicNotes = class extends import_obsidian10.Plugin {
         for (const rec of note.records) {
           const old = original.records.find((r) => r.from === rec.from && r.kind === rec.kind);
           if (old)
-            Object.assign(rec, { number: old.number, prefix: old.prefix, subletter: old.subletter, referenced: old.referenced });
+            Object.assign(rec, { number: old.number, prefix: old.prefix, subletter: old.subletter, referenced: old.referenced, rowNumbers: old.rowNumbers });
         }
       }
       warnings.push(t("\u4FDD\u7559\u7B14\u8BB0\u7F16\u53F7\u6A21\u5F0F\uFF1A\u4E0D\u540C\u7AE0\u8282\u53EF\u80FD\u663E\u793A\u76F8\u540C\u7F16\u53F7\uFF1B\u8DF3\u8F6C\u4ECD\u6309\u6587\u4EF6\u8DEF\u5F84\u548C\u5757 ID \u533A\u5206\u3002"));

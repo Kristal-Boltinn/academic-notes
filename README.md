@@ -14,7 +14,7 @@ Inspired by [ElegantBook](https://github.com/ElegantLaTeX/ElegantBook), Academic
 
 - **Mathematical environments** — theorems, definitions, lemmas, propositions, proofs, remarks, and more, with support for folding and nesting.
 - **Flexible numbering** — automatic or manual numbers, section-based or continuous counters, shared theorem counters, and an option to number only referenced equations.
-- **Cross-file references** — readable labels, reference suggestions, customizable names and abbreviations, and links that follow their targets into a PDF book.
+- **Cross-file references** — readable labels, reference suggestions, customizable names and abbreviations, and links that follow their targets into a PDF book. Display equations also accept LaTeX `\label`, `\eqref`, and `\ref` syntax, with clickable `\eqref` links and per-row numbering in multi-line environments.
 - **Your own environments** — add named environments with their own numbering, references, colors, and corner motifs.
 
 [Explore mathematical environments](https://github.com/Kristal-Boltinn/academic-notes/wiki/Mathematical-environments) · [References and indexes](https://github.com/Kristal-Boltinn/academic-notes/wiki/References-and-indexes)

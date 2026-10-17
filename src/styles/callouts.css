@@ -364,6 +364,8 @@ body a.an-ref, body .markdown-preview-view a.an-ref {
   white-space: normal; cursor: pointer; font-variant-numeric: tabular-nums;
 }
 body a.an-ref::before, body a.an-ref::after { content: none; display: none; }
+body a.an-eqref { color: inherit; cursor: pointer; text-decoration: none; }
+body a.an-eqref:hover, body a.an-eqref:focus-visible { color: var(--text-accent); text-decoration: underline; }
 body .an-live-toc .phb-toc-row { gap: .65em; }
 
 /* Per-environment overrides reset on each native callout, including nested aliases. */

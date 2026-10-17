@@ -61,6 +61,11 @@ async function run() {
     await wc.executeJavaScript(uiClient);
     console.log(await wc.executeJavaScript('runUiRegressions()'));
     console.log(await wc.executeJavaScript('runEnvironmentRegressions()'));
+    if (process.env.ACADEMIC_TEST_FEATURE_ONLY === '1') {
+      const features = await wc.executeJavaScript('runFeatureRegressions()') as { message: string };
+      console.log(features.message);
+      return;
+    }
     if (process.env.ACADEMIC_TEST_SETTINGS_ONLY === '1') {
       await wc.executeJavaScript(`(async()=>{document.body.replaceChildren();document.body.style.cssText='margin:0;padding:28px;overflow:hidden;height:100vh;display:block;background:var(--background-primary);';const tab=mountSettingsPreview();tab.containerEl.style.cssText='width:100%;max-width:720px;height:calc(100vh - 56px);margin:auto;padding:0;overflow:auto';document.documentElement.style.overflow='hidden';window.scrollTo(0,0);await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));console.log('Settings preview bounds',JSON.stringify(tab.containerEl.getBoundingClientRect()));})()`);
       writeFileSync('output/settings-1.14.png', (await wc.capturePage({x:0,y:0,width:1000,height:1250})).toPNG());

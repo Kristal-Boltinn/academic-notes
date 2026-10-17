@@ -8,6 +8,7 @@ import Engine from '../src/indexing/engine';
 import { PDFDocument, PDFName, PDFString } from 'pdf-lib';
 import { measurePdf, finishPdf, PROBE } from '../src/export/pdf-postprocess';
 import AcademicNotes from '../src/main';
+import { ReferenceSuggest } from '../src/ui/modals';
 import { ENGLISH, setLanguage, t } from '../src/i18n';
 import { AcademicSettings } from '../src/ui/settings-tab';
 import { setTestLanguage, MockElement, Setting, Platform } from './obsidian-mock';
@@ -255,6 +256,162 @@ test('cross-file references control equation numbering and book renumbering', ()
   assert.equal(a.equations[0].number, '2.1.1');
   assert.equal(graph.resolve('a#^eq-one', 'b.md'), a.equations[0]);
 });
+
+test('LaTeX \\label and \\eqref use block IDs and plugin numbers', () => {
+  const note = Engine.parse('eq.md', ['## Section', '$$', 'E=mc^2', '$$', '^eq-a', '', '$$\\eqref{eq-a}$$', '',
+    '$$', 'F=ma \\label{eq-b}', '$$', '', '$$\\ref{eq-b}$$'].join('\n'));
+  const graph = Engine.graph([note]);
+  assert.equal(note.blocks.get('eq-a')?.number, '1.1');
+  assert.equal(note.blocks.get('eq-b')?.number, '1.2');
+  assert.deepEqual(note.refs.filter(r => r.syntax === 'latex').map(r => [r.command, r.label, r.block, r.target?.id]),
+    [['eqref', 'eq-a', 'eq-a', 'eq-a'], ['ref', 'eq-b', 'eq-b', 'eq-b']]);
+  const resolve = (label: string) => graph.resolveLabel(label, note.path);
+  assert.equal(Engine.taggedTex(note.blocks.get('eq-a')!, resolve), 'E=mc^2\\tag{1.1}');
+  assert.equal(Engine.taggedTex(note.equations[1], resolve), '\\text{(1.1)}');
+  assert.equal(Engine.taggedTex(note.equations[3], resolve), '\\text{1.2}');
+});
+
+test('LaTeX labels and \\eqref resolve across files, aliases and colons', () => {
+  const a = Engine.parse('a.md', '$$x=1 \\tag{A}$$ ^eq-a');
+  const b = Engine.parse('b.md', '$$\\eqref{a#^eq-a}$$');
+  const cross = Engine.graph([a, b]);
+  assert.equal(a.equations[0].number, 'A');
+  assert.equal(b.refs[0].target, a.equations[0]);
+  assert.equal(Engine.taggedTex(b.equations[0], label => cross.resolveLabel(label, b.path)), '\\text{(A)}');
+  assert.equal(Engine.taggedTex(a.equations[0]), 'x=1 \\tag{A}');
+  const alias = Engine.parse('alias.md', '$$x=1 \\label{foo}$$ ^bar\n\n$$\\eqref{foo}$$ $$\\eqref{bar}$$');
+  Engine.graph([alias]);
+  assert.equal(alias.blocks.get('foo'), alias.equations[0]);
+  assert.equal(alias.blocks.get('bar'), alias.equations[0]);
+  assert.equal(alias.equations[0].id, 'bar');
+  const colon = Engine.parse('colon.md', '$$x=1 \\label{eq:foo}$$\n\n$$\\eqref{eq:foo}$$');
+  const colonGraph = Engine.graph([colon]);
+  assert.equal(colon.blocks.get('eq:foo')?.number, '1');
+  assert.equal(Engine.taggedTex(colon.equations[1], label => colonGraph.resolveLabel(label, colon.path)), '\\text{(1)}');
+});
+
+test('unresolved and commented LaTeX references do not invent targets or numbers', () => {
+  const missing = Engine.parse('missing.md', '$$x=1$$\n\n$$\\eqref{missing}$$'), graph = Engine.graph([missing]);
+  assert.equal(missing.refs[0].target, null);
+  assert.equal(missing.equations[0].number, '');
+  assert.equal(Engine.taggedTex(missing.equations[1], label => graph.resolveLabel(label, missing.path)), '\\eqref{missing}');
+  const commented = Engine.parse('comment.md', '$$x=1 % \\eqref{nope}\n$$ ^eq\n\n$$\\eqref{eq}$$');
+  const commentedGraph = Engine.graph([commented]);
+  assert.equal(commented.refs.filter(r => r.syntax === 'latex').length, 1);
+  assert.equal(commented.equations[0].number, '1');
+  assert.equal(Engine.taggedTex(commented.equations[1], label => commentedGraph.resolveLabel(label, commented.path)), '\\text{(1)}');
+});
+
+
+test('a \\label on a row numbers only that row in multi-line environments', () => {
+  const note = Engine.parse('rows.md', ['## Sec', '$$', '\\begin{align*}', 'a &= b \\\\', 'c &= d \\label{eq:c}', '\\end{align*}', '$$', '', '$$\\eqref{eq:c}$$'].join('\n'));
+  const graph = Engine.graph([note]), eq = note.equations[0];
+  assert.deepEqual(eq.rowGroups, [['eq:c']]);
+  assert.deepEqual(eq.rowNumbers, { 'eq:c': '1.1' });
+  assert.equal(eq.number, '1.1');
+  assert.equal(Engine.taggedTex(eq, label => graph.resolveLabel(label, note.path)), '\\begin{align*}\na &= b \\\\\nc &= d \\tag{1.1}\n\\end{align*}');
+  assert.equal(Engine.taggedTex(note.equations[1], label => graph.resolveLabel(label, note.path)), '\\text{(1.1)}');
+  assert.deepEqual(Engine.splitTarget('#^eq:c'), { file: '', block: 'eq:c' });
+  assert.equal(graph.resolve('#^eq:c', 'rows.md'), eq);
+});
+
+test('multiple labeled rows get independent numbers and aligned is upgraded for row tags', () => {
+  const note = Engine.parse('rows2.md', ['$$', '\\begin{aligned}[t]', 'a &= b \\label{one} \\\\', 'c &= d \\label{two}', '\\end{aligned}', '$$', '', '$$\\eqref{one}\\ \\eqref{two}$$'].join('\n'));
+  const graph = Engine.graph([note]), eq = note.equations[0];
+  assert.deepEqual(eq.rowNumbers, { one: '1', two: '2' });
+  const tex = Engine.taggedTex(eq, label => graph.resolveLabel(label, note.path));
+  assert.match(tex, /^\\begin\{align\*\}/);
+  assert.ok(!tex.includes('[t]'));
+  assert.match(tex, /a &= b \\tag\{1\}/);
+  assert.match(tex, /c &= d \\tag\{2\}/);
+  assert.equal(Engine.taggedTex(note.equations[1], label => graph.resolveLabel(label, note.path)), '\\text{(1)}\\ \\text{(2)}');
+});
+
+test('row labels stay explicit under manual tags and disabled automatic numbering', () => {
+  const manual = Engine.parse('manual-row.md', '$$\\begin{align*}a &= b \\tag{A} \\\\ c &= d \\label{eq:c}\\end{align*}$$\n\n$$\\eqref{eq:c}$$');
+  const manualGraph = Engine.graph([manual]);
+  assert.equal(manual.equations[0].number, 'A');
+  assert.equal(manual.equations[0].rowNumbers, undefined);
+  assert.match(Engine.taggedTex(manual.equations[0], label => manualGraph.resolveLabel(label, manual.path)), /\\tag\{A\}/);
+  assert.equal(Engine.taggedTex(manual.equations[1], label => manualGraph.resolveLabel(label, manual.path)), '\\text{(A)}');
+  const off = Engine.parse('off-row.md', '$$\n\\begin{align*}\na &= b \\\\\nc &= d \\label{eq:c}\n\\end{align*}\n$$', {}, { equationMode: 'none' });
+  Engine.graph([off], { equationMode: 'none' });
+  assert.equal(off.equations[0].number, '1');
+  assert.deepEqual(off.equations[0].rowNumbers, { 'eq:c': '1' });
+});
+
+test('row labels and clickable references resolve across files', () => {
+  const a = Engine.parse('a.md', '$$\n\\begin{align*}\na &= b \\\\\nc &= d \\label{eq:c}\n\\end{align*}\n$$');
+  const b = Engine.parse('b.md', '$$\\eqref{a#^eq:c}$$');
+  const graph = Engine.graph([a, b]), tex = Engine.taggedTex(b.equations[0], label => graph.resolveLabel(label, b.path));
+  assert.equal(tex, '\\text{(1)}');
+  const linked = Engine.taggedTex(b.equations[0], label => graph.resolveLabel(label, b.path), true);
+  const hex = linked.match(/an-eqref:([0-9a-f]+)/)![1];
+  assert.equal(Engine.decodeLabel(hex), 'a#^eq:c');
+  assert.equal(Engine.decodeLabel(Engine.encodeLabel('笔记#^eq-a')), '笔记#^eq-a');
+  assert.equal(Engine.decodeLabel('zz'), '');
+});
+
+test('LaTeX reference insertion keeps same-file labels short and qualifies cross-file labels', () => {
+  const plugin: any = new AcademicNotes(), target = Engine.parse('target.md', '$$x=1$$ ^eq-a').equations[0];
+  assert.equal(plugin.makeLatexReference(target, 'target.md'), '\\eqref{eq-a}');
+  assert.equal(plugin.makeLatexReference(target, 'other.md'), '\\eqref{target#^eq-a}');
+  assert.equal(plugin.makeLatexReference(target, 'other.md', 'ref'), '\\ref{target#^eq-a}');
+});
+
+test('reference suggestions insert LaTeX inside display math and links in prose', () => {
+  const source = ['$$', '\\eqref', '$$', '', '前面的 \\eqref', '', '```', '$$', '\\eqref', '```', '', '正文 \\eqref'].join('\n');
+  const target = Engine.parse('target.md', '$$x=1$$ ^eq-a'), plugin: any = new AcademicNotes();
+  plugin.settings = { ...Engine.DEFAULTS };
+  plugin.graph = Engine.graph([target]);
+  plugin.scheduleIndex = () => {};
+  const suggest: any = new ReferenceSuggest(plugin); suggest.close = () => {};
+  let text = source;
+  const offset = (pos: { line: number; ch: number }) => text.split('\n').slice(0, pos.line).reduce((n, line) => n + line.length + 1, 0) + pos.ch;
+  const editor: any = { getLine: (line: number) => text.split('\n')[line], getRange: (from: any, to: any) => text.slice(offset(from), offset(to)),
+    replaceRange: (value: string, from: any, to: any) => { text = text.slice(0, offset(from)) + value + text.slice(offset(to)); } };
+  const trigger = (line: number, ch: number) => suggest.onTrigger({ line, ch }, editor, { path: 'math.md' } as any);
+  const math = trigger(1, 6)!;
+  assert.equal(suggest.math, true);
+  suggest.context = { ...math, editor, file: { path: 'math.md' } };
+  suggest.selectSuggestion(target.equations[0]);
+  assert.equal(text.split('\n')[1], '\\eqref{target#^eq-a}');
+  const prose = trigger(4, '前面的 \\eqref'.length)!;
+  assert.equal(suggest.math, false);
+  suggest.context = { ...prose, editor, file: { path: 'math.md' } };
+  suggest.selectSuggestion(target.equations[0]);
+  assert.equal(text.split('\n')[4], '前面的 [[target#^eq-a]]');
+  assert.equal(trigger(8, 6)!.query, '');
+  assert.equal(suggest.math, false);
+  let closed = '$$\\eqref{foo}$$';
+  const closedOffset = (pos: { line: number; ch: number }) => closed.split('\n').slice(0, pos.line).reduce((n, line) => n + line.length + 1, 0) + pos.ch;
+  const closedEditor: any = { getLine: (line: number) => closed.split('\n')[line], getRange: (from: any, to: any) => closed.slice(closedOffset(from), closedOffset(to)),
+    replaceRange: (value: string, from: any, to: any) => { closed = closed.slice(0, closedOffset(from)) + value + closed.slice(closedOffset(to)); } };
+  const editInside = suggest.onTrigger({ line: 0, ch: '$$\\eqref{foo'.length }, closedEditor, { path: 'math.md' } as any)!;
+  assert.equal(editInside.end.ch, '$$\\eqref{foo}'.length);
+  suggest.context = { ...editInside, editor: closedEditor, file: { path: 'math.md' } };
+  suggest.selectSuggestion(target.equations[0]);
+  assert.equal(closed, '$$\\eqref{target#^eq-a}$$');
+  const noBrace = '$$\\text{see \\eqref}$$';
+  const noBraceOffset = (pos: { line: number; ch: number }) => noBrace.split('\n').slice(0, pos.line).reduce((n, line) => n + line.length + 1, 0) + pos.ch;
+  const noBraceEditor: any = { getLine: (line: number) => noBrace.split('\n')[line], getRange: (from: any, to: any) => noBrace.slice(noBraceOffset(from), noBraceOffset(to)), replaceRange: () => {} };
+  const cursor = '$$\\text{see \\eqref'.length, unbraced = suggest.onTrigger({ line: 0, ch: cursor }, noBraceEditor, { path: 'math.md' } as any)!;
+  assert.equal(unbraced.end.ch, cursor);
+});
+
+
+test('clickable equation references delegate to the indexed target', async () => {
+  const plugin: any = new AcademicNotes(); let opened = '';
+  plugin.openReferenceLabel = async (label: string, path: string, newLeaf: boolean) => { opened = [label, path, newLeaf].join('|'); };
+  const host = { dataset: { anPath: 'note.md' } }, link: any = { dataset: { anEqref: 'eq-a' } };
+  link.closest = (selector: string) => selector === '[data-an-eqref]' ? link : selector === '[data-an-path]' ? host : null;
+  let prevented = false;
+  plugin.followEquationReference({ target: link, preventDefault: () => { prevented = true; }, stopImmediatePropagation() {}, ctrlKey: false, metaKey: false });
+  await Promise.resolve();
+  assert.equal(opened, 'eq-a|note.md|false');
+  assert.equal(prevented, true);
+});
+
 
 test('manual numbers, hidden prefixes and shared theorem counters', () => {
   const note = Engine.parse('a.md', '## A\n> [!thm|1] Manual\n\n> [!def] Auto\n\n> [!proof] Proof\n\n> [!thm|*] Hidden\n\n## B\n> [!lem] Lemma');

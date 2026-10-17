@@ -580,6 +580,16 @@ body a.an-ref::after {
   content: none;
   display: none;
 }
+body a.an-eqref {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+body a.an-eqref:hover,
+body a.an-eqref:focus-visible {
+  color: var(--text-accent);
+  text-decoration: underline;
+}
 body .an-live-toc .phb-toc-row {
   gap: .65em;
 }
