@@ -1,14 +1,16 @@
 # Changelog
 
-## Unreleased
+## 2.15.7 — 2026-10-31
 
 - Stop dropping full-width/IME punctuation on Windows at startup: composition handlers now defer their state updates instead of dispatching synchronously, and paragraph layout issues no transaction while the optional typography features are off or a composition is active.
 - Resolve block IDs on nested callouts by the line's reference depth instead of `endLine` ties. Inline IDs now bind to the environment whose body owns the line at any nesting depth, including outer theorem/proof labels, labels on middle lines, sibling children, figures, tables and custom environments; title-line IDs bind to the callout without becoming part of its title; equation and command-style standalone IDs keep their existing behavior. Labelling a nested block also keeps the enclosing callout open when more quoted content follows the inserted ID.
 - Point Obsidian's Page preview and block navigation at the nested block's own source range: hovering a lemma or equation now shows that environment instead of the enclosing theorem. Title-line, standalone quoted and equation-label IDs are exposed to Obsidian's metadata cache, so native click and hover use the labelled block rather than the outer callout. Media blocks keep the native preview so images and diagrams still render.
 - Keep top-level theorem-family and media blocks on Obsidian's native preview so their callout frame and rendered content match the page. Nested theorem-family callouts use the plugin card, which now recreates the callout frame: native Page preview preserves every `>` prefix and renders a nested block as extra blockquote bars. LaTeX-only references, non-native IDs and previews with Page preview disabled also use the plugin card; the card no longer prints the raw `^id` line, strips `\label` before MathJax, and resolves `\eqref` against the current graph.
-- Add a temporary “multi-line equation preview shows only the labelled row” switch (on by default) next to the reference-preview setting. It applies when the reference targets one row of an `align`-style environment and falls back to the whole block for unlabelled or unnumbered targets; the original author can move or rename it.
+- Add an optional row-only preview for references to multi-line equations (on by default). Disable it to preview the complete equation block.
 - Keep native block-cache ownership exact: case-folded IDs are never redirected to another source block, and host-owned entries replaced at identical coordinates survive plugin unload.
 - Keep the plugin reference card on plain hover when Page preview requires Ctrl/Cmd, while retaining native preview for modifier hover.
+
+Thanks to Innovaspire for the fixes and regression coverage in PR #4.
 
 ## 2.15.6 — 2026-10-29
 
