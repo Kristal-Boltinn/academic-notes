@@ -9,7 +9,7 @@ import { algorithmProcessor, algorithmRecord, finishAlgorithms } from './algorit
 import algorithmCss from './styles/algorithms.css';
 import { t, setLanguage, language } from './i18n';
 import type { EditorView } from '@codemirror/view';
-import type { StateEffectType } from '@codemirror/state';
+import { Prec, type StateEffectType } from '@codemirror/state';
 import type { ParsedNote, SourceRecord, NoteGraph } from './indexing/engine';
 import type { Editor, MarkdownPostProcessorContext } from 'obsidian';
 export interface ExportSelection { files: { file: TFile; title: string }[]; options: { book: boolean; title: string; subtitle: string; tocDepth: number } }
@@ -163,7 +163,10 @@ export default class AcademicNotes extends Plugin {
             this.recordError(t("academic-toc 已被占用；保留 [toc] 和编号功能"), e);
         }
         try {
-            this.registerEditorExtension([createLiveExtension(this), createLiveParagraphExtension(this)]);
+            // Obsidian's own Live Preview link decorations hide `[[` / `]]` with higher default
+            // precedence; a partially covered replace decoration loses its widget, leaving an empty
+            // gap after the first edit. Give the reference widgets the highest precedence.
+            this.registerEditorExtension([Prec.highest(createLiveExtension(this)), createLiveParagraphExtension(this)]);
             this.liveExtension = true;
         }
         catch (e) {
