@@ -77,6 +77,8 @@ Installation, syntax, settings, and examples live in the **[Wiki](https://github
 
 Thanks to [Innovaspire](https://github.com/Innovaspire) for contributing LaTeX equation references and per-row numbering in [PR #2](https://github.com/Kristal-Boltinn/academic-notes/pull/2), and grouped reference suggestions in [PR #3](https://github.com/Kristal-Boltinn/academic-notes/pull/3).
 
+Thanks to [dmalyuta](https://github.com/dmalyuta) for fixing reference labels disappearing after edits in Live Preview in [PR #5](https://github.com/Kristal-Boltinn/academic-notes/pull/5).
+
 ## Support and feedback
 
 If Academic Notes is useful to you, please consider [starring the project](https://github.com/Kristal-Boltinn/academic-notes). Bug reports and feature suggestions are welcome in [GitHub Issues](https://github.com/Kristal-Boltinn/academic-notes/issues).

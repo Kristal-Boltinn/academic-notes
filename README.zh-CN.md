@@ -77,6 +77,8 @@ Beta 功能有明确的适用范围，排版与触屏表现也可能受到设备
 
 感谢 [Innovaspire](https://github.com/Innovaspire) 在 [PR #2](https://github.com/Kristal-Boltinn/academic-notes/pull/2) 中贡献 LaTeX 公式引用和逐行编号功能，以及在 [PR #3](https://github.com/Kristal-Boltinn/academic-notes/pull/3) 中贡献分组引用候选。
 
+感谢 [dmalyuta](https://github.com/dmalyuta) 在 [PR #5](https://github.com/Kristal-Boltinn/academic-notes/pull/5) 中修复了实时预览里编辑后引用编号消失的问题。
+
 ## 支持与反馈
 
 如果你觉得 Academic Notes 好用，欢迎在 [GitHub 上点一个 Star](https://github.com/Kristal-Boltinn/academic-notes) 支持项目。遇到问题或有功能建议，欢迎[提交 Issue](https://github.com/Kristal-Boltinn/academic-notes/issues)，帮助插件持续完善。
